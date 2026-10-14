@@ -26,10 +26,11 @@ the generated sitemap.
   based on a fixed page count.
 - Review the privacy policy against the actual hosting setup, published contact details, and
   applicable legal requirements before launch.
-- Apply through AdSense. Add the exact `ads.txt` record and ad code Google provides only after
-  the account supplies the publisher ID.
+- The AdSense publisher script is installed on the homepage, privacy page, and Letterwell.
+  Keep ads disabled in AdSense until the consent-management platform is configured.
+- After approval, publish the exact `ads.txt` record Google provides for the publisher account.
 - Before serving ads where required, configure an eligible consent-management platform and
-  update the privacy policy to describe the actual vendors, data use, and choices.
+  keep the privacy policy accurate about the actual vendors, data use, and choices.
 
 The build does not promise indexing, AdSense acceptance, or legal compliance. Those also depend
 on live content, domain ownership, account status, hosting, and the actual advertising setup.
