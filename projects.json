@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Letterwell",
+    "symbol": "LW",
+    "category": "WORD FINDER",
+    "eyebrow": "A WORD GAME TOOL",
+    "description": "Find English words from your letters and compare Scrabble, Words With Friends, and Boggle scores.",
+    "href": "/letterwell/",
+    "image": "/letterwell-art.svg",
+    "imageAlt": "Colorful letter tiles spelling CREATE",
+    "linkLabel": "Explore Letterwell"
+  }
+]
