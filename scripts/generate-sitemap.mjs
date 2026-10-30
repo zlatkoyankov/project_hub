@@ -35,7 +35,7 @@ if (new Set(projectPaths).size !== projectPaths.length) {
   throw new Error('Every project in projects.json must have a unique href.')
 }
 
-const sitemapPaths = [...new Set(['/', '/privacy/', ...projectPaths])]
+const sitemapPaths = [...new Set(['/', '/privacy/', '/terms/', ...projectPaths])]
 const sitemap = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',

@@ -1,16 +1,56 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import projects from '../projects.json'
 import './App.css'
 
+const themePreferenceEvent = 'zyankov-theme-preference-change'
+let themePreferenceFallback: boolean | undefined
+
+function getThemePreference() {
+  try {
+    const preference = window.localStorage.getItem('zyankov-theme')
+    if (preference === 'dark') return true
+    if (preference === 'light') return false
+  } catch {
+    return themePreferenceFallback ?? false
+  }
+  return themePreferenceFallback ?? false
+}
+
+function subscribeToThemePreference(listener: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === 'zyankov-theme' || event.key === null) {
+      themePreferenceFallback = undefined
+      listener()
+    }
+  }
+  const onPreferenceChange = () => listener()
+  window.addEventListener('storage', onStorage)
+  window.addEventListener(themePreferenceEvent, onPreferenceChange)
+  return () => {
+    window.removeEventListener('storage', onStorage)
+    window.removeEventListener(themePreferenceEvent, onPreferenceChange)
+  }
+}
+
+function getServerThemePreference() {
+  return false
+}
+
+function setThemePreference(isDark: boolean) {
+  themePreferenceFallback = isDark
+  try {
+    window.localStorage.setItem('zyankov-theme', isDark ? 'dark' : 'light')
+  } catch (error) {
+    console.warn('Could not save the theme preference in this browser.', error)
+  }
+  window.dispatchEvent(new Event(themePreferenceEvent))
+}
+
 function App() {
-  const [isDark, setIsDark] = useState(
-    () => {
-      try {
-        return window.localStorage.getItem('zyankov-theme') === 'dark'
-      } catch {
-        return false
-      }
-    },
+  const isDark = useSyncExternalStore(
+    subscribeToThemePreference,
+    getThemePreference,
+    getServerThemePreference,
   )
 
   useEffect(() => {
@@ -19,11 +59,6 @@ function App() {
       'content',
       isDark ? '#24372d' : '#f1f5ef',
     )
-    try {
-      window.localStorage.setItem('zyankov-theme', isDark ? 'dark' : 'light')
-    } catch (error) {
-      console.warn('Could not save the theme preference in this browser.', error)
-    }
   }, [isDark])
 
   return (
@@ -51,7 +86,7 @@ function App() {
             type="button"
             aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
             title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-            onClick={() => setIsDark((current) => !current)}
+            onClick={() => setThemePreference(!isDark)}
           >
             <span aria-hidden="true">{isDark ? '☀' : '☾'}</span>
           </button>
@@ -119,8 +154,15 @@ function App() {
             </div>
             <div className="about-details">
               <p>
-                Zyankov.eu is an independent home for small web projects. Each project focuses on
-                one clear purpose and has its own dedicated page.
+                Zyankov.eu is an independent collection of practical browser-based projects,
+                created and maintained by Zlatko Yankov in Bulgaria. Letterwell helps people find
+                words from English or Bulgarian letters. BuildCalc estimates common home
+                improvement materials. Each project is designed to work without an account.
+              </p>
+              <p>
+                Calculations and word searches run in your browser. I build the tools around
+                explicit assumptions and welcome feedback about errors, accessibility, and ideas
+                for improvement.
               </p>
               <a href="mailto:hello@zyankov.eu">Get in touch <span aria-hidden="true">→</span></a>
             </div>
@@ -157,10 +199,11 @@ function App() {
               </p>
             </details>
             <details>
-              <summary>Does Zyankov.eu currently show ads or use analytics?</summary>
+              <summary>Does Zyankov.eu use advertising or analytics?</summary>
               <p>
-                No. The site currently has no advertising or analytics. If that changes, this
-                information and the privacy policy will be updated.
+                The Google AdSense publisher script is loaded on the homepage and Letterwell.
+                Whether ads are shown depends on the advertising configuration. We do not use a
+                separate analytics service.
               </p>
             </details>
             <details>
@@ -188,6 +231,7 @@ function App() {
           <a href="#blog">Blog</a>
           <a href="#faq">FAQ</a>
           <a href="/privacy/">Privacy</a>
+          <a href="/terms/">Terms</a>
           <a href="mailto:hello@zyankov.eu">Contact</a>
         </nav>
       </footer>
