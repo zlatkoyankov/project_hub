@@ -19,11 +19,11 @@ describe('SeoService', () => {
 
   it('emits canonical, social tags and linked structured data for a calculator', () => {
     TestBed.inject(SeoService).updateFromRoute(
-      snapshot(['calculators', 'gravel-calculator'], { description: 'Gravel estimates.' }, 'Gravel Calculator | BuildCalc'),
+      snapshot(['gravel-calculator'], { description: 'Gravel estimates.' }, 'Gravel Calculator | BuildCalc'),
     );
     const doc = document();
     expect(doc.title).toBe('Gravel Calculator | BuildCalc');
-    expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${SITE_BASE_URL}/calculators/gravel-calculator`);
+    expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${SITE_BASE_URL}/gravel-calculator`);
     expect(doc.querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe(`${SITE_BASE_URL}/images/gravel.webp`);
     expect(doc.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('index, follow');
     const json = JSON.parse(doc.getElementById('buildcalc-json-ld')!.textContent!) as { '@type': string; name?: string }[];

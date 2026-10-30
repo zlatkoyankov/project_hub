@@ -1,5 +1,5 @@
 <section class="page-hero content-hero calc-hero"><div class="calc-hero-bg" aria-hidden="true" [style.--hero-img]="bannerImage"></div><div class="container"><nav class="breadcrumbs" aria-label="Breadcrumb"><a routerLink="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ page.title }}</span></nav><p class="eyebrow">{{ page.kicker }}</p><h1>{{ page.title }}</h1><p>{{ page.intro }}</p></div></section>
-<section class="section content-section"><div class="container content-layout"><aside class="content-aside"><span class="aside-label">EXPLORE</span><a routerLink="/calculators">All calculators <span aria-hidden="true">→</span></a><a routerLink="/guides">Material guides <span aria-hidden="true">→</span></a></aside>
+<section class="section content-section"><div class="container content-layout"><aside class="content-aside"><span class="aside-label">EXPLORE</span><a routerLink="/all-calculators">All calculators <span aria-hidden="true">→</span></a><a routerLink="/guides">Material guides <span aria-hidden="true">→</span></a></aside>
   <div class="prose">
     @if (isGuideIndex) {
       <div class="guide-grid">
@@ -16,20 +16,11 @@
         <section><h2>{{ section.title }}</h2>@for (paragraph of section.paragraphs; track paragraph) {<p>{{ paragraph }}</p>}</section>
       }
     }
-    @if (guide) {
-      <a class="button" [routerLink]="['/calculators', guide.calculatorSlug]">Open the {{ guide.shortTitle.toLowerCase() }} calculator <span aria-hidden="true">→</span></a>
-    }
     @if (contact) {
-      <form class="contact-form" (ngSubmit)="submitContact()">
-        <label class="form-field"><span>Your name</span><input type="text" name="name" autocomplete="name" required></label>
-        <label class="form-field"><span>Email address</span><input type="email" name="email" autocomplete="email" required></label>
-        <label class="form-field"><span>Your message</span><textarea name="message" rows="5" required></textarea></label>
-        <p class="contact-warning">This form does not send or store your message. Message delivery requires a contact integration.</p>
-        <button class="button" type="submit">Check message status <span aria-hidden="true">→</span></button>
-        @if (contactNotice()) {<p class="form-error" role="status">No message was sent. Connect a message-delivery service to enable contact submissions.</p>}
-      </form>
+      <section><h2>Email us</h2><p>For questions, suggestions, or to report a problem, email <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>.</p></section>
     }
-    @if (pageKey === 'privacy') {<div class="notice-card"><span class="notice-mark" aria-hidden="true">i</span><div><h2>Before production</h2><p>Update this policy to reflect the actual analytics, advertising, cookies, and third-party services used on the live site.</p></div></div>}
+    @if (guide) {
+      <a class="button" [routerLink]="['/', guide.calculatorSlug]">Open the {{ guide.shortTitle.toLowerCase() }} calculator <span aria-hidden="true">→</span></a>
+    }
   </div>
 </div></section>
-@if (guide) {<app-ad-slot />}

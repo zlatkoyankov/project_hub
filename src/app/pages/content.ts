@@ -1,8 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { GUIDES, Guide } from '../data/guides';
-import { AdSlotComponent } from '../shared/ad-slot.component';
 import { MaterialArtComponent } from '../shared/material-art.component';
 
 interface ContentSection {
@@ -20,33 +18,37 @@ interface PageContent {
 const PAGES: Record<string, PageContent> = {
   about: {
     title: 'About BuildCalc', kicker: 'PLAN SMARTER',
-    intro: 'BuildCalc is a collection of browser-based tools for planning common home improvement and construction material needs.',
+    intro: 'BuildCalc is an independent project by Zlatko Yankov, based in Bulgaria, that helps people make an initial materials plan for common home improvement and construction jobs.',
     sections: [
-      { title: 'Practical project planning', paragraphs: ['Our calculators turn measurements into understandable arithmetic estimates. They are designed to help with early planning—not to replace product instructions, supplier advice, professional judgment, or building requirements.', 'Calculator inputs stay in your browser. The core estimates do not require an account, server, or external API.'] },
-      { title: 'Transparent assumptions', paragraphs: ['Coverage, density, waste, and site conditions can vary significantly. Each calculator explains the assumptions it uses so you can adapt inputs and verify important quantities before purchase.'] },
+      { title: 'What the calculators do', paragraphs: ['BuildCalc currently includes calculators for gravel, paint, tile, concrete, square footage, and mulch. Calculations run in your browser and do not require an account. Your measurements are not sent to a BuildCalc application server.', 'Each calculator shows its calculation method, an example, and important limitations. The calculation functions are covered by automated tests; the tests check expected results and input validation, but cannot account for every product or job-site condition.'] },
+      { title: 'How to use an estimate', paragraphs: ['Treat results as a starting point for planning. Product coverage, material density, packaging, layout, cutting, site preparation, and waste vary. Check manufacturer instructions and confirm quantities with your supplier before ordering.', 'BuildCalc does not provide structural design, building-code advice, a supplier quote, or professional construction advice. For safety or structural decisions, consult a qualified professional.'] },
+      { title: 'Feedback', paragraphs: ['If you find an error, have a question, or want to suggest a calculator, email hello@zyankov.eu. Include the calculator name and enough detail to reproduce the issue; please do not include sensitive information.'] },
     ],
   },
   contact: {
     title: 'Contact BuildCalc', kicker: 'GET IN TOUCH',
-    intro: 'Have a question or suggestion? You can draft a note below, but this demo does not deliver or store messages.',
-    sections: [
-      { title: 'Message delivery is not configured', paragraphs: ['BuildCalc currently has no message-delivery service. Submitting this form will not send your message or transmit your information; a backend or approved contact integration must be configured before messages can be delivered.'] },
-    ],
+    intro: 'Have a question or suggestion? Get in touch with the BuildCalc team.',
+    sections: [],
   },
   privacy: {
     title: 'Privacy policy', kicker: 'YOUR PRIVACY',
-    intro: 'This starter policy describes the current BuildCalc demo and must be reviewed before the site is launched publicly.',
+    intro: 'This policy describes information processed when you use BuildCalc at zyankov.eu/calculators.',
     sections: [
-      { title: 'Calculator data', paragraphs: ['Calculator inputs are processed in your browser and are not sent to a BuildCalc server by the core calculator functionality. No analytics, tracking, or advertising scripts are enabled by default.', 'If analytics, advertising, cookies, contact processing, or other third-party services are added in production, this policy must be updated to accurately explain those services, the data involved, retention, and available choices.'] },
-      { title: 'Policy review', paragraphs: ['This starter is not legal advice and is not a substitute for a policy tailored to the actual production website and its jurisdiction. Review it with appropriate counsel before use.'] },
+      { title: 'Who is responsible', paragraphs: ['The site is created and maintained by Zlatko Yankov in Bulgaria. For privacy questions or requests, email hello@zyankov.eu.'] },
+      { title: 'Calculator inputs and preferences', paragraphs: ['Measurements and options are processed in your browser by the calculator code. They are not sent to a BuildCalc application server and are not stored by BuildCalc. The site uses browser local storage to remember your light/dark theme and selected measurement system. These preferences remain in your browser and can be removed using your browser settings.'] },
+      { title: 'Cookies, analytics, and third parties', paragraphs: ['BuildCalc does not currently load advertising, analytics, or third-party tracking scripts and does not set advertising cookies. The site may be served by hosting infrastructure that processes request information such as IP address, requested pages, browser details, and request times for delivery and security; its retention is controlled by the hosting provider.'] },
+      { title: 'Contact and your choices', paragraphs: ['The contact page opens a mailto link in your email application; BuildCalc does not have a message form or receive a message until you choose to send an email. Your email provider processes the message after you send it. You can clear local preferences in your browser. Depending on applicable law, you may also have rights to request access, correction, deletion, restriction, or objection to certain processing.'] },
+      { title: 'Updates', paragraphs: ['This policy will be updated if BuildCalc’s data practices or third-party services change. The review date is October 23, 2026.'] },
     ],
   },
   terms: {
     title: 'Terms of use', kicker: 'USING BUILDCALC',
-    intro: 'These starter terms describe the intended use of BuildCalc and should be reviewed for the final production service.',
+    intro: 'These terms apply to your use of the BuildCalc website and its calculators, guides, and information pages.',
     sections: [
-      { title: 'Estimates and responsibility', paragraphs: ['BuildCalc provides general planning estimates based on the measurements and assumptions entered. Results may differ from actual material needs and are not a quote, guarantee, engineering design, or professional advice.', 'Verify measurements, product coverage, material properties, code requirements, and purchase quantities with suppliers and qualified professionals. You are responsible for determining whether an estimate is suitable for your project.'] },
-      { title: 'Availability and review', paragraphs: ['The tools are offered as-is and may change. These starter terms are not legal advice; have them reviewed and adapted before the website is used in production.'] },
+      { title: 'Planning estimates only', paragraphs: ['BuildCalc provides general arithmetic estimates based on the values and assumptions you enter. Results are not a supplier quote, guarantee, engineering design, building-code determination, or professional advice. Material coverage, density, packaging, site conditions, and workmanship can change actual requirements.', 'Check measurements and product specifications, and confirm order quantities with your supplier. Consult a qualified professional for structural, safety, or code-related decisions. You are responsible for deciding whether an estimate is appropriate for your project.'] },
+      { title: 'Use of the site', paragraphs: ['Use BuildCalc lawfully and do not interfere with its operation or attempt unauthorized access. The site is provided without an account; do not submit sensitive personal information through the email link.'] },
+      { title: 'Availability and changes', paragraphs: ['Calculators and supporting information may change, and uninterrupted availability or error-free results are not guaranteed. Nothing in these terms excludes rights or remedies that cannot be limited under applicable law.'] },
+      { title: 'Contact', paragraphs: ['Questions about these terms can be sent to hello@zyankov.eu. Last updated: October 23, 2026.'] },
     ],
   },
   disclaimer: {
@@ -61,7 +63,7 @@ const PAGES: Record<string, PageContent> = {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, FormsModule, MaterialArtComponent, AdSlotComponent],
+  imports: [RouterLink, MaterialArtComponent],
   templateUrl: './content.html',
 })
 export class ContentPage {
@@ -77,9 +79,4 @@ export class ContentPage {
       : PAGES[this.pageKey] ?? PAGES['disclaimer'];
   protected readonly bannerImage = `url(images/${this.guide?.kind ?? 'hero'}.webp)`;
   protected readonly contact = this.pageKey === 'contact';
-  protected readonly contactNotice = signal(false);
-
-  protected submitContact(): void {
-    this.contactNotice.set(true);
-  }
 }

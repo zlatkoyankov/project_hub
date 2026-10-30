@@ -20,6 +20,6 @@ describe('App shell', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.site-header .brand')?.textContent).toContain('BuildCalc');
-    expect(compiled.querySelector('a[href="/calculators"]')?.textContent).toContain('Calculators');
+    expect(compiled.querySelector('a[href="/all-calculators"]')?.textContent).toContain('Calculators');
   });
 });

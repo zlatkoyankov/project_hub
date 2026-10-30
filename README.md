@@ -8,6 +8,7 @@ Tagline: **Plan smarter. Build with confidence.**
 
 - Responsive landing page and calculator search.
 - Calculator directory with category filtering.
+- Short calculator URLs such as `/calculators/gravel-calculator`; the full directory is at `/calculators/all-calculators`.
 - Six working calculators:
   - Gravel
   - Paint
@@ -18,7 +19,9 @@ Tagline: **Plan smarter. Build with confidence.**
 - Unit selectors for imperial and metric measurements where practical (feet, inches, meters, centimeters, and millimeters for small measurements).
 - A site-wide US customary / Metric selector in the header. Changing it converts current calculator measurements and updates compatible result units.
 - Material guides and supporting pages (about, contact, privacy, terms, disclaimer).
+- Contact page links directly to `hello@zyankov.eu` using the visitor's email app.
 - SSR-ready Angular app (standalone components + lazy routes).
+- Known calculator, guide, and information routes are prerendered for static hosting.
 - Route-specific title + meta description handling via a centralized SEO service.
 - `robots.txt` and a maintainable `sitemap.xml`.
 - Unit tests for core calculation logic.
@@ -91,21 +94,21 @@ export const SITE_BASE_URL = 'https://www.your-domain.com';
 
 - SSR is enabled via Angular SSR setup in this project.
 - Server render mode is configured in [src/app/app.routes.server.ts](/Users/zlatko/WORK/calculators/src/app/app.routes.server.ts).
-- Dynamic calculator and guide slug routes are configured for server rendering mode instead of static prerender parameter expansion.
+- The wildcard route remains server-rendered for unknown paths; known calculator and guide slugs are prerendered from the project data.
 
 ## AdSense integration (after approval)
 
 BuildCalc intentionally does **not** load ad scripts by default.
 
-Current readiness:
-- Dedicated ad container in UI (reserved slot) so layout can absorb ads without breaking calculator controls.
-- No deceptive placement around core inputs/results.
+No empty ad placeholders are shown. Before adding advertising, configure appropriate consent
+controls, update the privacy policy to match the actual services, and keep ads separate from
+calculator inputs and results.
 
 After AdSense approval:
 1. Add your official AdSense script to [src/index.html](/Users/zlatko/WORK/calculators/src/index.html).
 2. Add your publisher ID and ad unit config.
 3. Keep ad placements separate from form controls and result actions.
-4. Re-review [privacy page copy in content pages](/Users/zlatko/WORK/calculators/src/app/pages/content.ts) to accurately reflect real cookie/advertising behavior.
+4. Re-review the privacy page in [src/app/pages/content.ts](/Users/zlatko/WORK/calculators/src/app/pages/content.ts) to accurately reflect real cookie/advertising behavior.
 
 ## Calculation assumptions and limitations
 

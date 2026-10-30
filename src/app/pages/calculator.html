@@ -2,7 +2,7 @@
   <header class="calc-hero">
     <div class="calc-hero-bg" aria-hidden="true" [style.--hero-img]="'url(images/' + calc.kind + '.webp)'"></div>
     <div class="container">
-      <nav class="breadcrumbs" aria-label="Breadcrumb"><a routerLink="/">Home</a><span aria-hidden="true">/</span><a routerLink="/calculators">Calculators</a><span aria-hidden="true">/</span><span aria-current="page">{{ calc.shortTitle }}</span></nav>
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a routerLink="/">Home</a><span aria-hidden="true">/</span><a routerLink="/all-calculators">Calculators</a><span aria-hidden="true">/</span><span aria-current="page">{{ calc.shortTitle }}</span></nav>
       <section class="calculator-intro">
         <p class="eyebrow">{{ calc.category }}</p>
         <h1>{{ calc.title }}</h1>
@@ -73,15 +73,14 @@
       <article><p class="eyebrow">HOW IT WORKS</p><h2>The calculation</h2><p>{{ calc.formula }}</p></article>
       <article class="notice-card"><span class="notice-mark" aria-hidden="true">i</span><div><h2>Keep in mind</h2><p>{{ limitationFor(calc.kind) }}</p></div></article>
     </section>
-    <app-ad-slot [contained]="false" />
     <section class="faq-section calculator-faq"><p class="eyebrow">COMMON QUESTIONS</p><h2>About {{ calc.shortTitle.toLowerCase() }} estimates</h2>
       <div class="faq-list">@for (faq of calc.faqs; track faq.question) {<details><summary>{{ faq.question }}</summary><p>{{ faq.answer }}</p></details>}</div>
     </section>
     @if (guideSlug(calc.slug); as guide) {
       <p class="guide-callout">Want to understand the assumptions? <a [routerLink]="['/guides', guide]">Read the {{ calc.shortTitle.toLowerCase() }} estimating guide →</a></p>
     }
-    <section class="related-section"><div><p class="eyebrow">KEEP PLANNING</p><h2>Related calculators</h2></div><div class="related-links">@for (related of relatedCalculators(calc.slug); track related.slug) {<a [routerLink]="['/calculators', related.slug]">{{ related.title }} <span aria-hidden="true">↗</span></a>}</div></section>
+    <section class="related-section"><div><p class="eyebrow">KEEP PLANNING</p><h2>Related calculators</h2></div><div class="related-links">@for (related of relatedCalculators(calc.slug); track related.slug) {<a [routerLink]="['/', related.slug]">{{ related.title }} <span aria-hidden="true">↗</span></a>}</div></section>
   </div>
 } @else {
-  <section class="page-hero"><div class="container"><h1>Calculator not found</h1><p>This calculator may have moved. Browse all available calculators.</p><a class="button" routerLink="/calculators">All calculators <span aria-hidden="true">→</span></a></div></section>
+  <section class="page-hero"><div class="container"><h1>Calculator not found</h1><p>This calculator may have moved. Browse all available calculators.</p><a class="button" routerLink="/all-calculators">All calculators <span aria-hidden="true">→</span></a></div></section>
 }

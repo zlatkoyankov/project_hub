@@ -53,11 +53,10 @@ describe('CalculatorPage', () => {
     expect((fixture.nativeElement as HTMLElement).querySelector('[role="alert"]')?.textContent).toMatch(/greater than zero/i);
   });
 
-  it('keeps an advertisement placeholder out of the form and results', () => {
+  it('does not render an empty advertisement placeholder', () => {
     const fixture = render('gravel-calculator');
     const root = fixture.nativeElement as HTMLElement;
-    expect(root.querySelector('app-ad-slot')).not.toBeNull();
-    expect(root.querySelector('.calculator-form app-ad-slot, .results-card app-ad-slot')).toBeNull();
+    expect(root.querySelector('app-ad-slot, .ad-slot-wrap, .ad-slot')).toBeNull();
   });
 });
 

@@ -22,14 +22,14 @@ export const routes: Routes = [
     data: { description: 'Estimate materials for home improvement, renovation, and landscaping projects with free, practical BuildCalc calculators.' },
   },
   {
-    path: 'calculators',
+    path: 'all-calculators',
     loadComponent: () => import('./pages/directory').then((module) => module.DirectoryPage),
     title: 'Construction Calculators | BuildCalc',
     data: { description: 'Browse free gravel, paint, tile, concrete, square footage, and mulch calculators for your next project.' },
   },
   {
-    path: 'calculators/:slug',
-    canMatch: [(_route: Route, segments: UrlSegment[]) => CALCULATORS.some((calculator) => calculator.slug === segments[1]?.path)],
+    path: ':slug',
+    canMatch: [(_route: Route, segments: UrlSegment[]) => CALCULATORS.some((calculator) => calculator.slug === segments[0]?.path)],
     loadComponent: () => import('./pages/calculator').then((module) => module.CalculatorPage),
     title: (route) => `${calculatorForRoute(route)?.title ?? 'Calculator'} | BuildCalc`,
     resolve: { description: calculatorDescriptionResolver },
@@ -52,8 +52,8 @@ export const routes: Routes = [
   },
   ...[
     { path: 'about', key: 'about', title: 'About BuildCalc', description: 'Learn about BuildCalc’s browser-based planning tools and transparent material estimate assumptions.' },
-    { path: 'contact', key: 'contact', title: 'Contact BuildCalc', description: 'Contact information and message-delivery status for BuildCalc.' },
-    { path: 'privacy', key: 'privacy', title: 'Privacy Policy | BuildCalc', description: 'Read the BuildCalc privacy policy starter and information about browser-based calculator data.' },
+    { path: 'contact', key: 'contact', title: 'Contact BuildCalc', description: 'Contact BuildCalc at hello@zyankov.eu with questions, suggestions, or calculator feedback.' },
+    { path: 'privacy', key: 'privacy', title: 'Privacy Policy | BuildCalc', description: 'Learn what information BuildCalc processes, what stays in your browser, and how to contact the site owner.' },
     { path: 'terms', key: 'terms', title: 'Terms of Use | BuildCalc', description: 'Review the terms for using BuildCalc planning estimates and calculators.' },
     { path: 'disclaimer', key: 'disclaimer', title: 'Disclaimer | BuildCalc', description: 'Important limitations for BuildCalc planning estimates and material calculators.' },
   ].map((page) => ({

@@ -2,7 +2,6 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.service';
-import { AdSlotComponent } from '../shared/ad-slot.component';
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
 import {
@@ -111,7 +110,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
 
 @Component({
   standalone: true,
-  imports: [FormsModule, RouterLink, AdSlotComponent],
+  imports: [FormsModule, RouterLink],
   templateUrl: './calculator.html',
 })
 export class CalculatorPage {

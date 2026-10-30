@@ -10,8 +10,8 @@ const segs = (...parts: string[]) => parts.map((part) => new UrlSegment(part, {}
 
 describe('routes', () => {
   it('matches only known calculator and guide slugs so unknown URLs reach the 404 page', () => {
-    expect(matcher('calculators/:slug')({}, segs('calculators', CALCULATORS[0].slug))).toBe(true);
-    expect(matcher('calculators/:slug')({}, segs('calculators', 'unknown'))).toBe(false);
+    expect(matcher(':slug')({}, segs(CALCULATORS[0].slug))).toBe(true);
+    expect(matcher(':slug')({}, segs('unknown'))).toBe(false);
     expect(matcher('guides/:slug')({}, segs('guides', GUIDES[0].slug))).toBe(true);
     expect(matcher('guides/:slug')({}, segs('guides', 'unknown'))).toBe(false);
   });
@@ -20,7 +20,11 @@ describe('routes', () => {
     const sitemap = readFileSync('public/sitemap.xml', 'utf8');
     const locs = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
     expect(new Set(locs).size).toBe(locs.length);
-    for (const calculator of CALCULATORS) expect(locs).toContain(`https://zyankov.eu/calculators/calculators/${calculator.slug}`);
+    expect(locs).toContain('https://zyankov.eu/calculators/all-calculators');
+    for (const calculator of CALCULATORS) {
+      expect(locs).toContain(`https://zyankov.eu/calculators/${calculator.slug}`);
+      expect(locs).not.toContain(`https://zyankov.eu/calculators/calculators/${calculator.slug}`);
+    }
     for (const guide of GUIDES) expect(locs).toContain(`https://zyankov.eu/calculators/guides/${guide.slug}`);
   });
 

@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
         <p class="eyebrow">ERROR 404</p>
         <h1>We couldn’t find that page</h1>
         <p>The link may be outdated or mistyped. Try one of our calculators instead.</p>
-        <a class="button" routerLink="/calculators">Browse calculators <span aria-hidden="true">→</span></a>
+        <a class="button" routerLink="/all-calculators">Browse calculators <span aria-hidden="true">→</span></a>
       </div>
     </section>
   `,

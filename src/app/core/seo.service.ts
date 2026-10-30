@@ -8,7 +8,7 @@ import { GUIDES } from '../data/guides';
 export const SITE_BASE_URL: string = 'https://zyankov.eu/calculators';
 const SITE_NAME = 'BuildCalc';
 const JSON_LD_ID = 'buildcalc-json-ld';
-const SECTION_NAMES: Record<string, string> = { calculators: 'Calculators', guides: 'Material guides' };
+const SECTION_NAMES: Record<string, string> = { 'all-calculators': 'Calculators', guides: 'Material guides' };
 
 @Injectable({ providedIn: 'root' })
 export class SeoService {
@@ -52,9 +52,8 @@ export class SeoService {
   }
 
   private imageFor(path: string): string {
-    const slug = path.split('/')[2];
-    return CALCULATORS.find((item) => item.slug === slug)?.kind
-      ?? GUIDES.find((item) => item.slug === slug)?.kind
+    return CALCULATORS.find((item) => path === `/${item.slug}`)?.kind
+      ?? GUIDES.find((item) => path === `/guides/${item.slug}`)?.kind
       ?? 'hero';
   }
 
@@ -64,8 +63,7 @@ export class SeoService {
     if (path === '/') {
       data.push({ '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, ...(url && { url }) });
     }
-    const slug = path.split('/')[2];
-    const calculator = path.startsWith('/calculators/') ? CALCULATORS.find((item) => item.slug === slug) : undefined;
+    const calculator = CALCULATORS.find((item) => path === `/${item.slug}`);
     if (calculator) {
       data.push({
         '@context': 'https://schema.org',
@@ -77,7 +75,7 @@ export class SeoService {
         })),
       });
     }
-    const guide = path.startsWith('/guides/') ? GUIDES.find((item) => item.slug === slug) : undefined;
+    const guide = GUIDES.find((item) => path === `/guides/${item.slug}`);
     if (guide) {
       data.push({
         '@context': 'https://schema.org',
