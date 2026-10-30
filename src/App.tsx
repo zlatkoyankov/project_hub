@@ -1,8 +1,95 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, useSyncExternalStore, type FormEvent } from 'react'
 import { ArrowDownAZ, ArrowUpNarrowWide, Check, Copy, Moon, Search, Shuffle, Sparkles, Sun } from 'lucide-react'
 import './App.css'
 
 type Language = 'en' | 'bg'
+
+const themePreferenceEvent = 'letterwell-theme-preference-change'
+const languagePreferenceEvent = 'letterwell-language-preference-change'
+let themePreferenceFallback: boolean | undefined
+let languagePreferenceFallback: Language | undefined
+
+function getThemePreference() {
+  try {
+    const preference = window.localStorage.getItem('letterwell-theme')
+    if (preference === 'dark') return true
+    if (preference === 'light') return false
+  } catch {
+    return themePreferenceFallback ?? false
+  }
+  return themePreferenceFallback ?? false
+}
+
+function subscribeToThemePreference(listener: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === 'letterwell-theme' || event.key === null) {
+      themePreferenceFallback = undefined
+      listener()
+    }
+  }
+  const onPreferenceChange = () => listener()
+  window.addEventListener('storage', onStorage)
+  window.addEventListener(themePreferenceEvent, onPreferenceChange)
+  return () => {
+    window.removeEventListener('storage', onStorage)
+    window.removeEventListener(themePreferenceEvent, onPreferenceChange)
+  }
+}
+
+function setThemePreference(isDark: boolean) {
+  themePreferenceFallback = isDark
+  try {
+    window.localStorage.setItem('letterwell-theme', isDark ? 'dark' : 'light')
+  } catch (error) {
+    console.warn('Could not save the theme preference in this browser.', error)
+  }
+  window.dispatchEvent(new Event(themePreferenceEvent))
+}
+
+function getServerThemePreference() {
+  return false
+}
+
+function getLanguagePreference(): Language {
+  try {
+    const preference = window.localStorage.getItem('letterwell-language')
+    if (preference === 'bg') return 'bg'
+    if (preference === 'en') return 'en'
+  } catch {
+    return languagePreferenceFallback ?? 'en'
+  }
+  return languagePreferenceFallback ?? 'en'
+}
+
+function subscribeToLanguagePreference(listener: () => void) {
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === 'letterwell-language' || event.key === null) {
+      languagePreferenceFallback = undefined
+      listener()
+    }
+  }
+  const onPreferenceChange = () => listener()
+  window.addEventListener('storage', onStorage)
+  window.addEventListener(languagePreferenceEvent, onPreferenceChange)
+  return () => {
+    window.removeEventListener('storage', onStorage)
+    window.removeEventListener(languagePreferenceEvent, onPreferenceChange)
+  }
+}
+
+function setLanguagePreference(language: Language) {
+  languagePreferenceFallback = language
+  try {
+    window.localStorage.setItem('letterwell-language', language)
+  } catch (error) {
+    console.warn('Could not save the language preference in this browser.', error)
+  }
+  window.dispatchEvent(new Event(languagePreferenceEvent))
+}
+
+function getServerLanguagePreference(): Language {
+  return 'en'
+}
 
 const seoMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
   en: {
@@ -120,13 +207,11 @@ function getRandomLetters(language: Language, count: number) {
 }
 
 function App() {
-  const [language, setLanguage] = useState<Language>(() => {
-    try {
-      return window.localStorage.getItem('letterwell-language') === 'bg' ? 'bg' : 'en'
-    } catch {
-      return 'en'
-    }
-  })
+  const language = useSyncExternalStore(
+    subscribeToLanguagePreference,
+    getLanguagePreference,
+    getServerLanguagePreference,
+  )
   const [letters, setLetters] = useState('')
   const [minimumLength, setMinimumLength] = useState(2)
   const [maximumLength, setMaximumLength] = useState(12)
@@ -249,30 +334,15 @@ function App() {
 
   const effectiveMinimum = requireAllLetters ? normalizedLetters.length : minimumLength
   const effectiveMaximum = requireAllLetters ? normalizedLetters.length : maximumLength
-  const [isDark, setIsDark] = useState(() => {
-    try {
-      return window.localStorage.getItem('letterwell-theme') === 'dark'
-    } catch {
-      return false
-    }
-  })
+  const isDark = useSyncExternalStore(
+    subscribeToThemePreference,
+    getThemePreference,
+    getServerThemePreference,
+  )
 
   useEffect(() => {
     document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
-    try {
-      window.localStorage.setItem('letterwell-theme', isDark ? 'dark' : 'light')
-    } catch {
-      return
-    }
   }, [isDark])
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem('letterwell-language', language)
-    } catch {
-      return
-    }
-  }, [language])
 
   useEffect(() => {
     const locale = language === 'bg' ? 'bg_BG' : 'en_US'
@@ -393,7 +463,7 @@ function App() {
             <select
               value={language}
               onChange={(event) => {
-                setLanguage(event.target.value as Language)
+                setLanguagePreference(event.target.value as Language)
                 setLetters('')
                 clearResults()
               }}
@@ -408,7 +478,7 @@ function App() {
             type="button"
             aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
             title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-            onClick={() => setIsDark((current) => !current)}
+            onClick={() => setThemePreference(!isDark)}
           >{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>
         </div>
       </header>
@@ -764,9 +834,34 @@ function App() {
             )}
           </section>
         </section>
+
+        <section className="tool-guide" aria-labelledby="tool-guide-title">
+          <h2 id="tool-guide-title">
+            {language === 'bg' ? 'Как работи търсенето на думи' : 'How the word finder works'}
+          </h2>
+          <p>
+            {language === 'bg'
+              ? 'Въведи английски или български букви, за да откриеш думи, които могат да се съставят от тях; всяка буква се използва най-много толкова пъти, колкото присъства в набора. Филтрирай по дължина или по букви в началото, края или средата на думата. Включи „Използвай всички букви“, за да търсиш точни анаграми.'
+              : 'Enter English or Bulgarian letters to find words you can build from them; each letter is used no more often than it appears in your rack. Filter results by word length or by letters at the start, end, or anywhere in a word. Enable “Use all letters” to look for exact anagrams.'}
+          </p>
+          <p>
+            {language === 'bg'
+              ? 'Смени речника от менюто за език. Търсенето се изпълнява в браузъра и буквите ти не се изпращат към сървър. Незадължителните точки за Scrabble и Boggle помагат да сравниш възможните ходове. Речникът може да се различава от официалните списъци на игрите, затова провери правилата за играта, която използваш.'
+              : 'Switch dictionaries with the language menu. Searches run in your browser, so your letters are not sent to a server. Optional Scrabble, Words With Friends, and Boggle scores help you compare possible plays. The word list may differ from official game dictionaries, so check the rules for the game you are playing.'}
+          </p>
+        </section>
       </main>
 
-      <footer className="footer"><span>letterwell</span><span>Every word starts somewhere.</span></footer>
+      <footer className="footer">
+        <span>letterwell</span>
+        <span>Every word starts somewhere.</span>
+        <nav className="footer-links" aria-label={language === 'bg' ? 'Информация за сайта' : 'Site information'}>
+          <a href="/#about">{language === 'bg' ? 'За проекта' : 'About'}</a>
+          <a href="/privacy/">{language === 'bg' ? 'Поверителност' : 'Privacy'}</a>
+          <a href="/terms/">{language === 'bg' ? 'Условия' : 'Terms'}</a>
+          <a href="mailto:hello@zyankov.eu">{language === 'bg' ? 'Контакт' : 'Contact'}</a>
+        </nav>
+      </footer>
     </div>
   )
 }

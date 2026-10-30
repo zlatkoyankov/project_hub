@@ -1,45 +1,34 @@
-# React + TypeScript + Vite
+# Letterwell
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Letterwell is a browser-based word finder for English and Bulgarian. It is built with React,
+TypeScript, and Vite and is published at `https://zyankov.eu/letterwell/`.
 
-Currently, two official plugins are available:
+The footer links to the shared Zyankov.eu About, Privacy, and Terms pages. Letter searches are
+processed in the browser using word lists downloaded from this site. Theme and language
+preferences are saved in local storage; recent searches stay in page memory and are cleared when
+the page is reloaded or closed.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Development
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm run dev
+npm run build
+npm run lint
 ```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
 
 ## Languages and dictionaries
 
-Letterwell supports English and Bulgarian through the language selector in the top bar. The selected language controls both the interface and the word list used for searches. Language preferences are saved in the browser.
+The selected language controls the interface and the word list used for searches. The page
+title, description, social metadata, and structured data follow the selected language. The
+sitemap is available at `/letterwell/sitemap.xml`; both languages currently share the same
+canonical URL.
 
-The page title, description, social metadata, and structured data follow the selected language. The sitemap is available at `/letterwell/sitemap.xml`; both languages currently share the same canonical URL.
+Bulgarian Scrabble scores use Bulgarian letter values. Words With Friends scoring is available
+for English words only.
 
-Bulgarian Scrabble scores use Bulgarian letter values. Words With Friends scoring is available for English words only.
-
-The Bulgarian word list in `public/bulgarian-words.txt` is derived from [bayganyu/bulgarian-dictionary](https://github.com/bayganyu/bulgarian-dictionary), licensed under MIT. Its license is included in `public/bulgarian-words-license.txt`.
+The Bulgarian word list in `public/bulgarian-words.txt` is derived from
+[bayganyu/bulgarian-dictionary](https://github.com/bayganyu/bulgarian-dictionary), licensed
+under MIT. Its license is included in `public/bulgarian-words-license.txt`.
 
 To add another language:
 
