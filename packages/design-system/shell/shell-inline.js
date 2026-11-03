@@ -65,7 +65,16 @@
     },
   };
 
+  function showConsent() {
+    window.googlefc = window.googlefc || {};
+    window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+    window.googlefc.callbackQueue.push(function () {
+      if (window.googlefc.showRevocationMessage) window.googlefc.showRevocationMessage();
+    });
+  }
+
   apply(read());
+  if (window.location.hash === '#privacy-settings') showConsent();
 
   document.addEventListener('DOMContentLoaded', function () {
     apply(window.zyTheme.get());
@@ -80,11 +89,9 @@
     var consent = target && target.closest ? target.closest('[data-zy-consent]') : null;
     if (consent) {
       event.preventDefault();
-      window.googlefc = window.googlefc || {};
-      window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
-      window.googlefc.callbackQueue.push(function () {
-        if (window.googlefc.showRevocationMessage) window.googlefc.showRevocationMessage();
-      });
+      if (document.querySelector('script[src*="adsbygoogle"]')) showConsent();
+      /* Pages without ad tags (privacy, terms) cannot open the message: go to the homepage. */
+      else window.location.href = '/#privacy-settings';
     }
     /* Clicks from the bar or footer to another project. */
     var projectLink = target && target.closest ? target.closest('[data-zy-project]') : null;

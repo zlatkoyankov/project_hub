@@ -58,7 +58,8 @@ switch, and the page shell (top bar + footer). Apps depend on it as a workspace 
 
 ## Ads, consent and analytics
 
-- The head slot loads AdSense on every page (`site.config.json` → `adsense.client`).
+- The head slot loads AdSense on every page (`site.config.json` → `adsense.client`) except
+  privacy and terms pages, which Google asks to keep free of ad tags.
 - Consent in the EEA, UK and Switzerland comes from Google's own certified message, set up in
   AdSense under **Privacy & messaging → European regulations**. The footer button
   "Privacy settings" (`data-zy-consent`) reopens it.

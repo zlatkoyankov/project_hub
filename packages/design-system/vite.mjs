@@ -6,7 +6,7 @@ export function zyShell({ project, main = 'main' }) {
     name: 'zyankov-shell',
     transformIndexHtml: {
       order: 'pre',
-      handler: (html) => injectShell(html, { project, main }),
+      handler: (html, ctx) => injectShell(html, { project, main, path: ctx.path }),
     },
   }
 }
