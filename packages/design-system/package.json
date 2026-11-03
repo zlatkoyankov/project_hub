@@ -1,0 +1,23 @@
+{
+  "name": "@zyankov/design-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared tokens, fonts, theme and page shell for every zyankov.eu app.",
+  "exports": {
+    "./tokens.css": "./tokens.css",
+    "./fonts.css": "./fonts.css",
+    "./shell.css": "./shell.css",
+    "./base.css": "./base.css",
+    "./projects.json": "./projects.json",
+    "./theme": { "types": "./theme.d.ts", "default": "./theme.js" },
+    "./vite": { "types": "./vite.d.ts", "default": "./vite.mjs" },
+    "./inject": "./shell/inject.mjs"
+  },
+  "bin": {
+    "zy-inject": "./shell/inject.mjs"
+  },
+  "scripts": {
+    "preview": "node scripts/build-preview.mjs && vite preview --outDir preview-dist --port 4174"
+  }
+}

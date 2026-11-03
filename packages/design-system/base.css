@@ -7,7 +7,7 @@
 
 body {
   margin: 0;
-  font-family: "DM Sans", "Avenir Next", Inter, "Segoe UI", sans-serif;
+  font-family: var(--font-body);
   color: var(--text);
   background: var(--bg);
   line-height: 1.5;
@@ -39,7 +39,7 @@ a {
   margin-top: 2rem;
   border-top: 1px solid var(--border);
   background: var(--footer-bg);
-  color: #f1f4f0;
+  color: var(--footer-text);
 }
 
 .card {

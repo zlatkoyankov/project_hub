@@ -1,34 +1,13 @@
 :root {
-  color-scheme: light;
-  --ink: #20352d;
-  --muted: #6d7d72;
-  --line: #dce5dc;
-  --paper: #f1f5ef;
-  --coral: #e76d53;
-  --card: #fbfcf8;
-  --accent-soft: #f3dcd1;
-  --body: 'DM Sans', 'Avenir Next', sans-serif;
-  --display: 'Fraunces', Georgia, serif;
-
-  color: var(--ink);
-  background: var(--paper);
-  font-family: var(--body);
+  color: var(--text);
+  background: var(--bg);
+  font-family: var(--font-body);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-:root[data-theme='dark'] {
-  color-scheme: dark;
-  --ink: #eef2e8;
-  --muted: #b0bdb0;
-  --line: #405548;
-  --paper: #24372d;
-  --coral: #ef896e;
-  --card: #2a4033;
-  --accent-soft: #59463c;
-}
 
 * {
   box-sizing: border-box;
@@ -44,15 +23,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background-color: #e9f0e9;
-  background-image: linear-gradient(rgba(42, 73, 55, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(42, 73, 55, 0.035) 1px, transparent 1px);
+  background-color: var(--canvas);
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
-:root[data-theme='dark'] body {
-  background-color: #17271e;
-  background-image: linear-gradient(rgba(228, 239, 225, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(228, 239, 225, 0.035) 1px, transparent 1px);
-}
 
 button,
 input {
@@ -64,8 +39,8 @@ button {
 }
 
 ::selection {
-  color: #fff;
-  background: #567c65;
+  color: var(--on-accent);
+  background: var(--accent);
 }
 
 #root {

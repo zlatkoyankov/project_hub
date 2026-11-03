@@ -21,6 +21,8 @@
     "build": "npm run build:hub && npm run build:letterwell && npm run build:buildcalc && node scripts/assemble-site.mjs",
     "preview": "vite preview --outDir dist --port 4173",
     "test": "npm run test -w buildcalc -- --watch=false",
-    "lint": "npm run lint -w hub -w letterwell"
+    "lint": "npm run lint -w hub -w letterwell",
+    "lint:colors": "node scripts/lint-colors.mjs",
+    "preview:design": "npm run preview -w @zyankov/design-system"
   }
 }
