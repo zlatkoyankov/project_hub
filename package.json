@@ -1,28 +1,26 @@
 {
-  "name": "project-hub",
+  "name": "zyankov",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "zyankov.eu: the homepage, Letterwell, BuildCalc and the shared packages in one repository.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "prepare:letterwell": "npm --prefix ../test-app run build && node scripts/copy-letterwell.mjs",
-    "predev": "npm run prepare:letterwell",
-    "prebuild": "npm run prepare:letterwell",
-    "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/generate-sitemap.mjs",
-    "lint": "oxlint",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8"
-  },
-  "devDependencies": {
-    "@types/node": "^24.13.3",
-    "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
-    "oxlint": "^1.81.0",
-    "typescript": "~6.0.2",
-    "vite": "^8.3.0"
+    "dev:hub": "npm run dev -w hub",
+    "dev:letterwell": "npm run dev -w letterwell",
+    "dev:buildcalc": "npm run start -w buildcalc",
+    "build:hub": "npm run build -w hub",
+    "build:letterwell": "npm run build -w letterwell",
+    "build:buildcalc": "npm run build:prod -w buildcalc",
+    "build": "npm run build:hub && npm run build:letterwell && npm run build:buildcalc && node scripts/assemble-site.mjs",
+    "preview": "vite preview --outDir dist --port 4173",
+    "test": "npm run test -w buildcalc -- --watch=false",
+    "lint": "npm run lint -w hub -w letterwell"
   }
 }
