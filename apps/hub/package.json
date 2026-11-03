@@ -1,14 +1,9 @@
 {
-  "name": "project-hub",
+  "name": "hub",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prepare:letterwell": "npm --prefix ../test-app run build && node scripts/copy-letterwell.mjs",
-    "prepare:calculators": "npm --prefix ../calculators run build:prod && node scripts/copy-calculators.mjs",
-    "prepare:projects": "npm run prepare:letterwell && npm run prepare:calculators",
-    "predev": "npm run prepare:projects",
-    "prebuild": "npm run prepare:projects",
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/prerender-home.mjs && node scripts/generate-sitemap.mjs",
     "lint": "oxlint",
