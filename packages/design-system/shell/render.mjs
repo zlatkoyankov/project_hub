@@ -5,7 +5,8 @@ import { readFileSync } from 'node:fs'
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 const projects = JSON.parse(read('../projects.json'))
-const themeScript = read('./theme-inline.js')
+const shellScript = read('./shell-inline.js')
+const config = JSON.parse(read('../site.config.json'))
 
 const escape = (value) =>
   String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
@@ -18,15 +19,41 @@ const sun = `<svg class="zy-icon zy-icon--sun" viewBox="0 0 24 24" aria-hidden="
 
 const current = (active) => (active ? ' aria-current="page"' : '')
 
-/** Inline head snippet: theme before first paint. Later phases add consent, ads and analytics here. */
+const analytics = config.analytics ?? {}
+/** True when an analytics provider is configured in site.config.json. */
+export const analyticsEnabled = Boolean(
+  (analytics.provider === 'umami' && analytics.websiteId) ||
+    (analytics.provider === 'plausible' && analytics.domain),
+)
+
+function analyticsTag() {
+  if (!analyticsEnabled) return ''
+  if (analytics.provider === 'umami') {
+    return `<script defer src="${escape(analytics.src)}" data-website-id="${escape(analytics.websiteId)}"></script>`
+  }
+  return `<script defer src="${escape(analytics.src)}" data-domain="${escape(analytics.domain)}"></script>`
+}
+
+/** Inline head snippet: theme before first paint, then AdSense (with Google's consent
+    message, configured in AdSense) and the analytics script from site.config.json. */
 export function renderHead() {
-  return `<script>${themeScript}</script>`
+  const adsense = config.adsense?.client
+    ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${escape(config.adsense.client)}" crossorigin="anonymous"></script>`
+    : ''
+  return [`<script>${shellScript}</script>`, adsense, analyticsTag()].filter(Boolean).join('\n')
+}
+
+/** Privacy-policy paragraph that matches the analytics configuration at build time. */
+export function renderPrivacyAnalytics() {
+  if (!analyticsEnabled) return '<p>Zyankov.eu does not use an analytics service.</p>'
+  const name = analytics.provider === 'umami' ? 'Umami Cloud' : 'Plausible Analytics'
+  return `<p>Zyankov.eu uses ${name} to count page views and a few anonymous events (for example, that a calculation or a word search happened, without its contents). The service does not use cookies or local storage and does not build a profile of you. It processes technical request data such as your IP address, which it uses only to derive aggregate statistics such as country and device type.</p>`
 }
 
 /** Top bar shown on every page. `project` is the slug of the current app ('hub' for the homepage). */
 export function renderBar({ project = 'hub', main = 'main' } = {}) {
   const links = projects
-    .map((p) => `<a class="zy-bar__link" href="${escape(p.href)}"${current(p.slug === project)}>${escape(p.name)}</a>`)
+    .map((p) => `<a class="zy-bar__link" href="${escape(p.href)}" data-zy-project="${escape(p.slug)}"${current(p.slug === project)}>${escape(p.name)}</a>`)
     .join('')
   return `<a class="zy-skip" href="#${escape(main)}">Skip to content</a>
 <div class="zy-bar" data-zy-shell="bar">
@@ -41,7 +68,7 @@ export function renderBar({ project = 'hub', main = 'main' } = {}) {
 /** Shared footer: every project, the site pages and the legal links. */
 export function renderFooter({ project = 'hub', year = new Date().getFullYear() } = {}) {
   const tools = projects
-    .map((p) => `<li><a href="${escape(p.href)}"${current(p.slug === project)}>${escape(p.name)}</a> <span>${escape(p.tagline)}</span></li>`)
+    .map((p) => `<li><a href="${escape(p.href)}" data-zy-project="${escape(p.slug)}"${current(p.slug === project)}>${escape(p.name)}</a> <span>${escape(p.tagline)}</span></li>`)
     .join('')
   return `<footer class="zy-footer" data-zy-shell="footer">
   <div class="zy-footer__inner">
@@ -51,7 +78,7 @@ export function renderFooter({ project = 'hub', year = new Date().getFullYear() 
     </div>
     <nav class="zy-footer__col" aria-label="Tools"><h2>Tools</h2><ul>${tools}</ul></nav>
     <nav class="zy-footer__col" aria-label="Site"><h2>Site</h2><ul><li><a href="/">Home</a></li><li><a href="/#blog">Blog</a></li><li><a href="/#about">About</a></li><li><a href="/#faq">FAQ</a></li></ul></nav>
-    <nav class="zy-footer__col" aria-label="Legal"><h2>Legal</h2><ul><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="mailto:hello@zyankov.eu">Contact</a></li></ul></nav>
+    <nav class="zy-footer__col" aria-label="Legal"><h2>Legal</h2><ul><li><a href="/privacy/">Privacy</a></li><li><a href="/terms/">Terms</a></li><li><a href="mailto:hello@zyankov.eu">Contact</a></li><li><button class="zy-footer__button" type="button" data-zy-consent>Privacy settings</button></li></ul></nav>
   </div>
   <div class="zy-footer__bottom"><span>© ${escape(year)} Zlatko Yankov · zyankov.eu</span><span>Searches and calculations run in your browser.</span></div>
 </footer>`

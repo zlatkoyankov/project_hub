@@ -1,5 +1,6 @@
 import { useEffect, useState, useSyncExternalStore, type FormEvent } from 'react'
 import { ArrowDownAZ, ArrowUpNarrowWide, Check, Copy, Search, Shuffle, Sparkles } from 'lucide-react'
+import { track } from '@zyankov/design-system/analytics'
 import './App.css'
 
 type Language = 'en' | 'bg'
@@ -379,6 +380,8 @@ function App() {
         ...previous.filter((entry) => entry.letters !== normalizedLetters),
       ].slice(0, 5))
       setHasSearched(true)
+      // Only the language and counts; the letters themselves never leave the browser.
+      track('word_search', { language, letters: normalizedLetters.length, results: matches.length })
     } catch (searchError) {
       setError(searchError instanceof Error ? searchError.message : language === 'bg' ? 'Възникна неочаквана грешка.' : 'Something unexpected happened.')
     } finally {

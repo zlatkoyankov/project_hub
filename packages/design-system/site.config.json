@@ -1,0 +1,10 @@
+{
+  "adsense": {
+    "client": "ca-pub-4282820287798834"
+  },
+  "analytics": {
+    "provider": "umami",
+    "websiteId": "",
+    "src": "https://cloud.umami.is/script.js"
+  }
+}
