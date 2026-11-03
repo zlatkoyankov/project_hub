@@ -1,0 +1,26 @@
+<section class="page-hero content-hero calc-hero"><div class="calc-hero-bg" aria-hidden="true" [style.--hero-img]="bannerImage"></div><div class="container"><nav class="breadcrumbs" aria-label="Breadcrumb"><a routerLink="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">{{ page.title }}</span></nav><p class="eyebrow">{{ page.kicker }}</p><h1>{{ page.title }}</h1><p>{{ page.intro }}</p></div></section>
+<section class="section content-section"><div class="container content-layout"><aside class="content-aside"><span class="aside-label">EXPLORE</span><a routerLink="/all-calculators">All calculators <span aria-hidden="true">→</span></a><a routerLink="/guides">Material guides <span aria-hidden="true">→</span></a></aside>
+  <div class="prose">
+    @if (isGuideIndex) {
+      <div class="guide-grid">
+        @for (item of guides; track item.slug; let i = $index) {
+          <a class="calculator-card" [routerLink]="['/guides', item.slug]">
+            <app-material-art class="card-art" [kind]="item.kind" [eager]="i < 3" />
+            <span class="card-category">{{ item.kicker }}</span><h2>{{ item.title }}</h2><p>{{ item.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
+          </a>
+        }
+      </div>
+      <h2>Material quantities are estimates</h2><p>Package sizes and product specifications vary. Always check the label or supplier listing and confirm the quantity before ordering.</p>
+    } @else {
+      @for (section of page.sections; track section.title) {
+        <section><h2>{{ section.title }}</h2>@for (paragraph of section.paragraphs; track paragraph) {<p>{{ paragraph }}</p>}</section>
+      }
+    }
+    @if (contact) {
+      <section><h2>Email us</h2><p>For questions, suggestions, or to report a problem, email <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>.</p></section>
+    }
+    @if (guide) {
+      <a class="button" [routerLink]="['/', guide.calculatorSlug]">Open the {{ guide.shortTitle.toLowerCase() }} calculator <span aria-hidden="true">→</span></a>
+    }
+  </div>
+</div></section>

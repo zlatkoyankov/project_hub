@@ -1,0 +1,58 @@
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true" style="--hero-img: url(images/hero.webp)"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow"><span class="eyebrow-line"></span> MADE FOR YOUR NEXT PROJECT</p>
+      <h1>Free <span class="accent-text">construction</span> &amp; home improvement calculators</h1>
+      <p class="hero-lede">Get a clear estimate of the materials your project needs—so you can plan the next step with confidence.</p>
+      <ul class="trust-list"><li>Free</li><li>No sign-up</li><li>Runs in your browser</li><li>US &amp; metric</li></ul>
+      <div class="hero-actions"><a class="button" routerLink="/all-calculators">Explore calculators <span aria-hidden="true">→</span></a><a class="text-link" routerLink="/guides">Browse material guides <span aria-hidden="true">↗</span></a></div>
+    </div>
+    <div class="hero-art" role="img" aria-label="Collage of construction materials: concrete, paint, tile, gravel and mulch">
+      <app-material-art class="tile tile-a" kind="concrete" [eager]="true" />
+      <app-material-art class="tile tile-b" kind="paint" [eager]="true" />
+      <app-material-art class="tile tile-c" kind="tile" [eager]="true" />
+      <app-material-art class="tile tile-d" kind="gravel" [eager]="true" />
+      <app-material-art class="tile tile-e" kind="mulch" [eager]="true" />
+      <div class="measure-card"><span class="measure-icon" aria-hidden="true">✓</span><span><b>1.23 cu yd of concrete</b><small>Example: 10 × 10 ft slab, 4 in thick</small></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section calculator-showcase">
+  <div class="container">
+    <div class="section-heading split-heading"><div><p class="eyebrow">THE RIGHT TOOL FOR THE JOB</p><h2>Start with a solid estimate</h2></div><a class="text-link" routerLink="/all-calculators">View all calculators <span aria-hidden="true">→</span></a></div>
+    <label class="search-box"><span aria-hidden="true">⌕</span><input type="search" [value]="search()" (input)="onSearchInput($event)" placeholder="What are you working on?" aria-label="Search calculators by name, category, or keyword"></label>
+    @if (matches().length) {
+      <div class="card-grid">
+        @for (calculator of matches(); track calculator.slug; let i = $index) {
+          <a class="calculator-card" [routerLink]="['/', calculator.slug]">
+            <app-material-art class="card-art" [kind]="calculator.kind" [eager]="i < 3" />
+            <span class="card-category">{{ calculator.category }}</span><h3>{{ calculator.title }}</h3><p>{{ calculator.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="empty-state"><h3>No calculators found</h3><p>Try another project name or material, such as “paint” or “landscaping.”</p></div>
+    }
+  </div>
+</section>
+
+<section class="category-band">
+  <div class="container"><div class="section-heading"><p class="eyebrow">BUILT AROUND YOUR PROJECT</p><h2>Explore by category</h2></div>
+    <div class="category-list">@for (category of categories; track category) {<a [routerLink]="['/all-calculators']" [queryParams]="{ category }"><span>{{ category }}</span><span aria-hidden="true">↗</span></a>}</div>
+  </div>
+</section>
+
+<section class="section how-section"><div class="container how-grid">
+  <div><p class="eyebrow">SIMPLE BY DESIGN</p><h2>From measurements to a smarter plan</h2><p class="muted">Take a few measurements, choose realistic assumptions, and use the estimate as a starting point for a supplier conversation.</p><a class="text-link" routerLink="/about">Learn about BuildCalc <span aria-hidden="true">→</span></a></div>
+  <ol class="steps"><li><span>01</span><div><h3>Choose your project</h3><p>Find a calculator that fits the material and work you have in mind.</p></div></li><li><span>02</span><div><h3>Enter your measurements</h3><p>Use the units shown and adjust assumptions to match your project.</p></div></li><li><span>03</span><div><h3>Review your estimate</h3><p>Understand the calculation, then confirm product details with your supplier.</p></div></li></ol>
+</div></section>
+
+<section class="section guide-teaser"><div class="container guide-panel"><div><p class="eyebrow">BETTER ESTIMATES, BETTER PROJECTS</p><h2>Leave room for the details</h2><p>Cutting, uneven surfaces, and product coverage can all change how much material you need. A small allowance can help, but always check the manufacturer’s coverage and confirm quantities with your supplier.</p></div><a class="button button-outline" routerLink="/guides">Read material guides <span aria-hidden="true">→</span></a></div></section>
+
+<section class="section faq-section"><div class="container faq-grid"><div><p class="eyebrow">GOOD TO KNOW</p><h2>Frequently asked questions</h2><p class="muted">A few helpful notes before you get started.</p></div><div class="faq-list">
+  <details><summary>Are BuildCalc estimates exact?</summary><p>No. They are arithmetic estimates based on the measurements and assumptions you provide. Product coverage, material density, site conditions, and cutting waste vary.</p></details>
+  <details><summary>Should I add extra material?</summary><p>Many projects need some allowance for cuts, spillage, or uneven areas. Choose an allowance that suits the project and verify it with product instructions or a qualified supplier.</p></details>
+  <details><summary>Are my measurements sent to a server?</summary><p>No. Calculations run in your browser. BuildCalc does not send calculator inputs to a server.</p></details>
+</div></div></section>
