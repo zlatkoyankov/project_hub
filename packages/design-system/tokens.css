@@ -71,8 +71,8 @@
   --project-accent: var(--accent);
 
   /* Typography */
-  --font-body: 'DM Sans Variable', 'DM Sans', 'Avenir Next', 'Segoe UI', Arial, sans-serif;
-  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
+  --font-body: 'Onest Variable', 'Onest', 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-display: 'Literata Variable', 'Literata', Georgia, serif;
   --text-xs: 0.75rem; /* 12px — the smallest size in use */
   --text-sm: 0.875rem; /* 14px — captions, small print */
   --text-base: 1rem; /* 16px — body text */
