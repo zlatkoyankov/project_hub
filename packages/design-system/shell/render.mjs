@@ -29,7 +29,8 @@ export const analyticsEnabled = Boolean(
 function analyticsTag() {
   if (!analyticsEnabled) return ''
   if (analytics.provider === 'umami') {
-    return `<script defer src="${escape(analytics.src)}" data-website-id="${escape(analytics.websiteId)}"></script>`
+    const domains = analytics.domains ? ` data-domains="${escape(analytics.domains)}"` : ''
+    return `<script defer src="${escape(analytics.src)}" data-website-id="${escape(analytics.websiteId)}"${domains}></script>`
   }
   return `<script defer src="${escape(analytics.src)}" data-domain="${escape(analytics.domain)}"></script>`
 }
