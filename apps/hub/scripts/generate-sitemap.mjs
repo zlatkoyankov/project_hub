@@ -1,10 +1,11 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 
 const siteUrl = 'https://zyankov.eu'
 const distDirectory = resolve('dist')
 const projectRegistry = JSON.parse(
-  await readFile(new URL('../projects.json', import.meta.url), 'utf8'),
+  await readFile(createRequire(import.meta.url).resolve('@zyankov/design-system/projects.json'), 'utf8'),
 )
 
 if (!Array.isArray(projectRegistry)) {

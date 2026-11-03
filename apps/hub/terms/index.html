@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <template data-zy-slot="head"></template>
     <meta name="theme-color" content="#f1f5ef" />
     <meta name="robots" content="index, follow" />
     <meta name="description" content="Terms for using Zyankov.eu, Letterwell, and BuildCalc." />
@@ -28,79 +29,12 @@
         }
       }
     </script>
-    <style>
-      :root {
-        color-scheme: light;
-        --ink: #20352d;
-        --muted: #586b5e;
-        --line: #dce5dc;
-        --paper: #f1f5ef;
-        font-family: "DM Sans", "Avenir Next", Arial, sans-serif;
-        color: var(--ink);
-        background: #e9f0e9;
-        font-synthesis: none;
-        text-rendering: optimizeLegibility;
-        -webkit-font-smoothing: antialiased;
-      }
-      * { box-sizing: border-box; }
-      body {
-        min-width: 320px;
-        min-height: 100vh;
-        margin: 0;
-        background-image: linear-gradient(rgba(42, 73, 55, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(42, 73, 55, 0.035) 1px, transparent 1px);
-        background-size: 32px 32px;
-      }
-      a { color: #3e6a4e; text-underline-offset: 3px; }
-      a:focus-visible { outline: 2px solid #729785; outline-offset: 3px; }
-      .page {
-        width: min(100%, 900px);
-        min-height: 100vh;
-        margin: 0 auto;
-        padding: 0 clamp(22px, 6vw, 64px);
-        background: var(--paper);
-        border-inline: 1px solid var(--line);
-      }
-      header {
-        min-height: 76px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        border-bottom: 1px solid var(--line);
-      }
-      header a { color: var(--ink); font-size: 15px; font-weight: 700; text-decoration: none; }
-      header a:last-child { color: var(--muted); font-size: 12px; }
-      main { padding: clamp(42px, 8vw, 76px) 0 64px; }
-      .eyebrow {
-        margin: 0 0 12px;
-        color: var(--muted);
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 1.2px;
-        text-transform: uppercase;
-      }
-      h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; }
-      h1 { margin: 0; font-size: clamp(40px, 7vw, 58px); letter-spacing: -1.8px; }
-      .updated { margin: 12px 0 34px; color: var(--muted); font-size: 13px; }
-      .intro { color: var(--muted); font-size: 15px; line-height: 1.75; }
-      section { padding: 22px 0; border-top: 1px solid var(--line); }
-      h2 { margin: 0 0 10px; font-size: 23px; letter-spacing: -0.4px; }
-      p, li { color: var(--muted); font-size: 14px; line-height: 1.75; }
-      p { margin: 9px 0; }
-      footer { padding: 18px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
-      @media (max-width: 480px) {
-        header { min-height: 68px; }
-        header a:last-child { font-size: 11px; }
-      }
-    </style>
+    <link rel="stylesheet" href="/src/legal.css" />
   </head>
   <body>
+    <template data-zy-slot="bar"></template>
     <div class="page">
-      <header>
-        <a href="/" aria-label="Zyankov.eu home">zyankov.eu</a>
-        <a href="/">Back to projects <span aria-hidden="true">→</span></a>
-      </header>
-      <main>
+      <main id="top">
         <p class="eyebrow">Using these projects</p>
         <h1>Terms of use</h1>
         <p class="updated">Last updated: October 23, 2026</p>
@@ -162,7 +96,7 @@
           </p>
         </section>
       </main>
-      <footer>© Zyankov.eu · <a href="/privacy/">Privacy policy</a></footer>
     </div>
+    <template data-zy-slot="footer"></template>
   </body>
 </html>

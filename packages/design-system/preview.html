@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f1f5ef" />
+    <meta name="robots" content="noindex" />
+    <template data-zy-slot="head"></template>
+    <title>zyankov.eu design system</title>
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="shell.css" />
+    <style>
+      body { margin: 0; color: var(--text); background: var(--bg); font-family: var(--font-body); }
+      main { width: min(100% - 2rem, 1100px); margin: 0 auto; padding: var(--space-6) 0; }
+      h1, h2 { font-family: var(--font-display); font-weight: 500; }
+      h1 { font-size: var(--text-3xl); margin: 0 0 var(--space-2); letter-spacing: -1px; }
+      h2 { font-size: var(--text-xl); margin: var(--space-6) 0 var(--space-3); }
+      p { color: var(--text-muted); }
+      .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-2); }
+      .swatch { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); font-size: var(--text-xs); }
+      .swatch div { height: 56px; border-bottom: 1px solid var(--border); }
+      .swatch code { display: block; padding: 6px 8px 0; color: var(--text); font-weight: 600; }
+      .swatch span { display: block; padding: 0 8px 8px; color: var(--text-muted); }
+      .type p { margin: 0 0 var(--space-2); color: var(--text); }
+      .demo { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+      .button { padding: 10px 18px; color: var(--on-accent); background: var(--accent); border: 0; border-radius: 999px; font: 600 var(--text-sm) var(--font-body); }
+      .button.quiet { color: var(--text); background: var(--surface); border: 1px solid var(--border); }
+      .card { padding: var(--space-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-soft); max-width: 320px; }
+      input { padding: 10px 12px; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-xs); font: inherit; }
+      input:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <template data-zy-slot="bar"></template>
+    <main id="main">
+      <h1>Design system</h1>
+      <p>Tokens from <code>tokens.css</code>, shown in the current theme. Switch the theme in the bar to compare.</p>
+      <h2>Colour tokens</h2>
+      <div class="swatches" id="swatches"></div>
+      <h2>Typography</h2>
+      <div class="type" id="type"></div>
+      <h2>Components</h2>
+      <div class="demo">
+        <button class="button" type="button">Primary</button>
+        <button class="button quiet" type="button">Quiet</button>
+        <input placeholder="Input" aria-label="Example input" />
+        <div class="card"><strong>Card</strong><p>Surface, border, radius and soft shadow tokens.</p></div>
+      </div>
+    </main>
+    <template data-zy-slot="footer"></template>
+    <script>
+      const names = new Set()
+      for (const sheet of document.styleSheets) {
+        try {
+          for (const rule of sheet.cssRules) {
+            if (rule.selectorText === ':root') for (const prop of rule.style) if (prop.startsWith('--')) names.add(prop)
+          }
+        } catch (error) {}
+      }
+      const css = getComputedStyle(document.documentElement)
+      const isColour = (value) => /^(#|rgb|color-mix|var\()/.test(value.trim())
+      const swatches = document.getElementById('swatches')
+      const type = document.getElementById('type')
+      function render() {
+        swatches.innerHTML = ''
+        type.innerHTML = ''
+        for (const name of names) {
+          const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+          if (isColour(value) && !name.startsWith('--shadow')) {
+            swatches.insertAdjacentHTML('beforeend', `<div class="swatch"><div style="background:var(${name})"></div><code>${name}</code><span>${value}</span></div>`)
+          } else if (name.startsWith('--text-') && value.endsWith('rem')) {
+            type.insertAdjacentHTML('beforeend', `<p style="font-size:var(${name})"><code>${name}</code> ${value} — The quick brown fox jumps over the lazy dog</p>`)
+          }
+        }
+        type.insertAdjacentHTML('beforeend', '<p style="font-family:var(--font-display);font-size:var(--text-2xl)">Fraunces display — Small tools, made with care.</p>')
+      }
+      render()
+      window.addEventListener('zyankov-theme-change', render)
+    </script>
+  </body>
+</html>

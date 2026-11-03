@@ -1,6 +1,8 @@
 [
   {
+    "slug": "letterwell",
     "name": "Letterwell",
+    "tagline": "Word finder",
     "symbol": "LW",
     "category": "WORD FINDER",
     "eyebrow": "A WORD GAME TOOL",
@@ -11,7 +13,9 @@
     "linkLabel": "Explore Letterwell"
   },
   {
+    "slug": "buildcalc",
     "name": "BuildCalc",
+    "tagline": "Material calculators",
     "symbol": "BC",
     "category": "HOME & CONSTRUCTION",
     "eyebrow": "A PROJECT PLANNING TOOL",

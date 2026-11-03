@@ -1,0 +1,147 @@
+/* zyankov.eu design tokens — the single source of truth for colour, type, shape and spacing.
+   Every app imports this file from @zyankov/design-system; never copy or override it per app.
+   Light theme on :root, dark theme on :root[data-theme='dark']. */
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --canvas: #e9f0e9; /* outermost page background behind framed layouts */
+  --bg: #f1f5ef; /* page background */
+  --surface: #fbfcf8; /* cards, inputs, bars */
+  --surface-soft: #e9f0e9; /* subtle panels */
+  --surface-hover: #e4ebe2; /* hover fill on quiet controls */
+
+  /* Text */
+  --text: #20352d;
+  --text-muted: #566a5d; /* secondary text, WCAG AA on --bg */
+  --text-subtle: #718077; /* placeholders, decorative labels; not for body text */
+
+  /* Brand */
+  --accent: #3f6b54;
+  --accent-dark: #2f5440;
+  --accent-soft: #dce8de;
+  --on-accent: #ffffff;
+  --coral: #e76d53;
+  --coral-strong: #b55b45; /* coral for text and icons on light backgrounds */
+  --coral-soft: #f3dcd1;
+  --yellow: #efd276;
+  --yellow-ink: #655322; /* text on --yellow */
+  --success: #70a984;
+
+  /* Illustration palette (same in both themes) */
+  --tile-yellow: #f3d477;
+  --tile-coral: #ef9478;
+  --tile-blue: #a3c4d9;
+  --tile-mint: #a9cfb2;
+  --tile-white: #f4f3e8;
+  --tile-ink: #20352d; /* letters on tiles */
+
+  /* Lines */
+  --border: #dce5dc;
+  --border-strong: #c8d7ca;
+  --line-strong: #2a4937; /* illustration strokes */
+  --grid: #d3ddd3;
+  --grid-line: rgba(42, 73, 55, 0.035); /* background grid pattern */
+  --focus-ring: #729785;
+  --focus: rgba(63, 107, 84, 0.4);
+
+  /* Feedback */
+  --danger: #8a2a2a;
+  --danger-bg: #fbecec;
+  --danger-line: #f2cece;
+
+  /* Inverse band: dark panels in both themes (footer, Letterwell art card) */
+  --inverse-bg: #20352d;
+  --inverse-text: #f6f7ec;
+  --inverse-muted: #c0cfc4;
+  --footer-bg: var(--inverse-bg);
+  --footer-text: var(--inverse-text);
+  --footer-muted: var(--inverse-muted);
+
+  /* Legacy illustration tokens (BuildCalc hero) */
+  --sun-a: #f8ffda;
+  --sun-b: #bed1a1;
+
+  /* Effects */
+  --shadow-color: #1c2e24;
+  --shadow: 0 10px 24px rgba(32, 53, 45, 0.08);
+  --shadow-soft: 0 4px 10px rgba(32, 53, 45, 0.08);
+
+  /* Per-project accent: set data-project on <html> */
+  --project-accent: var(--accent);
+
+  /* Typography */
+  --font-body: 'DM Sans Variable', 'DM Sans', 'Avenir Next', 'Segoe UI', Arial, sans-serif;
+  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
+  --text-xs: 0.75rem; /* 12px — the smallest size in use */
+  --text-sm: 0.875rem; /* 14px — captions, small print */
+  --text-base: 1rem; /* 16px — body text */
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 3rem;
+
+  /* Shape and spacing */
+  --radius-xs: 0.5rem;
+  --radius-sm: 0.8rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --space-1: 0.4rem;
+  --space-2: 0.75rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+  --space-6: 3rem;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --canvas: #101d16;
+  --bg: #17271e;
+  --surface: #24372d;
+  --surface-soft: #2a4033;
+  --surface-hover: #354b3d;
+
+  --text: #eef2e8;
+  --text-muted: #b0bdb0;
+  --text-subtle: #91a096;
+
+  --accent: #8fc2a3;
+  --accent-dark: #a9d3b9;
+  --accent-soft: #34503f;
+  --on-accent: #12211a;
+  --coral: #ef896e;
+  --coral-strong: #f5a88d;
+  --coral-soft: #4d3b34;
+  --yellow: #d7b85f;
+  --yellow-ink: #352e18;
+  --success: #70a984;
+
+  --border: #405548;
+  --border-strong: #506b56;
+  --line-strong: #8fa896;
+  --grid: #3a5042;
+  --grid-line: rgba(228, 239, 225, 0.035);
+  --focus-ring: #8fc2a3;
+  --focus: rgba(143, 194, 163, 0.5);
+
+  --danger: #f2b0b0;
+  --danger-bg: #4a2a2a;
+  --danger-line: #6e3c3c;
+
+  --inverse-bg: #0f1c15;
+  --inverse-text: #eef2e8;
+  --inverse-muted: #9fb0a3;
+
+  --sun-a: #f3dcd1;
+  --sun-b: #ef896e;
+
+  --shadow-color: #000000;
+  --shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-project='letterwell'] {
+  --project-accent: var(--coral);
+}

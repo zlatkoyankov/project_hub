@@ -3,133 +3,19 @@
   min-height: 100vh;
   margin: 0 auto;
   padding: 0 clamp(24px, 5.8vw, 74px);
-  background: var(--paper);
-  border-inline: 1px solid var(--line);
+  background: var(--bg);
+  border-inline: 1px solid var(--border);
 }
 
-.site-header,
-.site-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-
-.site-header {
-  min-height: 82px;
-  border-bottom: 1px solid var(--line);
-}
-
-.site-nav,
-.site-footer nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(12px, 2vw, 23px);
-}
-
-.site-nav a,
-.site-footer nav a {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 150ms;
-}
-
-.site-nav a:hover,
-.site-footer nav a:hover {
-  color: var(--ink);
-}
-
-.site-nav a:focus-visible,
-.site-footer nav a:focus-visible,
 .about-details a:focus-visible,
-.faq a:focus-visible,
-.wordmark:focus-visible {
-  outline: 2px solid #729785;
+.faq a:focus-visible {
+  outline: 2px solid var(--focus-ring);
   outline-offset: 4px;
 }
 
-.wordmark {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--ink);
-  font-size: 18px;
-  font-weight: 750;
-  letter-spacing: -0.4px;
-  text-decoration: none;
-}
-
-.wordmark-mark {
-  width: 42px;
-  height: 34px;
-  flex: 0 0 42px;
-}
-
-.monogram-main,
-.monogram-accent {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.monogram-main {
-  stroke: var(--ink);
-  stroke-width: 2.4;
-}
-
-.monogram-accent {
-  stroke: var(--coral);
-  stroke-width: 2.4;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-}
-
-.header-note {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.theme-toggle {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  color: #526c5b;
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
-  transition: color 150ms, background 150ms, border-color 150ms, transform 150ms;
-}
-
-.theme-toggle:hover {
-  color: var(--ink);
-  background: #e4ebe2;
-  transform: rotate(-8deg);
-}
-
-.theme-toggle:focus-visible,
 a.project-card:focus-visible {
-  outline: 2px solid #729785;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
-}
-
-:root[data-theme='dark'] .theme-toggle {
-  color: #f0cf75;
-}
-
-:root[data-theme='dark'] .theme-toggle:hover {
-  background: #354b3d;
 }
 
 .hero {
@@ -139,7 +25,7 @@ a.project-card:focus-visible {
 .eyebrow,
 .section-kicker,
 .project-eyebrow {
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 1.25px;
@@ -161,8 +47,8 @@ a.project-card:focus-visible {
 .hero h1 {
   max-width: 650px;
   margin: 0;
-  color: var(--ink);
-  font-family: var(--display);
+  color: var(--text);
+  font-family: var(--font-display);
   font-size: clamp(45px, 6.5vw, 76px);
   font-weight: 500;
   letter-spacing: -2.8px;
@@ -177,14 +63,14 @@ a.project-card:focus-visible {
 .hero-copy {
   max-width: 430px;
   margin: 22px 0 0;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 16px;
   line-height: 1.7;
 }
 
 .projects {
   padding: 33px 0 45px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--border);
 }
 
 .section-heading {
@@ -202,8 +88,8 @@ a.project-card:focus-visible {
 
 .section-heading h2 {
   margin: 0;
-  color: var(--ink);
-  font-family: var(--display);
+  color: var(--text);
+  font-family: var(--font-display);
   font-size: 27px;
   font-weight: 500;
   letter-spacing: -0.7px;
@@ -211,7 +97,7 @@ a.project-card:focus-visible {
 
 .project-count {
   flex-shrink: 0;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1px;
@@ -237,8 +123,8 @@ a.project-card:focus-visible {
   display: flex;
   flex-direction: column;
   color: inherit;
-  background: var(--card);
-  border: 1px solid var(--line);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
   text-decoration: none;
@@ -262,8 +148,8 @@ a.project-card:focus-visible {
 }
 
 a.project-card:hover {
-  border-color: #a8c0ad;
-  box-shadow: 0 12px 26px rgba(35, 65, 48, 0.1);
+  border-color: var(--border-strong);
+  box-shadow: 0 12px 26px color-mix(in srgb, var(--accent-dark) 10%, transparent);
   transform: translateY(-3px);
 }
 
@@ -279,16 +165,16 @@ a.project-card:hover {
   height: 43px;
   display: grid;
   place-items: center;
-  color: var(--ink);
-  background: var(--accent-soft);
+  color: var(--text);
+  background: var(--coral-soft);
   border-radius: 11px 11px 11px 3px;
-  font-family: var(--display);
+  font-family: var(--font-display);
   font-size: 16px;
   font-weight: 600;
 }
 
 .status {
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.8px;
@@ -305,8 +191,8 @@ a.project-card:hover {
 
 .project-card h3 {
   margin: 0;
-  color: var(--ink);
-  font-family: var(--display);
+  color: var(--text);
+  font-family: var(--font-display);
   font-size: 25px;
   font-weight: 500;
   letter-spacing: -0.7px;
@@ -314,20 +200,20 @@ a.project-card:hover {
 
 .project-card p:not(.project-eyebrow) {
   margin: 10px 0 0;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 13px;
   line-height: 1.6;
 }
 
 .project-link {
   margin-top: 23px;
-  color: #527260;
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
 }
 
 :root[data-theme='dark'] .project-link {
-  color: #a8c8af;
+  color: var(--accent-dark);
 }
 
 .project-link b {
@@ -341,19 +227,10 @@ a.project-card:hover .project-link b {
   transform: translateX(3px);
 }
 
-.site-footer {
-  min-height: 76px;
-  flex-wrap: wrap;
-  padding-block: 18px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 11px;
-}
-
 .editorial-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--border);
 }
 
 .about,
@@ -366,8 +243,8 @@ a.project-card:hover .project-link b {
 .blog h2,
 .faq h2 {
   margin: 0;
-  color: var(--ink);
-  font-family: var(--display);
+  color: var(--text);
+  font-family: var(--font-display);
   font-size: clamp(22px, 2.5vw, 28px);
   font-weight: 500;
   letter-spacing: -0.6px;
@@ -377,7 +254,7 @@ a.project-card:hover .project-link b {
 .about-details,
 .blog-copy {
   max-width: 440px;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 13px;
   line-height: 1.75;
 }
@@ -389,7 +266,7 @@ a.project-card:hover .project-link b {
 
 .about-details a,
 .faq a {
-  color: #527260;
+  color: var(--text-muted);
   font-weight: 700;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
@@ -397,7 +274,7 @@ a.project-card:hover .project-link b {
 
 :root[data-theme='dark'] .about-details a,
 :root[data-theme='dark'] .faq a {
-  color: #a8c8af;
+  color: var(--accent-dark);
 }
 
 .about-details a span {
@@ -412,12 +289,12 @@ a.project-card:hover .project-link b {
 
 .blog {
   padding-inline: 28px 0;
-  border-left: 1px solid var(--line);
+  border-left: 1px solid var(--border);
 }
 
 .blog-date {
   margin: 10px 0 0;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -433,21 +310,21 @@ a.project-card:hover .project-link b {
   grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.2fr);
   gap: clamp(24px, 6vw, 80px);
   padding: 38px 0 48px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--border);
 }
 
 .faq-list details {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--border);
 }
 
 .faq-list details:first-child {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--border);
 }
 
 .faq-list summary {
   position: relative;
   padding: 17px 32px 17px 0;
-  color: var(--ink);
+  color: var(--text);
   cursor: pointer;
   font-size: 13px;
   font-weight: 650;
@@ -475,45 +352,21 @@ a.project-card:hover .project-link b {
 }
 
 .faq-list summary:focus-visible {
-  outline: 2px solid #729785;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 3px;
 }
 
 .faq-list details p {
   max-width: 560px;
   margin: -3px 24px 17px 0;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 12px;
   line-height: 1.7;
-}
-
-.site-footer span:first-child {
-  color: #526c5b;
-  font-weight: 750;
-}
-
-:root[data-theme='dark'] .site-footer span:first-child {
-  color: #a8c8af;
 }
 
 @media (max-width: 760px) {
   .site-shell {
     padding-inline: 28px;
-  }
-
-  .site-header {
-    flex-wrap: wrap;
-    padding-block: 12px;
-  }
-
-  .site-nav {
-    order: 3;
-    width: 100%;
-    padding-top: 5px;
-  }
-
-  .site-nav a {
-    font-size: 11px;
   }
 
   .editorial-grid {
@@ -526,7 +379,7 @@ a.project-card:hover .project-link b {
   }
 
   .blog {
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--border);
     border-left: 0;
   }
 
@@ -534,43 +387,11 @@ a.project-card:hover .project-link b {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-
-  .site-footer {
-    justify-content: flex-start;
-  }
-
-  .site-footer > span:nth-child(2) {
-    margin-right: auto;
-  }
 }
 
 @media (max-width: 500px) {
   .site-shell {
     padding-inline: 20px;
-  }
-
-  .site-header {
-    min-height: 70px;
-  }
-
-  .header-note {
-    display: none;
-  }
-
-  .header-actions {
-    gap: 8px;
-  }
-
-  .header-note {
-    max-width: 130px;
-    font-size: 10px;
-    text-align: right;
-  }
-
-  .theme-toggle {
-    width: 35px;
-    height: 35px;
-    flex-basis: 35px;
   }
 
   .hero {
@@ -585,18 +406,6 @@ a.project-card:hover .project-link b {
     align-items: flex-start;
     flex-direction: column;
     gap: 9px;
-  }
-
-  .site-footer {
-    min-height: 65px;
-    font-size: 10px;
-  }
-
-  .site-footer nav {
-    width: 100%;
-    justify-content: space-between;
-    gap: 8px;
-    padding-top: 4px;
   }
 }
 

@@ -1,54 +1,11 @@
 import { useEffect, useState, useSyncExternalStore, type FormEvent } from 'react'
-import { ArrowDownAZ, ArrowUpNarrowWide, Check, Copy, Moon, Search, Shuffle, Sparkles, Sun } from 'lucide-react'
+import { ArrowDownAZ, ArrowUpNarrowWide, Check, Copy, Search, Shuffle, Sparkles } from 'lucide-react'
 import './App.css'
 
 type Language = 'en' | 'bg'
 
-const themePreferenceEvent = 'letterwell-theme-preference-change'
 const languagePreferenceEvent = 'letterwell-language-preference-change'
-let themePreferenceFallback: boolean | undefined
 let languagePreferenceFallback: Language | undefined
-
-function getThemePreference() {
-  try {
-    const preference = window.localStorage.getItem('letterwell-theme')
-    if (preference === 'dark') return true
-    if (preference === 'light') return false
-  } catch {
-    return themePreferenceFallback ?? false
-  }
-  return themePreferenceFallback ?? false
-}
-
-function subscribeToThemePreference(listener: () => void) {
-  const onStorage = (event: StorageEvent) => {
-    if (event.key === 'letterwell-theme' || event.key === null) {
-      themePreferenceFallback = undefined
-      listener()
-    }
-  }
-  const onPreferenceChange = () => listener()
-  window.addEventListener('storage', onStorage)
-  window.addEventListener(themePreferenceEvent, onPreferenceChange)
-  return () => {
-    window.removeEventListener('storage', onStorage)
-    window.removeEventListener(themePreferenceEvent, onPreferenceChange)
-  }
-}
-
-function setThemePreference(isDark: boolean) {
-  themePreferenceFallback = isDark
-  try {
-    window.localStorage.setItem('letterwell-theme', isDark ? 'dark' : 'light')
-  } catch (error) {
-    console.warn('Could not save the theme preference in this browser.', error)
-  }
-  window.dispatchEvent(new Event(themePreferenceEvent))
-}
-
-function getServerThemePreference() {
-  return false
-}
 
 function getLanguagePreference(): Language {
   try {
@@ -334,16 +291,6 @@ function App() {
 
   const effectiveMinimum = requireAllLetters ? normalizedLetters.length : minimumLength
   const effectiveMaximum = requireAllLetters ? normalizedLetters.length : maximumLength
-  const isDark = useSyncExternalStore(
-    subscribeToThemePreference,
-    getThemePreference,
-    getServerThemePreference,
-  )
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
-  }, [isDark])
-
   useEffect(() => {
     const locale = language === 'bg' ? 'bg_BG' : 'en_US'
     const socialDescription = language === 'bg'
@@ -473,13 +420,6 @@ function App() {
               <option value="bg">БГ</option>
             </select>
           </label>
-          <button
-            className="theme-toggle"
-            type="button"
-            aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-            title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-            onClick={() => setThemePreference(!isDark)}
-          >{isDark ? <Sun size={18} /> : <Moon size={18} />}</button>
         </div>
       </header>
 
@@ -851,17 +791,6 @@ function App() {
           </p>
         </section>
       </main>
-
-      <footer className="footer">
-        <span>letterwell</span>
-        <span>Every word starts somewhere.</span>
-        <nav className="footer-links" aria-label={language === 'bg' ? 'Информация за сайта' : 'Site information'}>
-          <a href="/#about">{language === 'bg' ? 'За проекта' : 'About'}</a>
-          <a href="/privacy/">{language === 'bg' ? 'Поверителност' : 'Privacy'}</a>
-          <a href="/terms/">{language === 'bg' ? 'Условия' : 'Terms'}</a>
-          <a href="mailto:hello@zyankov.eu">{language === 'bg' ? 'Контакт' : 'Contact'}</a>
-        </nav>
-      </footer>
     </div>
   )
 }

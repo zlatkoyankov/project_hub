@@ -1,98 +1,9 @@
-import { useEffect, useSyncExternalStore } from 'react'
-import projects from '../projects.json'
+import projects from '@zyankov/design-system/projects.json'
 import './App.css'
 
-const themePreferenceEvent = 'zyankov-theme-preference-change'
-let themePreferenceFallback: boolean | undefined
-
-function getThemePreference() {
-  try {
-    const preference = window.localStorage.getItem('zyankov-theme')
-    if (preference === 'dark') return true
-    if (preference === 'light') return false
-  } catch {
-    return themePreferenceFallback ?? false
-  }
-  return themePreferenceFallback ?? false
-}
-
-function subscribeToThemePreference(listener: () => void) {
-  const onStorage = (event: StorageEvent) => {
-    if (event.key === 'zyankov-theme' || event.key === null) {
-      themePreferenceFallback = undefined
-      listener()
-    }
-  }
-  const onPreferenceChange = () => listener()
-  window.addEventListener('storage', onStorage)
-  window.addEventListener(themePreferenceEvent, onPreferenceChange)
-  return () => {
-    window.removeEventListener('storage', onStorage)
-    window.removeEventListener(themePreferenceEvent, onPreferenceChange)
-  }
-}
-
-function getServerThemePreference() {
-  return false
-}
-
-function setThemePreference(isDark: boolean) {
-  themePreferenceFallback = isDark
-  try {
-    window.localStorage.setItem('zyankov-theme', isDark ? 'dark' : 'light')
-  } catch (error) {
-    console.warn('Could not save the theme preference in this browser.', error)
-  }
-  window.dispatchEvent(new Event(themePreferenceEvent))
-}
-
 function App() {
-  const isDark = useSyncExternalStore(
-    subscribeToThemePreference,
-    getThemePreference,
-    getServerThemePreference,
-  )
-
-  useEffect(() => {
-    document.documentElement.dataset.theme = isDark ? 'dark' : 'light'
-    document.querySelector('meta[name="theme-color"]')?.setAttribute(
-      'content',
-      isDark ? '#24372d' : '#f1f5ef',
-    )
-  }, [isDark])
-
   return (
     <div className="site-shell">
-      <header className="site-header">
-        <a className="wordmark" href="#top" aria-label="Zyankov.eu home">
-          <svg className="wordmark-mark" viewBox="0 0 46 36" aria-hidden="true">
-            <path
-              className="monogram-main"
-              d="M3 8h15L4 28h16M15 8l8 9 9-9m-9 9v11m5-20h14M30 17h11M30 28h11m-11-20v20"
-            />
-            <path className="monogram-accent" d="M5 32h12" />
-          </svg>
-          <span>zyankov.eu</span>
-        </a>
-        <nav className="site-nav" aria-label="Main navigation">
-          <a href="#projects">Projects</a>
-          <a href="#blog">Blog</a>
-          <a href="#faq">FAQ</a>
-        </nav>
-        <div className="header-actions">
-          <span className="header-note">Independent projects &amp; tools</span>
-          <button
-            className="theme-toggle"
-            type="button"
-            aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-            title={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-            onClick={() => setThemePreference(!isDark)}
-          >
-            <span aria-hidden="true">{isDark ? '☀' : '☾'}</span>
-          </button>
-        </div>
-      </header>
-
       <main id="top">
         <section className="hero" aria-labelledby="page-title">
           <p className="eyebrow"><span>WELCOME TO ZYANKOV.EU</span><span /></p>
@@ -222,19 +133,6 @@ function App() {
           </div>
         </section>
       </main>
-
-      <footer className="site-footer">
-        <span>zyankov.eu</span>
-        <span>Independent projects, thoughtfully made.</span>
-        <nav aria-label="Footer navigation">
-          <a href="#about">About</a>
-          <a href="#blog">Blog</a>
-          <a href="#faq">FAQ</a>
-          <a href="/privacy/">Privacy</a>
-          <a href="/terms/">Terms</a>
-          <a href="mailto:hello@zyankov.eu">Contact</a>
-        </nav>
-      </footer>
     </div>
   )
 }

@@ -30,7 +30,9 @@
               }
             ],
             "styles": [
-              "design-system/tokens.css",
+              "@zyankov/design-system/tokens.css",
+              "@zyankov/design-system/fonts.css",
+              "@zyankov/design-system/shell.css",
               "src/styles.scss"
             ],
             "server": "src/main.server.ts",

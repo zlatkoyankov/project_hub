@@ -4,8 +4,8 @@ Letterwell is a browser-based word finder for English and Bulgarian. It is built
 TypeScript, and Vite and is published at `https://zyankov.eu/letterwell/`.
 
 The footer links to the shared Zyankov.eu About, Privacy, and Terms pages. Letter searches are
-processed in the browser using word lists downloaded from this site. Theme and language
-preferences are saved in local storage; recent searches stay in page memory and are cleared when
+processed in the browser using word lists downloaded from this site. The site-wide theme and the
+language preference are saved in local storage; recent searches stay in page memory and are cleared when
 the page is reloaded or closed.
 
 ## Development

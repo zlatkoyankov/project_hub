@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <template data-zy-slot="head"></template>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4282820287798834" crossorigin="anonymous"></script>
     <meta name="theme-color" content="#f1f5ef" />
     <meta name="description" content="Find English words from your letters with flexible word filters, random letter racks, and Scrabble, Words With Friends, or Boggle scores." />
@@ -41,7 +42,9 @@
     </script>
   </head>
   <body>
+    <template data-zy-slot="bar"></template>
     <div id="root"></div>
+    <template data-zy-slot="footer"></template>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

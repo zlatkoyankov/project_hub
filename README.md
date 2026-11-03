@@ -8,7 +8,7 @@ tool, and the shared packages they use.
 | `apps/hub` | Homepage, privacy and terms pages (React + Vite) | `/` |
 | `apps/letterwell` | Letterwell word finder (React + Vite) | `/letterwell/` |
 | `apps/buildcalc` | BuildCalc calculators and guides (Angular, prerendered) | `/calculators/` |
-| `packages/` | Shared code, starting with the design system (phase 1) | — |
+| `packages/design-system` | Shared tokens, fonts, theme and page shell (top bar + footer) | — |
 | `scripts/assemble-site.mjs` | Combines the app builds into one deployable `dist/` | — |
 
 Letterwell and BuildCalc were imported with `git subtree`, so their full commit history is part of
@@ -34,6 +34,8 @@ npm install
 | `npm run preview` | Serves `dist/` at http://localhost:4173 — use URLs with a trailing slash |
 | `npm test` | BuildCalc unit tests |
 | `npm run lint` | oxlint for the hub and Letterwell |
+| `npm run lint:colors` | Fails on colour literals outside `packages/design-system/tokens.css` |
+| `npm run preview:design` | Design-system reference page at http://localhost:4174 |
 
 Run a script for one app with `-w`, for example `npm run build -w letterwell`.
 
@@ -50,8 +52,11 @@ The deploy checklist in the improvement plan applies before every upload.
 2. Build it for its sub-path (Vite: `base: '/<path>/'`, Angular: `--base-href /<path>/`).
 3. Add it to `parts` in `scripts/assemble-site.mjs` and a `build:<name>` script in the root
    `package.json`, then include it in `build`.
-4. Add an entry to `apps/hub/projects.json` (root-relative `href` ending in `/`, description,
-   card image in `apps/hub/public/`). The homepage card and the sitemap entry come from it.
+4. Use the design system: depend on `@zyankov/design-system`, load its CSS and add the shell
+   slots (see `packages/design-system/README.md`).
+5. Add an entry to `packages/design-system/projects.json` (`slug`, `name`, `tagline`,
+   root-relative `href` ending in `/`, description, card image in `apps/hub/public/`). The top
+   bar, footer, homepage card and sitemap entry come from it.
 
 ## Conventions
 
