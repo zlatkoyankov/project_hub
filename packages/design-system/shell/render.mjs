@@ -36,9 +36,10 @@ function analyticsTag() {
 }
 
 /** Inline head snippet: theme before first paint, then AdSense (with Google's consent
-    message, configured in AdSense) and the analytics script from site.config.json. */
-export function renderHead() {
-  const adsense = config.adsense?.client
+    message, configured in AdSense) and the analytics script from site.config.json.
+    `ads: false` leaves AdSense out: Google asks that privacy-policy pages carry no ad tags. */
+export function renderHead({ ads = true } = {}) {
+  const adsense = ads && config.adsense?.client
     ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${escape(config.adsense.client)}" crossorigin="anonymous"></script>`
     : ''
   return [`<script>${shellScript}</script>`, adsense, analyticsTag()].filter(Boolean).join('\n')

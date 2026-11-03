@@ -7,12 +7,13 @@
 //   <template data-zy-slot="footer"></template>   after the app root
 //   <template data-zy-slot="privacy-analytics"></template>  privacy policy only
 //
-// Library:  injectShell(html, { project, main })
+// Library:  injectShell(html, { project, main, path })   path decides whether ads load
+//           (privacy and terms pages never load ad tags; <meta name="zy-ads" content="off"> also turns them off)
 // CLI:      node inject.mjs <dir> --project <slug> [--main <id>]
 //           rewrites every .html file under <dir> that contains a slot.
 import { realpathSync } from 'node:fs'
 import { readdir, readFile, writeFile } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { renderBar, renderFooter, renderHead, renderPrivacyAnalytics } from './render.mjs'
 
@@ -22,9 +23,18 @@ export function hasSlots(html) {
   return /<template data-zy-slot="/.test(html)
 }
 
-export function injectShell(html, { project = 'hub', main = 'main' } = {}) {
+// Pages that must not load ad tags (Google: privacy and cookie-policy pages carry no ad tags).
+const NO_ADS_PAGE = /(^|\/)(privacy|terms)(\/(index\.html)?)?$/
+
+/** True when the page at this path (URL path or file path) should load no ads. */
+export function isNoAdsPage(path = '') {
+  return NO_ADS_PAGE.test(path.replace(/\\/g, '/'))
+}
+
+export function injectShell(html, { project = 'hub', main = 'main', path = '' } = {}) {
+  const ads = !isNoAdsPage(path) && !/<meta name="zy-ads" content="off"/.test(html)
   let out = html
-    .replace(slot('head'), () => renderHead())
+    .replace(slot('head'), () => renderHead({ ads }))
     .replace(slot('bar'), () => renderBar({ project, main }))
     .replace(slot('footer'), () => renderFooter({ project }))
     .replace(slot('privacy-analytics'), () => renderPrivacyAnalytics())
@@ -55,7 +65,7 @@ async function main(argv) {
   for await (const file of htmlFiles(resolve(dir))) {
     const html = await readFile(file, 'utf8')
     if (!hasSlots(html)) continue
-    await writeFile(file, injectShell(html, { project, main: mainId }))
+    await writeFile(file, injectShell(html, { project, main: mainId, path: relative(resolve(dir), file) }))
     changed++
   }
   if (changed === 0) throw new Error(`No shell slots found in ${dir}.`)
