@@ -4,7 +4,8 @@
   },
   "analytics": {
     "provider": "umami",
-    "websiteId": "",
-    "src": "https://cloud.umami.is/script.js"
+    "websiteId": "320f2cbf-c5eb-4269-ab9a-32ff4fb151e5",
+    "src": "https://cloud.umami.is/script.js",
+    "domains": "zyankov.eu,www.zyankov.eu"
   }
 }

@@ -62,7 +62,7 @@ switch, and the page shell (top bar + footer). Apps depend on it as a workspace 
 - Consent in the EEA, UK and Switzerland comes from Google's own certified message, set up in
   AdSense under **Privacy & messaging → European regulations**. The footer button
   "Privacy settings" (`data-zy-consent`) reopens it.
-- Analytics: set `analytics.websiteId` (Umami) or `provider: "plausible"` + `domain` and rebuild.
+- Analytics: set `analytics.websiteId` (Umami; `analytics.domains` limits tracking to the live site, so local builds are not counted) or `provider: "plausible"` + `domain` and rebuild.
   With no ID nothing is loaded, and the privacy policy and FAQ say so automatically
   (`<template data-zy-slot="privacy-analytics">`).
 - Events in use: `calculate` (BuildCalc: calculator, units), `word_search` (Letterwell: language,
