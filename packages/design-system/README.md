@@ -9,11 +9,13 @@ switch, and the page shell (top bar + footer). Apps depend on it as a workspace 
 | File | Purpose |
 | --- | --- |
 | `tokens.css` | All colours (light + dark), fonts, type scale, radii, spacing, shadows. **The only file with colour values.** |
-| `fonts.css` + `fonts/` | DM Sans and Fraunces, self-hosted woff2 (SIL OFL). Latin + Latin Extended only. |
+| `fonts.css` + `fonts/` | Onest (text) and Literata (headings), self-hosted woff2 (SIL OFL). Latin, Latin Extended, Cyrillic. |
 | `shell.css` | Styles for the skip link, top bar, footer and `.zy-ad-slot`. All classes start with `zy-`. |
 | `shell/render.mjs` | Renders the head snippet, top bar and footer as HTML. |
 | `shell/inject.mjs` | Puts the shell into HTML slots. Library function + CLI (`zy-inject`). |
-| `shell/theme-inline.js` | Inlined into `<head>`: applies the theme before first paint, wires the toggle. |
+| `shell/shell-inline.js` | Inlined into `<head>`: theme before first paint, theme toggle, skip link, Privacy settings button, cross-project click event. |
+| `site.config.json` | AdSense publisher ID and the analytics provider. Read at build time by the shell. |
+| `analytics.js` | `track(event, data)` for anonymous app events (Umami or Plausible, no-op otherwise). |
 | `theme.js` | `getTheme`, `setTheme`, `toggleTheme`, `subscribeTheme` for app code (SSR-safe). |
 | `vite.mjs` | Vite plugin `zyShell({ project, main })` that injects the shell in dev and build. |
 | `projects.json` | The project registry: bar and footer links, homepage cards, sitemap. |
@@ -54,6 +56,19 @@ switch, and the page shell (top bar + footer). Apps depend on it as a workspace 
 - `--text-subtle` is for placeholders and decoration only; it is below AA for body text.
 - Keep text contrast at WCAG AA (4.5:1) in both themes.
 
+## Ads, consent and analytics
+
+- The head slot loads AdSense on every page (`site.config.json` → `adsense.client`).
+- Consent in the EEA, UK and Switzerland comes from Google's own certified message, set up in
+  AdSense under **Privacy & messaging → European regulations**. The footer button
+  "Privacy settings" (`data-zy-consent`) reopens it.
+- Analytics: set `analytics.websiteId` (Umami) or `provider: "plausible"` + `domain` and rebuild.
+  With no ID nothing is loaded, and the privacy policy and FAQ say so automatically
+  (`<template data-zy-slot="privacy-analytics">`).
+- Events in use: `calculate` (BuildCalc: calculator, units), `word_search` (Letterwell: language,
+  letter count, result count), `outbound_project` (bar/footer clicks between projects).
+  Never send what the user typed.
+
 ## Theme
 
 One key for the whole site: `localStorage['zyankov-theme']` (`light` | `dark`). Without it the
@@ -62,5 +77,4 @@ Changes fire `zyankov-theme-change` on `window`.
 
 ## Known gaps
 
-- DM Sans and Fraunces have no Cyrillic. Bulgarian text renders in the next font in the stack.
 - `ng serve` does not run the injector, so BuildCalc in dev has no bar, footer or theme script.

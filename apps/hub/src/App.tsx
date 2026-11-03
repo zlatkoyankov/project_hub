@@ -1,5 +1,11 @@
 import projects from '@zyankov/design-system/projects.json'
+import siteConfig from '@zyankov/design-system/site.config.json'
 import './App.css'
+
+const analytics = siteConfig.analytics as { provider?: string; websiteId?: string; domain?: string }
+const analyticsEnabled = Boolean(
+  (analytics.provider === 'umami' && analytics.websiteId) || (analytics.provider === 'plausible' && analytics.domain),
+)
 
 function App() {
   return (
@@ -112,9 +118,12 @@ function App() {
             <details>
               <summary>Does Zyankov.eu use advertising or analytics?</summary>
               <p>
-                The Google AdSense publisher script is loaded on the homepage and Letterwell.
-                Whether ads are shown depends on the advertising configuration. We do not use a
-                separate analytics service.
+                Yes. Pages show ads from Google AdSense, which keeps the tools free. In the EU, the
+                UK and Switzerland, Google asks for your consent first, and you can change your
+                choice at any time with Privacy settings in the footer.{' '}
+                {analyticsEnabled
+                  ? 'Visits are counted with a cookieless analytics service that never sees your letters or measurements.'
+                  : 'We do not use an analytics service.'}
               </p>
             </details>
             <details>

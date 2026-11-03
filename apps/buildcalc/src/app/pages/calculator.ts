@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { track } from '@zyankov/design-system/analytics';
 import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.service';
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
@@ -224,6 +225,7 @@ export class CalculatorPage {
       }
       this.result.set(estimate);
       this.copied.set(false);
+      track('calculate', { calculator: calculator.kind, units: this.unitPreference.system() });
     } catch (error: unknown) {
       this.result.set(null);
       this.error.set(error instanceof Error ? error.message : 'Please check your measurements and try again.');

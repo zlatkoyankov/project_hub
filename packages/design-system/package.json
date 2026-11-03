@@ -10,9 +10,20 @@
     "./shell.css": "./shell.css",
     "./base.css": "./base.css",
     "./projects.json": "./projects.json",
-    "./theme": { "types": "./theme.d.ts", "default": "./theme.js" },
-    "./vite": { "types": "./vite.d.ts", "default": "./vite.mjs" },
-    "./inject": "./shell/inject.mjs"
+    "./theme": {
+      "types": "./theme.d.ts",
+      "default": "./theme.js"
+    },
+    "./vite": {
+      "types": "./vite.d.ts",
+      "default": "./vite.mjs"
+    },
+    "./inject": "./shell/inject.mjs",
+    "./analytics": {
+      "types": "./analytics.d.ts",
+      "default": "./analytics.js"
+    },
+    "./site.config.json": "./site.config.json"
   },
   "bin": {
     "zy-inject": "./shell/inject.mjs"

@@ -5,6 +5,7 @@
 //   <template data-zy-slot="head"></template>     inside <head>
 //   <template data-zy-slot="bar"></template>      first thing in <body>
 //   <template data-zy-slot="footer"></template>   after the app root
+//   <template data-zy-slot="privacy-analytics"></template>  privacy policy only
 //
 // Library:  injectShell(html, { project, main })
 // CLI:      node inject.mjs <dir> --project <slug> [--main <id>]
@@ -13,7 +14,7 @@ import { realpathSync } from 'node:fs'
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { renderBar, renderFooter, renderHead } from './render.mjs'
+import { renderBar, renderFooter, renderHead, renderPrivacyAnalytics } from './render.mjs'
 
 const slot = (name) => new RegExp(`<template data-zy-slot="${name}"\\s*>\\s*</template>`, 'g')
 
@@ -26,6 +27,7 @@ export function injectShell(html, { project = 'hub', main = 'main' } = {}) {
     .replace(slot('head'), () => renderHead())
     .replace(slot('bar'), () => renderBar({ project, main }))
     .replace(slot('footer'), () => renderFooter({ project }))
+    .replace(slot('privacy-analytics'), () => renderPrivacyAnalytics())
   if (!/<html[^>]*\sdata-project=/.test(out)) {
     out = out.replace(/<html(\s|>)/, `<html data-project="${project}"$1`)
   }

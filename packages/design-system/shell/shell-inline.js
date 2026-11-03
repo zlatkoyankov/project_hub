@@ -1,6 +1,7 @@
 /* Inlined into <head> of every page by the shell (see render.mjs). Runs before first paint:
    applies the saved or system theme, wires every [data-zy-theme-toggle] button and exposes
-   window.zyTheme. Apps listen for the 'zyankov-theme-change' event instead of storing theme state. */
+   window.zyTheme. Apps listen for the 'zyankov-theme-change' event instead of storing theme state.
+   Also handles the skip link, the "Privacy settings" button and cross-project click tracking. */
 (function () {
   var KEY = 'zyankov-theme';
   var LEGACY_KEYS = ['letterwell-theme', 'buildcalc-theme'];
@@ -75,6 +76,24 @@
     var button = target && target.closest ? target.closest('[data-zy-theme-toggle]') : null;
     if (button) window.zyTheme.toggle();
     /* Skip link: focus the main element directly, so apps with a <base href> do not navigate. */
+    /* "Privacy settings": reopen Google's consent message (AdSense Privacy & messaging). */
+    var consent = target && target.closest ? target.closest('[data-zy-consent]') : null;
+    if (consent) {
+      event.preventDefault();
+      window.googlefc = window.googlefc || {};
+      window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+      window.googlefc.callbackQueue.push(function () {
+        if (window.googlefc.showRevocationMessage) window.googlefc.showRevocationMessage();
+      });
+    }
+    /* Clicks from the bar or footer to another project. */
+    var projectLink = target && target.closest ? target.closest('[data-zy-project]') : null;
+    if (projectLink && window.umami && window.umami.track) {
+      window.umami.track('outbound_project', {
+        to: projectLink.getAttribute('data-zy-project'),
+        from: root.getAttribute('data-project') || '',
+      });
+    }
     var skip = target && target.closest ? target.closest('.zy-skip') : null;
     var main = skip && document.getElementById(skip.getAttribute('href').slice(1));
     if (main) {

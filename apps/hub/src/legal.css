@@ -105,3 +105,19 @@ p {
 ul {
   padding-left: 22px;
 }
+
+.link-button {
+  padding: 0;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}
