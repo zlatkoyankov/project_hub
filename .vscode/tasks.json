@@ -1,0 +1,9 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{ "label": "Dev: hub", "type": "shell", "command": "npm run dev:hub", "isBackground": true, "problemMatcher": [] },
+		{ "label": "Dev: Letterwell", "type": "shell", "command": "npm run dev:letterwell", "isBackground": true, "problemMatcher": [] },
+		{ "label": "Dev: BuildCalc", "type": "shell", "command": "npm run dev:buildcalc", "isBackground": true, "problemMatcher": [] },
+		{ "label": "Build site", "type": "shell", "command": "npm run build", "group": "build", "problemMatcher": [] }
+	]
+}

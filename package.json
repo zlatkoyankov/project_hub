@@ -1,0 +1,26 @@
+{
+  "name": "zyankov",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "zyankov.eu: the homepage, Letterwell, BuildCalc and the shared packages in one repository.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev:hub": "npm run dev -w hub",
+    "dev:letterwell": "npm run dev -w letterwell",
+    "dev:buildcalc": "npm run start -w buildcalc",
+    "build:hub": "npm run build -w hub",
+    "build:letterwell": "npm run build -w letterwell",
+    "build:buildcalc": "npm run build:prod -w buildcalc",
+    "build": "npm run build:hub && npm run build:letterwell && npm run build:buildcalc && node scripts/assemble-site.mjs",
+    "preview": "vite preview --outDir dist --port 4173",
+    "test": "npm run test -w buildcalc -- --watch=false",
+    "lint": "npm run lint -w hub -w letterwell"
+  }
+}
