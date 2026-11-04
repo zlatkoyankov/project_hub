@@ -107,9 +107,11 @@ const projectTagline = (p, lang) => (lang === 'bg' && p.tagline_bg) || p.tagline
 function languageSwitch(lang, alternates) {
   const other = lang === 'bg' ? 'en' : 'bg'
   if (!alternates?.[other]) return ''
+  // Same-site link as a path, so the switch also works on localhost and in previews.
+  const href = alternates[other].replace(/^https?:\/\/(www\.)?zyankov\.eu(?=\/)/, '')
   const label = other === 'bg' ? 'БГ' : 'EN'
   const name = other === 'bg' ? 'Български' : 'English'
-  return `<a class="zy-bar__lang" href="${escape(alternates[other])}" hreflang="${other}" lang="${other}" title="${name}">${label}</a>`
+  return `<a class="zy-bar__lang" href="${escape(href)}" hreflang="${other}" lang="${other}" title="${name}">${label}</a>`
 }
 
 /** Top bar shown on every page. `project` is the slug of the current app ('hub' for the homepage).
