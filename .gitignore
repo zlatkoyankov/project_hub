@@ -19,3 +19,6 @@ npm-debug.log*
 !.vscode/tasks.json
 .DS_Store
 *.local
+
+# Files downloaded from Claude chats
+Claude outputs/

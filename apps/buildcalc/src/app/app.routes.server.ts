@@ -20,7 +20,7 @@ export const serverRoutes: ServerRoute[] = [
       return GUIDES.map(({ slug }) => ({ slug }));
     },
   },
-  ...['about', 'contact', 'privacy', 'terms', 'disclaimer'].map((path): ServerRoute => ({
+  ...['about'].map((path): ServerRoute => ({
     path,
     renderMode: RenderMode.Prerender,
   })),

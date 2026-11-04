@@ -36,18 +36,28 @@ if (new Set(projectPaths).size !== projectPaths.length) {
   throw new Error('Every project in projects.json must have a unique href.')
 }
 
-const sitemapPaths = [...new Set(['/', '/privacy/', '/terms/', ...projectPaths])]
-const sitemap = [
+// Site pages that live in the hub. Each project publishes its own sitemap at <href>sitemap.xml.
+const sitePaths = ['/', '/about/', '/privacy/', '/terms/', '/disclaimer/']
+
+const siteSitemap = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ...sitemapPaths.flatMap((path) => [
-    '  <url>',
-    `    <loc>${siteUrl}${path}</loc>`,
-    '  </url>',
-  ]),
+  ...sitePaths.map((path) => `  <url><loc>${siteUrl}${path}</loc></url>`),
   '</urlset>',
   '',
 ].join('\n')
 
+// /sitemap.xml is a sitemap index: the hub pages plus every project's own sitemap.
+const sitemapIndex = [
+  '<?xml version="1.0" encoding="UTF-8"?>',
+  '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  ...['/sitemap-site.xml', ...projectPaths.map((path) => `${path}sitemap.xml`)].map(
+    (path) => `  <sitemap><loc>${siteUrl}${path}</loc></sitemap>`,
+  ),
+  '</sitemapindex>',
+  '',
+].join('\n')
+
 await mkdir(distDirectory, { recursive: true })
-await writeFile(resolve(distDirectory, 'sitemap.xml'), sitemap)
+await writeFile(resolve(distDirectory, 'sitemap-site.xml'), siteSitemap)
+await writeFile(resolve(distDirectory, 'sitemap.xml'), sitemapIndex)

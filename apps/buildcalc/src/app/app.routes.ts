@@ -52,10 +52,6 @@ export const routes: Routes = [
   },
   ...[
     { path: 'about', key: 'about', title: 'About BuildCalc', description: 'Learn about BuildCalc’s browser-based planning tools and transparent material estimate assumptions.' },
-    { path: 'contact', key: 'contact', title: 'Contact BuildCalc', description: 'Contact BuildCalc at hello@zyankov.eu with questions, suggestions, or calculator feedback.' },
-    { path: 'privacy', key: 'privacy', title: 'Privacy Policy | BuildCalc', description: 'Learn what information BuildCalc processes, what stays in your browser, and how to contact the site owner.' },
-    { path: 'terms', key: 'terms', title: 'Terms of Use | BuildCalc', description: 'Review the terms for using BuildCalc planning estimates and calculators.' },
-    { path: 'disclaimer', key: 'disclaimer', title: 'Disclaimer | BuildCalc', description: 'Important limitations for BuildCalc planning estimates and material calculators.' },
   ].map((page) => ({
     path: page.path,
     loadComponent: () => import('./pages/content').then((module) => module.ContentPage),

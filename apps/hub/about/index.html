@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <template data-zy-slot="head"></template>
+    <meta name="theme-color" content="#f1f5ef" />
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="Zyankov.eu is a collection of small, practical browser tools by Zlatko Yankov, a frontend engineer from Sofia, Bulgaria." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Zyankov.eu" />
+    <meta property="og:url" content="https://zyankov.eu/about/" />
+    <meta property="og:title" content="About Zyankov.eu | Zlatko Yankov" />
+    <meta property="og:description" content="Zyankov.eu is a collection of small, practical browser tools by Zlatko Yankov, a frontend engineer from Sofia, Bulgaria." />
+    <link rel="canonical" href="https://zyankov.eu/about/" />
+    <title>About Zyankov.eu | Zlatko Yankov</title>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Zyankov.eu | Zlatko Yankov",
+  "url": "https://zyankov.eu/about/",
+  "description": "Zyankov.eu is a collection of small, practical browser tools by Zlatko Yankov, a frontend engineer from Sofia, Bulgaria.",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Zyankov.eu",
+    "url": "https://zyankov.eu/"
+  },
+  "mainEntity": {
+    "@type": "Person",
+    "name": "Zlatko Yankov",
+    "jobTitle": "Frontend engineer",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Sofia",
+      "addressCountry": "BG"
+    },
+    "email": "mailto:hello@zyankov.eu",
+    "url": "https://zyankov.eu/about/"
+  }
+}
+    </script>
+    <link rel="stylesheet" href="/src/legal.css" />
+  </head>
+  <body>
+    <template data-zy-slot="bar"></template>
+    <div class="page">
+      <main id="top">
+        <p class="eyebrow">About</p>
+        <h1>Hi, I’m Zlatko.</h1>
+        <p class="intro">
+          Zyankov.eu is where I publish small, practical tools that run in your browser. I’m Zlatko Yankov, a frontend engineer from Sofia, Bulgaria, and I build and maintain every project on this site myself.
+        </p>
+
+        <section>
+          <h2>Who builds these tools</h2>
+          <p>For about ten years I have built and maintained web applications. Much of that time went into a large business application: supporting and improving its original AngularJS version, building its Angular successor, and migrating it step by step, release after release, across many Angular versions.</p>
+          <p>That kind of work is mostly invisible to the people who use it. Zyankov.eu is the opposite: tools that do one job you can see, built with the same care for correctness, accessibility and maintenance.</p>
+        </section>
+
+        <section>
+          <h2>What you will find here</h2>
+          <p><a href="/letterwell/">Letterwell</a> finds words from a set of letters in English or <a href="/letterwell/bg/">Bulgarian</a> and shows Scrabble, Words With Friends and Boggle scores.</p>
+          <p><a href="/calculators/">BuildCalc</a> estimates materials for common home-improvement jobs: concrete, gravel, paint, tile, mulch and floor area, with guides that explain the assumptions behind each estimate.</p>
+          <p>New tools and articles are added over time. Each tool works without an account and is designed to work on phones, tablets and desktops.</p>
+        </section>
+
+        <section>
+          <h2>How the tools are made</h2>
+          <p>Calculations and word searches run in your browser, so what you type is not sent to a server. Each calculator shows its formula, an example and its limitations, and the calculation code is covered by automated tests.</p>
+          <p>Letterwell uses openly licensed (MIT) word lists; see the <a href="/letterwell/english-words-license.txt">English</a> and <a href="/letterwell/bulgarian-words-license.txt">Bulgarian</a> licence notices. Lists can differ from official game dictionaries, so check the rules of the game you are playing.</p>
+          <p>When someone reports an error, I fix it and note the change. Reports about accessibility problems are especially welcome.</p>
+        </section>
+
+        <section>
+          <h2>English and Bulgarian</h2>
+          <p>I am Bulgarian, and the site is written mainly in English so that the tools are useful to as many people as possible. Where a Bulgarian version adds real value, such as Letterwell’s Bulgarian dictionary, it has its own page.</p>
+        </section>
+
+        <section>
+          <h2>Advertising</h2>
+          <p>The site shows ads from Google AdSense, which keeps the tools free. Advertising, consent and analytics are described in the <a href="/privacy/">privacy policy</a>.</p>
+        </section>
+
+        <section id="contact">
+          <h2>Contact</h2>
+          <p>Questions, corrections and ideas for new tools are welcome at <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>. Please mention the page or tool and what you expected to happen; do not send sensitive personal information.</p>
+        </section>
+      </main>
+    </div>
+    <template data-zy-slot="footer"></template>
+  </body>
+</html>

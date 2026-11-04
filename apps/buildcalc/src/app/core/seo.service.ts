@@ -35,7 +35,7 @@ export class SeoService {
     const canonical = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
       ?? this.document.createElement('link');
     canonical.rel = 'canonical';
-    const canonicalUrl = this.absolute(path);
+    const canonicalUrl = this.pageUrl(path);
     if (canonicalUrl && !route.data['noindex']) {
       canonical.href = canonicalUrl;
       if (!canonical.isConnected) this.document.head.appendChild(canonical);
@@ -45,6 +45,12 @@ export class SeoService {
     if (canonicalUrl) this.setMeta('og:url', canonicalUrl, 'property');
 
     this.setJsonLd(route.data['noindex'] ? [] : this.structuredData(path, title, description));
+  }
+
+  // Pages are prerendered as <path>/index.html, and the static host redirects /path to /path/,
+  // so canonical and structured-data URLs end with a slash.
+  private pageUrl(path: string): string {
+    return this.absolute(path.endsWith('/') ? path : `${path}/`);
   }
 
   private absolute(path: string): string {
@@ -59,7 +65,7 @@ export class SeoService {
 
   private structuredData(path: string, title: string, description?: string): object[] {
     const data: object[] = [];
-    const url = this.absolute(path);
+    const url = this.pageUrl(path);
     if (path === '/') {
       data.push({ '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, ...(url && { url }) });
     }
@@ -92,12 +98,12 @@ export class SeoService {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: this.absolute('/') },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: this.pageUrl('/') },
           ...crumbs.map((_, index) => ({
             '@type': 'ListItem',
             position: index + 2,
             name: index === crumbs.length - 1 ? title.replace(` | ${SITE_NAME}`, '') : SECTION_NAMES[crumbs[index]] ?? crumbs[index],
-            item: this.absolute(`/${crumbs.slice(0, index + 1).join('/')}`),
+            item: this.pageUrl(`/${crumbs.slice(0, index + 1).join('/')}`),
           })),
         ],
       });

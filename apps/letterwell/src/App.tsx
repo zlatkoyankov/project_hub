@@ -1,81 +1,9 @@
-import { useEffect, useState, useSyncExternalStore, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowDownAZ, ArrowUpNarrowWide, Check, Copy, Search, Shuffle, Sparkles } from 'lucide-react'
 import { track } from '@zyankov/design-system/analytics'
 import './App.css'
 
-type Language = 'en' | 'bg'
-
-const languagePreferenceEvent = 'letterwell-language-preference-change'
-let languagePreferenceFallback: Language | undefined
-
-function getLanguagePreference(): Language {
-  try {
-    const preference = window.localStorage.getItem('letterwell-language')
-    if (preference === 'bg') return 'bg'
-    if (preference === 'en') return 'en'
-  } catch {
-    return languagePreferenceFallback ?? 'en'
-  }
-  return languagePreferenceFallback ?? 'en'
-}
-
-function subscribeToLanguagePreference(listener: () => void) {
-  const onStorage = (event: StorageEvent) => {
-    if (event.key === 'letterwell-language' || event.key === null) {
-      languagePreferenceFallback = undefined
-      listener()
-    }
-  }
-  const onPreferenceChange = () => listener()
-  window.addEventListener('storage', onStorage)
-  window.addEventListener(languagePreferenceEvent, onPreferenceChange)
-  return () => {
-    window.removeEventListener('storage', onStorage)
-    window.removeEventListener(languagePreferenceEvent, onPreferenceChange)
-  }
-}
-
-function setLanguagePreference(language: Language) {
-  languagePreferenceFallback = language
-  try {
-    window.localStorage.setItem('letterwell-language', language)
-  } catch (error) {
-    console.warn('Could not save the language preference in this browser.', error)
-  }
-  window.dispatchEvent(new Event(languagePreferenceEvent))
-}
-
-function getServerLanguagePreference(): Language {
-  return 'en'
-}
-
-const seoMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
-  en: {
-    title: 'Letterwell | Find Words from Your Letters',
-    description: 'Find English words from your letters with flexible word filters, random letter racks, and Scrabble, Words With Friends, or Boggle scores.',
-    structuredDescription: 'An English word finder that makes words from supplied letters and calculates Scrabble, Words With Friends, and Boggle scores.',
-    features: [
-      'English word finder',
-      'Letter position filters',
-      'Random letter racks',
-      'Scrabble score calculator',
-      'Words With Friends score calculator',
-      'Boggle score calculator',
-    ],
-  },
-  bg: {
-    title: 'Letterwell | Намери думи от букви',
-    description: 'Намери български думи от зададени букви, използвай филтри и разбъркай произволни букви. Провери точките си в Scrabble и Boggle.',
-    structuredDescription: 'Българска търсачка за думи, която съставя думи от зададени букви и изчислява точки за Scrabble и Boggle.',
-    features: [
-      'Българска търсачка за думи',
-      'Филтри по позиция на буквите',
-      'Случайни комбинации от букви',
-      'Калкулатор за точки в български Scrabble',
-      'Калкулатор за точки в Boggle',
-    ],
-  },
-}
+import { languagePath, seoMetadata, socialDescriptions, type Language } from './seo'
 
 const examples: Record<Language, string[]> = {
   en: ['triangle', 'listen', 'stream'],
@@ -164,12 +92,7 @@ function getRandomLetters(language: Language, count: number) {
   ).join('')
 }
 
-function App() {
-  const language = useSyncExternalStore(
-    subscribeToLanguagePreference,
-    getLanguagePreference,
-    getServerLanguagePreference,
-  )
+function App({ language }: { language: Language }) {
   const [letters, setLetters] = useState('')
   const [minimumLength, setMinimumLength] = useState(2)
   const [maximumLength, setMaximumLength] = useState(12)
@@ -294,9 +217,7 @@ function App() {
   const effectiveMaximum = requireAllLetters ? normalizedLetters.length : maximumLength
   useEffect(() => {
     const locale = language === 'bg' ? 'bg_BG' : 'en_US'
-    const socialDescription = language === 'bg'
-      ? 'Откривай български думи от буквите си и проверявай точките за Scrabble и Boggle.'
-      : 'Discover English words from your letters and compare Scrabble, Words With Friends, and Boggle scores.'
+    const socialDescription = socialDescriptions[language]
 
     document.documentElement.lang = language
     document.title = pageMetadata.title
@@ -413,9 +334,8 @@ function App() {
             <select
               value={language}
               onChange={(event) => {
-                setLanguagePreference(event.target.value as Language)
-                setLetters('')
-                clearResults()
+                // Each language has its own URL (/letterwell/ and /letterwell/bg/).
+                window.location.assign(languagePath(event.target.value as Language))
               }}
               aria-label="Language"
             >
