@@ -34,9 +34,9 @@ const cover = (post: Post) => `/og/${ogKey(postPath(post))}.png`
         </div>
         {posts.length > 1 && (
           <div class="blog-filters" role="group" aria-label={t.filter} data-blog-filters>
-            <button type="button" aria-pressed="true" data-filter="all">{t.all}</button>
-            {filters.map((category) => <button type="button" aria-pressed="false" data-filter={category}>{t.categories[category]}</button>)}
-            <a href={t.other[1]} hreflang={bg ? 'en' : 'bg'}>{t.other[0]}</a>
+            <button class="zy-key" type="button" aria-pressed="true" data-filter="all">{t.all}</button>
+            {filters.map((category) => <button class="zy-key" type="button" aria-pressed="false" data-filter={category}>{t.categories[category]}</button>)}
+            <a class="zy-key" href={t.other[1]} hreflang={bg ? 'en' : 'bg'}>{t.other[0]}</a>
           </div>
         )}
       </header>

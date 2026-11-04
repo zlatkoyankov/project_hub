@@ -128,10 +128,10 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
           <label class="sr-only" for="tool-search">{t.searchLabel}</label>
           <svg class="tool-search__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
           <input id="tool-search" type="search" autocomplete="off" placeholder={t.searchPlaceholder} />
-          <button type="submit">{t.searchButton}</button>
+          <button class="zy-cta" type="submit">{t.searchButton}</button>
         </form>
         <p class="tool-search__empty" role="status" data-tool-search-empty hidden>{t.noMatch}</p>
-        <p class="home-chips"><span>{t.popular}</span>{t.chips.map(([label, href]) => <a href={href}>{label}</a>)}</p>
+        <p class="home-chips"><span>{t.popular}</span>{t.chips.map(([label, href]) => <a class="zy-key" href={href}>{label}</a>)}</p>
       </div>
 
       <div class="home-hero__art" aria-hidden="true">
@@ -149,7 +149,7 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
         </div>
         <div class="art-card art-card--finder">
           <p class="art-label">{t.art.finder}</p>
-          <div class="art-letters">{[...t.art.letters].map((letter, index) => <span class={`letter letter--${tileColours[index % tileColours.length]}`}>{letter}</span>)}</div>
+          <div class="art-letters">{[...t.art.letters].map((letter, index) => <span class={`letter zy-gloss letter--${tileColours[index % tileColours.length]}`}>{letter}</span>)}</div>
           <p class="art-note">{t.art.found}</p>
         </div>
       </div>

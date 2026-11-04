@@ -63,28 +63,20 @@
 .blog-filters a {
   min-height: 44px;
   padding: 0 18px;
-  display: inline-flex;
-  align-items: center;
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
   cursor: pointer;
   font: 600 14px var(--font-body);
-  text-decoration: none;
 }
 
 .blog-filters button[aria-pressed='true'] {
-  color: var(--inverse-text);
-  background: var(--inverse-bg);
-  border-color: var(--inverse-bg);
+  color: var(--cta-ink);
+  background: linear-gradient(180deg, var(--cta-top), var(--cta-bottom));
+  border-color: transparent;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--game-ink) 45%, transparent), 0 2px 0 var(--cta-edge);
   font-weight: 700;
 }
 
 .blog-filters a {
   color: var(--accent-dark);
-  background: transparent;
-  border-style: dashed;
 }
 
 /* Featured post */
@@ -534,15 +526,8 @@
 }
 
 .tool-cta a {
-  min-height: 48px;
-  display: inline-flex;
-  align-items: center;
   padding: 0 22px;
-  color: var(--yellow-ink);
-  background: var(--yellow);
-  border-radius: 14px;
   font-weight: 800;
-  text-decoration: none;
 }
 
 .author-box {

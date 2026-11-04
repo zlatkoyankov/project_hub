@@ -397,7 +397,7 @@ function App({ language }: { language: Language }) {
             <span className="art-caption">{text.artCaption}</span>
             <div className="art-tiles" aria-hidden="true">
               {Array.from(text.artWord).map((letter, index) => (
-                <span className={`art-tile ${artTileColors[index % artTileColors.length]}`} key={index}>{letter}</span>
+                <span className={`art-tile zy-gloss ${artTileColors[index % artTileColors.length]}`} key={index}>{letter}</span>
               ))}
             </div>
             <span className="art-footnote">{Array.from(text.artWord).join(' ')} <span>→</span> {text.artWord}</span>
@@ -414,7 +414,7 @@ function App({ language }: { language: Language }) {
               value={letters}
               onChange={(event) => updateLetters(event.target.value)}
             />
-            <button className="hero-search-button" type="submit" disabled={!normalizedLetters || isSearching}>
+            <button className="hero-search-button zy-cta" type="submit" disabled={!normalizedLetters || isSearching}>
               {isSearching ? text.findingWords : text.findWords}
             </button>
           </form>
@@ -439,7 +439,7 @@ function App({ language }: { language: Language }) {
                   <span className="preview-label">{text.lettersInPlay}</span>
                   <div className="preview-tiles">
                     {normalizedLetters.split('').map((letter, index) => (
-                      <span className="preview-tile" key={`${letter}-${index}`}>{letter.toUpperCase()}</span>
+                      <span className="preview-tile zy-gloss" key={`${letter}-${index}`}>{letter.toUpperCase()}</span>
                     ))}
                   </div>
                 </>
@@ -470,7 +470,7 @@ function App({ language }: { language: Language }) {
               <span>{text.tryThese}</span>
               {examples[language].map((example) => (
                 <button
-                  className="example-button"
+                  className="example-button zy-key"
                   type="button"
                   key={example}
                   onClick={() => {
@@ -587,7 +587,7 @@ function App({ language }: { language: Language }) {
               <span className="toggle-copy"><strong>{text.useAll}</strong><small>{text.exactAnagrams}</small></span>
             </label>
 
-            <button className="search-button" type="submit" disabled={!normalizedLetters || isSearching}>
+            <button className="search-button zy-cta" type="submit" disabled={!normalizedLetters || isSearching}>
               {isSearching ? <span className="spinner" /> : <Search size={18} />}
               {isSearching ? text.searching : text.findWords}
             </button>
