@@ -1,4 +1,4 @@
-export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch';
+export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall';
 
 export interface CalculatorInfo {
   slug: string;
@@ -88,11 +88,36 @@ export const CALCULATORS: CalculatorInfo[] = [
       { question: 'How many bags are in a cubic yard?', answer: 'Bag volumes vary. Divide the required cubic feet by the volume printed on the bag to estimate the number of bags, rounding up.' },
     ],
   },
+  {
+    slug: 'laminate-flooring-calculator', title: 'Laminate Flooring Calculator', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
+    description: 'Work out how many boxes of laminate or vinyl plank flooring you need for a room, with waste and cost.',
+    intro: 'Enter the room size and the coverage printed on the box. The estimate adds a waste allowance for cuts and rounds up to whole boxes.',
+    kind: 'flooring', icon: 'flooring', keywords: ['laminate', 'vinyl plank', 'LVP', 'floor', 'boxes', 'hardwood', 'underlayment'],
+    example: 'A 14 ft × 12 ft room is 168 square feet of floor before waste.',
+    formula: 'Length × width gives the floor area. Add the waste allowance, divide by the coverage per box and round up to whole boxes.',
+    faqs: [
+      { question: 'How much extra laminate should I buy?', answer: 'Around 10% is a common allowance for a straight layout in a simple room. Diagonal or herringbone layouts and rooms with many corners need more. Keep a spare box for future repairs.' },
+      { question: 'Do I need underlayment?', answer: 'Most floating floors need an underlayment unless one is attached to the planks. Plan for roughly the floor area and follow the flooring manufacturer’s instructions.' },
+    ],
+  },
+  {
+    slug: 'drywall-calculator', title: 'Drywall Calculator', shortTitle: 'Drywall', category: 'General Construction',
+    description: 'Estimate drywall sheets for the walls and ceiling of a room, minus doors and windows, with waste and cost.',
+    intro: 'Enter the room size and wall height, subtract doors and windows, and choose a sheet size. The estimate adds waste and rounds up to whole sheets.',
+    kind: 'drywall', icon: 'drywall', keywords: ['plasterboard', 'gypsum board', 'sheetrock', 'walls', 'ceiling', 'sheets'],
+    example: 'A 12 ft × 10 ft room with 8 ft walls has 352 square feet of wall before openings.',
+    formula: 'Room perimeter × wall height gives the wall area; add the ceiling if needed and subtract openings. Add waste, divide by the sheet area and round up.',
+    faqs: [
+      { question: 'Should I subtract doors and windows?', answer: 'Subtracting them gives the net area. Many installers subtract only large openings, because offcuts from small ones are rarely usable; the waste allowance covers the rest.' },
+      { question: 'Which sheet size should I use?', answer: 'Larger sheets mean fewer joints to tape but are heavier to handle. Choose a length that matches your wall height where possible and check what your supplier stocks.' },
+    ],
+  },
 ];
 
 export const FEATURED_SLUGS = [
   'gravel-calculator', 'paint-calculator', 'tile-calculator',
   'concrete-calculator', 'square-footage-calculator', 'mulch-calculator',
+  'laminate-flooring-calculator', 'drywall-calculator',
 ];
 
 export const CATEGORIES = [...new Set(CALCULATORS.map((calculator) => calculator.category))];

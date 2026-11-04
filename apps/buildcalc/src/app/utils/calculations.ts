@@ -286,3 +286,100 @@ export function calculateMulch(values: MulchInput): Estimate {
     summary: `${adjusted.toFixed(2)} cubic yards including waste.`,
   };
 }
+
+export interface FlooringInput {
+  length: number;
+  width: number;
+  waste: number;
+  boxArea: number;
+  price?: number;
+  dimensionUnit?: number;
+  boxAreaUnit?: number;
+}
+
+export function calculateFlooring(values: FlooringInput): Estimate {
+  positive(values.length, 'Room length');
+  positive(values.width, 'Room width');
+  positive(values.boxArea, 'Coverage per box');
+  nonNegative(values.waste, 'Waste allowance');
+
+  const dimensionFactor = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const area = values.length * dimensionFactor * values.width * dimensionFactor;
+  const withWaste = area * wasteMultiplier(values.waste);
+  const boxArea = values.boxArea * unitFactor(SQUARE_FEET_PER_UNIT, values.boxAreaUnit);
+  const boxes = Math.ceil(withWaste / boxArea - 1e-6);
+  const price = values.price ?? 0;
+  nonNegative(price, 'Price');
+
+  return {
+    rows: [
+      { label: 'Floor area', value: area, unit: 'sq ft', precision: 2 },
+      { label: 'Area with waste', value: withWaste, unit: 'sq ft', precision: 2 },
+      { label: 'Boxes needed', value: boxes, unit: boxes === 1 ? 'box' : 'boxes', precision: 0, detail: 'rounded up to whole boxes' },
+      { label: 'Flooring in those boxes', value: boxes * boxArea, unit: 'sq ft', precision: 2 },
+      ...(price > 0 ? [{ label: 'Estimated material cost', value: boxes * price, unit: 'USD', precision: 2 }] : []),
+    ],
+    summary: `Plan for ${boxes} box${boxes === 1 ? '' : 'es'} (${(boxes * boxArea).toFixed(2)} sq ft) including waste.`,
+  };
+}
+
+/** Drywall sheet sizes: the first three in feet (US), the rest in meters. */
+export const DRYWALL_SHEETS = [
+  { label: '4 × 8 ft', squareFeet: 32 },
+  { label: '4 × 10 ft', squareFeet: 40 },
+  { label: '4 × 12 ft', squareFeet: 48 },
+  { label: '1.2 × 2.0 m', squareFeet: 2.4 * 10.7639104 },
+  { label: '1.2 × 2.5 m', squareFeet: 3.0 * 10.7639104 },
+  { label: '1.2 × 3.0 m', squareFeet: 3.6 * 10.7639104 },
+];
+
+export interface DrywallInput {
+  length: number;
+  width: number;
+  height: number;
+  openings: number;
+  includeCeiling: boolean;
+  sheetSize: number;
+  waste: number;
+  price?: number;
+  dimensionUnit?: number;
+  openingsUnit?: number;
+}
+
+export function calculateDrywall(values: DrywallInput): Estimate {
+  positive(values.length, 'Room length');
+  positive(values.width, 'Room width');
+  positive(values.height, 'Wall height');
+  nonNegative(values.openings, 'Doors and windows');
+  nonNegative(values.waste, 'Waste allowance');
+  const sheet = DRYWALL_SHEETS[values.sheetSize];
+  if (!sheet) throw new Error('Choose a sheet size.');
+
+  const dimensionFactor = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const length = values.length * dimensionFactor;
+  const width = values.width * dimensionFactor;
+  const height = values.height * dimensionFactor;
+  const walls = 2 * (length + width) * height;
+  const ceiling = values.includeCeiling ? length * width : 0;
+  const gross = walls + ceiling;
+  const openings = values.openings * unitFactor(SQUARE_FEET_PER_UNIT, values.openingsUnit);
+  if (openings > gross) throw new Error('Doors and windows cannot be larger than the wall area.');
+  const net = gross - openings;
+  const withWaste = net * wasteMultiplier(values.waste);
+  const sheets = Math.ceil(withWaste / sheet.squareFeet - 1e-6);
+  const price = values.price ?? 0;
+  nonNegative(price, 'Price');
+
+  return {
+    rows: [
+      { label: 'Wall area', value: walls, unit: 'sq ft', precision: 2 },
+      ...(ceiling > 0 ? [{ label: 'Ceiling area', value: ceiling, unit: 'sq ft', precision: 2 }] : []),
+      { label: 'Doors and windows', value: openings, unit: 'sq ft', precision: 2 },
+      { label: 'Area to cover', value: net, unit: 'sq ft', precision: 2 },
+      { label: 'Area with waste', value: withWaste, unit: 'sq ft', precision: 2 },
+      { label: 'Sheets needed', value: sheets, unit: sheets === 1 ? 'sheet' : 'sheets', precision: 0, detail: `${sheet.label} sheets, rounded up` },
+      ...(price > 0 ? [{ label: 'Estimated material cost', value: sheets * price, unit: 'USD', precision: 2 }] : []),
+    ],
+    summary: `Plan for ${sheets} sheet${sheets === 1 ? '' : 's'} of ${sheet.label} drywall, including waste.`,
+  };
+}

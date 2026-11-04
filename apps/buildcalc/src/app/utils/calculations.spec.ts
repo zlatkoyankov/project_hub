@@ -1,5 +1,5 @@
 import {
-  calculateArea, calculateConcrete, calculateGravel, calculateMulch, calculatePaint, calculateTile,
+  calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
 
 describe('calculation utilities', () => {
@@ -131,5 +131,33 @@ describe('calculation utilities', () => {
     });
     expect(millimeters.rows.find((row) => row.label === 'Estimated tiles')?.value)
       .toBe(inches.rows.find((row) => row.label === 'Estimated tiles')?.value);
+  });
+
+  it('rounds laminate up to whole boxes after waste', () => {
+    const result = calculateFlooring({ length: 14, width: 12, waste: 10, boxArea: 20 });
+    expect(result.rows.find((row) => row.label === 'Floor area')?.value).toBeCloseTo(168, 6);
+    expect(result.rows.find((row) => row.label === 'Area with waste')?.value).toBeCloseTo(184.8, 6);
+    expect(result.rows.find((row) => row.label === 'Boxes needed')?.value).toBe(10);
+    expect(result.rows.find((row) => row.label === 'Flooring in those boxes')?.value).toBeCloseTo(200, 6);
+  });
+
+  it('reads metric laminate inputs', () => {
+    // 4 m × 3 m = 12 m², +10% = 13.2 m², boxes of 2.2 m² → exactly 6 boxes.
+    const result = calculateFlooring({ length: 4, width: 3, waste: 10, boxArea: 2.2, dimensionUnit: 2, boxAreaUnit: 2 });
+    expect(result.rows.find((row) => row.label === 'Boxes needed')?.value).toBe(6);
+  });
+
+  it('counts drywall sheets for walls, minus openings, plus ceiling when asked', () => {
+    const walls = calculateDrywall({ length: 12, width: 10, height: 8, openings: 21, includeCeiling: false, sheetSize: 0, waste: 10 });
+    expect(walls.rows.find((row) => row.label === 'Wall area')?.value).toBeCloseTo(352, 6);
+    expect(walls.rows.find((row) => row.label === 'Area to cover')?.value).toBeCloseTo(331, 6);
+    expect(walls.rows.find((row) => row.label === 'Sheets needed')?.value).toBe(12);
+    const withCeiling = calculateDrywall({ length: 12, width: 10, height: 8, openings: 21, includeCeiling: true, sheetSize: 0, waste: 10 });
+    expect(withCeiling.rows.find((row) => row.label === 'Ceiling area')?.value).toBeCloseTo(120, 6);
+    expect(withCeiling.rows.find((row) => row.label === 'Sheets needed')?.value).toBe(16);
+  });
+
+  it('rejects openings larger than the walls', () => {
+    expect(() => calculateDrywall({ length: 2, width: 2, height: 2, openings: 100, includeCeiling: false, sheetSize: 0, waste: 0 })).toThrow();
   });
 });

@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall'
 
 export interface Tool {
   id: string
@@ -71,6 +71,26 @@ export const TOOL_CATALOG: Tool[] = [
     keywords: 'tile tiles floor wall grout плочки фаянс теракот под фуга',
   },
   {
+    id: 'flooring',
+    category: 'home',
+    icon: 'flooring',
+    href: calculator('laminate-flooring-calculator'),
+    name: { en: 'Laminate flooring', bg: 'Ламинат' },
+    description: { en: 'Boxes of laminate or vinyl plank for a room, with waste.', bg: 'Кутии ламинат или винил за стая, с фира.' },
+    keywords: 'laminate flooring vinyl plank lvp floor boxes ламинат паркет винил под кутии',
+    isNew: true,
+  },
+  {
+    id: 'drywall',
+    category: 'home',
+    icon: 'drywall',
+    href: calculator('drywall-calculator'),
+    name: { en: 'Drywall', bg: 'Гипсокартон' },
+    description: { en: 'Sheets for walls and ceilings, minus doors and windows.', bg: 'Листове за стени и таван, без вратите и прозорците.' },
+    keywords: 'drywall plasterboard gypsum sheetrock sheets wall ceiling гипсокартон листове стена таван',
+    isNew: true,
+  },
+  {
     id: 'gravel',
     category: 'home',
     icon: 'gravel',
@@ -118,6 +138,8 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   mulch: '<path d="M5 20c0-9 6-15 15-15 0 9-6 15-15 15z"/><path d="M5 20 13 12"/>',
   area: '<path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/>',
   energy: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  flooring: '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.3h18M3 14.6h18M10 4v5.3M16 9.3v5.3M8 14.6V20"/>',
+  drywall: '<rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/><path d="M5.5 6v.01M5.5 12v.01M5.5 18v.01M15.5 6v.01M15.5 12v.01M15.5 18v.01"/>',
 }
 
 /** Blog category of a post, from the tool it links to. */

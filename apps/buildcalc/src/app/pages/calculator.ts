@@ -7,7 +7,7 @@ import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.servi
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
 import {
-  calculateArea, calculateConcrete, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, Estimate, EstimateRow, GravelInput, MulchInput, PaintInput, TileInput, Values,
+  calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
 } from '../utils/calculations';
 
 interface Field {
@@ -92,6 +92,21 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
     { key: 'price', label: 'Price per cubic yard', unit: '$', min: 0, step: 0.01, optional: true },
   ],
+  flooring: [
+    { key: 'length', label: 'Room length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'width', label: 'Room width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'boxArea', label: 'Coverage per box', unit: 'sq ft', unitKey: 'boxAreaUnit', unitOptions: AREA_UNITS, min: 0.01, step: 0.01, hint: 'Printed on the box, for example 20 sq ft or 2.2 m².' },
+    { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1, hint: 'About 10% for a straight layout; more for diagonal or herringbone.' },
+    { key: 'price', label: 'Price per box', unit: '$', min: 0, step: 0.01, optional: true },
+  ],
+  drywall: [
+    { key: 'length', label: 'Room length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'width', label: 'Room width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'height', label: 'Wall height', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'openings', label: 'Doors and windows to subtract', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0, step: 0.5, hint: 'A standard door is about 21 sq ft (2 m²).' },
+    { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
+    { key: 'price', label: 'Price per sheet', unit: '$', min: 0, step: 0.01, optional: true },
+  ],
   mulch: [
     { key: 'length', label: 'Bed length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
     { key: 'width', label: 'Bed width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
@@ -108,6 +123,8 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
   concrete: { length: 10, width: 10, depth: 4, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   area: {},
   mulch: { length: 10, width: 10, depth: 3, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
+  flooring: { length: 14, width: 12, boxArea: 20, waste: 10, price: 0, dimensionUnit: 0, boxAreaUnit: 0 },
+  drywall: { length: 12, width: 10, height: 8, openings: 21, includeCeiling: 0, sheetSize: 0, waste: 10, price: 0, dimensionUnit: 0, openingsUnit: 0 },
 };
 
 @Component({
@@ -151,7 +168,7 @@ export class CalculatorPage {
         unitOptions: field.unitOptions?.filter((unit) => {
           if (field.unitKey === 'dimensionUnit') return system === 'us' ? US_DISTANCE_UNITS.some((item) => item.value === unit.value) : METRIC_DISTANCE_UNITS.some((item) => item.value === unit.value);
           if (field.unitKey === 'depthUnit' || field.unitKey === 'tileUnit' || field.unitKey === 'groutUnit') return system === 'us' ? US_SMALL_UNITS.some((item) => item.value === unit.value) : METRIC_SMALL_UNITS.some((item) => item.value === unit.value);
-          if (field.unitKey === 'openingsUnit') return system === 'us' ? US_AREA_UNITS.some((item) => item.value === unit.value) : METRIC_AREA_UNITS.some((item) => item.value === unit.value);
+          if (field.unitKey === 'openingsUnit' || field.unitKey === 'boxAreaUnit') return system === 'us' ? US_AREA_UNITS.some((item) => item.value === unit.value) : METRIC_AREA_UNITS.some((item) => item.value === unit.value);
           if (field.unitKey === 'densityUnit' || field.unitKey === 'coverageUnit') return unit.value === (system === 'us' ? 0 : 1);
           return true;
         }),
@@ -175,6 +192,9 @@ export class CalculatorPage {
     const purchase = rows.find((row) => row.label === 'Whole-liter purchase');
     if (calculator.kind === 'paint' && purchase) return `Plan for ${purchase.displayValue}.`;
     if ((calculator.kind === 'concrete' || calculator.kind === 'mulch') && volume) return `${volume.displayValue} including waste.`;
+    const boxes = rows.find((row) => row.label === 'Boxes needed');
+    const boxed = rows.find((row) => row.label === 'Flooring in those boxes');
+    if (calculator.kind === 'flooring' && boxes && boxed) return `Plan for ${boxes.displayValue} (${boxed.displayValue}) including waste.`;
     if (calculator.kind === 'gravel' && volume) return `${volume.displayValue}${weight ? ` (about ${weight.displayValue})` : ''} including waste.`;
     return result.summary;
   });
@@ -224,7 +244,8 @@ export class CalculatorPage {
       const unitKey = key;
       const previousUnit = this.number(current, unitKey);
       const valueKeys = ({
-        dimensionUnit: ['length', 'width'],
+        dimensionUnit: ['length', 'width', 'height'],
+        boxAreaUnit: ['boxArea'],
         depthUnit: ['depth'],
         tileUnit: ['tileLength', 'tileWidth'],
         groutUnit: ['grout'],
@@ -234,7 +255,7 @@ export class CalculatorPage {
       }[unitKey] ?? []).filter((candidate) => current[candidate] !== undefined);
       for (const valueKey of valueKeys) {
         const currentValue = this.number(current, valueKey);
-        if (unitKey === 'openingsUnit') updated[valueKey] = this.convertArea(currentValue, previousUnit, nextUnit);
+        if (unitKey === 'openingsUnit' || unitKey === 'boxAreaUnit') updated[valueKey] = this.convertArea(currentValue, previousUnit, nextUnit);
         else if (unitKey === 'densityUnit') updated[valueKey] = tidy(previousUnit === 0 ? currentValue * 0.593276 : currentValue / 0.593276);
         else if (unitKey === 'coverageUnit') updated[valueKey] = tidy(previousUnit === 0 ? currentValue / 40.745 : currentValue * 40.745);
         else updated[valueKey] = this.convertLength(currentValue, previousUnit, nextUnit);
@@ -257,6 +278,8 @@ export class CalculatorPage {
         case 'concrete': estimate = calculateConcrete(this.toConcreteInput(this.values())); break;
         case 'mulch': estimate = calculateMulch(this.toMulchInput(this.values())); break;
         case 'area': estimate = calculateArea(this.areas()); break;
+        case 'flooring': estimate = calculateFlooring(this.toFlooringInput(this.values())); break;
+        case 'drywall': estimate = calculateDrywall(this.toDrywallInput(this.values())); break;
       }
       this.result.set(estimate);
       this.copied.set(false);
@@ -273,13 +296,18 @@ export class CalculatorPage {
     const metric = this.unitPreference.system() === 'metric';
     const defaults = { ...DEFAULTS[kind] };
     if (metric) {
-      for (const key of ['length', 'width']) {
+      for (const key of ['length', 'width', 'height']) {
         if (defaults[key] !== undefined) defaults[key] = Number(this.convertLength(defaults[key], 0, 2).toFixed(2));
       }
+      if (defaults['boxArea'] !== undefined) {
+        defaults['boxArea'] = Number(this.convertArea(defaults['boxArea'], 0, 2).toFixed(2));
+        defaults['boxAreaUnit'] = 2;
+      }
+      if (defaults['sheetSize'] !== undefined) defaults['sheetSize'] = 4;
       for (const key of ['depth', 'tileLength', 'tileWidth', 'grout']) {
         if (defaults[key] !== undefined) defaults[key] = Number(this.convertLength(defaults[key], 1, 3).toFixed(key === 'grout' ? 2 : 1));
       }
-      if (defaults['openings'] !== undefined) defaults['openings'] = this.convertArea(defaults['openings'], 0, 2);
+      if (defaults['openings'] !== undefined) defaults['openings'] = Number(this.convertArea(defaults['openings'], 0, 2).toFixed(2));
       defaults['dimensionUnit'] = 2;
       defaults['depthUnit'] = 3;
       defaults['tileUnit'] = 3;
@@ -343,6 +371,8 @@ export class CalculatorPage {
       concrete: 'This estimates volume only. It does not replace structural engineering, local codes, reinforcement design, or placement requirements.',
       area: 'This totals rectangular measurements. Break irregular shapes into separate rectangles without overlap.',
       mulch: 'Depth needs vary with material and intended use. Follow local horticultural guidance and keep mulch clear of plant stems and trunks.',
+      flooring: 'This covers a rectangular room. Add closets and alcoves as extra area, check the coverage on your box and follow the manufacturer’s expansion-gap and underlayment instructions.',
+      drywall: 'This counts sheets for flat walls and ceilings only. Joint compound, tape, screws, corner bead and building-code requirements such as fire-rated or moisture-resistant board are not included.',
     };
     return limitations[kind];
   }
@@ -391,11 +421,17 @@ export class CalculatorPage {
     const targetSmall = to === 'us' ? 1 : 3;
     const targetArea = to === 'us' ? 0 : 2;
 
-    for (const key of ['length', 'width']) {
+    for (const key of ['length', 'width', 'height']) {
       if (values[key] !== undefined) {
         values[key] = this.convertLength(this.number(values, key), this.number(values, 'dimensionUnit'), targetLength);
       }
     }
+    if (values['boxArea'] !== undefined) {
+      values['boxArea'] = this.convertArea(this.number(values, 'boxArea'), this.number(values, 'boxAreaUnit'), targetArea);
+      values['boxAreaUnit'] = targetArea;
+    }
+    // Sheet sizes differ by market: switch to the common size for the new system.
+    if (values['sheetSize'] !== undefined) values['sheetSize'] = to === 'us' ? 0 : 4;
     for (const key of ['depth', 'tileLength', 'tileWidth', 'grout']) {
       const unitKey = key === 'tileLength' || key === 'tileWidth' ? 'tileUnit' : key === 'grout' ? 'groutUnit' : 'depthUnit';
       if (values[key] !== undefined) {
@@ -563,6 +599,38 @@ export class CalculatorPage {
       dimensionUnit: this.number(values, 'dimensionUnit'),
       depthUnit: this.number(values, 'depthUnit'),
       metricPrice: this.unitPreference.system() === 'metric',
+    };
+  }
+
+  /** Sheet sizes offered for the current measurement system. */
+  protected readonly sheetOptions = computed(() => DRYWALL_SHEETS
+    .map((sheet, index) => ({ value: index, label: sheet.label }))
+    .filter((sheet) => this.unitPreference.system() === 'us' ? sheet.value < 3 : sheet.value >= 3));
+
+  private toFlooringInput(values: Values): FlooringInput {
+    return {
+      length: this.number(values, 'length'),
+      width: this.number(values, 'width'),
+      waste: this.number(values, 'waste'),
+      boxArea: this.number(values, 'boxArea'),
+      price: this.number(values, 'price'),
+      dimensionUnit: this.number(values, 'dimensionUnit'),
+      boxAreaUnit: this.number(values, 'boxAreaUnit'),
+    };
+  }
+
+  private toDrywallInput(values: Values): DrywallInput {
+    return {
+      length: this.number(values, 'length'),
+      width: this.number(values, 'width'),
+      height: this.number(values, 'height'),
+      openings: this.number(values, 'openings'),
+      includeCeiling: this.number(values, 'includeCeiling') === 1,
+      sheetSize: this.number(values, 'sheetSize'),
+      waste: this.number(values, 'waste'),
+      price: this.number(values, 'price'),
+      dimensionUnit: this.number(values, 'dimensionUnit'),
+      openingsUnit: this.number(values, 'openingsUnit'),
     };
   }
 
