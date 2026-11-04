@@ -16,9 +16,6 @@
         <section><h2>{{ section.title }}</h2>@for (paragraph of section.paragraphs; track paragraph) {<p>{{ paragraph }}</p>}</section>
       }
     }
-    @if (contact) {
-      <section><h2>Email us</h2><p>For questions, suggestions, or to report a problem, email <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>.</p></section>
-    }
     @if (guide) {
       <a class="button" [routerLink]="['/', guide.calculatorSlug]">Open the {{ guide.shortTitle.toLowerCase() }} calculator <span aria-hidden="true">→</span></a>
     }

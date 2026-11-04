@@ -36,7 +36,11 @@
     var buttons = document.querySelectorAll('[data-zy-theme-toggle]');
     for (var i = 0; i < buttons.length; i++) {
       buttons[i].setAttribute('aria-pressed', String(theme === 'dark'));
-      buttons[i].setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+      var bg = (root.getAttribute('lang') || '').indexOf('bg') === 0;
+      var label = theme === 'dark'
+        ? (bg ? 'Включи светла тема' : 'Switch to light theme')
+        : (bg ? 'Включи тъмна тема' : 'Switch to dark theme');
+      buttons[i].setAttribute('aria-label', label);
     }
   }
 

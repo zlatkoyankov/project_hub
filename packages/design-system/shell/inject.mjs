@@ -24,19 +24,37 @@ export function hasSlots(html) {
 }
 
 // Pages that must not load ad tags (Google: privacy and cookie-policy pages carry no ad tags).
-const NO_ADS_PAGE = /(^|\/)(privacy|terms)(\/(index\.html)?)?$/
+const NO_ADS_PAGE = /(^|\/)(privacy|terms|disclaimer)(\/(index\.html)?)?$/
 
 /** True when the page at this path (URL path or file path) should load no ads. */
 export function isNoAdsPage(path = '') {
   return NO_ADS_PAGE.test(path.replace(/\\/g, '/'))
 }
 
+/** Language of the page: <html lang="…">, else 'en'. */
+export function pageLanguage(html) {
+  return /<html[^>]*\slang="bg/i.test(html) ? 'bg' : 'en'
+}
+
+/** hreflang alternates declared in the page head: { en: url, bg: url }. */
+export function pageAlternates(html) {
+  const alternates = {}
+  for (const tag of html.match(/<link[^>]+rel="alternate"[^>]*>/g) ?? []) {
+    const lang = /hreflang="([a-z]{2})"/.exec(tag)?.[1]
+    const href = /href="([^"]+)"/.exec(tag)?.[1]
+    if (lang && href) alternates[lang] = href
+  }
+  return alternates
+}
+
 export function injectShell(html, { project = 'hub', main = 'main', path = '' } = {}) {
   const ads = !isNoAdsPage(path) && !/<meta name="zy-ads" content="off"/.test(html)
+  const lang = pageLanguage(html)
+  const alternates = pageAlternates(html)
   let out = html
     .replace(slot('head'), () => renderHead({ ads }))
-    .replace(slot('bar'), () => renderBar({ project, main }))
-    .replace(slot('footer'), () => renderFooter({ project }))
+    .replace(slot('bar'), () => renderBar({ project, main, lang, alternates }))
+    .replace(slot('footer'), () => renderFooter({ project, lang }))
     .replace(slot('privacy-analytics'), () => renderPrivacyAnalytics())
   if (!/<html[^>]*\sdata-project=/.test(out)) {
     out = out.replace(/<html(\s|>)/, `<html data-project="${project}"$1`)

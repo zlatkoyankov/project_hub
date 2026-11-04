@@ -63,12 +63,21 @@ switch, and the page shell (top bar + footer). Apps depend on it as a workspace 
 - Consent in the EEA, UK and Switzerland comes from Google's own certified message, set up in
   AdSense under **Privacy & messaging → European regulations**. The footer button
   "Privacy settings" (`data-zy-consent`) reopens it.
+- Pages under privacy/, terms/ and disclaimer/ never load ad tags.
 - Analytics: set `analytics.websiteId` (Umami; `analytics.domains` limits tracking to the live site, so local builds are not counted) or `provider: "plausible"` + `domain` and rebuild.
   With no ID nothing is loaded, and the privacy policy and FAQ say so automatically
   (`<template data-zy-slot="privacy-analytics">`).
 - Events in use: `calculate` (BuildCalc: calculator, units), `word_search` (Letterwell: language,
   letter count, result count), `outbound_project` (bar/footer clicks between projects).
   Never send what the user typed.
+
+## Languages
+
+The shell follows `<html lang>`: `bg` pages get Bulgarian bar and footer text. When a page lists
+the other language with `<link rel="alternate" hreflang="…">`, the bar shows an EN / БГ switch
+to that URL. Apps that prerender several language versions build with `zyShell({ devOnly: true })`
+and run `zy-inject` after the prerender (see Letterwell). Project taglines in Bulgarian are
+`tagline_bg` in `projects.json`.
 
 ## Theme
 

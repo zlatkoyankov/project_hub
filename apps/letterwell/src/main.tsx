@@ -5,10 +5,11 @@ import '@zyankov/design-system/fonts.css'
 import '@zyankov/design-system/shell.css'
 import './index.css'
 import App from './App.tsx'
+import { languageFromPath } from './seo'
 
 hydrateRoot(
   document.getElementById('root')!,
   <StrictMode>
-    <App />
+    <App language={languageFromPath(window.location.pathname)} />
   </StrictMode>,
 )

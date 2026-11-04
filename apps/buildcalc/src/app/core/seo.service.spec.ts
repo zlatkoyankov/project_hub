@@ -23,7 +23,7 @@ describe('SeoService', () => {
     );
     const doc = document();
     expect(doc.title).toBe('Gravel Calculator | BuildCalc');
-    expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${SITE_BASE_URL}/gravel-calculator`);
+    expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${SITE_BASE_URL}/gravel-calculator/`);
     expect(doc.querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe(`${SITE_BASE_URL}/images/gravel.webp`);
     expect(doc.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('index, follow');
     const json = JSON.parse(doc.getElementById('buildcalc-json-ld')!.textContent!) as { '@type': string; name?: string }[];
