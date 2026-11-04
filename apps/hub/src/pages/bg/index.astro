@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import HomePage from '../../components/HomePage.astro'
+import { getPosts } from '../../lib/site'
+
+const posts = (await getPosts('bg')).slice(0, 3)
+---
+
+<BaseLayout
+  title="Zyankov.eu | Малки инструменти в браузъра"
+  description="Безплатни инструменти от Златко Янков: Letterwell намира думи от букви на български и английски, BuildCalc изчислява материали за ремонт."
+  path="/bg/"
+  lang="bg"
+  alternates={{ en: '/', bg: '/bg/' }}
+  rss="/bg/blog/rss.xml"
+  jsonLd={{ '@type': 'WebSite', name: 'Zyankov.eu' }}
+>
+  <HomePage lang="bg" posts={posts} />
+</BaseLayout>

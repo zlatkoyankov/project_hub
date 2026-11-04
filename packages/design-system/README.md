@@ -11,7 +11,7 @@ switch, and the page shell (top bar + footer). Apps depend on it as a workspace 
 | `tokens.css` | All colours (light + dark), fonts, type scale, radii, spacing, shadows. **The only file with colour values.** |
 | `fonts.css` + `fonts/` | Onest (text) and Literata (headings), self-hosted woff2 (SIL OFL). Latin, Latin Extended, Cyrillic. |
 | `shell.css` | Styles for the skip link, top bar, footer and `.zy-ad-slot`. All classes start with `zy-`. |
-| `shell/render.mjs` | Renders the head snippet, top bar and footer as HTML. |
+| `shell/render.mjs` | Renders the head snippet, top bar and footer as HTML (`@zyankov/design-system/render`; Astro pages call it directly). No file-system access, so bundlers can include it. |
 | `shell/inject.mjs` | Puts the shell into HTML slots. Library function + CLI (`zy-inject`). |
 | `shell/shell-inline.js` | Inlined into `<head>`: theme before first paint, theme toggle, skip link, Privacy settings button, cross-project click event. |
 | `site.config.json` | AdSense publisher ID and the analytics provider. Read at build time by the shell. |

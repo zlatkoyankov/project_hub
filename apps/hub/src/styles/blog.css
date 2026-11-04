@@ -1,0 +1,189 @@
+/* Blog listing and blog posts. Builds on page.css. */
+
+.breadcrumbs {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.breadcrumbs a {
+  color: var(--text-muted);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.breadcrumbs a::before {
+  content: '← ';
+}
+
+.post-meta {
+  margin: 10px 0 24px;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.post-meta a {
+  color: inherit;
+}
+
+.post-index {
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-index li {
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+}
+
+.post-index a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.post-index a:hover h2 {
+  color: var(--accent);
+}
+
+.post-index h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.post-index .post-meta {
+  margin: 6px 0 8px;
+}
+
+/* Article body */
+.prose h2 {
+  margin: 40px 0 12px;
+  font-size: 27px;
+  letter-spacing: -0.4px;
+}
+
+.prose h3 {
+  margin: 28px 0 8px;
+  color: var(--text);
+  font-size: var(--text-lg);
+}
+
+.prose p,
+.prose li {
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.prose li + li {
+  margin-top: 6px;
+}
+
+.prose strong {
+  color: var(--text);
+}
+
+.prose code {
+  padding: 1px 6px;
+  background: var(--surface-soft);
+  border-radius: 4px;
+  font-size: 0.92em;
+}
+
+.prose blockquote {
+  margin: 24px 0;
+  padding: 4px 20px;
+  border-left: 3px solid var(--project-accent);
+  background: var(--surface);
+}
+
+.prose table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+.prose th,
+.prose td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose th {
+  background: var(--surface-soft);
+  font-weight: 700;
+}
+
+.prose hr {
+  margin: 36px 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+/* Try-the-tool card and author box */
+.tool-card {
+  margin: 40px 0 24px;
+  padding: 22px 24px;
+  color: var(--inverse-text);
+  background: var(--inverse-bg);
+  border-radius: var(--radius-md);
+}
+
+.tool-card .eyebrow {
+  color: var(--inverse-muted);
+}
+
+.tool-card__name {
+  margin: 0 0 14px;
+  color: var(--inverse-text) !important;
+  font-family: var(--font-display);
+  font-size: 24px;
+}
+
+.tool-card__button {
+  display: inline-block;
+  padding: 10px 18px;
+  color: var(--on-accent);
+  background: var(--accent);
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+:root[data-theme='dark'] .tool-card__button {
+  color: var(--inverse-bg);
+}
+
+.author-box {
+  margin: 24px 0 0;
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.author-box p {
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.related {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.related h2 {
+  font-size: 22px;
+}
+
+.related ul {
+  padding-left: 18px;
+}
+
+.related a {
+  color: var(--accent);
+}

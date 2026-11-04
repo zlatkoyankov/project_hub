@@ -1,0 +1,160 @@
+---
+// The homepage in English (/) and Bulgarian (/bg/).
+import { analyticsEnabled, projects } from '@zyankov/design-system/render'
+import { formatDate, isoDate, postPath, type Lang, type Post } from '../lib/site'
+import '../styles/home.css'
+
+interface Props {
+  lang: Lang
+  posts: Post[]
+}
+
+const { lang, posts } = Astro.props
+const bg = lang === 'bg'
+const blogPath = bg ? '/bg/blog/' : '/blog/'
+const count = String(projects.length).padStart(2, '0')
+
+const t = bg
+  ? {
+      welcome: 'ДОБРЕ ДОШЛИ В ZYANKOV.EU',
+      title: ['Малки инструменти.', 'Направени с грижа.'],
+      intro: 'Полезни уеб проекти, които правят ежедневните задачи малко по-лесни. Работят в браузъра, без регистрация.',
+      directory: 'ПРОЕКТИ',
+      explore: 'Разгледай проектите.',
+      projectsLabel: projects.length === 1 ? 'ПРОЕКТ' : 'ПРОЕКТА',
+      aboutKicker: 'ЗА САЙТА',
+      aboutTitle: 'Полезни идеи, проект по проект.',
+      aboutText: [
+        'Zyankov.eu е независима колекция от практични инструменти в браузъра, които създавам и поддържам аз, Златко Янков от София. Letterwell намира думи от букви на български и английски, а BuildCalc изчислява материали за ремонт.',
+        'Изчисленията и търсенията се извършват в браузъра ти. Всеки инструмент обяснява допусканията си, а сигнали за грешки и идеи са винаги добре дошли.',
+      ],
+      aboutLink: 'Повече за мен и сайта',
+      blogKicker: 'ОТ БЛОГА',
+      blogTitle: 'Последни статии',
+      allPosts: 'Всички статии',
+      noPosts: 'Скоро тук ще има статии на български.',
+      faqKicker: 'ДОБРЕ Е ДА ЗНАЕШ',
+      faqTitle: 'Често задавани въпроси',
+      faq: [
+        ['Изпраща ли Letterwell буквите ми към сървър?', 'Не. Letterwell търси в речника директно в браузъра ти. Буквите, които въвеждаш, не се изпращат към Zyankov.eu.'],
+        ['Има ли реклами и статистика?', `Да. Страниците показват реклами от Google AdSense, благодарение на които инструментите са безплатни. В ЕС, Великобритания и Швейцария Google първо иска съгласието ти, а изборът може да се промени по всяко време от „Настройки за поверителност“ във footer-а. ${analyticsEnabled ? 'Посещенията се броят с услуга без бисквитки, която никога не вижда буквите или мерките ти.' : 'Не използваме услуга за статистика.'}`],
+        ['Работят ли инструментите на телефон?', 'Да. Всички страници са направени за телефон, таблет и компютър.'],
+        ['Как да предложа идея или да съобщя за грешка?', 'Пиши на hello@zyankov.eu. Посочи инструмента и накратко какво се случва.'],
+      ],
+    }
+  : {
+      welcome: 'WELCOME TO ZYANKOV.EU',
+      title: ['Small tools.', 'Made with care.'],
+      intro: 'A home for useful web projects, built to make everyday tasks a little easier. Everything runs in your browser, no account needed.',
+      directory: 'PROJECT DIRECTORY',
+      explore: 'Explore the projects.',
+      projectsLabel: projects.length === 1 ? 'PROJECT' : 'PROJECTS',
+      aboutKicker: 'ABOUT ZYANKOV.EU',
+      aboutTitle: 'Useful ideas, built one project at a time.',
+      aboutText: [
+        'Zyankov.eu is an independent collection of practical browser-based tools, created and maintained by Zlatko Yankov in Sofia, Bulgaria. Letterwell finds words from English or Bulgarian letters. BuildCalc estimates common home-improvement materials.',
+        'Calculations and word searches run in your browser. Every tool explains its assumptions, and feedback about errors, accessibility and new ideas is always welcome.',
+      ],
+      aboutLink: 'More about me and the site',
+      blogKicker: 'FROM THE BLOG',
+      blogTitle: 'Latest articles',
+      allPosts: 'All articles',
+      noPosts: 'Articles are on their way.',
+      faqKicker: 'GOOD TO KNOW',
+      faqTitle: 'Frequently asked questions',
+      faq: [
+        ['Does Letterwell send my letters to a server?', 'No. Letterwell searches the dictionary in your browser. The letters you enter are not sent to Zyankov.eu.'],
+        ['Does Zyankov.eu use advertising or analytics?', `Yes. Pages show ads from Google AdSense, which keeps the tools free. In the EU, the UK and Switzerland, Google asks for your consent first, and you can change your choice at any time with Privacy settings in the footer. ${analyticsEnabled ? 'Visits are counted with a cookieless analytics service that never sees your letters or measurements.' : 'We do not use an analytics service.'}`],
+        ['Can I use the projects on my phone?', 'Yes. The project pages are designed to work on mobile, tablet, and desktop screens.'],
+        ['How can I suggest a project or report a problem?', 'Email hello@zyankov.eu. Please include the project name and a short description.'],
+      ],
+    }
+
+const field = (project: Record<string, unknown>, key: string) => ((bg && project[`${key}_bg`]) || project[key]) as string
+---
+
+<div class="site-shell">
+  <main id="top">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow"><span>{t.welcome}</span><span></span></p>
+      <h1 id="page-title">{t.title[0]}<br /><em>{t.title[1]}</em></h1>
+      <p class="hero-copy">{t.intro}</p>
+    </section>
+
+    <section class="projects" id="projects" aria-labelledby="projects-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">{t.directory}</p>
+          <h2 id="projects-title">{t.explore}</h2>
+        </div>
+        <span class="project-count">{count} {t.projectsLabel}</span>
+      </div>
+      <ul class="project-grid">
+        {projects.map((project) => (
+          <li>
+            <a class="project-card" href={field(project, 'href')}>
+              <img class="project-art" src={project.image} alt={project.imageAlt} width="720" height="360" loading="lazy" decoding="async" />
+              <div class="project-card-content">
+                <div class="project-topline">
+                  <span class="project-symbol">{project.symbol}</span>
+                  <span class="status">{field(project, 'category')}</span>
+                </div>
+                <div class="project-copy">
+                  <p class="project-eyebrow">{field(project, 'eyebrow')}</p>
+                  <h3>{project.name}</h3>
+                  <p>{field(project, 'description')}</p>
+                </div>
+                <span class="project-link">{field(project, 'linkLabel')} <b aria-hidden="true">→</b></span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="editorial-grid" aria-label={t.aboutKicker}>
+      <section class="about" id="about" aria-labelledby="about-title">
+        <div>
+          <p class="section-kicker">{t.aboutKicker}</p>
+          <h2 id="about-title">{t.aboutTitle}</h2>
+        </div>
+        <div class="about-details">
+          {t.aboutText.map((paragraph) => <p>{paragraph}</p>)}
+          <a href="/about/">{t.aboutLink} <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+
+      <section class="blog" id="blog" aria-labelledby="blog-title">
+        <div>
+          <p class="section-kicker">{t.blogKicker}</p>
+          <h2 id="blog-title">{t.blogTitle}</h2>
+        </div>
+        {posts.length === 0 && <p class="blog-copy">{t.noPosts}</p>}
+        <ul class="post-list">
+          {posts.map((post) => (
+            <li>
+              <a href={postPath(post)}>{post.data.title}</a>
+              <p class="blog-date"><time datetime={isoDate(post.data.date)}>{formatDate(post.data.date, lang)}</time></p>
+            </li>
+          ))}
+        </ul>
+        {posts.length > 0 && <a class="blog-all" href={blogPath}>{t.allPosts} <span aria-hidden="true">→</span></a>}
+      </section>
+    </section>
+
+    <section class="faq" id="faq" aria-labelledby="faq-title">
+      <div class="faq-heading">
+        <p class="section-kicker">{t.faqKicker}</p>
+        <h2 id="faq-title">{t.faqTitle}</h2>
+      </div>
+      <div class="faq-list">
+        {t.faq.map(([question, answer]) => (
+          <details>
+            <summary>{question}</summary>
+            <p>{answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </main>
+</div>

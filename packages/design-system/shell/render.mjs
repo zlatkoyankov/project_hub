@@ -1,12 +1,14 @@
 // Renders the shared page shell (head snippet, top bar, footer) as plain HTML strings.
-// The output sits outside each app's framework root, so it works for React, Angular and
+// The output sits outside each app's framework root, so it works for React, Angular, Astro and
 // static pages alike and is present in the HTML before any JavaScript runs.
-import { readFileSync } from 'node:fs'
+// No file-system access here, so bundlers (Astro, Vite SSR) can include this module as is.
+import projects from '../projects.json' with { type: 'json' }
+import config from '../site.config.json' with { type: 'json' }
+import { shellInline } from './shell-inline.js'
 
-const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
-const projects = JSON.parse(read('../projects.json'))
-const shellScript = read('./shell-inline.js')
-const config = JSON.parse(read('../site.config.json'))
+export { projects, config }
+
+const shellScript = `(${shellInline.toString()})();`
 
 const escape = (value) =>
   String(value).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
@@ -94,6 +96,11 @@ const STRINGS = {
 }
 
 const t = (lang) => STRINGS[lang] ?? STRINGS.en
+/** Site links in the page language: the Bulgarian homepage and blog live under /bg/. */
+const links = (lang) =>
+  lang === 'bg'
+    ? { home: '/bg/', blog: '/bg/blog/', faq: '/bg/#faq' }
+    : { home: '/', blog: '/blog/', faq: '/#faq' }
 const projectTagline = (p, lang) => (lang === 'bg' && p.tagline_bg) || p.tagline
 
 /** EN / БГ switch, shown only when the page lists the other language with hreflang. */
@@ -109,14 +116,15 @@ function languageSwitch(lang, alternates) {
     `alternates` maps language → URL of the same page in that language (read from hreflang links). */
 export function renderBar({ project = 'hub', main = 'main', lang = 'en', alternates = {} } = {}) {
   const s = t(lang)
-  const links = projects
+  const l = links(lang)
+  const projectLinks = projects
     .map((p) => `<a class="zy-bar__link" href="${escape(p.href)}" data-zy-project="${escape(p.slug)}"${current(p.slug === project)}>${escape(p.name)}</a>`)
     .join('')
   return `<a class="zy-skip" href="#${escape(main)}">${s.skip}</a>
 <div class="zy-bar" data-zy-shell="bar">
   <div class="zy-bar__inner">
-    <a class="zy-bar__brand" href="/"${current(project === 'hub')}>${monogram('zy-mark')}<span>zyankov.eu</span></a>
-    <nav class="zy-bar__nav" aria-label="zyankov.eu">${links}<a class="zy-bar__link zy-bar__link--secondary" href="/#blog">${s.blog}</a><a class="zy-bar__link zy-bar__link--secondary" href="/about/"${current(project === 'about')}>${s.about}</a></nav>
+    <a class="zy-bar__brand" href="${l.home}"${current(project === 'hub')}>${monogram('zy-mark')}<span>zyankov.eu</span></a>
+    <nav class="zy-bar__nav" aria-label="zyankov.eu">${projectLinks}<a class="zy-bar__link zy-bar__link--secondary" href="${l.blog}"${current(project === 'blog')}>${s.blog}</a><a class="zy-bar__link zy-bar__link--secondary" href="/about/"${current(project === 'about')}>${s.about}</a></nav>
     ${languageSwitch(lang, alternates)}<button class="zy-bar__theme" type="button" data-zy-theme-toggle aria-label="${s.theme}" aria-pressed="false">${moon}${sun}</button>
   </div>
 </div>`
@@ -125,17 +133,18 @@ export function renderBar({ project = 'hub', main = 'main', lang = 'en', alterna
 /** Shared footer: every project, the site pages and the legal links. */
 export function renderFooter({ project = 'hub', lang = 'en', year = new Date().getFullYear() } = {}) {
   const s = t(lang)
+  const l = links(lang)
   const tools = projects
     .map((p) => `<li><a href="${escape(p.href)}" data-zy-project="${escape(p.slug)}"${current(p.slug === project)}>${escape(p.name)}</a> <span>${escape(projectTagline(p, lang))}</span></li>`)
     .join('')
   return `<footer class="zy-footer" data-zy-shell="footer">
   <div class="zy-footer__inner">
     <div class="zy-footer__brand">
-      <a class="zy-footer__home" href="/">${monogram('zy-mark zy-mark--footer')}<span>zyankov.eu</span></a>
+      <a class="zy-footer__home" href="${l.home}">${monogram('zy-mark zy-mark--footer')}<span>zyankov.eu</span></a>
       <p>${s.tagline}</p>
     </div>
     <nav class="zy-footer__col" aria-label="${s.tools}"><h2>${s.tools}</h2><ul>${tools}</ul></nav>
-    <nav class="zy-footer__col" aria-label="${s.site}"><h2>${s.site}</h2><ul><li><a href="/">${s.home}</a></li><li><a href="/#blog">${s.blog}</a></li><li><a href="/about/">${s.about}</a></li><li><a href="/#faq">${s.faq}</a></li></ul></nav>
+    <nav class="zy-footer__col" aria-label="${s.site}"><h2>${s.site}</h2><ul><li><a href="${l.home}">${s.home}</a></li><li><a href="${l.blog}">${s.blog}</a></li><li><a href="/about/">${s.about}</a></li><li><a href="${l.faq}">${s.faq}</a></li></ul></nav>
     <nav class="zy-footer__col" aria-label="${s.legal}"><h2>${s.legal}</h2><ul><li><a href="/privacy/">${s.privacy}</a></li><li><a href="/terms/">${s.terms}</a></li><li><a href="/disclaimer/">${s.disclaimer}</a></li><li><a href="/about/#contact">${s.contact}</a></li><li><button class="zy-footer__button" type="button" data-zy-consent>${s.consent}</button></li></ul></nav>
   </div>
   <div class="zy-footer__bottom"><span>© ${escape(year)} Zlatko Yankov · zyankov.eu</span><span>${s.local}</span></div>
