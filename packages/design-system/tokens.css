@@ -40,6 +40,11 @@
   --game-present: #c9b458;
   --game-correct: #6aaa64;
   --game-ink: #ffffff;
+  /* Raised call-to-action button (Wordle helper): gradient, bottom edge, text. */
+  --cta-top: #d4623f;
+  --cta-bottom: #b04429;
+  --cta-edge: #82301d;
+  --cta-ink: #ffffff;
 
   /* Lines */
   --border: #dce5dc;
@@ -145,6 +150,10 @@
   --game-absent: #565a5c;
   --game-present: #b59f3b;
   --game-correct: #538d4e;
+  --cta-top: #ffbfa6;
+  --cta-bottom: #f08a6e;
+  --cta-edge: #b8583f;
+  --cta-ink: #2b120a;
 
   --shadow-color: #000000;
   --shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
