@@ -284,10 +284,12 @@ function WordleSolver({ language }: { language: Language }) {
                     <Lightbulb size={20} aria-hidden="true" />
                     <div>
                       <span className="result-meta">{text.suggestion}</span>
-                      <strong className="suggestion-word">{suggestion.word.toLocaleUpperCase(locale)}</strong>
+                      <strong className="suggestion-word" aria-label={suggestion.word.toLocaleUpperCase(locale)}>
+                        {[...suggestion.word.toLocaleUpperCase(locale)].map((letter, index) => <span className="mini-tile" aria-hidden="true" key={index}>{letter}</span>)}
+                      </strong>
                       <p>{total === 1 ? text.suggestionFound : `${text.suggestionText(formatLeft(suggestion.expectedLeft))}${suggestion.possibleAnswer ? ` ${text.suggestionAnswer}` : ''}`}</p>
                     </div>
-                    {total > 1 && rows.length < MAX_ROWS && <button type="button" className="example-button" onClick={() => addGuess(suggestion.word)}>{text.use}</button>}
+                    {total > 1 && rows.length < MAX_ROWS && <button type="button" className="guess-use" onClick={() => addGuess(suggestion.word)}>{text.use}</button>}
                   </div>
                 )}
                 {common.length > 0 && (
