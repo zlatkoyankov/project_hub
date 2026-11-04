@@ -1,0 +1,72 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro'
+
+const title = 'Terms of Use | Zyankov.eu'
+const description = 'Terms for using Zyankov.eu, Letterwell, and BuildCalc.'
+const jsonLd = {
+  '@type': 'WebPage',
+}
+---
+
+<PageLayout title={title} description={description} path="/terms/" noAds={true} project="hub" jsonLd={jsonLd}>
+      <p class="eyebrow">Using these projects</p>
+      <h1>Terms of use</h1>
+      <p class="updated">Last updated: October 23, 2026</p>
+      <p class="intro">
+        These terms apply to Zyankov.eu and its projects, including Letterwell and BuildCalc.
+        By using the sites, you agree to use them lawfully and in accordance with these terms.
+      </p>
+
+      <section>
+        <h2>What the projects provide</h2>
+        <p>
+          Letterwell searches its included English and Bulgarian word lists and provides word
+          and game-score tools. BuildCalc provides arithmetic estimates for selected
+          construction and home-improvement materials. The projects are provided for general
+          information and planning.
+        </p>
+      </section>
+
+      <section>
+        <h2>Estimates and decisions</h2>
+        <p>
+          Results depend on the measurements, options, assumptions, dictionaries, and scoring
+          rules used. They may contain limitations or errors and are not guarantees, supplier
+          quotes, professional advice, structural designs, or a substitute for product
+          instructions and applicable requirements.
+        </p>
+        <p>
+          Check measurements, product coverage, material properties, dictionary results, and
+          game rules independently before relying on them. For construction work, confirm
+          quantities and safety or structural questions with qualified professionals and
+          suppliers.
+        </p>
+      </section>
+
+      <section>
+        <h2>Acceptable use</h2>
+        <p>
+          Do not misuse the sites, interfere with their operation, attempt unauthorized access,
+          or use them in a way that violates applicable law. The projects are provided without
+          an account or user-submitted content service.
+        </p>
+      </section>
+
+      <section>
+        <h2>Availability and changes</h2>
+        <p>
+          Features, content, and availability may change as the projects are maintained. The
+          sites are provided without a promise of uninterrupted availability or error-free
+          results. Nothing in these terms limits rights that cannot be excluded under
+          applicable law.
+        </p>
+      </section>
+
+      <section>
+        <h2>Contact</h2>
+        <p>
+          Questions about these terms can be sent to
+          <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>.
+        </p>
+      </section>
+</PageLayout>

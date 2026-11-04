@@ -1,0 +1,72 @@
+---
+// A blog post page in either language.
+import { render } from 'astro:content'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { TOOLS, formatDate, getPosts, getTranslation, isoDate, postPath, readingMinutes, type Post } from '../lib/site'
+import '../styles/page.css'
+import '../styles/blog.css'
+
+interface Props {
+  post: Post
+}
+
+const { post } = Astro.props
+const { lang } = post.data
+const bg = lang === 'bg'
+const { Content } = await render(post)
+const path = postPath(post)
+const translation = await getTranslation(post)
+const alternates = translation ? { [lang]: path, [translation.data.lang]: postPath(translation) } : {}
+const tool = post.data.tool ? TOOLS[post.data.tool][lang] : undefined
+const related = (await getPosts(lang)).filter((entry) => entry.id !== post.id).slice(0, 3)
+const t = bg
+  ? { author: 'Златко Янков', blog: 'Блог', min: 'мин четене', updated: 'Обновено', by: 'Автор', about: 'Златко Янков е frontend инженер от София и прави инструментите на Zyankov.eu.', more: 'Повече за автора', try: 'Пробвай сам', related: 'Още статии', all: 'Всички статии' }
+  : { author: 'Zlatko Yankov', blog: 'Blog', min: 'min read', updated: 'Updated', by: 'By', about: 'Zlatko Yankov is a frontend engineer from Sofia who builds the tools on Zyankov.eu.', more: 'More about the author', try: 'Try it yourself', related: 'More articles', all: 'All articles' }
+const blogPath = bg ? '/bg/blog/' : '/blog/'
+const jsonLd = {
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  datePublished: isoDate(post.data.date),
+  dateModified: isoDate(post.data.updated ?? post.data.date),
+  author: { '@type': 'Person', name: 'Zlatko Yankov', url: 'https://zyankov.eu/about/' },
+  publisher: { '@type': 'Person', name: 'Zlatko Yankov', url: 'https://zyankov.eu/about/' },
+  mainEntityOfPage: `https://zyankov.eu${path}`,
+}
+---
+
+<BaseLayout project="blog" title={`${post.data.title} | Zyankov.eu`} description={post.data.description} path={path} lang={lang} alternates={alternates} ogType="article" rss={`${blogPath}rss.xml`} jsonLd={jsonLd}>
+  <div class="page">
+    <main id="top">
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={blogPath}>{t.blog}</a></nav>
+      <article class="post">
+        <h1>{post.data.title}</h1>
+        <p class="post-meta">
+          {t.by} <a href="/about/">{t.author}</a> · <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date, lang)}</time>
+          {post.data.updated && <> · {t.updated} <time datetime={isoDate(post.data.updated)}>{formatDate(post.data.updated, lang)}</time></>}
+          · {readingMinutes(post.body)} {t.min}
+        </p>
+        <p class="intro">{post.data.description}</p>
+        <div class="prose">
+          <Content />
+        </div>
+        {tool && (
+          <aside class="tool-card">
+            <p class="eyebrow">{t.try}</p>
+            <p class="tool-card__name">{tool.name}</p>
+            <a class="tool-card__button" href={tool.href}>{tool.cta} <span aria-hidden="true">→</span></a>
+          </aside>
+        )}
+        <aside class="author-box">
+          <p><strong>{t.author}</strong> · {t.about} <a href="/about/">{t.more}</a></p>
+        </aside>
+      </article>
+      {related.length > 0 && (
+        <section class="related">
+          <h2>{t.related}</h2>
+          <ul>{related.map((entry) => <li><a href={postPath(entry)}>{entry.data.title}</a></li>)}</ul>
+          <a href={blogPath}>{t.all} <span aria-hidden="true">→</span></a>
+        </section>
+      )}
+    </main>
+  </div>
+</BaseLayout>

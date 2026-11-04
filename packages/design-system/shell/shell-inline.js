@@ -1,8 +1,9 @@
-/* Inlined into <head> of every page by the shell (see render.mjs). Runs before first paint:
+/* Inlined into <head> of every page by the shell: render.mjs serialises this function with
+   toString(), so it must only use browser globals (no imports, no module-level variables). Runs before first paint:
    applies the saved or system theme, wires every [data-zy-theme-toggle] button and exposes
    window.zyTheme. Apps listen for the 'zyankov-theme-change' event instead of storing theme state.
    Also handles the skip link, the "Privacy settings" button and cross-project click tracking. */
-(function () {
+export function shellInline() {
   var KEY = 'zyankov-theme';
   var LEGACY_KEYS = ['letterwell-theme', 'buildcalc-theme'];
   var EVENT = 'zyankov-theme-change';
@@ -120,4 +121,4 @@
       announce(event.newValue);
     }
   });
-})();
+}

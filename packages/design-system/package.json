@@ -23,7 +23,11 @@
       "types": "./analytics.d.ts",
       "default": "./analytics.js"
     },
-    "./site.config.json": "./site.config.json"
+    "./site.config.json": "./site.config.json",
+    "./render": {
+      "types": "./shell/render.d.ts",
+      "default": "./shell/render.mjs"
+    }
   },
   "bin": {
     "zy-inject": "./shell/inject.mjs"

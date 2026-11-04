@@ -1,0 +1,72 @@
+---
+// Every hub page: head metadata, the shared shell (top bar + footer) and the design tokens.
+import '@zyankov/design-system/tokens.css'
+import '@zyankov/design-system/fonts.css'
+import '@zyankov/design-system/shell.css'
+import { renderBar, renderFooter, renderHead } from '@zyankov/design-system/render'
+import { absolute, type Lang } from '../lib/site'
+
+interface Props {
+  title: string
+  description: string
+  /** Canonical path, e.g. "/about/". */
+  path: string
+  lang?: Lang
+  /** Same page in other languages: { en: '/', bg: '/bg/' }. */
+  alternates?: Partial<Record<Lang, string>>
+  /** Leave AdSense out (privacy, terms, disclaimer). */
+  noAds?: boolean
+  /** Which bar link is current: 'hub' or 'about'. */
+  project?: string
+  ogType?: 'website' | 'article'
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[]
+  rss?: string
+}
+
+const { title, description, path, lang = 'en', alternates = {}, noAds = false, project = 'hub', ogType = 'website', jsonLd, rss } = Astro.props
+const url = absolute(path)
+const alternateUrls = Object.fromEntries(Object.entries(alternates).map(([key, value]) => [key, absolute(value as string)]))
+const structured = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map((item) => ({
+  '@context': 'https://schema.org',
+  url,
+  name: title,
+  description,
+  inLanguage: lang,
+  isPartOf: { '@type': 'WebSite', name: 'Zyankov.eu', url: 'https://zyankov.eu/' },
+  ...item,
+}))
+---
+
+<!doctype html>
+<html lang={lang} data-project="hub">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <Fragment set:html={renderHead({ ads: !noAds })} />
+    <meta name="theme-color" content="#f1f5ef" />
+    <meta name="robots" content="index, follow" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={url} />
+    {Object.entries(alternateUrls).map(([key, href]) => <link rel="alternate" hreflang={key} href={href} />)}
+    {alternateUrls.en && alternateUrls.bg && <link rel="alternate" hreflang="x-default" href={alternateUrls.en} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {rss && <link rel="alternate" type="application/rss+xml" title="Zyankov.eu blog" href={rss} />}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content={lang === 'bg' ? 'bg_BG' : 'en_US'} />
+    <meta property="og:site_name" content="Zyankov.eu" />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {structured.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item).replace(/</g, '\\u003c')} />)}
+    <slot name="head" />
+  </head>
+  <body>
+    <Fragment set:html={renderBar({ project, main: 'top', lang, alternates: alternateUrls })} />
+    <slot />
+    <Fragment set:html={renderFooter({ project, lang })} />
+  </body>
+</html>

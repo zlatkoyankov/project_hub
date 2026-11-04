@@ -24,5 +24,9 @@
     "lint": "npm run lint -w hub -w letterwell",
     "lint:colors": "node scripts/lint-colors.mjs",
     "preview:design": "npm run preview -w @zyankov/design-system"
-  }
+  },
+  "devDependencies": {
+    "cookie": "^2.0.1"
+  },
+  "//": "cookie: Astro 7 needs cookie 2.x at the root; Express (BuildCalc SSR) keeps its own 0.7.x copy."
 }

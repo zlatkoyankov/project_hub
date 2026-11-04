@@ -1,0 +1,114 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro'
+import { renderPrivacyAnalytics } from '@zyankov/design-system/render'
+
+const title = 'Privacy Policy | Zyankov.eu'
+const description = 'Learn what information Zyankov.eu processes, how project preferences work, and how to contact us about privacy.'
+const jsonLd = {
+  '@type': 'WebPage',
+}
+---
+
+<PageLayout title={title} description={description} path="/privacy/" noAds={true} project="hub" jsonLd={jsonLd}>
+      <p class="eyebrow">Your information</p>
+      <h1>Privacy policy</h1>
+      <p class="updated">Last updated: November 3, 2026</p>
+      <p class="intro">
+        This policy explains what information may be processed when you visit Zyankov.eu,
+        Letterwell, or BuildCalc. It describes the current site setup; please check it again
+        whenever a project or third-party service changes.
+      </p>
+
+      <section>
+        <h2>Who is responsible for your information?</h2>
+        <p>
+          The data controller for Zyankov.eu is Zlatko Yankov, based in Bulgaria. For privacy
+          questions or requests, contact
+          <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Information processed when you visit</h2>
+        <p>
+          The hosting provider that serves these static pages may process technical request
+          data such as your IP address, browser and device details, requested URL, and request
+          time to deliver and secure the service. The site owner does not receive calculator
+          inputs or word searches through an application backend. Hosting-provider logs are
+          subject to the provider's own retention and privacy practices.
+        </p>
+        <p>
+          Fonts and images are served from zyankov.eu itself. Pages do not request fonts from
+          Google Fonts or other font services.
+        </p>
+      </section>
+
+      <section>
+        <h2>Project data and local storage</h2>
+        <p>
+          Letterwell processes the letters you enter in your browser using a dictionary
+          downloaded from this site. The letters are not sent to Zyankov.eu.
+        </p>
+        <p>
+          Zyankov.eu saves the selected light or dark theme in browser local storage, and the
+          choice applies to every project on the site. Letterwell also saves the selected language, and BuildCalc saves the
+          measurement system. These preferences stay in your browser and are not sent to the
+          site owner. You can remove them by clearing this site's stored data in your browser
+          settings.
+        </p>
+        <p>
+          Letterwell also keeps up to five recent searches in temporary page memory so you can
+          reuse them while the page remains open. This search history is not saved to local
+          storage and is cleared when you leave or reload the page.
+        </p>
+      </section>
+
+      <section>
+        <h2>Advertising and cookies</h2>
+        <p>
+          Pages on Zyankov.eu, Letterwell and BuildCalc load Google AdSense to show ads. This
+          privacy policy and the terms of use load no ads. Google
+          may process technical information such as your IP address and browser or device
+          details, and may use cookies or similar technologies to serve, limit and measure ads
+          and, where allowed, to personalise them.
+        </p>
+        <p>
+          Visitors in the European Economic Area, the United Kingdom and Switzerland see
+          Google's consent message before personalised advertising is used. You can change or
+          withdraw your choice at any time with <button class="link-button" type="button" data-zy-consent>Privacy settings</button>,
+          also linked in the footer of every page.
+        </p>
+        <p>
+          You can manage Google ad personalisation at
+          <a href="https://myadcenter.google.com/" rel="noreferrer">My Ad Center</a>
+          and read how Google uses information from sites that use its services at
+          <a href="https://policies.google.com/technologies/partner-sites" rel="noreferrer">How Google uses information from sites or apps that use our services</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Analytics</h2>
+        <Fragment set:html={renderPrivacyAnalytics()} />
+      </section>
+
+      <section>
+        <h2>Your choices and privacy requests</h2>
+        <p>
+          You can control local storage through your browser settings. Depending on where you
+          live, applicable data-protection laws may give you rights to request access,
+          correction, deletion, restriction, or objection to certain processing.
+        </p>
+        <p>
+          For a privacy question or request, contact
+          <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Changes to this policy</h2>
+        <p>
+          This policy may be updated when the site or its services change. The date at the top
+          shows when it was most recently reviewed.
+        </p>
+      </section>
+</PageLayout>

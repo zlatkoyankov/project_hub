@@ -1,0 +1,27 @@
+---
+// Text pages (about, privacy, terms, disclaimer): a single readable column.
+import BaseLayout from './BaseLayout.astro'
+import '../styles/page.css'
+import type { Lang } from '../lib/site'
+
+interface Props {
+  title: string
+  description: string
+  path: string
+  lang?: Lang
+  alternates?: Partial<Record<Lang, string>>
+  noAds?: boolean
+  project?: string
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[]
+}
+
+const props = Astro.props
+---
+
+<BaseLayout {...props}>
+  <div class="page">
+    <main id="top">
+      <slot />
+    </main>
+  </div>
+</BaseLayout>

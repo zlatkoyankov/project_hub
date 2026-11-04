@@ -6,12 +6,17 @@
     "tagline_bg": "Търсачка за думи",
     "symbol": "LW",
     "category": "WORD FINDER",
+    "category_bg": "ТЪРСАЧКА ЗА ДУМИ",
     "eyebrow": "A WORD GAME TOOL",
-    "description": "Find English words from your letters and compare Scrabble, Words With Friends, and Boggle scores.",
+    "eyebrow_bg": "ИНСТРУМЕНТ ЗА ИГРИ С ДУМИ",
+    "description": "Find words from your letters in English or Bulgarian and compare Scrabble, Words With Friends, and Boggle scores.",
+    "description_bg": "Намери думи от буквите си на български или английски и сравни точките в Scrabble и Boggle.",
     "href": "/letterwell/",
+    "href_bg": "/letterwell/bg/",
     "image": "/letterwell-art.svg",
     "imageAlt": "Colorful letter tiles spelling CREATE",
-    "linkLabel": "Explore Letterwell"
+    "linkLabel": "Explore Letterwell",
+    "linkLabel_bg": "Към Letterwell"
   },
   {
     "slug": "buildcalc",
@@ -20,11 +25,15 @@
     "tagline_bg": "Калкулатори за материали",
     "symbol": "BC",
     "category": "HOME & CONSTRUCTION",
+    "category_bg": "ДОМ И СТРОИТЕЛСТВО",
     "eyebrow": "A PROJECT PLANNING TOOL",
+    "eyebrow_bg": "ИНСТРУМЕНТ ЗА ПЛАНИРАНЕ",
     "description": "Estimate concrete, gravel, paint, tile, mulch, and area for home improvement projects.",
+    "description_bg": "Изчисли бетон, чакъл, боя, плочки, мулч и площ за ремонт. На английски, с метрични единици.",
     "href": "/calculators/",
     "image": "/calculators/images/hero.webp",
     "imageAlt": "Construction material estimates with BuildCalc",
-    "linkLabel": "Explore BuildCalc"
+    "linkLabel": "Explore BuildCalc",
+    "linkLabel_bg": "Към BuildCalc"
   }
 ]

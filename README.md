@@ -5,7 +5,7 @@ tool, and the shared packages they use.
 
 | Path | What it is | Served at |
 | --- | --- | --- |
-| `apps/hub` | Homepage, privacy and terms pages (React + Vite) | `/` |
+| `apps/hub` | Homepage, blog, about and legal pages (Astro) | `/`, `/bg/`, `/blog/` |
 | `apps/letterwell` | Letterwell word finder (React + Vite) | `/letterwell/` |
 | `apps/buildcalc` | BuildCalc calculators and guides (Angular, prerendered) | `/calculators/` |
 | `packages/design-system` | Shared tokens, fonts, theme and page shell (top bar + footer) | — |
@@ -27,7 +27,7 @@ npm install
 
 | Command | Does |
 | --- | --- |
-| `npm run dev:hub` | Homepage dev server |
+| `npm run dev:hub` | Homepage and blog dev server (http://localhost:4321/) |
 | `npm run dev:letterwell` | Letterwell dev server (opens under `/letterwell/`) |
 | `npm run dev:buildcalc` | BuildCalc dev server |
 | `npm run build` | Builds all apps and assembles the site in `dist/` |
