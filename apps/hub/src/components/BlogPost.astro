@@ -1,8 +1,9 @@
 ---
-// A blog post page in either language.
+// A blog post page in either language: article with a contents list and tool card beside it.
 import { render } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
-import { TOOLS, formatDate, getPosts, getTranslation, isoDate, postPath, readingMinutes, type Post } from '../lib/site'
+import { TOOLS, formatDate, getPosts, getTranslation, isoDate, ogKey, postPath, readingMinutes, type Post } from '../lib/site'
+import { postCategory } from '../lib/tools'
 import '../styles/page.css'
 import '../styles/blog.css'
 
@@ -13,15 +14,19 @@ interface Props {
 const { post } = Astro.props
 const { lang } = post.data
 const bg = lang === 'bg'
-const { Content } = await render(post)
+const { Content, headings } = await render(post)
+const sections = headings.filter((heading) => heading.depth === 2)
 const path = postPath(post)
 const translation = await getTranslation(post)
 const alternates = translation ? { [lang]: path, [translation.data.lang]: postPath(translation) } : {}
 const tool = post.data.tool ? TOOLS[post.data.tool][lang] : undefined
-const related = (await getPosts(lang)).filter((entry) => entry.id !== post.id).slice(0, 3)
+const category = postCategory(post.data.tool)
+const all = (await getPosts(lang)).filter((entry) => entry.id !== post.id)
+// Same-topic posts first, then the newest of the rest.
+const related = [...all.filter((entry) => postCategory(entry.data.tool) === category), ...all.filter((entry) => postCategory(entry.data.tool) !== category)].slice(0, 3)
 const t = bg
-  ? { author: 'Златко Янков', blog: 'Блог', min: 'мин четене', updated: 'Обновено', by: 'Автор', about: 'Златко Янков е frontend инженер от София и прави инструментите на Zyankov.eu.', more: 'Повече за автора', try: 'Пробвай сам', related: 'Още статии', all: 'Всички статии' }
-  : { author: 'Zlatko Yankov', blog: 'Blog', min: 'min read', updated: 'Updated', by: 'By', about: 'Zlatko Yankov is a frontend engineer from Sofia who builds the tools on Zyankov.eu.', more: 'More about the author', try: 'Try it yourself', related: 'More articles', all: 'All articles' }
+  ? { author: 'Златко Янков', blog: 'Блог', min: 'мин четене', updated: 'Обновено', by: 'Автор', about: 'Златко Янков е frontend инженер от София и прави инструментите на Zyankov.eu.', more: 'Повече за автора', contents: 'В ТАЗИ СТАТИЯ', toolKicker: 'ИНСТРУМЕНТ КЪМ СТАТИЯТА', toolText: 'Безплатно, в браузъра, без регистрация.', ctaTitle: 'Пробвай сам', related: 'Още статии', all: 'Всички статии', categories: { words: 'Думи и игри', home: 'Дом и ремонт', general: 'За сайта' } }
+  : { author: 'Zlatko Yankov', blog: 'Blog', min: 'min read', updated: 'Updated', by: 'By', about: 'Zlatko Yankov is a frontend engineer from Sofia who builds the tools on Zyankov.eu.', more: 'More about the author', contents: 'ON THIS PAGE', toolKicker: 'TOOL FOR THIS ARTICLE', toolText: 'Free, in your browser, no sign-up.', ctaTitle: 'Try it yourself', related: 'Keep reading', all: 'All articles', categories: { words: 'Word games', home: 'Home & DIY', general: 'About the site' } }
 const blogPath = bg ? '/bg/blog/' : '/blog/'
 const jsonLd = {
   '@type': 'BlogPosting',
@@ -35,36 +40,82 @@ const jsonLd = {
 ---
 
 <BaseLayout project="blog" title={`${post.data.title} | Zyankov.eu`} description={post.data.description} path={path} lang={lang} alternates={alternates} ogType="article" rss={`${blogPath}rss.xml`} jsonLd={jsonLd}>
-  <div class="page">
+  <div class="blog-page">
     <main id="top">
-      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={blogPath}>{t.blog}</a></nav>
-      <article class="post">
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={blogPath}>{t.blog}</a><span aria-hidden="true">/</span><span>{t.categories[category]}</span></nav>
+      <header class="post-head">
+        <p class={`category-badge category-badge--${category}`}>{t.categories[category]}</p>
         <h1>{post.data.title}</h1>
-        <p class="post-meta">
-          {t.by} <a href="/about/">{t.author}</a> · <time datetime={isoDate(post.data.date)}>{formatDate(post.data.date, lang)}</time>
-          {post.data.updated && <> · {t.updated} <time datetime={isoDate(post.data.updated)}>{formatDate(post.data.updated, lang)}</time></>}
-          · {readingMinutes(post.body)} {t.min}
-        </p>
         <p class="intro">{post.data.description}</p>
-        <div class="prose">
-          <Content />
+        <div class="byline">
+          <span class="byline__avatar" aria-hidden="true">ZY</span>
+          <p>
+            <span>{t.by} <a href="/about/">{t.author}</a></span>
+            <span><time datetime={isoDate(post.data.date)}>{formatDate(post.data.date, lang)}</time>
+            {post.data.updated && <> · {t.updated} <time datetime={isoDate(post.data.updated)}>{formatDate(post.data.updated, lang)}</time></>}
+            · {readingMinutes(post.body)} {t.min}</span>
+          </p>
         </div>
-        {tool && (
-          <aside class="tool-card">
-            <p class="eyebrow">{t.try}</p>
-            <p class="tool-card__name">{tool.name}</p>
-            <a class="tool-card__button" href={tool.href}>{tool.cta} <span aria-hidden="true">→</span></a>
+      </header>
+
+      <div class="post-layout">
+        <article class="post">
+          <div class="prose">
+            <Content />
+          </div>
+          {tool && (
+            <aside class="tool-cta" aria-label={t.ctaTitle}>
+              <div>
+                <p class="tool-cta__title">{t.ctaTitle}</p>
+                <p>{tool.name} · {t.toolText}</p>
+              </div>
+              <a href={tool.href}>{tool.cta} <span aria-hidden="true">→</span></a>
+            </aside>
+          )}
+          <aside class="author-box">
+            <span class="byline__avatar" aria-hidden="true">ZY</span>
+            <p><strong>{t.author}</strong> · {t.about} <a href="/about/">{t.more}</a></p>
           </aside>
-        )}
-        <aside class="author-box">
-          <p><strong>{t.author}</strong> · {t.about} <a href="/about/">{t.more}</a></p>
+        </article>
+
+        <aside class="post-aside">
+          {sections.length > 2 && (
+            <nav class="post-contents" aria-label={t.contents}>
+              <p>{t.contents}</p>
+              {sections.map((heading) => <a href={`#${heading.slug}`}>{heading.text}</a>)}
+            </nav>
+          )}
+          {tool && (
+            <div class="post-tool">
+              <p class="post-tool__kicker">{t.toolKicker}</p>
+              <p class="post-tool__name">{tool.name}</p>
+              <p>{t.toolText}</p>
+              <a href={tool.href}>{tool.cta} <span aria-hidden="true">→</span></a>
+            </div>
+          )}
         </aside>
-      </article>
+      </div>
+
       {related.length > 0 && (
-        <section class="related">
-          <h2>{t.related}</h2>
-          <ul>{related.map((entry) => <li><a href={postPath(entry)}>{entry.data.title}</a></li>)}</ul>
-          <a href={blogPath}>{t.all} <span aria-hidden="true">→</span></a>
+        <section class="related" aria-labelledby="related-title">
+          <div class="related__head">
+            <h2 id="related-title">{t.related}</h2>
+            <a href={blogPath}>{t.all} <span aria-hidden="true">→</span></a>
+          </div>
+          <ul class="post-grid">
+            {related.map((entry) => (
+              <li>
+                <a class="post-tile" href={postPath(entry)}>
+                  <img src={`/og/${ogKey(postPath(entry))}.png`} alt="" width="1200" height="630" loading="lazy" decoding="async" />
+                  <div class="post-tile__body">
+                    <span class={`post-tile__category post-tile__category--${postCategory(entry.data.tool)}`}>{t.categories[postCategory(entry.data.tool)]}</span>
+                    <h3>{entry.data.title}</h3>
+                    <span class="post-meta">{readingMinutes(entry.body)} {t.min}</span>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </main>
