@@ -1,7 +1,8 @@
 ---
-// The homepage in English (/) and Bulgarian (/bg/).
-import { analyticsEnabled, projects } from '@zyankov/design-system/render'
-import { formatDate, isoDate, postPath, type Lang, type Post } from '../lib/site'
+// The homepage in English (/) and Bulgarian (/bg/): tool search, the tools by category, latest posts.
+import { analyticsEnabled } from '@zyankov/design-system/render'
+import { TOOL_CATALOG, TOOL_ICONS, postCategory } from '../lib/tools'
+import { ogKey, postPath, readingMinutes, type Lang, type Post } from '../lib/site'
 import '../styles/home.css'
 
 interface Props {
@@ -12,28 +13,50 @@ interface Props {
 const { lang, posts } = Astro.props
 const bg = lang === 'bg'
 const blogPath = bg ? '/bg/blog/' : '/blog/'
-const count = String(projects.length).padStart(2, '0')
+const words = TOOL_CATALOG.filter((tool) => tool.category === 'words')
+const home = TOOL_CATALOG.filter((tool) => tool.category === 'home')
+const wordle = words.find((tool) => tool.id === 'wordle-solver')!
+const finder = words.find((tool) => tool.id === 'word-finder')!
 
 const t = bg
   ? {
-      welcome: 'ДОБРЕ ДОШЛИ В ZYANKOV.EU',
+      kicker: ['БЕЗПЛАТНИ ИНСТРУМЕНТИ', 'БЕЗ РЕГИСТРАЦИЯ'],
       title: ['Малки инструменти.', 'Направени с грижа.'],
-      intro: 'Полезни уеб проекти, които правят ежедневните задачи малко по-лесни. Работят в браузъра, без регистрация.',
-      directory: 'ПРОЕКТИ',
-      explore: 'Разгледай проектите.',
-      projectsLabel: projects.length === 1 ? 'ПРОЕКТ' : 'ПРОЕКТА',
-      aboutKicker: 'ЗА САЙТА',
-      aboutTitle: 'Полезни идеи, проект по проект.',
-      aboutText: [
-        'Zyankov.eu е независима колекция от практични инструменти в браузъра, които създавам и поддържам аз, Златко Янков от София. Letterwell намира думи от букви на български и английски, а BuildCalc изчислява материали за ремонт.',
-        'Изчисленията и търсенията се извършват в браузъра ти. Всеки инструмент обяснява допусканията си, а сигнали за грешки и идеи са винаги добре дошли.',
+      intro: 'Помощници за игри с думи и калкулатори за ремонт, които отговарят добре на един въпрос. Работят в браузъра, на български и английски.',
+      searchLabel: 'Търси инструмент',
+      searchPlaceholder: 'Какво ти трябва? Напр. „Wordle“ или „бетон“',
+      searchButton: 'Намери',
+      noMatch: 'Няма такъв инструмент засега. Пиши ни на hello@zyankov.eu с идея.',
+      popular: 'Популярни:',
+      chips: [['Wordle', '/letterwell/bg/wordle/'], ['Думи от букви', '/letterwell/bg/'], ['Бетон', '/calculators/concrete-calculator/'], ['Боя', '/calculators/paint-calculator/'], ['Плочки', '/calculators/tile-calculator/']],
+      art: { wordle: 'ПОМОЩНИК ЗА WORDLE', wordleWord: 'РОЛКА', next: 'Пробвай:', nextWord: 'КАТЕР', concrete: 'КАЛКУЛАТОР ЗА БЕТОН', slab: 'Плоча 3 × 3 м, 10 см', amount: '0,90', unit: 'м³', note: 'Без фира', finder: 'ТЪРСАЧКА ЗА ДУМИ', letters: 'КАРТА', found: 'карта · акт · рак' },
+      wordsKicker: 'ДУМИ И ИГРИ',
+      wordsTitle: 'Намери думата, спечели играта',
+      wordsAll: 'Към Letterwell',
+      wordsTag: 'БЪЛГАРСКИ И АНГЛИЙСКИ',
+      open: 'Отвори',
+      new: 'НОВО',
+      soon: 'СКОРО',
+      homeKicker: 'ДОМ И РЕМОНТ',
+      homeTitle: 'Купи точното количество от първия път',
+      homeAll: 'Всички калкулатори',
+      embedTitle: 'Имаш блог или магазин?',
+      embedText: 'Вгради всеки калкулатор на сайта си безплатно.',
+      embedLink: 'Вземи кода',
+      trust: [
+        ['Работи в браузъра', 'Буквите и мерките ти не се изпращат към сървър.'],
+        ['Без акаунт и такси', 'Отваряш инструмента и го ползваш. Това е цялата регистрация.'],
+        ['Български и английски', 'Инструменти и статии на двата езика, метрични и US мерки.'],
       ],
-      aboutLink: 'Повече за мен и сайта',
       blogKicker: 'ОТ БЛОГА',
-      blogTitle: 'Последни статии',
+      blogTitle: 'Статии с примери и изчисления',
       allPosts: 'Всички статии',
       noPosts: 'Скоро тук ще има статии на български.',
-      faqKicker: 'ДОБРЕ Е ДА ЗНАЕШ',
+      min: 'мин четене',
+      categories: { words: 'ДУМИ И ИГРИ', home: 'ДОМ И РЕМОНТ', general: 'ЗА САЙТА' },
+      aboutTitle: 'За сайта',
+      aboutText: 'Zyankov.eu е независима колекция от практични инструменти, които създавам и поддържам аз, Златко Янков от София. Всеки инструмент обяснява допусканията си, а сигнали за грешки и идеи са винаги добре дошли.',
+      aboutLink: 'Повече за мен и сайта',
       faqTitle: 'Често задавани въпроси',
       faq: [
         ['Изпраща ли Letterwell буквите ми към сървър?', 'Не. Letterwell търси в речника директно в браузъра ти. Буквите, които въвеждаш, не се изпращат към Zyankov.eu.'],
@@ -43,68 +66,197 @@ const t = bg
       ],
     }
   : {
-      welcome: 'WELCOME TO ZYANKOV.EU',
+      kicker: ['FREE BROWSER TOOLS', 'NO SIGN-UP'],
       title: ['Small tools.', 'Made with care.'],
-      intro: 'A home for useful web projects, built to make everyday tasks a little easier. Everything runs in your browser, no account needed.',
-      directory: 'PROJECT DIRECTORY',
-      explore: 'Explore the projects.',
-      projectsLabel: projects.length === 1 ? 'PROJECT' : 'PROJECTS',
-      aboutKicker: 'ABOUT ZYANKOV.EU',
-      aboutTitle: 'Useful ideas, built one project at a time.',
-      aboutText: [
-        'Zyankov.eu is an independent collection of practical browser-based tools, created and maintained by Zlatko Yankov in Sofia, Bulgaria. Letterwell finds words from English or Bulgarian letters. BuildCalc estimates common home-improvement materials.',
-        'Calculations and word searches run in your browser. Every tool explains its assumptions, and feedback about errors, accessibility and new ideas is always welcome.',
+      intro: 'Word game helpers and home-project calculators that answer one question well. Everything runs in your browser, in English and Bulgarian.',
+      searchLabel: 'Search tools',
+      searchPlaceholder: 'What do you need? Try “Wordle” or “concrete”',
+      searchButton: 'Find a tool',
+      noMatch: 'No tool for that yet. Send your idea to hello@zyankov.eu.',
+      popular: 'Popular:',
+      chips: [['Wordle helper', '/letterwell/wordle-solver/'], ['Word finder', '/letterwell/'], ['Concrete', '/calculators/concrete-calculator/'], ['Paint', '/calculators/paint-calculator/'], ['Tiles', '/calculators/tile-calculator/']],
+      art: { wordle: 'WORDLE HELPER', wordleWord: 'RAISE', next: 'Try next:', nextWord: 'CLASP', concrete: 'CONCRETE CALCULATOR', slab: '10 × 10 ft slab, 4 in deep', amount: '1.23', unit: 'cu yd', note: 'Before waste allowance', finder: 'WORD FINDER', letters: 'TRIANGLE', found: 'integral · altering · relating' },
+      wordsKicker: 'WORD GAMES',
+      wordsTitle: 'Find the word, win the game',
+      wordsAll: 'Open Letterwell',
+      wordsTag: 'ENGLISH & BULGARIAN',
+      open: 'Open',
+      new: 'NEW',
+      soon: 'SOON',
+      homeKicker: 'HOME & DIY',
+      homeTitle: 'Buy the right amount, the first time',
+      homeAll: 'All calculators',
+      embedTitle: 'Have a DIY blog or shop?',
+      embedText: 'Embed any calculator on your site for free.',
+      embedLink: 'Get the code',
+      trust: [
+        ['Runs in your browser', 'Your letters and measurements are never sent to a server.'],
+        ['No account, no paywall', 'Open a tool and use it. That is the whole sign-up.'],
+        ['English and Bulgarian', 'Word tools and guides in both languages, metric and US units.'],
       ],
-      aboutLink: 'More about me and the site',
       blogKicker: 'FROM THE BLOG',
-      blogTitle: 'Latest articles',
+      blogTitle: 'Guides with worked examples',
       allPosts: 'All articles',
       noPosts: 'Articles are on their way.',
-      faqKicker: 'GOOD TO KNOW',
+      min: 'min read',
+      categories: { words: 'WORD GAMES', home: 'HOME & DIY', general: 'ABOUT THE SITE' },
+      aboutTitle: 'About the site',
+      aboutText: 'Zyankov.eu is an independent collection of practical browser tools, created and maintained by Zlatko Yankov in Sofia, Bulgaria. Every tool explains its assumptions, and feedback about errors and new ideas is always welcome.',
+      aboutLink: 'More about me and the site',
       faqTitle: 'Frequently asked questions',
       faq: [
         ['Does Letterwell send my letters to a server?', 'No. Letterwell searches the dictionary in your browser. The letters you enter are not sent to Zyankov.eu.'],
         ['Does Zyankov.eu use advertising or analytics?', `Yes. Pages show ads from Google AdSense, which keeps the tools free. In the EU, the UK and Switzerland, Google asks for your consent first, and you can change your choice at any time with Privacy settings in the footer. ${analyticsEnabled ? 'Visits are counted with a cookieless analytics service that never sees your letters or measurements.' : 'We do not use an analytics service.'}`],
-        ['Can I use the projects on my phone?', 'Yes. The project pages are designed to work on mobile, tablet, and desktop screens.'],
-        ['How can I suggest a project or report a problem?', 'Email hello@zyankov.eu. Please include the project name and a short description.'],
+        ['Can I use the tools on my phone?', 'Yes. Every page is designed to work on mobile, tablet and desktop screens.'],
+        ['How can I suggest a tool or report a problem?', 'Email hello@zyankov.eu. Please include the tool name and a short description.'],
       ],
     }
 
-const field = (project: Record<string, unknown>, key: string) => ((bg && project[`${key}_bg`]) || project[key]) as string
+const wordleColours = ['absent', 'present', 'absent', 'correct', 'absent']
+const tileColours = ['coral', 'yellow', 'blue', 'white', 'mint']
+const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${tool.name.bg} ${tool.keywords}`.toLowerCase()
 ---
 
-<div class="site-shell">
+<div class="home">
   <main id="top">
-    <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow"><span>{t.welcome}</span><span></span></p>
-      <h1 id="page-title">{t.title[0]}<br /><em>{t.title[1]}</em></h1>
-      <p class="hero-copy">{t.intro}</p>
+    <section class="home-hero" aria-labelledby="page-title">
+      <div class="home-hero__copy">
+        <p class="home-kicker">{t.kicker[0]} <span aria-hidden="true"></span> {t.kicker[1]}</p>
+        <h1 id="page-title">{t.title[0]}<br /><em>{t.title[1]}</em></h1>
+        <p class="home-hero__intro">{t.intro}</p>
+        <form class="tool-search" role="search" data-tool-search>
+          <label class="sr-only" for="tool-search">{t.searchLabel}</label>
+          <svg class="tool-search__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+          <input id="tool-search" type="search" autocomplete="off" placeholder={t.searchPlaceholder} />
+          <button type="submit">{t.searchButton}</button>
+        </form>
+        <p class="tool-search__empty" role="status" data-tool-search-empty hidden>{t.noMatch}</p>
+        <p class="home-chips"><span>{t.popular}</span>{t.chips.map(([label, href]) => <a href={href}>{label}</a>)}</p>
+      </div>
+
+      <div class="home-hero__art" aria-hidden="true">
+        <div class="art-backdrop"></div>
+        <div class="art-card art-card--wordle">
+          <p class="art-label">{t.art.wordle}</p>
+          <div class="art-wordle">{[...t.art.wordleWord].map((letter, index) => <span class={`clue clue--${wordleColours[index]}`}>{letter}</span>)}</div>
+          <p class="art-note">{t.art.next} <strong>{t.art.nextWord}</strong></p>
+        </div>
+        <div class="art-card art-card--result">
+          <p class="art-label">{t.art.concrete}</p>
+          <p class="art-sub">{t.art.slab}</p>
+          <p class="art-amount">{t.art.amount} <span>{t.art.unit}</span></p>
+          <p class="art-pill">{t.art.note}</p>
+        </div>
+        <div class="art-card art-card--finder">
+          <p class="art-label">{t.art.finder}</p>
+          <div class="art-letters">{[...t.art.letters].map((letter, index) => <span class={`letter letter--${tileColours[index % tileColours.length]}`}>{letter}</span>)}</div>
+          <p class="art-note">{t.art.found}</p>
+        </div>
+      </div>
     </section>
 
-    <section class="projects" id="projects" aria-labelledby="projects-title">
-      <div class="section-heading">
+    <section class="home-section" id="word-games" aria-labelledby="words-title">
+      <div class="home-section__head">
         <div>
-          <p class="section-kicker">{t.directory}</p>
-          <h2 id="projects-title">{t.explore}</h2>
+          <p class="home-section__kicker home-section__kicker--coral">{t.wordsKicker}</p>
+          <h2 id="words-title">{t.wordsTitle}</h2>
         </div>
-        <span class="project-count">{count} {t.projectsLabel}</span>
+        <a class="home-section__more" href={bg ? '/letterwell/bg/' : '/letterwell/'}>{t.wordsAll} <span aria-hidden="true">→</span></a>
       </div>
-      <ul class="project-grid">
-        {projects.map((project) => (
+      <ul class="tool-grid">
+        <li class="tool-grid__wide" data-tool={searchText(wordle)}>
+          <a class="feature-tile feature-tile--dark" href={wordle.href[lang]}>
+            <div class="feature-tile__body">
+              <span class="badge badge--new">{t.new}</span>
+              <h3>{wordle.name[lang]}</h3>
+              <p>{wordle.description[lang]}</p>
+              <span class="feature-tile__cta">{t.open} <span aria-hidden="true">→</span></span>
+            </div>
+            <div class="feature-tile__board" aria-hidden="true">
+              {['absent', 'present', 'absent', 'correct', 'absent', 'correct', 'absent', 'present', 'correct', 'absent', 'correct', 'correct', 'correct', 'correct', 'correct'].map((clue) => <span class={`clue clue--${clue}`}></span>)}
+            </div>
+          </a>
+        </li>
+        <li class="tool-grid__wide" data-tool={searchText(finder)}>
+          <a class="feature-tile feature-tile--coral" href={finder.href[lang]}>
+            <div class="feature-tile__body">
+              <span class="feature-tile__tag">{t.wordsTag}</span>
+              <h3>{finder.name[lang]}</h3>
+              <p>{finder.description[lang]}</p>
+              <span class="feature-tile__cta">{t.open} <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="home-section" id="home-diy" aria-labelledby="home-title">
+      <div class="home-section__head">
+        <div>
+          <p class="home-section__kicker">{t.homeKicker}</p>
+          <h2 id="home-title">{t.homeTitle}</h2>
+        </div>
+        <a class="home-section__more" href="/calculators/all-calculators/">{t.homeAll} <span aria-hidden="true">→</span></a>
+      </div>
+      <ul class="tool-grid">
+        {home.map((tool) => (
+          <li data-tool={searchText(tool)}>
+            {tool.comingSoon ? (
+              <div class="tool-tile tool-tile--soon">
+                <span class="tool-tile__icon tool-tile__icon--soon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon!]} /></span>
+                <strong>{tool.name[lang]} <span class="badge badge--soon">{t.soon}</span></strong>
+                <span>{tool.description[lang]}</span>
+              </div>
+            ) : (
+              <a class="tool-tile" href={tool.href[lang]}>
+                <span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon!]} /></span>
+                <strong>{tool.name[lang]}</strong>
+                <span>{tool.description[lang]}</span>
+              </a>
+            )}
+          </li>
+        ))}
+        <li data-tool="embed widget website blog shop вграждане сайт блог магазин">
+          <a class="tool-tile tool-tile--embed" href="/calculators/concrete-calculator/#embed-title">
+            <strong>{t.embedTitle}</strong>
+            <span>{t.embedText}</span>
+            <span class="tool-tile__cta">{t.embedLink} <span aria-hidden="true">→</span></span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="trust" aria-label={t.trust[0][0]}>
+      {t.trust.map(([title, text], index) => (
+        <div class="trust__item">
+          <span class="trust__icon" aria-hidden="true">
+            {index === 0 && <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>}
+            {index === 1 && <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>}
+            {index === 2 && <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>}
+          </span>
+          <div><strong>{title}</strong><p>{text}</p></div>
+        </div>
+      ))}
+    </section>
+
+    <section class="home-section" id="blog" aria-labelledby="blog-title">
+      <div class="home-section__head">
+        <div>
+          <p class="home-section__kicker home-section__kicker--muted">{t.blogKicker}</p>
+          <h2 id="blog-title">{t.blogTitle}</h2>
+        </div>
+        {posts.length > 0 && <a class="home-section__more" href={blogPath}>{t.allPosts} <span aria-hidden="true">→</span></a>}
+      </div>
+      {posts.length === 0 && <p class="home-empty">{t.noPosts}</p>}
+      <ul class="post-cards">
+        {posts.map((post) => (
           <li>
-            <a class="project-card" href={field(project, 'href')}>
-              <img class="project-art" src={project.image} alt={project.imageAlt} width="720" height="360" loading="lazy" decoding="async" />
-              <div class="project-card-content">
-                <div class="project-topline">
-                  <span class="project-symbol">{project.symbol}</span>
-                  <span class="status">{field(project, 'category')}</span>
-                </div>
-                <div class="project-copy">
-                  <p class="project-eyebrow">{field(project, 'eyebrow')}</p>
-                  <h3>{project.name}</h3>
-                  <p>{field(project, 'description')}</p>
-                </div>
-                <span class="project-link">{field(project, 'linkLabel')} <b aria-hidden="true">→</b></span>
+            <a class="post-card" href={postPath(post)}>
+              <img src={`/og/${ogKey(postPath(post))}.png`} alt="" width="1200" height="630" loading="lazy" decoding="async" />
+              <div class="post-card__body">
+                <span class={`post-card__category post-card__category--${postCategory(post.data.tool)}`}>{t.categories[postCategory(post.data.tool)]}</span>
+                <h3>{post.data.title}</h3>
+                <span class="post-card__meta">{readingMinutes(post.body)} {t.min}</span>
               </div>
             </a>
           </li>
@@ -112,42 +264,14 @@ const field = (project: Record<string, unknown>, key: string) => ((bg && project
       </ul>
     </section>
 
-    <section class="editorial-grid" aria-label={t.aboutKicker}>
-      <section class="about" id="about" aria-labelledby="about-title">
-        <div>
-          <p class="section-kicker">{t.aboutKicker}</p>
-          <h2 id="about-title">{t.aboutTitle}</h2>
-        </div>
-        <div class="about-details">
-          {t.aboutText.map((paragraph) => <p>{paragraph}</p>)}
-          <a href="/about/">{t.aboutLink} <span aria-hidden="true">→</span></a>
-        </div>
-      </section>
-
-      <section class="blog" id="blog" aria-labelledby="blog-title">
-        <div>
-          <p class="section-kicker">{t.blogKicker}</p>
-          <h2 id="blog-title">{t.blogTitle}</h2>
-        </div>
-        {posts.length === 0 && <p class="blog-copy">{t.noPosts}</p>}
-        <ul class="post-list">
-          {posts.map((post) => (
-            <li>
-              <a href={postPath(post)}>{post.data.title}</a>
-              <p class="blog-date"><time datetime={isoDate(post.data.date)}>{formatDate(post.data.date, lang)}</time></p>
-            </li>
-          ))}
-        </ul>
-        {posts.length > 0 && <a class="blog-all" href={blogPath}>{t.allPosts} <span aria-hidden="true">→</span></a>}
-      </section>
-    </section>
-
-    <section class="faq" id="faq" aria-labelledby="faq-title">
-      <div class="faq-heading">
-        <p class="section-kicker">{t.faqKicker}</p>
-        <h2 id="faq-title">{t.faqTitle}</h2>
+    <section class="home-about" id="about" aria-labelledby="about-title">
+      <div class="home-about__text">
+        <h2 id="about-title">{t.aboutTitle}</h2>
+        <p>{t.aboutText}</p>
+        <a href="/about/">{t.aboutLink} <span aria-hidden="true">→</span></a>
       </div>
-      <div class="faq-list">
+      <div class="home-about__faq" id="faq">
+        <h2>{t.faqTitle}</h2>
         {t.faq.map(([question, answer]) => (
           <details>
             <summary>{question}</summary>
@@ -158,3 +282,28 @@ const field = (project: Record<string, unknown>, key: string) => ((bg && project
     </section>
   </main>
 </div>
+
+<script>
+  // Tool search: filters the tool tiles as you type; Enter opens the first match.
+  const form = document.querySelector<HTMLFormElement>('[data-tool-search]')
+  const input = form?.querySelector<HTMLInputElement>('input')
+  const empty = document.querySelector<HTMLElement>('[data-tool-search-empty]')
+  const items = [...document.querySelectorAll<HTMLElement>('[data-tool]')]
+  const matches = () => {
+    const terms = (input?.value ?? '').toLowerCase().trim().split(/\s+/).filter(Boolean)
+    return items.filter((item) => terms.every((term) => (item.dataset.tool ?? '').includes(term)))
+  }
+  input?.addEventListener('input', () => {
+    const found = new Set(matches())
+    const searching = Boolean(input.value.trim())
+    for (const item of items) item.hidden = searching && !found.has(item)
+    if (empty) empty.hidden = !searching || found.size > 0
+  })
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault()
+    const first = matches().find((item) => item.querySelector('a'))
+    const link = first?.querySelector('a')
+    if (input?.value.trim() && link) window.location.assign(link.href)
+    else document.getElementById('word-games')?.scrollIntoView({ behavior: 'smooth' })
+  })
+</script>
