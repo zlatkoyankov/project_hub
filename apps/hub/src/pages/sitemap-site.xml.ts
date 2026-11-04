@@ -24,10 +24,12 @@ export async function GET() {
   ]
   for (const post of [...(await getPosts('en')), ...(await getPosts('bg'))]) {
     const translation = await getTranslation(post)
+    const [en, bg] = post.data.lang === 'en' ? [post, translation] : [translation, post]
     entries.push({
       path: postPath(post),
       lastmod: isoDate(post.data.updated ?? post.data.date),
-      alternates: translation ? { [post.data.lang]: postPath(post), [translation.data.lang]: postPath(translation) } : undefined,
+      // Same order and x-default as the <link rel="alternate"> tags in BaseLayout.
+      alternates: en && bg ? pair(postPath(en), postPath(bg)) : undefined,
     })
   }
   const xml = [
