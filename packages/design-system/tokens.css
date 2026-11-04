@@ -35,6 +35,11 @@
   --tile-mint: #a9cfb2;
   --tile-white: #f4f3e8;
   --tile-ink: #20352d; /* letters on tiles */
+  /* Word-game clue colours (Wordle helper): letter absent, in the word, in the right place. */
+  --game-absent: #787c7e;
+  --game-present: #c9b458;
+  --game-correct: #6aaa64;
+  --game-ink: #ffffff;
 
   /* Lines */
   --border: #dce5dc;
@@ -136,6 +141,10 @@
 
   --sun-a: #f3dcd1;
   --sun-b: #ef896e;
+
+  --game-absent: #565a5c;
+  --game-present: #b59f3b;
+  --game-correct: #538d4e;
 
   --shadow-color: #000000;
   --shadow: 0 10px 24px rgba(0, 0, 0, 0.35);

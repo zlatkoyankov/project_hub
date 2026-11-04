@@ -1,0 +1,12 @@
+Wordle helper word lists (wordle-en.txt, wordle-bg.txt)
+
+Each file lists the five-letter words from Letterwell's dictionaries (english-words.txt,
+bulgarian-words.txt; MIT licensed, see their license files). Words above the "---" line are
+the ones that also appear in a word-frequency list built from film and TV subtitles, in order
+of frequency; the words below it are the rest, in alphabetical order. A handful of slurs are
+left out.
+
+The frequency order comes from FrequencyWords by Hermit Dave
+(https://github.com/hermitdave/FrequencyWords), whose word lists are licensed under
+Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+These two files are adapted from that work and are shared under the same license.

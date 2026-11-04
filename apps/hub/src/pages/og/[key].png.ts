@@ -1,4 +1,4 @@
-// /og/<key>.png — sharing images for every hub page, every post and the two Letterwell pages.
+// /og/<key>.png — sharing images for every hub page, every post and the Letterwell pages.
 // <key> is the page path without slashes: "/" → home, "/bg/blog/x/" → bg-blog-x (see ogKey()).
 import type { APIRoute, GetStaticPaths } from 'astro'
 import { renderOg, type OgCard } from '../../lib/og'
@@ -16,6 +16,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-blog': { kicker: 'Блог', title: 'Практични статии за думи и ремонти' },
     letterwell: { kicker: 'Letterwell · word finder', title: 'Find words from your letters', footer: 'zyankov.eu/letterwell' },
     'letterwell-bg': { kicker: 'Letterwell · търсачка за думи', title: 'Думи от букви на български', footer: 'zyankov.eu/letterwell/bg' },
+    'letterwell-wordle-solver': { kicker: 'Letterwell · Wordle helper', title: 'Stuck on Wordle? Narrow down the answer', footer: 'zyankov.eu/letterwell/wordle-solver' },
+    'letterwell-bg-wordle': { kicker: 'Letterwell · помощник за Wordle', title: 'Wordle на български: стесни възможните думи', footer: 'zyankov.eu/letterwell/bg/wordle' },
   }
   for (const lang of ['en', 'bg'] as const) {
     for (const post of await getPosts(lang)) {
