@@ -1,5 +1,6 @@
-// Prerenders one static HTML page per language: dist/index.html (English, /letterwell/)
-// and dist/bg/index.html (Bulgarian, /letterwell/bg/), each with its own head metadata.
+// Prerenders one static HTML page per page and language, each with its own head metadata:
+// the word finder at /letterwell/ and /letterwell/bg/, and the Wordle helper at
+// /letterwell/wordle-solver/ and /letterwell/bg/wordle/.
 // The shared shell is injected afterwards by zy-inject (see the build script).
 import { createElement } from 'react'
 import { renderToString } from 'react-dom/server'
@@ -19,10 +20,13 @@ function setMeta(html, attribute, key, value) {
   return html.replace(pattern, `$1${escape(value)}$2`)
 }
 
-function localizeHead(html, { language, url, meta, social }) {
+function localizeHead(html, { language, url, meta, social, alternates, ogKey, name }) {
   let out = html.replace(/<html lang="[^"]*"/, `<html lang="${language}"`)
   out = out.replace(/<title>[^<]*<\/title>/, `<title>${escape(meta.title)}</title>`)
   out = out.replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`)
+  for (const [lang, href] of Object.entries(alternates)) {
+    out = out.replace(new RegExp(`(<link rel="alternate" hreflang="${lang}" href=")[^"]*(")`), `$1${href}$2`)
+  }
   out = setMeta(out, 'name', 'description', meta.description)
   out = setMeta(out, 'property', 'og:locale', language === 'bg' ? 'bg_BG' : 'en_US')
   out = setMeta(out, 'property', 'og:url', url)
@@ -30,13 +34,13 @@ function localizeHead(html, { language, url, meta, social }) {
   out = setMeta(out, 'property', 'og:description', social)
   out = setMeta(out, 'name', 'twitter:title', meta.title)
   out = setMeta(out, 'name', 'twitter:description', social)
-  const image = `${site}/og/${language === 'bg' ? 'letterwell-bg' : 'letterwell'}.png`
+  const image = `${site}/og/${ogKey}.png`
   out = setMeta(out, 'property', 'og:image', image)
   out = setMeta(out, 'name', 'twitter:image', image)
   const structured = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'Letterwell',
+    name,
     url,
     applicationCategory: 'GameApplication',
     operatingSystem: 'Any',
@@ -55,18 +59,27 @@ const vite = await createServer({ appType: 'custom', server: { middlewareMode: t
 
 try {
   const { default: App } = await vite.ssrLoadModule('/src/App.tsx')
-  const { languages, languagePath, seoMetadata, socialDescriptions } = await vite.ssrLoadModule('/src/seo.ts')
+  const { default: WordleSolver } = await vite.ssrLoadModule('/src/WordleSolver.tsx')
+  const { languages, pages, pagePath, pageMeta, pageOgKey } = await vite.ssrLoadModule('/src/seo.ts')
+  const components = { finder: App, wordle: WordleSolver }
+  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper' }
   const template = await readFile(resolve('dist/index.html'), 'utf8')
   if (!template.includes(placeholder)) throw new Error('Could not find the Letterwell root element to prerender.')
 
-  for (const language of languages) {
-    const path = languagePath(language)
-    const markup = renderToString(createElement(App, { language }))
+  for (const page of pages) for (const language of languages) {
+    const path = pagePath(page, language)
+    const markup = renderToString(createElement(components[page], { language }))
     const html = localizeHead(template.replace(placeholder, `<div id="root">${markup}</div>`), {
       language,
       url: `${site}${path}`,
-      meta: seoMetadata[language],
-      social: socialDescriptions[language],
+      ...pageMeta(page, language),
+      alternates: {
+        en: `${site}${pagePath(page, 'en')}`,
+        bg: `${site}${pagePath(page, 'bg')}`,
+        'x-default': `${site}${pagePath(page, 'en')}`,
+      },
+      ogKey: pageOgKey(page, language),
+      name: names[page],
     })
     const file = resolve('dist', path.replace(/^\/letterwell\//, ''), 'index.html')
     await mkdir(dirname(file), { recursive: true })

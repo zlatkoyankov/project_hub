@@ -44,6 +44,7 @@ export function readingMinutes(body = '') {
 
 export const TOOLS = {
   letterwell: { en: { href: '/letterwell/', name: 'Letterwell', cta: 'Find words with Letterwell' }, bg: { href: '/letterwell/bg/', name: 'Letterwell', cta: 'Търси думи с Letterwell' } },
+  'wordle-solver': { en: { href: '/letterwell/wordle-solver/', name: 'Wordle helper', cta: 'Open the Wordle helper' }, bg: { href: '/letterwell/bg/wordle/', name: 'Помощник за Wordle', cta: 'Към помощника за Wordle' } },
   'concrete-calculator': { en: { href: '/calculators/concrete-calculator/', name: 'Concrete calculator', cta: 'Open the concrete calculator' }, bg: { href: '/calculators/concrete-calculator/', name: 'Калкулатор за бетон', cta: 'Към калкулатора за бетон' } },
   'tile-calculator': { en: { href: '/calculators/tile-calculator/', name: 'Tile calculator', cta: 'Open the tile calculator' }, bg: { href: '/calculators/tile-calculator/', name: 'Калкулатор за плочки', cta: 'Към калкулатора за плочки' } },
   'paint-calculator': { en: { href: '/calculators/paint-calculator/', name: 'Paint calculator', cta: 'Open the paint calculator' }, bg: { href: '/calculators/paint-calculator/', name: 'Калкулатор за боя', cta: 'Към калкулатора за боя' } },

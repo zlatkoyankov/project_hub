@@ -3,7 +3,7 @@ import { ArrowDownAZ, ArrowUpNarrowWide, Check, Copy, Search, Shuffle, Sparkles 
 import { track } from '@zyankov/design-system/analytics'
 import './App.css'
 
-import { languagePath, seoMetadata, socialDescriptions, type Language } from './seo'
+import { languagePath, pagePath, seoMetadata, socialDescriptions, type Language } from './seo'
 
 const examples: Record<Language, string[]> = {
   en: ['triangle', 'listen', 'stream'],
@@ -369,6 +369,7 @@ function App({ language }: { language: Language }) {
         </a>
         <div className="topbar-actions">
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
+          <a className="topbar-link" href={pagePath('wordle', language)}>{language === 'bg' ? 'Помощник за Wordle' : 'Wordle helper'}</a>
           <label className="language-picker">
             <span className="sr-only">{text.languageLabel}</span>
             <select
@@ -417,7 +418,9 @@ function App({ language }: { language: Language }) {
               {isSearching ? text.findingWords : text.findWords}
             </button>
           </form>
-          
+          <a className="wordle-promo" href={pagePath('wordle', language)}>
+            {language === 'bg' ? 'Играеш Wordle? Пробвай помощника за Wordle' : 'Playing Wordle? Try the Wordle helper'} <span aria-hidden="true">→</span>
+          </a>
         </section>
 
         <section className="workspace" aria-label={text.workspaceLabel}>

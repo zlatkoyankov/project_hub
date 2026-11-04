@@ -1,0 +1,286 @@
+/* Wordle helper page (/letterwell/wordle-solver/, /letterwell/bg/wordle/). Shares App.css. */
+.topbar-link {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.topbar-link:hover {
+  color: var(--text);
+}
+
+.wordle-intro {
+  padding: 30px 0 28px;
+  text-align: center;
+}
+
+.wordle-intro h1 {
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.wordle-intro h1 em {
+  color: var(--coral);
+  font-weight: 500;
+}
+
+.guess-entry-row {
+  display: flex;
+  gap: 8px;
+}
+
+.guess-entry-row .letters-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.guess-add {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 16px;
+  color: var(--surface);
+  background: var(--coral);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font: 700 14px var(--font-body);
+}
+
+.guess-add:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.guess-add:focus-visible,
+.guess-tile:focus-visible,
+.guess-remove:focus-visible,
+.text-action:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.guess-note {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.guess-board {
+  margin-top: 22px;
+}
+
+.guess-hint {
+  margin: 0 0 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.guess-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.guess-tile {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font: 700 22px var(--font-display);
+  transition: transform 120ms, background 150ms;
+}
+
+.guess-tile:active {
+  transform: scale(0.94);
+}
+
+/* Game colours, kept close to the original so clues are easy to copy across. */
+.guess-tile.clue-absent {
+  color: var(--game-ink);
+  background: var(--game-absent);
+}
+
+.guess-tile.clue-present {
+  color: var(--game-ink);
+  background: var(--game-present);
+}
+
+.guess-tile.clue-correct {
+  color: var(--game-ink);
+  background: var(--game-correct);
+}
+
+.guess-remove {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  margin-left: 4px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.text-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 0;
+  color: var(--coral-strong);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: 700 13px var(--font-body);
+}
+
+.openers {
+  margin-top: 22px;
+}
+
+.result-count {
+  margin-left: 6px;
+  color: var(--coral-strong);
+}
+
+.suggestion-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 16px 0 18px;
+  padding: 14px 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--coral);
+  border-radius: 6px;
+}
+
+.suggestion-card > svg {
+  flex: 0 0 auto;
+  color: var(--coral);
+}
+
+.suggestion-card > div {
+  flex: 1 1 auto;
+}
+
+.suggestion-card p {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.suggestion-word {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  letter-spacing: 0.12em;
+}
+
+.wordle-page .result-meta {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0 8px;
+}
+
+.answer-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.answer-word {
+  padding: 5px 9px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+}
+
+.answer-list.rare .answer-word {
+  color: var(--text-muted);
+}
+
+.answer-more {
+  align-self: center;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.rare-words {
+  margin-top: 12px;
+}
+
+.rare-words .answer-list {
+  margin-top: 8px;
+}
+
+.guide-links a {
+  color: var(--coral-strong);
+}
+
+.wordle-promo {
+  grid-column: 1 / -1;
+  color: var(--coral-strong);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid var(--coral-soft);
+}
+
+.wordle-promo:hover {
+  border-bottom-color: var(--coral);
+}
+
+@media (max-width: 780px) {
+  .wordle-intro h1 {
+    font-size: 28px;
+  }
+
+  .topbar-link {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .guess-tile {
+    width: 44px;
+    height: 44px;
+    font-size: 19px;
+  }
+
+  .guess-entry-row {
+    flex-direction: column;
+  }
+
+  .guess-add {
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .suggestion-card {
+    flex-wrap: wrap;
+  }
+}
