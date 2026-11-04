@@ -92,6 +92,8 @@ function getRandomLetters(language: Language, count: number) {
   ).join('')
 }
 
+const artTileColors = ['tile-coral', 'tile-yellow', 'tile-blue', 'tile-white', 'tile-mint', 'tile-white']
+
 function App({ language }: { language: Language }) {
   const [letters, setLetters] = useState('')
   const [minimumLength, setMinimumLength] = useState(2)
@@ -158,6 +160,25 @@ function App({ language }: { language: Language }) {
     sortResults: 'Сортиране на резултатите',
     sortByLength: 'По дължина',
     sortAlphabetically: 'По азбучен ред',
+    homeLabel: 'Letterwell – начало',
+    languageLabel: 'Език',
+    artLabel: 'Думата СЪЗДАЙ, подредена от цветни плочки с букви',
+    artCaption: 'НЯКОЛКО БУКВИ, МНОГО ДУМИ',
+    artWord: 'СЪЗДАЙ',
+    workspaceLabel: 'Търсачка за български думи',
+    randomCountLabel: 'Брой случайни букви',
+    recentSearchesLabel: 'Последни търсения',
+    min: 'От',
+    max: 'До',
+    minLabel: 'Минимална дължина на думата',
+    maxLabel: 'Максимална дължина на думата',
+    letterSuffix: 'буква',
+    filterByLength: 'Филтър по дължина на думата',
+    lengthChip: (length: number, count: number) => `${length} букви, ${count} думи`,
+    scrabbleScore: 'Точки в Scrabble',
+    wordsWithFriendsScore: 'Точки в Words With Friends',
+    boggleScore: 'Точки в Boggle',
+    copy: 'Копирай',
   } : {
     tagline: 'Your English word finder',
     titleFirst: 'Your letters.',
@@ -203,6 +224,25 @@ function App({ language }: { language: Language }) {
     sortResults: 'Sort results',
     sortByLength: 'By length',
     sortAlphabetically: 'A to Z',
+    homeLabel: 'Letterwell home',
+    languageLabel: 'Language',
+    artLabel: 'The word CREATE arranged with colorful letter tiles',
+    artCaption: 'A FEW LETTERS, MANY WORDS',
+    artWord: 'CREATE',
+    workspaceLabel: 'English word finder',
+    randomCountLabel: 'Number of random letters',
+    recentSearchesLabel: 'Recent searches',
+    min: 'Min',
+    max: 'Max',
+    minLabel: 'Minimum word length',
+    maxLabel: 'Maximum word length',
+    letterSuffix: 'letter',
+    filterByLength: 'Filter by word length',
+    lengthChip: (length: number, count: number) => `${length} letters, ${count} words`,
+    scrabbleScore: 'Scrabble score',
+    wordsWithFriendsScore: 'Words With Friends score',
+    boggleScore: 'Boggle score',
+    copy: 'Copy',
   }
   const pageMetadata = seoMetadata[language]
 
@@ -323,21 +363,21 @@ function App({ language }: { language: Language }) {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#top" aria-label="Letterwell home">
+        <a className="brand" href="#top" aria-label={text.homeLabel}>
           <span className="brand-mark"><Sparkles size={18} strokeWidth={2.2} /></span>
           <span>letterwell</span>
         </a>
         <div className="topbar-actions">
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
           <label className="language-picker">
-            <span className="sr-only">Language</span>
+            <span className="sr-only">{text.languageLabel}</span>
             <select
               value={language}
               onChange={(event) => {
                 // Each language has its own URL (/letterwell/ and /letterwell/bg/).
                 window.location.assign(languagePath(event.target.value as Language))
               }}
-              aria-label="Language"
+              aria-label={text.languageLabel}
             >
               <option value="en">EN</option>
               <option value="bg">БГ</option>
@@ -352,17 +392,14 @@ function App({ language }: { language: Language }) {
             <h1 id="page-title">{text.titleFirst}<br />{text.titleSecond}<em>{text.titleEmphasis}</em></h1>
             <p className="intro-description">{text.description}</p>
           </div>
-          <div className="letter-art" aria-label="The word CREATE arranged with colorful letter tiles">
-            <span className="art-caption">A FEW LETTERS, MANY WORDS</span>
+          <div className="letter-art" role="img" aria-label={text.artLabel}>
+            <span className="art-caption">{text.artCaption}</span>
             <div className="art-tiles" aria-hidden="true">
-              <span className="art-tile tile-coral">C</span>
-              <span className="art-tile tile-yellow">R</span>
-              <span className="art-tile tile-blue">E</span>
-              <span className="art-tile tile-white">A</span>
-              <span className="art-tile tile-mint">T</span>
-              <span className="art-tile tile-white">E</span>
+              {Array.from(text.artWord).map((letter, index) => (
+                <span className={`art-tile ${artTileColors[index % artTileColors.length]}`} key={index}>{letter}</span>
+              ))}
             </div>
-            <span className="art-footnote">C R E A T E <span>→</span> CREATE</span>
+            <span className="art-footnote">{Array.from(text.artWord).join(' ')} <span>→</span> {text.artWord}</span>
           </div>
           <form className="hero-entry" onSubmit={findWords}>
             <label className="field-label" htmlFor="hero-letters-input">{text.enterLetters}</label>
@@ -383,7 +420,7 @@ function App({ language }: { language: Language }) {
           
         </section>
 
-        <section className="workspace" aria-label="English word finder">
+        <section className="workspace" aria-label={text.workspaceLabel}>
           <form className="controls" onSubmit={findWords}>
             <div className="control-heading">
               <span className="step-number">01</span>
@@ -412,7 +449,7 @@ function App({ language }: { language: Language }) {
               <label>
                 <span>{text.randomLetters}</span>
                 <select
-                  aria-label="Number of random letters"
+                  aria-label={text.randomCountLabel}
                   value={randomLetterCount}
                   onChange={(event) => setRandomLetterCount(Number(event.target.value))}
                 >
@@ -448,7 +485,7 @@ function App({ language }: { language: Language }) {
                   <span>{text.recentSearches}</span>
                   <button type="button" onClick={() => setSearchHistory([])}>{text.clear}</button>
                 </div>
-                <div className="history-list" role="group" aria-label="Recent searches">
+                <div className="history-list" role="group" aria-label={text.recentSearchesLabel}>
                   {searchHistory.map((entry) => (
                     <button
                       className="history-button"
@@ -473,9 +510,9 @@ function App({ language }: { language: Language }) {
             <fieldset className="length-settings" disabled={requireAllLetters}>
               <legend>{text.wordLength}</legend>
               <label className="number-control">
-                <span>Min</span>
+                <span>{text.min}</span>
                 <input
-                  aria-label="Minimum word length"
+                  aria-label={text.minLabel}
                   type="number"
                   min={2}
                   max={16}
@@ -489,9 +526,9 @@ function App({ language }: { language: Language }) {
               </label>
               <span className="range-dash">—</span>
               <label className="number-control">
-                <span>Max</span>
+                <span>{text.max}</span>
                 <input
-                  aria-label="Maximum word length"
+                  aria-label={text.maxLabel}
                   type="number"
                   min={2}
                   max={16}
@@ -516,7 +553,7 @@ function App({ language }: { language: Language }) {
                   <label className="letter-select-control" key={label}>
                     <span>{label}</span>
                     <select
-                      aria-label={`${label} letter`}
+                      aria-label={`${label}: ${text.letterSuffix}`}
                       value={value}
                       disabled={availableLetters.length === 0}
                       onChange={(event) => {
@@ -626,7 +663,7 @@ function App({ language }: { language: Language }) {
               <div className="empty-state"><span className="empty-spark">↗</span><h3>{text.noMatches}</h3><p>{text.tryDifferent}</p></div>
             ) : (
               <>
-                <div className="length-filters" role="group" aria-label="Filter by word length">
+                <div className="length-filters" role="group" aria-label={text.filterByLength}>
                   <button
                     className="length-filter-button"
                     type="button"
@@ -642,7 +679,7 @@ function App({ language }: { language: Language }) {
                       type="button"
                       key={length}
                       aria-pressed={selectedLength === length}
-                      aria-label={`${length} letters, ${lengthCounts.get(length)} words`}
+                      aria-label={text.lengthChip(length, lengthCounts.get(length) ?? 0)}
                       onClick={() => {
                         setSelectedLength(length)
                         setVisibleCount(maxResultsOnPage)
@@ -662,17 +699,17 @@ function App({ language }: { language: Language }) {
                       {showAnyWordScores && (
                         <div className="word-scores">
                           {showScrabbleScores && (
-                            <span className="score-badge" aria-label={`Scrabble score ${getTileScore(word, tileScores)}`}>
+                            <span className="score-badge" aria-label={`${text.scrabbleScore} ${getTileScore(word, tileScores)}`}>
                               SCR {getTileScore(word, tileScores)}
                             </span>
                           )}
                           {language === 'en' && showWordsWithFriendsScores && (
-                            <span className="score-badge" aria-label={`Words With Friends score ${getTileScore(word, wordsWithFriendsLetterScores)}`}>
+                            <span className="score-badge" aria-label={`${text.wordsWithFriendsScore} ${getTileScore(word, wordsWithFriendsLetterScores)}`}>
                               WWF {getTileScore(word, wordsWithFriendsLetterScores)}
                             </span>
                           )}
                           {showBoggleScores && (
-                            <span className="score-badge" aria-label={`Boggle score ${getBoggleScore(word)}`}>
+                            <span className="score-badge" aria-label={`${text.boggleScore} ${getBoggleScore(word)}`}>
                               BOG {getBoggleScore(word)}
                             </span>
                           )}
@@ -681,8 +718,8 @@ function App({ language }: { language: Language }) {
                       <button
                         className="copy-button"
                         type="button"
-                        aria-label={`Copy ${word}`}
-                        title={`Copy ${word}`}
+                        aria-label={`${text.copy} ${word}`}
+                        title={`${text.copy} ${word}`}
                         onClick={() => void copyWord(word)}
                       >{copiedWord === word ? <Check size={16} /> : <Copy size={15} />}</button>
                     </div>
