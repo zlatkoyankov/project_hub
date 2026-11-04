@@ -20,6 +20,11 @@ export class UnitPreferenceService {
     }
   }
 
+  /** Uses a system for this visit only (embedded calculators), leaving the saved choice alone. */
+  useForVisit(system: UnitSystem): void {
+    this.system.set(system);
+  }
+
   private stored(): UnitSystem {
     if (!this.browser) return 'us';
     try {

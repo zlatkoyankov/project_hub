@@ -1,3 +1,4 @@
+@if (!embed()) {
 <header class="site-header" (keydown.escape)="closeMenu()">
   <div class="header-inner">
     <a class="brand" routerLink="/" aria-label="BuildCalc home">
@@ -17,7 +18,10 @@
     </nav>
   </div>
 </header>
+}
 <main id="main" tabindex="-1">
   <router-outlet />
 </main>
+@if (!embed()) {
 <p class="app-note">BuildCalc estimates are for planning purposes. Check quantities with your supplier and read the <a href="/disclaimer/">disclaimer</a>.</p>
+}

@@ -4,13 +4,16 @@ import { of } from 'rxjs';
 import { UnitPreferenceService } from '../core/unit-preference.service';
 import { CalculatorPage } from './calculator';
 
-function render(slug: string, system: 'us' | 'metric' = 'us') {
+function render(slug: string, system: 'us' | 'metric' = 'us', data: Record<string, unknown> = {}) {
   localStorage.clear();
   TestBed.configureTestingModule({
     imports: [CalculatorPage],
     providers: [
       provideRouter([]),
-      { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ slug })) } },
+      {
+        provide: ActivatedRoute,
+        useValue: { paramMap: of(convertToParamMap({ slug })), data: of(data), snapshot: { queryParamMap: convertToParamMap({}) } },
+      },
     ],
   });
   TestBed.inject(UnitPreferenceService).setSystem(system);
@@ -25,6 +28,20 @@ const submit = (fixture: ReturnType<typeof render>) => {
 };
 
 describe('CalculatorPage', () => {
+  it('offers embed code that links back to the full calculator', () => {
+    const fixture = render('gravel-calculator');
+    const code = (fixture.nativeElement as HTMLElement).querySelector<HTMLTextAreaElement>('#embed-code')!.value;
+    expect(code).toContain('src="https://zyankov.eu/calculators/embed/gravel-calculator/"');
+    expect(code).toContain('href="https://zyankov.eu/calculators/gravel-calculator/"');
+  });
+
+  it('renders only the calculator and a credit link when embedded', () => {
+    const element = render('gravel-calculator', 'us', { embed: true }).nativeElement as HTMLElement;
+    expect(element.querySelector('form.calculator-form')).not.toBeNull();
+    expect(element.querySelector('.calc-hero, .embed-section, .related-section, .calculator-faq')).toBeNull();
+    expect(element.querySelector('.embed-credit a')?.getAttribute('target')).toBe('_blank');
+  });
+
   it('shows metric units only in the combined area summary when metric is selected', () => {
     const fixture = render('square-footage-calculator', 'metric');
     submit(fixture);

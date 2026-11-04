@@ -1101,3 +1101,67 @@ p {
 .app-note a {
   color: var(--accent);
 }
+
+
+/* Embedded calculator (/embed/<slug>/) and the embed-code box. */
+html.is-embed body {
+  min-height: 0;
+}
+
+html.is-embed .calculator-layout {
+  margin: 0.75rem 0;
+}
+
+.embed-title {
+  width: min(72rem, calc(100% - 2rem));
+  margin: 1rem auto 0;
+  font-size: 1.35rem;
+}
+
+.embed-credit {
+  margin: 0 0 1rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.embed-credit a {
+  color: var(--accent);
+}
+
+.embed-section {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.embed-box {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: start;
+}
+
+.embed-box .form-field {
+  width: 100%;
+}
+
+.embed-box .compact-select {
+  margin-top: 0;
+  width: auto;
+}
+
+.embed-box textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8rem;
+  resize: vertical;
+}
+
+@media (min-width: 900px) {
+  .embed-section {
+    grid-template-columns: 1fr 1.4fr;
+    align-items: start;
+  }
+}

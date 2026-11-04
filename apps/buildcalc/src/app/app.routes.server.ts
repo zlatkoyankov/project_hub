@@ -12,6 +12,13 @@ export const serverRoutes: ServerRoute[] = [
       return CALCULATORS.map(({ slug }) => ({ slug }));
     },
   },
+  {
+    path: 'embed/:slug',
+    renderMode: RenderMode.Prerender,
+    async getPrerenderParams() {
+      return CALCULATORS.map(({ slug }) => ({ slug }));
+    },
+  },
   { path: 'guides', renderMode: RenderMode.Prerender },
   {
     path: 'guides/:slug',
