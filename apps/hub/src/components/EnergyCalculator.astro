@@ -1,0 +1,273 @@
+---
+// Appliance energy cost calculator, English (/energy-cost-calculator/) and Bulgarian (/bg/razhod-na-tok/).
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getPosts, ogKey, postPath, readingMinutes, type Lang } from '../lib/site'
+import '../styles/tool.css'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const bg = lang === 'bg'
+const path = bg ? '/bg/razhod-na-tok/' : '/energy-cost-calculator/'
+const alternates = { en: '/energy-cost-calculator/', bg: '/bg/razhod-na-tok/' }
+
+// Typical ratings only: the page tells people to check the label on their own appliance.
+const presets: { id: string; en: string; bg: string; watts: number; hours: number; load: number }[] = [
+  { id: 'heater', en: 'Space heater (fan heater)', bg: 'Вентилаторна печка (духалка)', watts: 2000, hours: 6, load: 100 },
+  { id: 'radiator', en: 'Oil-filled radiator', bg: 'Маслен радиатор', watts: 1500, hours: 8, load: 100 },
+  { id: 'ac', en: 'Air conditioner, heating', bg: 'Климатик, отопление', watts: 900, hours: 8, load: 100 },
+  { id: 'boiler', en: 'Electric water heater (boiler)', bg: 'Бойлер', watts: 3000, hours: 2, load: 100 },
+  { id: 'oven', en: 'Electric oven', bg: 'Фурна', watts: 2200, hours: 1, load: 100 },
+  { id: 'kettle', en: 'Kettle', bg: 'Електрическа кана', watts: 2000, hours: 0.25, load: 100 },
+  { id: 'washer', en: 'Washing machine', bg: 'Перална машина', watts: 700, hours: 1, load: 100 },
+  { id: 'dishwasher', en: 'Dishwasher', bg: 'Съдомиялна', watts: 1200, hours: 1, load: 100 },
+  { id: 'fridge', en: 'Fridge-freezer', bg: 'Хладилник', watts: 100, hours: 24, load: 40 },
+  { id: 'tv', en: 'TV', bg: 'Телевизор', watts: 100, hours: 4, load: 100 },
+  { id: 'pc', en: 'Desktop computer', bg: 'Настолен компютър', watts: 200, hours: 6, load: 100 },
+  { id: 'led', en: 'LED bulb', bg: 'LED крушка', watts: 9, hours: 5, load: 100 },
+]
+const start = presets[0]
+
+const t = bg
+  ? {
+      title: 'Калкулатор за разход на ток: колко струва уредът | Zyankov.eu',
+      description: 'Изчисли колко киловатчаса харчи печката, климатикът или бойлерът и колко струва на ден, месец и година при твоята цена на тока.',
+      crumbs: ['Начало', 'Дом и ремонт'],
+      kicker: 'ДОМ И ЕНЕРГИЯ',
+      h1: 'Колко ток харчи уредът?',
+      intro: 'Избери уред или въведи мощността му, колко часа работи и цената на тока от сметката. Виждаш разхода в kWh и в пари на ден, месец и година.',
+      form: 'Твоят уред',
+      formHint: 'Стойностите по подразбиране са типични. Мощността на твоя уред е на етикета му.',
+      appliance: 'Уред',
+      custom: 'Друг уред',
+      watts: 'Мощност',
+      hours: 'Часа на ден',
+      days: 'Дни в месеца',
+      load: 'Средно натоварване',
+      loadHint: 'Намали за уреди с термостат (хладилник, печка, бойлер), които се включват и изключват.',
+      price: 'Цена за kWh',
+      priceHint: 'Виж сметката си. Пример: дневната тарифа на ЕНЕРГО-ПРО от 1 юли 2026 г. е 0,12927 € за kWh.',
+      currency: 'Валута',
+      result: 'ПРИБЛИЗИТЕЛЕН РАЗХОД',
+      perMonth: 'на месец',
+      rows: ['На ден', 'На година', 'За един час работа', 'Енергия на ден', 'Енергия на месец', 'Енергия на година'],
+      caveat: 'Приблизителна оценка. Реалната консумация зависи от модела, настройките и помещението.',
+      howTitle: 'Как се изчислява',
+      how: 'Мощността във ватове се дели на 1000, за да стане в киловати, и се умножава по часовете работа и средното натоварване. Така се получават киловатчасове (kWh), а те се умножават по цената за kWh.',
+      tipsTitle: 'Как да намалиш сметката',
+      tips: ['Ползвай нощната тарифа за бойлера, пералнята и съдомиялната, ако имаш двутарифен електромер.', 'За отопление климатикът обикновено харчи по-малко ток от духалка или маслен радиатор за същата топлина.', 'Термостатът и затворените врати пестят повече от всяка настройка на самия уред.'],
+      articles: 'Статии по темата',
+      min: 'мин четене',
+      currencyDefault: '€',
+      priceDefault: '0.13',
+    }
+  : {
+      title: 'Appliance Energy Cost Calculator: What Does It Cost to Run? | Zyankov.eu',
+      description: 'Work out how many kWh a heater, air conditioner or water heater uses and what it costs per day, month and year at your electricity price.',
+      crumbs: ['Home', 'Home & DIY'],
+      kicker: 'HOME & ENERGY',
+      h1: 'What does it cost to run?',
+      intro: 'Pick an appliance or enter its power, how long it runs and the price on your bill. See the energy in kWh and the cost per day, month and year.',
+      form: 'Your appliance',
+      formHint: 'The defaults are typical values. Your appliance’s power is on its rating label.',
+      appliance: 'Appliance',
+      custom: 'Other appliance',
+      watts: 'Power',
+      hours: 'Hours per day',
+      days: 'Days per month',
+      load: 'Average load',
+      loadHint: 'Lower it for appliances a thermostat switches on and off, such as fridges, heaters and water heaters.',
+      price: 'Price per kWh',
+      priceHint: 'Check your bill. The US residential average was 18.83¢ per kWh in April 2026 (EIA).',
+      currency: 'Currency',
+      result: 'ESTIMATED COST',
+      perMonth: 'per month',
+      rows: ['Per day', 'Per year', 'Per hour of use', 'Energy per day', 'Energy per month', 'Energy per year'],
+      caveat: 'Planning estimate. Real use depends on the model, its settings and the room.',
+      howTitle: 'How it works',
+      how: 'Power in watts is divided by 1,000 to get kilowatts, then multiplied by the hours the appliance runs and its average load. That gives kilowatt-hours (kWh), which are multiplied by your price per kWh.',
+      tipsTitle: 'Ways to cut the cost',
+      tips: ['Run water heaters, washing machines and dishwashers on a cheaper night rate if your tariff has one.', 'For heating, an air conditioner (heat pump) usually uses less electricity than a fan heater or radiator for the same warmth.', 'A thermostat and closed doors save more than any setting on the appliance itself.'],
+      articles: 'Related articles',
+      min: 'min read',
+      currencyDefault: '$',
+      priceDefault: '0.19',
+    }
+
+const posts = (await getPosts(lang)).filter((post) => post.data.tool === 'energy-cost-calculator')
+const jsonLd = {
+  '@type': 'WebApplication',
+  name: bg ? 'Калкулатор за разход на ток' : 'Appliance energy cost calculator',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+}
+---
+
+<BaseLayout title={t.title} description={t.description} path={path} lang={lang} alternates={alternates} project="buildcalc" jsonLd={jsonLd}>
+  <div class="tool-page">
+    <main id="top">
+      <nav class="tool-crumbs" aria-label="Breadcrumb"><a href={bg ? '/bg/' : '/'}>{t.crumbs[0]}</a><span aria-hidden="true">/</span><a href={bg ? '/bg/#home-diy' : '/#home-diy'}>{t.crumbs[1]}</a></nav>
+      <header class="tool-head">
+        <span class="tool-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z" /></svg></span>
+        <div>
+          <p class="tool-kicker">{t.kicker}</p>
+          <h1>{t.h1}</h1>
+          <p class="tool-intro">{t.intro}</p>
+        </div>
+      </header>
+
+      <section class="tool-layout" aria-label={t.h1} data-energy data-lang={lang}>
+        <form class="tool-form" novalidate>
+          <h2>{t.form}</h2>
+          <p class="tool-form__hint">{t.formHint}</p>
+          <div class="tool-field tool-field--wide">
+            <label for="energy-appliance">{t.appliance}</label>
+            <select id="energy-appliance" name="appliance">
+              {presets.map((preset) => (
+                <option value={preset.id} data-watts={preset.watts} data-hours={preset.hours} data-load={preset.load}>{bg ? preset.bg : preset.en}</option>
+              ))}
+              <option value="custom">{t.custom}</option>
+            </select>
+          </div>
+          <div class="tool-fields">
+            <div class="tool-field">
+              <label for="energy-watts">{t.watts}</label>
+              <div class="tool-input"><input id="energy-watts" name="watts" type="number" inputmode="decimal" min="0" step="any" value={start.watts} /><span>W</span></div>
+            </div>
+            <div class="tool-field">
+              <label for="energy-hours">{t.hours}</label>
+              <div class="tool-input"><input id="energy-hours" name="hours" type="number" inputmode="decimal" min="0" max="24" step="any" value={start.hours} /><span>h</span></div>
+            </div>
+            <div class="tool-field">
+              <label for="energy-days">{t.days}</label>
+              <div class="tool-input"><input id="energy-days" name="days" type="number" inputmode="numeric" min="1" max="31" step="1" value="30" /><span>{bg ? 'дни' : 'days'}</span></div>
+            </div>
+            <div class="tool-field">
+              <label for="energy-load">{t.load}</label>
+              <div class="tool-input"><input id="energy-load" name="load" type="number" inputmode="numeric" min="1" max="100" step="1" value={start.load} aria-describedby="energy-load-hint" /><span>%</span></div>
+              <small id="energy-load-hint">{t.loadHint}</small>
+            </div>
+            <div class="tool-field">
+              <label for="energy-price">{t.price}</label>
+              <div class="tool-input"><input id="energy-price" name="price" type="number" inputmode="decimal" min="0" step="any" value={t.priceDefault} aria-describedby="energy-price-hint" /><span data-energy-currency-label>{t.currencyDefault}</span></div>
+              <small id="energy-price-hint">{t.priceHint}</small>
+            </div>
+            <div class="tool-field">
+              <label for="energy-currency">{t.currency}</label>
+              <select id="energy-currency" name="currency">
+                {['€', '$', '£'].map((symbol) => <option value={symbol} selected={symbol === t.currencyDefault}>{symbol}</option>)}
+              </select>
+            </div>
+          </div>
+        </form>
+
+        <aside class="tool-result" aria-live="polite">
+          <p class="tool-result__kicker">{t.result}</p>
+          <p class="tool-result__big"><span data-out="month">–</span> <small>{t.perMonth}</small></p>
+          <dl>
+            <div><dt>{t.rows[0]}</dt><dd data-out="day">–</dd></div>
+            <div><dt>{t.rows[1]}</dt><dd data-out="year">–</dd></div>
+            <div><dt>{t.rows[2]}</dt><dd data-out="hour">–</dd></div>
+            <div><dt>{t.rows[3]}</dt><dd data-out="kwhDay">–</dd></div>
+            <div><dt>{t.rows[4]}</dt><dd data-out="kwhMonth">–</dd></div>
+            <div><dt>{t.rows[5]}</dt><dd data-out="kwhYear">–</dd></div>
+          </dl>
+          <p class="tool-result__caveat">{t.caveat}</p>
+        </aside>
+      </section>
+
+      <section class="tool-notes">
+        <article>
+          <h2>{t.howTitle}</h2>
+          <p>{t.how}</p>
+          <p class="tool-formula">kWh = W ÷ 1000 × h × load</p>
+        </article>
+        <article>
+          <h2>{t.tipsTitle}</h2>
+          <ul>{t.tips.map((tip) => <li>{tip}</li>)}</ul>
+        </article>
+      </section>
+
+      {posts.length > 0 && (
+        <section class="tool-articles" aria-labelledby="tool-articles-title">
+          <h2 id="tool-articles-title">{t.articles}</h2>
+          <ul>
+            {posts.map((post) => (
+              <li>
+                <a href={postPath(post)}>
+                  <img src={`/og/${ogKey(postPath(post))}.png`} alt="" width="1200" height="630" loading="lazy" decoding="async" />
+                  <span><strong>{post.data.title}</strong><small>{readingMinutes(post.body)} {t.min}</small></span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </main>
+  </div>
+</BaseLayout>
+
+<script>
+  import { track } from '@zyankov/design-system/analytics'
+
+  // Live calculation: every change updates the result card.
+  const root = document.querySelector<HTMLElement>('[data-energy]')
+  if (root) {
+    const lang = root.dataset.lang === 'bg' ? 'bg' : 'en'
+    const locale = lang === 'bg' ? 'bg-BG' : 'en-GB'
+    const field = (name: string) => root.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${name}"]`)!
+    const out = (name: string) => root.querySelector<HTMLElement>(`[data-out="${name}"]`)!
+    const currencyLabel = root.querySelector<HTMLElement>('[data-energy-currency-label]')!
+    const number = (name: string) => Math.max(0, Number(field(name).value) || 0)
+    const money = (value: number) => {
+      const symbol = field('currency').value
+      const digits = value < 1 ? 3 : 2
+      const amount = value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: digits })
+      return symbol === '€' ? `${amount} €` : `${symbol}${amount}`
+    }
+    const kwh = (value: number) => `${value.toLocaleString(locale, { maximumFractionDigits: value < 10 ? 2 : 0 })} kWh`
+    let tracked = false
+
+    const update = () => {
+      const watts = number('watts')
+      const hours = Math.min(24, number('hours'))
+      const days = Math.min(31, Math.max(1, number('days')))
+      const load = Math.min(100, number('load')) / 100
+      const price = number('price')
+      const perDay = (watts / 1000) * hours * load
+      currencyLabel.textContent = field('currency').value
+      out('month').textContent = money(perDay * days * price)
+      out('day').textContent = money(perDay * price)
+      out('year').textContent = money(perDay * 365 * price)
+      out('hour').textContent = money((watts / 1000) * load * price)
+      out('kwhDay').textContent = kwh(perDay)
+      out('kwhMonth').textContent = kwh(perDay * days)
+      out('kwhYear').textContent = kwh(perDay * 365)
+    }
+
+    field('appliance').addEventListener('change', () => {
+      const option = (field('appliance') as HTMLSelectElement).selectedOptions[0]
+      if (option?.dataset.watts) {
+        field('watts').value = option.dataset.watts
+        field('hours').value = option.dataset.hours ?? '1'
+        field('load').value = option.dataset.load ?? '100'
+      }
+      update()
+    })
+    root.querySelector('form')!.addEventListener('input', (event) => {
+      const name = (event.target as HTMLInputElement).name
+      if (name === 'watts' || name === 'hours' || name === 'load') (field('appliance') as HTMLSelectElement).value = 'custom'
+      update()
+      if (!tracked) {
+        tracked = true
+        // Only that the tool was used, never the values.
+        track('energy_calculate', { language: lang })
+      }
+    })
+    root.querySelector('form')!.addEventListener('submit', (event) => event.preventDefault())
+    update()
+  }
+</script>

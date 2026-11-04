@@ -102,6 +102,9 @@ const links = (lang) =>
     ? { home: '/bg/', blog: '/bg/blog/', faq: '/bg/#faq' }
     : { home: '/', blog: '/blog/', faq: '/#faq' }
 const projectTagline = (p, lang) => (lang === 'bg' && p.tagline_bg) || p.tagline
+/** Site-bar label and link of a project: its section name ("Word games") rather than the product name. */
+const navLabel = (p, lang) => (lang === 'bg' && p.nav_bg) || p.nav || p.name
+const navHref = (p, lang) => (lang === 'bg' && (p.nav_href_bg || p.href_bg)) || p.href
 
 /** EN / БГ switch, shown only when the page lists the other language with hreflang. */
 function languageSwitch(lang, alternates) {
@@ -120,7 +123,7 @@ export function renderBar({ project = 'hub', main = 'main', lang = 'en', alterna
   const s = t(lang)
   const l = links(lang)
   const projectLinks = projects
-    .map((p) => `<a class="zy-bar__link" href="${escape(p.href)}" data-zy-project="${escape(p.slug)}"${current(p.slug === project)}>${escape(p.name)}</a>`)
+    .map((p) => `<a class="zy-bar__link" href="${escape(navHref(p, lang))}" data-zy-project="${escape(p.slug)}"${current(p.slug === project)}>${escape(navLabel(p, lang))}</a>`)
     .join('')
   return `<a class="zy-skip" href="#${escape(main)}">${s.skip}</a>
 <div class="zy-bar" data-zy-shell="bar">

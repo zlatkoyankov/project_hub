@@ -210,7 +210,7 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
             ) : (
               <a class="tool-tile" href={tool.href[lang]}>
                 <span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon!]} /></span>
-                <strong>{tool.name[lang]}</strong>
+                <strong>{tool.name[lang]} {tool.isNew && <span class="badge badge--new">{t.new}</span>}</strong>
                 <span>{tool.description[lang]}</span>
               </a>
             )}

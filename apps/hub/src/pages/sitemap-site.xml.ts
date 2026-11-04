@@ -13,6 +13,8 @@ export async function GET() {
   const entries: Entry[] = [
     { path: '/', alternates: pair('/', '/bg/') },
     { path: '/bg/', alternates: pair('/', '/bg/') },
+    { path: '/energy-cost-calculator/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },
+    { path: '/bg/razhod-na-tok/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },
     { path: '/about/' },
     { path: '/privacy/' },
     { path: '/terms/' },

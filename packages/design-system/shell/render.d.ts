@@ -16,6 +16,10 @@ export interface Project {
   eyebrow_bg?: string
   linkLabel_bg?: string
   href_bg?: string
+  /** Site-bar section label ("Word games") and its Bulgarian version and link. */
+  nav?: string
+  nav_bg?: string
+  nav_href_bg?: string
 }
 export declare const projects: Project[]
 export declare const config: { adsense?: { client?: string }; analytics?: Record<string, string> }
