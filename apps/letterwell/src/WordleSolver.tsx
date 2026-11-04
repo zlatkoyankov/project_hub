@@ -257,7 +257,7 @@ function WordleSolver({ language }: { language: Language }) {
               <div className="examples openers">
                 <span>{text.openersTitle}</span>
                 {OPENERS[language].map((word) => (
-                  <button className="example-button" type="button" key={word} onClick={() => addGuess(word)}>{word}</button>
+                  <button className="example-button zy-key" type="button" key={word} onClick={() => addGuess(word)}>{word}</button>
                 ))}
               </div>
             )}

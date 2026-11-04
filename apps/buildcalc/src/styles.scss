@@ -1042,32 +1042,6 @@ p {
 
 
 
-.calc-hero {
-  position: relative;
-  isolation: isolate;
-  padding: 2.2rem 0 2.6rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.calc-hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 85%, transparent) 50%, color-mix(in srgb, var(--bg) 45%, transparent) 100%),
-    linear-gradient(0deg, var(--bg) 0%, transparent 40%),
-    var(--hero-img) center / cover no-repeat;
-}
-
-.calc-hero .calculator-intro {
-  max-width: 44rem;
-}
-
-.calc-hero h1 {
-  margin: 0.2rem 0 0.6rem;
-}
-
 .guide-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
@@ -1163,5 +1137,268 @@ html.is-embed .calculator-layout {
   .embed-section {
     grid-template-columns: 1fr 1.4fr;
     align-items: start;
+  }
+}
+
+
+/* ── Shared look (2026 redesign) ─────────────────────────────────────────
+   One site bar on top (from the design system), then a slim BuildCalc bar;
+   raised buttons, keycap secondary buttons, a dark results card. */
+.site-header {
+  position: static;
+  background: var(--bg);
+  backdrop-filter: none;
+}
+
+.header-inner {
+  width: min(100%, 1240px);
+  min-height: 3.5rem;
+  padding-inline: clamp(16px, 4vw, 40px);
+}
+
+.brand {
+  font-size: 1rem;
+}
+
+.main-nav {
+  gap: 0.25rem;
+}
+
+.main-nav a {
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+}
+
+.main-nav a:hover {
+  background: var(--surface-hover);
+}
+
+.main-nav a.active {
+  color: var(--accent-dark);
+  background: var(--accent-soft);
+}
+
+.button {
+  min-height: 46px;
+  justify-content: center;
+  padding: 0 1.2rem;
+  color: var(--cta-ink);
+  background: linear-gradient(180deg, var(--cta-top), var(--cta-bottom));
+  border: 0;
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--game-ink) 45%, transparent),
+    0 3px 0 var(--cta-edge),
+    0 10px 20px color-mix(in srgb, var(--cta-bottom) 30%, transparent);
+  transition: transform 120ms, box-shadow 120ms, filter 150ms;
+}
+
+.button:hover,
+.button:focus-visible {
+  color: var(--cta-ink);
+  background: linear-gradient(180deg, var(--cta-top), var(--cta-bottom));
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.button:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--game-ink) 35%, transparent),
+    0 1px 0 var(--cta-edge),
+    0 4px 10px color-mix(in srgb, var(--cta-bottom) 26%, transparent);
+}
+
+.button-outline,
+.button-quiet,
+.button-outline:hover,
+.button-quiet:hover,
+.button-outline:focus-visible,
+.button-quiet:focus-visible {
+  color: var(--text);
+  background: linear-gradient(180deg, var(--surface), var(--surface-soft));
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 0 var(--border-strong), 0 4px 10px color-mix(in srgb, var(--shadow-color) 6%, transparent);
+  filter: none;
+}
+
+.button-small {
+  min-height: 40px;
+  padding: 0 0.95rem;
+}
+
+.related-links a,
+.category-list a {
+  background: linear-gradient(180deg, var(--surface), var(--surface-soft));
+  box-shadow: 0 2px 0 var(--border-strong);
+  transition: transform 120ms, box-shadow 120ms;
+}
+
+.related-links a:hover,
+.category-list a:hover {
+  transform: translateY(-1px);
+}
+
+.calculator-card {
+  border-radius: 22px;
+  transition: transform 200ms, box-shadow 200ms;
+}
+
+.calculator-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--shadow-color) 12%, transparent);
+}
+
+/* Calculator page header: icon, title and intro instead of a photo banner. */
+.calc-head {
+  padding: 1.6rem 0 0.4rem;
+}
+
+.calc-head__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.1rem;
+  margin-top: 0.9rem;
+}
+
+.calc-head__icon {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  color: var(--accent-dark);
+  background: linear-gradient(180deg, var(--surface), var(--accent-soft));
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 3px 0 var(--border-strong), 0 10px 20px color-mix(in srgb, var(--shadow-color) 8%, transparent);
+}
+
+.calc-head__icon svg {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.calc-head h1 {
+  margin: 0.1rem 0 0.4rem;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.1;
+}
+
+.calc-head p:last-child {
+  max-width: 44rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+/* Form and results */
+.calculator-form {
+  padding: 1.5rem;
+  border-radius: 24px;
+}
+
+.notice-card,
+.content-layout .prose > section,
+.content-aside {
+  border-radius: 20px;
+}
+
+.results-card {
+  padding: 1.5rem;
+  color: var(--inverse-text);
+  background: var(--inverse-bg);
+  border-color: transparent;
+  border-radius: 24px;
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--shadow-color) 22%, transparent);
+}
+
+.results-card h2,
+.results-card .result-summary,
+.results-card dt,
+.results-card dd {
+  color: var(--inverse-text);
+}
+
+.results-card .eyebrow,
+.results-card small,
+.results-card .result-placeholder,
+.results-card .sample-label,
+.results-card .estimate-caveat,
+.results-card .sample-result p {
+  color: var(--inverse-muted);
+}
+
+.results-card .result-icon {
+  color: var(--yellow-ink);
+  background: var(--yellow);
+}
+
+.results-card .result-summary {
+  margin-top: 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.results-card .result-list div {
+  border-top: 1px solid color-mix(in srgb, var(--inverse-text) 16%, transparent);
+}
+
+.results-card .sample-result {
+  border-color: color-mix(in srgb, var(--inverse-text) 24%, transparent);
+}
+
+.results-card .text-button {
+  min-height: 40px;
+  padding: 0 0.9rem;
+  color: var(--inverse-text);
+  border: 1px solid color-mix(in srgb, var(--inverse-text) 30%, transparent);
+  border-radius: 10px;
+}
+
+.results-card .text-button:hover {
+  background: color-mix(in srgb, var(--inverse-text) 10%, transparent);
+}
+
+.results-card .text-button:focus-visible {
+  outline-color: var(--yellow);
+}
+
+/* Headings in the site's display serif, like the rest of zyankov.eu. */
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.calculator-card h2,
+.calculator-card h3,
+.form-heading h2,
+.result-heading h2 {
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+@media (max-width: 560px) {
+  .calc-head__row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .calc-head__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
   }
 }

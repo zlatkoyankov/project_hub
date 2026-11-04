@@ -311,3 +311,109 @@
     transition: none;
   }
 }
+
+/* ── Shared raised look (2026 redesign) ──────────────────────────────────
+   .zy-cta   raised call-to-action button (colours from the --cta-* tokens)
+   .zy-key   quiet keycap-style button or chip
+   .zy-gloss glossy, slightly raised tile; set its background-color yourself */
+.zy-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 46px;
+  padding: 0 1.15rem;
+  color: var(--cta-ink);
+  background: linear-gradient(180deg, var(--cta-top), var(--cta-bottom));
+  border: 0;
+  border-radius: 12px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--game-ink) 45%, transparent),
+    0 3px 0 var(--cta-edge),
+    0 10px 20px color-mix(in srgb, var(--cta-bottom) 32%, transparent);
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 120ms, box-shadow 120ms, filter 150ms;
+}
+
+.zy-cta:hover:not(:disabled) {
+  color: var(--cta-ink);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.zy-cta:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--game-ink) 35%, transparent),
+    0 1px 0 var(--cta-edge),
+    0 4px 10px color-mix(in srgb, var(--cta-bottom) 28%, transparent);
+}
+
+.zy-cta:disabled {
+  color: var(--text-muted);
+  background: var(--surface-soft);
+  box-shadow: inset 0 0 0 1px var(--border-strong), inset 0 2px 4px color-mix(in srgb, var(--shadow-color) 12%, transparent);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.zy-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--surface), var(--surface-soft));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 2px 0 var(--border-strong), 0 4px 10px color-mix(in srgb, var(--shadow-color) 6%, transparent);
+  text-decoration: none;
+  transition: transform 120ms, box-shadow 120ms;
+}
+
+.zy-key:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 var(--border-strong), 0 8px 16px color-mix(in srgb, var(--shadow-color) 10%, transparent);
+}
+
+.zy-key:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--border-strong);
+}
+
+.zy-gloss {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--game-ink) 18%, transparent), transparent 60%);
+  box-shadow:
+    inset 0 2px 0 color-mix(in srgb, var(--game-ink) 34%, transparent),
+    inset 0 -3px 0 color-mix(in srgb, var(--shadow-color) 18%, transparent),
+    0 5px 12px color-mix(in srgb, var(--shadow-color) 18%, transparent);
+}
+
+.zy-gloss::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  left: 3px;
+  height: 45%;
+  border-radius: 7px 7px 50% 50% / 7px 7px 12px 12px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--game-ink) 36%, transparent), transparent);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zy-cta,
+  .zy-key {
+    transition: none;
+  }
+}
+
+.zy-cta:focus-visible,
+.zy-key:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 3px;
+}

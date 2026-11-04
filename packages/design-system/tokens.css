@@ -163,3 +163,18 @@
 :root[data-project='letterwell'] {
   --project-accent: var(--coral);
 }
+
+/* BuildCalc's raised buttons are green; everything else keeps the coral call to action. */
+:root[data-project='buildcalc'] {
+  --cta-top: #4f8466;
+  --cta-bottom: #3a6450;
+  --cta-edge: #23402f;
+  --cta-ink: #ffffff;
+}
+
+:root[data-theme='dark'][data-project='buildcalc'] {
+  --cta-top: #b9e0c7;
+  --cta-bottom: #8fc2a3;
+  --cta-edge: #5a8a6d;
+  --cta-ink: #10221a;
+}

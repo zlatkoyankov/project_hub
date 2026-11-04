@@ -38,7 +38,7 @@ describe('CalculatorPage', () => {
   it('renders only the calculator and a credit link when embedded', () => {
     const element = render('gravel-calculator', 'us', { embed: true }).nativeElement as HTMLElement;
     expect(element.querySelector('form.calculator-form')).not.toBeNull();
-    expect(element.querySelector('.calc-hero, .embed-section, .related-section, .calculator-faq')).toBeNull();
+    expect(element.querySelector('.calc-head, .embed-section, .related-section, .calculator-faq')).toBeNull();
     expect(element.querySelector('.embed-credit a')?.getAttribute('target')).toBe('_blank');
   });
 
