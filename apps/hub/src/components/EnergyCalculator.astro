@@ -62,6 +62,24 @@ const t = bg
       min: 'мин четене',
       currencyDefault: '€',
       priceDefault: '0.13',
+      name: 'Име в списъка',
+      qty: 'Брой',
+      qtyUnit: 'бр.',
+      add: 'Добави към списъка',
+      added: 'Добавено ✓',
+      listTitle: 'Моят списък с уреди',
+      listHint: 'Добави уредите един по един и сравни общата сума със сметката си. Махни отметката, за да изключиш уред от сумата. Списъкът се пази само в този браузър.',
+      empty: 'Списъкът е празен. Сметни уред по-горе и натисни „Добави към списъка“.',
+      cols: ['В сумата', 'Уред', 'kWh на месец', 'На месец'],
+      include: 'Включи в сумата',
+      remove: 'Махни',
+      total: 'Общо',
+      perYear: 'на година',
+      bill: 'Сметката ми за месеца',
+      billHint: 'Сумата за ток от последната фактура, без такси, ако искаш точно сравнение.',
+      billCompare: (share: string) => `Списъкът обяснява около ${share} от сметката ти.`,
+      billOver: (share: string) => `Списъкът е с ${share} над сметката ти. Може би някой уред работи по-малко, отколкото си въвел.`,
+      clear: 'Изчисти списъка',
     }
   : {
       title: 'Appliance Energy Cost Calculator: What Does It Cost to Run? | Zyankov.eu',
@@ -94,6 +112,24 @@ const t = bg
       min: 'min read',
       currencyDefault: '$',
       priceDefault: '0.19',
+      name: 'Name in your list',
+      qty: 'How many',
+      qtyUnit: 'pcs',
+      add: 'Add to my list',
+      added: 'Added ✓',
+      listTitle: 'My appliance list',
+      listHint: 'Add appliances one by one and compare the total with your bill. Untick an appliance to leave it out of the total. The list is kept only in this browser.',
+      empty: 'Your list is empty. Work out an appliance above and press “Add to my list”.',
+      cols: ['In total', 'Appliance', 'kWh per month', 'Per month'],
+      include: 'Include in the total',
+      remove: 'Remove',
+      total: 'Total',
+      perYear: 'per year',
+      bill: 'My monthly bill',
+      billHint: 'The electricity amount on your last bill, without fixed fees, for a fair comparison.',
+      billCompare: (share: string) => `Your list explains about ${share} of your bill.`,
+      billOver: (share: string) => `Your list comes to ${share} more than your bill. Some appliance may run less than you entered.`,
+      clear: 'Clear the list',
     }
 
 const posts = (await getPosts(lang)).filter((post) => post.data.tool === 'energy-cost-calculator')
@@ -127,12 +163,20 @@ const jsonLd = {
             <label for="energy-appliance">{t.appliance}</label>
             <select id="energy-appliance" name="appliance">
               {presets.map((preset) => (
-                <option value={preset.id} data-watts={preset.watts} data-hours={preset.hours} data-load={preset.load}>{bg ? preset.bg : preset.en}</option>
+                <option value={preset.id} data-watts={preset.watts} data-hours={preset.hours} data-load={preset.load} data-name={bg ? preset.bg : preset.en}>{bg ? preset.bg : preset.en}</option>
               ))}
               <option value="custom">{t.custom}</option>
             </select>
           </div>
           <div class="tool-fields">
+            <div class="tool-field">
+              <label for="energy-name">{t.name}</label>
+              <div class="tool-input"><input id="energy-name" name="name" type="text" maxlength="40" value={bg ? start.bg : start.en} /></div>
+            </div>
+            <div class="tool-field">
+              <label for="energy-qty">{t.qty}</label>
+              <div class="tool-input"><input id="energy-qty" name="qty" type="number" inputmode="numeric" min="1" max="99" step="1" value="1" /><span>{t.qtyUnit}</span></div>
+            </div>
             <div class="tool-field">
               <label for="energy-watts">{t.watts}</label>
               <div class="tool-input"><input id="energy-watts" name="watts" type="number" inputmode="decimal" min="0" step="any" value={start.watts} /><span>W</span></div>
@@ -175,8 +219,38 @@ const jsonLd = {
             <div><dt>{t.rows[4]}</dt><dd data-out="kwhMonth">–</dd></div>
             <div><dt>{t.rows[5]}</dt><dd data-out="kwhYear">–</dd></div>
           </dl>
+          <button class="zy-cta energy-add" type="button" data-energy-add data-added={t.added}>+ {t.add}</button>
           <p class="tool-result__caveat">{t.caveat}</p>
         </aside>
+      </section>
+
+      <section class="energy-list" aria-labelledby="energy-list-title" data-energy-list
+        data-include={t.include} data-remove={t.remove} data-bill-under={t.billCompare('{share}')} data-bill-over={t.billOver('{share}')} data-per-year={t.perYear}>
+        <div class="energy-list__head">
+          <div>
+            <h2 id="energy-list-title">{t.listTitle}</h2>
+            <p>{t.listHint}</p>
+          </div>
+          <button class="zy-key energy-list__clear" type="button" data-energy-clear hidden>{t.clear}</button>
+        </div>
+        <p class="energy-list__empty" data-energy-empty>{t.empty}</p>
+        <div class="energy-list__table" data-energy-table hidden>
+          <table>
+            <thead><tr><th scope="col">{t.cols[0]}</th><th scope="col">{t.cols[1]}</th><th scope="col">{t.cols[2]}</th><th scope="col">{t.cols[3]}</th><th scope="col"><span class="sr-only">{t.remove}</span></th></tr></thead>
+            <tbody data-energy-rows></tbody>
+            <tfoot>
+              <tr><th scope="row" colspan="2">{t.total}</th><td data-energy-total-kwh>–</td><td><strong data-energy-total>–</strong><small data-energy-total-year></small></td><td></td></tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="energy-bill" data-energy-billbox hidden>
+          <div class="tool-field">
+            <label for="energy-bill">{t.bill}</label>
+            <div class="tool-input"><input id="energy-bill" type="number" inputmode="decimal" min="0" step="any" aria-describedby="energy-bill-hint" /><span data-energy-bill-currency>{t.currencyDefault}</span></div>
+            <small id="energy-bill-hint">{t.billHint}</small>
+          </div>
+          <p class="energy-bill__result" data-energy-bill-result aria-live="polite"></p>
+        </div>
       </section>
 
       <section class="tool-notes">
@@ -237,12 +311,12 @@ const jsonLd = {
       const days = Math.min(31, Math.max(1, number('days')))
       const load = Math.min(100, number('load')) / 100
       const price = number('price')
-      const perDay = (watts / 1000) * hours * load
+      const perDay = (watts / 1000) * hours * load * Math.min(99, Math.max(1, Math.round(number('qty')) || 1))
       currencyLabel.textContent = field('currency').value
       out('month').textContent = money(perDay * days * price)
       out('day').textContent = money(perDay * price)
       out('year').textContent = money(perDay * 365 * price)
-      out('hour').textContent = money((watts / 1000) * load * price)
+      out('hour').textContent = money((watts / 1000) * load * price * Math.min(99, Math.max(1, Math.round(number('qty')) || 1)))
       out('kwhDay').textContent = kwh(perDay)
       out('kwhMonth').textContent = kwh(perDay * days)
       out('kwhYear').textContent = kwh(perDay * 365)
@@ -251,6 +325,7 @@ const jsonLd = {
     field('appliance').addEventListener('change', () => {
       const option = (field('appliance') as HTMLSelectElement).selectedOptions[0]
       if (option?.dataset.watts) {
+        field('name').value = option.dataset.name ?? ''
         field('watts').value = option.dataset.watts
         field('hours').value = option.dataset.hours ?? '1'
         field('load').value = option.dataset.load ?? '100'
@@ -260,6 +335,7 @@ const jsonLd = {
     root.querySelector('form')!.addEventListener('input', (event) => {
       const name = (event.target as HTMLInputElement).name
       if (name === 'watts' || name === 'hours' || name === 'load') (field('appliance') as HTMLSelectElement).value = 'custom'
+      if (name === 'currency') renderList()
       update()
       if (!tracked) {
         tracked = true
@@ -268,6 +344,104 @@ const jsonLd = {
       }
     })
     root.querySelector('form')!.addEventListener('submit', (event) => event.preventDefault())
+
+    // ── My appliance list: add the current appliance, tick what counts, compare with the bill.
+    interface Item { id: string; name: string; qty: number; watts: number; hours: number; load: number; kwhMonth: number; costMonth: number; include: boolean }
+    const STORE = 'zyankov-energy-list'
+    const list = document.querySelector<HTMLElement>('[data-energy-list]')!
+    const rows = list.querySelector<HTMLElement>('[data-energy-rows]')!
+    const billInput = list.querySelector<HTMLInputElement>('#energy-bill')!
+    const show = (selector: string, visible: boolean) => { list.querySelector<HTMLElement>(selector)!.hidden = !visible }
+    const load = (): Item[] => {
+      try { return JSON.parse(localStorage.getItem(STORE) ?? '[]') as Item[] } catch { return [] }
+    }
+    const save = () => {
+      try { localStorage.setItem(STORE, JSON.stringify(items)) } catch { /* private mode: the list lasts for this visit */ }
+    }
+    let items = load()
+    const fmt = (value: number, digits = 1) => value.toLocaleString(locale, { maximumFractionDigits: digits })
+
+    function renderList() {
+      rows.replaceChildren(...items.map((item) => {
+        const row = document.createElement('tr')
+        if (!item.include) row.className = 'is-off'
+        const check = document.createElement('input')
+        check.type = 'checkbox'
+        check.checked = item.include
+        check.setAttribute('aria-label', `${list.dataset.include}: ${item.name}`)
+        check.addEventListener('change', () => { item.include = check.checked; save(); renderList() })
+        const remove = document.createElement('button')
+        remove.type = 'button'
+        remove.className = 'energy-remove'
+        remove.textContent = '×'
+        remove.setAttribute('aria-label', `${list.dataset.remove}: ${item.name}`)
+        remove.addEventListener('click', () => { items = items.filter((other) => other.id !== item.id); save(); renderList() })
+        const cells = [
+          check,
+          Object.assign(document.createElement('span'), { className: 'energy-name', textContent: `${item.qty > 1 ? `${item.qty} × ` : ''}${item.name}` }),
+          document.createTextNode(fmt(item.kwhMonth)),
+          document.createTextNode(money(item.costMonth)),
+          remove,
+        ]
+        const detail = document.createElement('small')
+        detail.textContent = `${fmt(item.watts, 0)} W · ${fmt(item.hours, 2)} h · ${fmt(item.load, 0)}%`
+        cells.forEach((cell, index) => {
+          const td = document.createElement('td')
+          td.append(cell)
+          if (index === 1) td.append(detail)
+          row.append(td)
+        })
+        return row
+      }))
+      const included = items.filter((item) => item.include)
+      const totalKwh = included.reduce((sum, item) => sum + item.kwhMonth, 0)
+      const totalCost = included.reduce((sum, item) => sum + item.costMonth, 0)
+      list.querySelector('[data-energy-total-kwh]')!.textContent = fmt(totalKwh)
+      list.querySelector('[data-energy-total]')!.textContent = money(totalCost)
+      list.querySelector('[data-energy-total-year]')!.textContent = `${money(totalCost * 12)} ${list.dataset.perYear}`
+      list.querySelector('[data-energy-bill-currency]')!.textContent = field('currency').value
+      show('[data-energy-empty]', items.length === 0)
+      show('[data-energy-table]', items.length > 0)
+      show('[data-energy-billbox]', items.length > 0)
+      show('[data-energy-clear]', items.length > 0)
+      const bill = Number(billInput.value)
+      const result = list.querySelector<HTMLElement>('[data-energy-bill-result]')!
+      if (bill > 0 && totalCost > 0) {
+        const share = totalCost / bill
+        result.textContent = share <= 1
+          ? (list.dataset.billUnder ?? '').replace('{share}', `${Math.round(share * 100)}%`)
+          : (list.dataset.billOver ?? '').replace('{share}', `${Math.round((share - 1) * 100)}%`)
+      } else {
+        result.textContent = ''
+      }
+    }
+
+    const addButton = root.querySelector<HTMLButtonElement>('[data-energy-add]')!
+    const addLabel = addButton.textContent
+    addButton.addEventListener('click', () => {
+      const qty = Math.min(99, Math.max(1, Math.round(number('qty')) || 1))
+      const watts = number('watts')
+      const hours = Math.min(24, number('hours'))
+      const days = Math.min(31, Math.max(1, number('days')))
+      const loadPct = Math.min(100, number('load'))
+      const kwhMonth = (watts / 1000) * hours * (loadPct / 100) * qty * days
+      const select = field('appliance') as HTMLSelectElement
+      const name = field('name').value.trim() || select.selectedOptions[0]?.textContent || ''
+      items.push({ id: `${Date.now()}-${items.length}`, name, qty, watts, hours, load: loadPct, kwhMonth, costMonth: kwhMonth * number('price'), include: true })
+      save()
+      renderList()
+      addButton.textContent = addButton.dataset.added ?? addLabel
+      window.setTimeout(() => { addButton.textContent = addLabel }, 1400)
+      track('energy_list_add', { language: lang, items: items.length })
+    })
+    list.querySelector('[data-energy-clear]')!.addEventListener('click', () => { items = []; save(); renderList() })
+    try { billInput.value = localStorage.getItem(`${STORE}-bill`) ?? '' } catch { /* storage unavailable */ }
+    billInput.addEventListener('input', () => {
+      try { localStorage.setItem(`${STORE}-bill`, billInput.value) } catch { /* storage unavailable */ }
+      renderList()
+    })
+
     update()
+    renderList()
   }
 </script>
