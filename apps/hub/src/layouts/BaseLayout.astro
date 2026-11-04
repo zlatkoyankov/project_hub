@@ -4,7 +4,7 @@ import '@zyankov/design-system/tokens.css'
 import '@zyankov/design-system/fonts.css'
 import '@zyankov/design-system/shell.css'
 import { renderBar, renderFooter, renderHead } from '@zyankov/design-system/render'
-import { absolute, type Lang } from '../lib/site'
+import { absolute, ogKey, type Lang } from '../lib/site'
 
 interface Props {
   title: string
@@ -25,6 +25,7 @@ interface Props {
 
 const { title, description, path, lang = 'en', alternates = {}, noAds = false, project = 'hub', ogType = 'website', jsonLd, rss } = Astro.props
 const url = absolute(path)
+const ogImage = absolute(`/og/${ogKey(path)}.png`)
 const alternateUrls = Object.fromEntries(Object.entries(alternates).map(([key, value]) => [key, absolute(value as string)]))
 const structured = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map((item) => ({
   '@context': 'https://schema.org',
@@ -50,7 +51,10 @@ const structured = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map
     <link rel="canonical" href={url} />
     {Object.entries(alternateUrls).map(([key, href]) => <link rel="alternate" hreflang={key} href={href} />)}
     {alternateUrls.en && alternateUrls.bg && <link rel="alternate" hreflang="x-default" href={alternateUrls.en} />}
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     {rss && <link rel="alternate" type="application/rss+xml" title="Zyankov.eu blog" href={rss} />}
     <meta property="og:type" content={ogType} />
     <meta property="og:locale" content={lang === 'bg' ? 'bg_BG' : 'en_US'} />
@@ -58,7 +62,11 @@ const structured = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map
     <meta property="og:url" content={url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     {structured.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item).replace(/</g, '\\u003c')} />)}

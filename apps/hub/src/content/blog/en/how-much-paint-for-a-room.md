@@ -5,6 +5,7 @@ date: 2026-11-04
 lang: en
 tags: [paint, home-improvement]
 tool: paint-calculator
+translation: bg/kolko-boya-mi-tryabva
 ---
 
 Buying paint by guesswork usually ends one of two ways: a half-painted wall on Sunday evening, or three unopened cans in the garage. Both are avoidable with ten minutes and a tape measure. Here is the method, with a worked example you can repeat in the [paint calculator](/calculators/paint-calculator/).

@@ -7,6 +7,9 @@ export type Post = CollectionEntry<'blog'>
 
 export const absolute = (path: string) => new URL(path, SITE).href
 
+/** Key of a page's sharing image: "/" → "home", "/bg/blog/x/" → "bg-blog-x". */
+export const ogKey = (path: string) => path.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home'
+
 /** Blog post slug: the file name inside src/content/blog/<lang>/. */
 export const postSlug = (post: Post) => post.id.split('/').pop() as string
 
@@ -44,6 +47,8 @@ export const TOOLS = {
   'concrete-calculator': { en: { href: '/calculators/concrete-calculator/', name: 'Concrete calculator', cta: 'Open the concrete calculator' }, bg: { href: '/calculators/concrete-calculator/', name: 'Калкулатор за бетон', cta: 'Към калкулатора за бетон' } },
   'tile-calculator': { en: { href: '/calculators/tile-calculator/', name: 'Tile calculator', cta: 'Open the tile calculator' }, bg: { href: '/calculators/tile-calculator/', name: 'Калкулатор за плочки', cta: 'Към калкулатора за плочки' } },
   'paint-calculator': { en: { href: '/calculators/paint-calculator/', name: 'Paint calculator', cta: 'Open the paint calculator' }, bg: { href: '/calculators/paint-calculator/', name: 'Калкулатор за боя', cta: 'Към калкулатора за боя' } },
+  'mulch-calculator': { en: { href: '/calculators/mulch-calculator/', name: 'Mulch calculator', cta: 'Open the mulch calculator' }, bg: { href: '/calculators/mulch-calculator/', name: 'Калкулатор за мулч', cta: 'Към калкулатора за мулч' } },
+  'square-footage-calculator': { en: { href: '/calculators/square-footage-calculator/', name: 'Square footage calculator', cta: 'Open the square footage calculator' }, bg: { href: '/calculators/square-footage-calculator/', name: 'Калкулатор за площ', cta: 'Към калкулатора за площ' } },
   'gravel-calculator': { en: { href: '/calculators/gravel-calculator/', name: 'Gravel calculator', cta: 'Open the gravel calculator' }, bg: { href: '/calculators/gravel-calculator/', name: 'Калкулатор за чакъл', cta: 'Към калкулатора за чакъл' } },
 } as const
 
