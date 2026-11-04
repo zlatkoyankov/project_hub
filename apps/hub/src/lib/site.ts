@@ -51,6 +51,8 @@ export const TOOLS = {
   'paint-calculator': { en: { href: '/calculators/paint-calculator/', name: 'Paint calculator', cta: 'Open the paint calculator' }, bg: { href: '/calculators/paint-calculator/', name: 'Калкулатор за боя', cta: 'Към калкулатора за боя' } },
   'mulch-calculator': { en: { href: '/calculators/mulch-calculator/', name: 'Mulch calculator', cta: 'Open the mulch calculator' }, bg: { href: '/calculators/mulch-calculator/', name: 'Калкулатор за мулч', cta: 'Към калкулатора за мулч' } },
   'square-footage-calculator': { en: { href: '/calculators/square-footage-calculator/', name: 'Square footage calculator', cta: 'Open the square footage calculator' }, bg: { href: '/calculators/square-footage-calculator/', name: 'Калкулатор за площ', cta: 'Към калкулатора за площ' } },
+  'laminate-flooring-calculator': { en: { href: '/calculators/laminate-flooring-calculator/', name: 'Laminate flooring calculator', cta: 'Open the flooring calculator' }, bg: { href: '/calculators/laminate-flooring-calculator/', name: 'Калкулатор за ламинат', cta: 'Към калкулатора за ламинат' } },
+  'drywall-calculator': { en: { href: '/calculators/drywall-calculator/', name: 'Drywall calculator', cta: 'Open the drywall calculator' }, bg: { href: '/calculators/drywall-calculator/', name: 'Калкулатор за гипсокартон', cta: 'Към калкулатора за гипсокартон' } },
   'gravel-calculator': { en: { href: '/calculators/gravel-calculator/', name: 'Gravel calculator', cta: 'Open the gravel calculator' }, bg: { href: '/calculators/gravel-calculator/', name: 'Калкулатор за чакъл', cta: 'Към калкулатора за чакъл' } },
 } as const
 
