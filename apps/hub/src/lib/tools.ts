@@ -101,11 +101,11 @@ export const TOOL_CATALOG: Tool[] = [
     id: 'energy',
     category: 'home',
     icon: 'energy',
-    href: { en: '/blog/', bg: '/bg/blog/' },
+    href: { en: '/energy-cost-calculator/', bg: '/bg/razhod-na-tok/' },
     name: { en: 'Appliance energy cost', bg: 'Разход на ток' },
-    description: { en: 'Coming soon: what a heater or boiler costs to run.', bg: 'Очаквайте скоро: колко струва печката или бойлерът.' },
-    keywords: 'electricity energy kwh heater boiler ток електричество печка бойлер',
-    comingSoon: true,
+    description: { en: 'What a heater, air conditioner or water heater costs to run.', bg: 'Колко струва печката, климатикът или бойлерът на месец.' },
+    keywords: 'electricity energy kwh heater boiler air conditioner cost ток електричество печка духалка бойлер климатик сметка',
+    isNew: true,
   },
 ]
 

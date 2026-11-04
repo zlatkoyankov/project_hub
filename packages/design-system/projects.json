@@ -16,7 +16,9 @@
     "image": "/letterwell-art.svg",
     "imageAlt": "Colorful letter tiles spelling CREATE",
     "linkLabel": "Explore Letterwell",
-    "linkLabel_bg": "Към Letterwell"
+    "linkLabel_bg": "Към Letterwell",
+    "nav": "Word games",
+    "nav_bg": "Думи и игри"
   },
   {
     "slug": "buildcalc",
@@ -34,6 +36,9 @@
     "image": "/calculators/images/hero.webp",
     "imageAlt": "Construction material estimates with BuildCalc",
     "linkLabel": "Explore BuildCalc",
-    "linkLabel_bg": "Към BuildCalc"
+    "linkLabel_bg": "Към BuildCalc",
+    "nav": "Home & DIY",
+    "nav_bg": "Дом и ремонт",
+    "nav_href_bg": "/bg/#home-diy"
   }
 ]
