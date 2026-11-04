@@ -30,6 +30,9 @@ function localizeHead(html, { language, url, meta, social }) {
   out = setMeta(out, 'property', 'og:description', social)
   out = setMeta(out, 'name', 'twitter:title', meta.title)
   out = setMeta(out, 'name', 'twitter:description', social)
+  const image = `${site}/og/${language === 'bg' ? 'letterwell-bg' : 'letterwell'}.png`
+  out = setMeta(out, 'property', 'og:image', image)
+  out = setMeta(out, 'name', 'twitter:image', image)
   const structured = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',

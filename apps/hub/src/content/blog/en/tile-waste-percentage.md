@@ -5,6 +5,7 @@ date: 2026-11-04
 lang: en
 tags: [tile, home-improvement]
 tool: tile-calculator
+translation: bg/kolko-plochki-mi-tryabvat
 ---
 
 Every tile job loses some tiles. Some are cut and the offcut is too small to use, some break, some have a chip you only notice after opening the box. The question is not whether to buy extra, but how much. "Add 10%" is the rule of thumb everyone repeats, and for many rooms it is fine. For others it is not enough. Here is how to decide.

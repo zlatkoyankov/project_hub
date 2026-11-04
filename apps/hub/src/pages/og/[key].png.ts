@@ -1,0 +1,29 @@
+// /og/<key>.png — sharing images for every hub page, every post and the two Letterwell pages.
+// <key> is the page path without slashes: "/" → home, "/bg/blog/x/" → bg-blog-x (see ogKey()).
+import type { APIRoute, GetStaticPaths } from 'astro'
+import { renderOg, type OgCard } from '../../lib/og'
+import { getPosts, ogKey, postPath } from '../../lib/site'
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const cards: Record<string, OgCard> = {
+    home: { kicker: 'Free browser tools', title: 'Small tools. Made with care.' },
+    bg: { kicker: 'Безплатни инструменти', title: 'Малки инструменти. Направени с грижа.' },
+    about: { kicker: 'About', title: 'Hi, I’m Zlatko. I build small, useful browser tools.' },
+    privacy: { kicker: 'Privacy policy', title: 'What Zyankov.eu processes and why' },
+    terms: { kicker: 'Terms of use', title: 'Terms for Zyankov.eu, Letterwell and BuildCalc' },
+    disclaimer: { kicker: 'Disclaimer', title: 'What the estimates and word lists can and cannot tell you' },
+    blog: { kicker: 'Blog', title: 'Worked examples for word games and home projects' },
+    'bg-blog': { kicker: 'Блог', title: 'Практични статии за думи и ремонти' },
+    letterwell: { kicker: 'Letterwell · word finder', title: 'Find words from your letters', footer: 'zyankov.eu/letterwell' },
+    'letterwell-bg': { kicker: 'Letterwell · търсачка за думи', title: 'Думи от букви на български', footer: 'zyankov.eu/letterwell/bg' },
+  }
+  for (const lang of ['en', 'bg'] as const) {
+    for (const post of await getPosts(lang)) {
+      cards[ogKey(postPath(post))] = { kicker: lang === 'bg' ? 'Блог' : 'Blog', title: post.data.title }
+    }
+  }
+  return Object.entries(cards).map(([key, card]) => ({ params: { key }, props: card }))
+}
+
+export const GET: APIRoute = async ({ props }) =>
+  new Response(new Uint8Array(await renderOg(props as OgCard)), { headers: { 'Content-Type': 'image/png' } })

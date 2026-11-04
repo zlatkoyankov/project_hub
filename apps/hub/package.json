@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
+    "@resvg/resvg-js": "^2.6.2",
     "@zyankov/design-system": "*",
-    "astro": "^7.4.5"
+    "astro": "^7.4.5",
+    "satori": "^0.63.2"
   },
   "devDependencies": {
     "oxlint": "^1.81.0",
