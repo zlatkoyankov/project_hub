@@ -28,6 +28,15 @@ export const routes: Routes = [
     data: { description: 'Browse free gravel, paint, tile, concrete, square footage, and mulch calculators for your next project.' },
   },
   {
+    // Chrome-free copy of a calculator for other sites to show in an iframe.
+    path: 'embed/:slug',
+    canMatch: [(_route: Route, segments: UrlSegment[]) => segments[0]?.path === 'embed' && CALCULATORS.some((calculator) => calculator.slug === segments[1]?.path)],
+    loadComponent: () => import('./pages/calculator').then((module) => module.CalculatorPage),
+    title: (route) => `${calculatorForRoute(route)?.title ?? 'Calculator'} | BuildCalc`,
+    data: { embed: true, noindex: true },
+    resolve: { description: calculatorDescriptionResolver },
+  },
+  {
     path: ':slug',
     canMatch: [(_route: Route, segments: UrlSegment[]) => CALCULATORS.some((calculator) => calculator.slug === segments[0]?.path)],
     loadComponent: () => import('./pages/calculator').then((module) => module.CalculatorPage),

@@ -1,7 +1,8 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { track } from '@zyankov/design-system/analytics';
+import { SITE_BASE_URL } from '../core/seo.service';
 import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.service';
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
@@ -121,6 +122,21 @@ export class CalculatorPage {
   protected readonly result = signal<Estimate | null>(null);
   protected readonly error = signal('');
   protected readonly copied = signal(false);
+  protected readonly embed = signal(false);
+  protected readonly embedUnits = signal<UnitSystem>('us');
+  protected readonly embedCopied = signal(false);
+  protected readonly fullUrl = computed(() => `${SITE_BASE_URL}/${this.calculator()?.slug ?? ''}/`);
+  protected readonly embedCode = computed(() => {
+    const calculator = this.calculator();
+    if (!calculator) return '';
+    const units = this.embedUnits() === 'metric' ? '?units=metric' : '';
+    return [
+      `<iframe src="${SITE_BASE_URL}/embed/${calculator.slug}/${units}" title="${calculator.title} by BuildCalc" width="100%" height="980" style="border:0;max-width:820px" loading="lazy"></iframe>`,
+      `<p style="font-size:14px"><a href="${this.fullUrl()}">${calculator.title}</a> by BuildCalc</p>`,
+      // Optional: lets the iframe grow to fit, so visitors never scroll inside it.
+      `<script>addEventListener("message",function(e){if(e.origin==="https://zyankov.eu"&&e.data&&e.data.type==="buildcalc-height"){document.querySelectorAll("iframe").forEach(function(f){if(f.contentWindow===e.source)f.style.height=e.data.height+"px"})}})</script>`,
+    ].join('\n');
+  });
   protected readonly areas = signal<AreaEntry[]>([{ length: 12, width: 10, unit: 'ft' }, { length: 14, width: 11, unit: 'ft' }]);
   private readonly unitPreference = inject(UnitPreferenceService);
   protected readonly unitSystem = this.unitPreference.system;
@@ -170,6 +186,25 @@ export class CalculatorPage {
         this.convertMeasurements(this.previousUnitSystem, system);
         this.previousUnitSystem = system;
       }
+    });
+    this.route.data.subscribe((data) => this.embed.set(data['embed'] === true));
+    const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      if (!this.embed()) return;
+      // ?units=metric|us picks the units for this visit without touching the visitor's saved choice.
+      const units = this.route.snapshot.queryParamMap.get('units');
+      if ((units === 'metric' || units === 'us') && units !== this.unitPreference.system()) {
+        this.unitPreference.useForVisit(units);
+        this.previousUnitSystem = units;
+        this.reset();
+      }
+      track('embed_view', { calculator: this.calculator()?.kind ?? 'unknown' });
+      // Tell the host page how tall the calculator is, so its iframe can fit it.
+      if (window.parent === window || typeof ResizeObserver === 'undefined') return;
+      const post = () => window.parent.postMessage({ type: 'buildcalc-height', height: Math.ceil(document.documentElement.scrollHeight) }, '*');
+      const observer = new ResizeObserver(post);
+      observer.observe(document.body);
+      destroyRef.onDestroy(() => observer.disconnect());
     });
     this.route.paramMap.subscribe((params) => {
       const calculator = CALCULATORS.find((item) => item.slug === params.get('slug')) ?? null;
@@ -239,10 +274,10 @@ export class CalculatorPage {
     const defaults = { ...DEFAULTS[kind] };
     if (metric) {
       for (const key of ['length', 'width']) {
-        if (defaults[key] !== undefined) defaults[key] = this.convertLength(defaults[key], 0, 2);
+        if (defaults[key] !== undefined) defaults[key] = Number(this.convertLength(defaults[key], 0, 2).toFixed(2));
       }
       for (const key of ['depth', 'tileLength', 'tileWidth', 'grout']) {
-        if (defaults[key] !== undefined) defaults[key] = this.convertLength(defaults[key], 1, 3);
+        if (defaults[key] !== undefined) defaults[key] = Number(this.convertLength(defaults[key], 1, 3).toFixed(key === 'grout' ? 2 : 1));
       }
       if (defaults['openings'] !== undefined) defaults['openings'] = this.convertArea(defaults['openings'], 0, 2);
       defaults['dimensionUnit'] = 2;
@@ -328,6 +363,24 @@ export class CalculatorPage {
       setTimeout(() => this.copied.set(false), 2500);
     } catch {
       this.error.set('Your browser could not copy the results. Select and copy them manually.');
+    }
+  }
+
+  protected setEmbedUnits(event: Event): void {
+    this.embedUnits.set((event.target as HTMLSelectElement).value === 'metric' ? 'metric' : 'us');
+  }
+
+  protected async copyEmbed(): Promise<void> {
+    const calculator = this.calculator();
+    if (!calculator) return;
+    try {
+      if (!navigator.clipboard) throw new Error('Clipboard access is unavailable.');
+      await navigator.clipboard.writeText(this.embedCode());
+      this.embedCopied.set(true);
+      setTimeout(() => this.embedCopied.set(false), 2500);
+      track('embed_copy', { calculator: calculator.kind, units: this.embedUnits() });
+    } catch {
+      this.embedCopied.set(false);
     }
   }
 

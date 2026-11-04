@@ -47,14 +47,23 @@ export function pageAlternates(html) {
   return alternates
 }
 
+// Calculators shown inside other sites' iframes: no site bar, footer or ads.
+const EMBED_PAGE = /(^|\/)embed\//
+
+/** True for pages built to be embedded in other sites. */
+export function isEmbedPage(path = '') {
+  return EMBED_PAGE.test(path.replace(/\\/g, '/'))
+}
+
 export function injectShell(html, { project = 'hub', main = 'main', path = '' } = {}) {
-  const ads = !isNoAdsPage(path) && !/<meta name="zy-ads" content="off"/.test(html)
+  const embed = isEmbedPage(path)
+  const ads = !embed && !isNoAdsPage(path) && !/<meta name="zy-ads" content="off"/.test(html)
   const lang = pageLanguage(html)
   const alternates = pageAlternates(html)
   let out = html
     .replace(slot('head'), () => renderHead({ ads }))
-    .replace(slot('bar'), () => renderBar({ project, main, lang, alternates }))
-    .replace(slot('footer'), () => renderFooter({ project, lang }))
+    .replace(slot('bar'), () => (embed ? '' : renderBar({ project, main, lang, alternates })))
+    .replace(slot('footer'), () => (embed ? '' : renderFooter({ project, lang })))
     .replace(slot('privacy-analytics'), () => renderPrivacyAnalytics())
   if (!/<html[^>]*\sdata-project=/.test(out)) {
     out = out.replace(/<html(\s|>)/, `<html data-project="${project}"$1`)
