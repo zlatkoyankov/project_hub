@@ -42,7 +42,12 @@ Run a script for one app with `-w`, for example `npm run build -w letterwell`.
 ## Deploy
 
 1. `npm run build`
-2. Upload the **contents** of `dist/` to the domain root.
+2. `npm run deploy` shows what would be uploaded and which files on the server are no longer in the build.
+3. `npm run deploy -- --yes` uploads `dist/` to `public_html` over FTPS and deletes those files.
+
+The FTP login is read from `.env.deploy` (copy `.env.deploy.example`; the file is in `.gitignore`).
+Dot files and folders on the server (`.well-known`, cPanel's `.htaccess` and `.user.ini` in subfolders),
+`php.ini`, `cgi-bin` and `error_log` are never deleted. Uploading `dist/` by hand still works.
 
 The deploy checklist in the improvement plan applies before every upload.
 
