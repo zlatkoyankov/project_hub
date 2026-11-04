@@ -1402,3 +1402,25 @@ h2 {
     border-radius: 15px;
   }
 }
+
+/* Laminate: optional baseboards and trim section */
+.trim-section {
+  margin: 1.4rem 0 0;
+  padding: 1rem 1rem 1.1rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 16px;
+}
+
+.trim-section legend {
+  padding: 0 0.4rem;
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+.trim-section .compact-select {
+  margin-top: 0;
+}
+
+.trim-fields {
+  margin-top: 0.9rem;
+}

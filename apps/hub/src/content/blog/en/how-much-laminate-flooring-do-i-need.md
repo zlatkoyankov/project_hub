@@ -46,6 +46,19 @@ Always round up. You cannot buy 0.24 of a box, and running short in the last row
 
 Most floating floors need an underlayment unless one is already attached to the planks. It is sold by area too, so plan for about the floor area itself (here 168 sq ft), plus a little for overlaps if the product requires them. On concrete subfloors a vapor barrier is often needed as well. Follow the flooring manufacturer's instructions, because using the wrong underlayment can void the warranty.
 
+## Baseboards and trim
+
+New flooring usually means new baseboards (skirting), and the small accessories are what people forget. For a rectangular room:
+
+- **Baseboard length** is the room's perimeter minus the doorways, plus about 10% for cuts. The 14 × 12 ft room has a 52 ft perimeter; with one 3 ft doorway that is 49 ft, or about 54 ft with waste. In 8 ft pieces that is **7 pieces**.
+- **Inside corners**: a rectangular room has four. Add one for each alcove corner.
+- **Outside corners** where a wall sticks out, such as a chimney breast or the end of a partition.
+- **End caps** where the baseboard stops at a door frame, usually two per doorway, if your system uses them.
+- **Connectors** where two pieces meet along a long wall.
+- **Transition strips** (thresholds) at each doorway where the new floor meets a different floor.
+
+Systems differ: some profiles are mitred at the corners and need no corner pieces, others clip into plastic corners and caps. Check what your baseboard range offers before you buy.
+
 ## Common mistakes
 
 - **Measuring from the baseboard instead of the wall.** Measure wall to wall; the expansion gap under the baseboard is small and the waste allowance covers it.
@@ -55,4 +68,4 @@ Most floating floors need an underlayment unless one is already attached to the 
 
 ## Work it out for your room
 
-Enter the room size, the coverage on your box and your waste allowance in the [laminate flooring calculator](/calculators/laminate-flooring-calculator/). It rounds up to whole boxes, shows how much flooring you are buying and can add the cost if you enter the price per box. It works in feet or meters.
+Enter the room size, the coverage on your box and your waste allowance in the [laminate flooring calculator](/calculators/laminate-flooring-calculator/). It rounds up to whole boxes, counts baseboard pieces, corners, end caps, connectors and transition strips, and can add the cost if you enter the prices. It works in feet or meters.

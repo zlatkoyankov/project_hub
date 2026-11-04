@@ -295,6 +295,37 @@ export interface FlooringInput {
   price?: number;
   dimensionUnit?: number;
   boxAreaUnit?: number;
+  /** Baseboards and trim around the room (lengths in the room's dimension unit). */
+  baseboards?: boolean;
+  doorways?: number;
+  doorWidth?: number;
+  pieceLength?: number;
+  insideCorners?: number;
+  outsideCorners?: number;
+  transitions?: number;
+  trimPrice?: number;
+}
+
+export interface TrimEstimate {
+  perimeter: number;
+  baseboardLength: number;
+  pieces: number;
+  connectors: number;
+  endCaps: number;
+}
+
+/** Baseboard pieces and accessories for a rectangular room; lengths in feet. */
+export function estimateTrim(length: number, width: number, doorways: number, doorWidth: number, pieceLength: number, waste: number): TrimEstimate {
+  positive(pieceLength, 'Baseboard piece length');
+  nonNegative(doorways, 'Doorways');
+  nonNegative(doorWidth, 'Doorway width');
+  const perimeter = 2 * (length + width);
+  const baseboardLength = Math.max(0, perimeter - doorways * doorWidth) * wasteMultiplier(waste);
+  const pieces = Math.ceil(baseboardLength / pieceLength - 1e-6);
+  // Joints along each wall where one piece meets the next (ignoring doorways, so a slight overestimate).
+  const perWall = (wall: number) => Math.max(0, Math.ceil(wall / pieceLength - 1e-6) - 1);
+  const connectors = 2 * perWall(length) + 2 * perWall(width);
+  return { perimeter, baseboardLength, pieces, connectors, endCaps: 2 * Math.round(doorways) };
 }
 
 export function calculateFlooring(values: FlooringInput): Estimate {
@@ -310,6 +341,24 @@ export function calculateFlooring(values: FlooringInput): Estimate {
   const boxes = Math.ceil(withWaste / boxArea - 1e-6);
   const price = values.price ?? 0;
   nonNegative(price, 'Price');
+  const trimPrice = values.trimPrice ?? 0;
+  nonNegative(trimPrice, 'Price per baseboard piece');
+  const trim = values.baseboards
+    ? estimateTrim(
+      values.length * dimensionFactor,
+      values.width * dimensionFactor,
+      Math.round(values.doorways ?? 0),
+      (values.doorWidth ?? 0) * dimensionFactor,
+      (values.pieceLength ?? 0) * dimensionFactor,
+      values.waste,
+    )
+    : null;
+  const insideCorners = Math.round(values.insideCorners ?? 0);
+  const outsideCorners = Math.round(values.outsideCorners ?? 0);
+  const transitions = Math.round(values.transitions ?? 0);
+  const cost = boxes * price + (trim ? trim.pieces * trimPrice : 0);
+  const count = (label: string, value: number, one: string, many: string, detail?: string) =>
+    ({ label, value, unit: value === 1 ? one : many, precision: 0, ...(detail ? { detail } : {}) });
 
   return {
     rows: [
@@ -317,9 +366,19 @@ export function calculateFlooring(values: FlooringInput): Estimate {
       { label: 'Area with waste', value: withWaste, unit: 'sq ft', precision: 2 },
       { label: 'Boxes needed', value: boxes, unit: boxes === 1 ? 'box' : 'boxes', precision: 0, detail: 'rounded up to whole boxes' },
       { label: 'Flooring in those boxes', value: boxes * boxArea, unit: 'sq ft', precision: 2 },
-      ...(price > 0 ? [{ label: 'Estimated material cost', value: boxes * price, unit: 'USD', precision: 2 }] : []),
+      ...(trim ? [
+        { label: 'Room perimeter', value: trim.perimeter, unit: 'ft', precision: 2 },
+        { label: 'Baseboard length', value: trim.baseboardLength, unit: 'ft', precision: 2, detail: 'minus doorways, plus waste' },
+        count('Baseboard pieces', trim.pieces, 'piece', 'pieces', 'rounded up to whole pieces'),
+        count('Inside corners', insideCorners, 'corner', 'corners'),
+        ...(outsideCorners > 0 ? [count('Outside corners', outsideCorners, 'corner', 'corners')] : []),
+        ...(trim.endCaps > 0 ? [count('End caps', trim.endCaps, 'cap', 'caps', 'where baseboards stop at a door frame')] : []),
+        ...(trim.connectors > 0 ? [count('Connectors', trim.connectors, 'connector', 'connectors', 'approximate; joints along the walls')] : []),
+      ] : []),
+      ...(transitions > 0 ? [count('Transition strips', transitions, 'strip', 'strips', 'at doorways to other floors')] : []),
+      ...(cost > 0 ? [{ label: 'Estimated material cost', value: cost, unit: 'USD', precision: 2 }] : []),
     ],
-    summary: `Plan for ${boxes} box${boxes === 1 ? '' : 'es'} (${(boxes * boxArea).toFixed(2)} sq ft) including waste.`,
+    summary: `Plan for ${boxes} box${boxes === 1 ? '' : 'es'} (${(boxes * boxArea).toFixed(2)} sq ft)${trim ? ` and ${trim.pieces} baseboard piece${trim.pieces === 1 ? '' : 's'}` : ''}, including waste.`,
   };
 }
 
