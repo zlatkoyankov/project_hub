@@ -62,6 +62,32 @@
               </div>
             }
           </div>
+          @if (hasTrim()) {
+            <fieldset class="trim-section">
+              <legend>Baseboards and trim</legend>
+              <label class="form-field compact-select"><span>Baseboards</span><select [ngModel]="values()['baseboards']" (ngModelChange)="setValue('baseboards', $event)" name="baseboards"><option [ngValue]="1">Include baseboards and trim</option><option [ngValue]="0">Flooring only</option></select></label>
+              @if (trimFields().length) {
+            <div class="fields-grid trim-fields">
+              @for (field of trimFields(); track field.key) {
+                <div class="form-field">
+                  <label [for]="'calc-' + field.key">{{ field.label }} @if (field.optional) {<span class="optional">(optional)</span>}</label>
+                  <div class="field-controls">
+                    <input [id]="'calc-' + field.key" type="number" [min]="field.min" [step]="field.step" [ngModel]="values()[field.key]" (ngModelChange)="setValue(field.key, $event)" [name]="field.key" [required]="!field.optional" inputmode="decimal" [attr.aria-describedby]="field.hint ? 'hint-' + field.key : null">
+                    @if (field.unitKey && field.unitOptions) {
+                      <select [ngModel]="values()[field.unitKey]" (ngModelChange)="setUnitValue(field.unitKey!, $event)" [name]="field.unitKey + '-' + field.key" [attr.aria-label]="field.label + ' unit'">
+                        @for (unit of field.unitOptions; track unit.value) {<option [ngValue]="unit.value">{{ unit.label }}</option>}
+                      </select>
+                    } @else {
+                      <span class="unit">{{ field.unit }}</span>
+                    }
+                  </div>
+                  @if (field.hint) {<small [id]="'hint-' + field.key">{{ field.hint }}</small>}
+                </div>
+              }
+            </div>
+              }
+            </fieldset>
+          }
           @if (calc.kind === 'gravel') {
             <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">{{ unitSystem() === 'metric' ? 'metric tonne' : 'US ton' }}</option><option [ngValue]="1">{{ unitSystem() === 'metric' ? 'cubic meter' : 'cubic yard' }}</option></select></label>
           }

@@ -20,6 +20,8 @@ interface Field {
   optional?: boolean;
   unitKey?: string;
   unitOptions?: { value: number; label: string }[];
+  /** Fields shown in a separate, optional section (laminate baseboards and trim). */
+  group?: 'trim';
 }
 
 interface AreaEntry {
@@ -98,6 +100,13 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'boxArea', label: 'Coverage per box', unit: 'sq ft', unitKey: 'boxAreaUnit', unitOptions: AREA_UNITS, min: 0.01, step: 0.01, hint: 'Printed on the box, for example 20 sq ft or 2.2 m².' },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1, hint: 'About 10% for a straight layout; more for diagonal or herringbone.' },
     { key: 'price', label: 'Price per box', unit: '$', min: 0, step: 0.01, optional: true },
+    { key: 'doorways', label: 'Doorways', unit: 'doors', min: 0, step: 1, group: 'trim', hint: 'Baseboards stop at each door frame.' },
+    { key: 'doorWidth', label: 'Doorway width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0, step: 0.1, group: 'trim' },
+    { key: 'pieceLength', label: 'Baseboard piece length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1, group: 'trim', hint: 'Check what your store sells, for example 8 ft or 2.5 m.' },
+    { key: 'insideCorners', label: 'Inside corners', unit: 'corners', min: 0, step: 1, group: 'trim', hint: 'A rectangular room has 4.' },
+    { key: 'outsideCorners', label: 'Outside corners', unit: 'corners', min: 0, step: 1, group: 'trim', hint: 'Where a wall sticks out, such as a chimney breast or alcove.' },
+    { key: 'transitions', label: 'Transition strips', unit: 'strips', min: 0, step: 1, group: 'trim', hint: 'At doorways where the floor meets a different floor.' },
+    { key: 'trimPrice', label: 'Price per baseboard piece', unit: '$', min: 0, step: 0.01, optional: true, group: 'trim' },
   ],
   drywall: [
     { key: 'length', label: 'Room length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
@@ -123,7 +132,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
   concrete: { length: 10, width: 10, depth: 4, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   area: {},
   mulch: { length: 10, width: 10, depth: 3, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
-  flooring: { length: 14, width: 12, boxArea: 20, waste: 10, price: 0, dimensionUnit: 0, boxAreaUnit: 0 },
+  flooring: { length: 14, width: 12, boxArea: 20, waste: 10, price: 0, dimensionUnit: 0, boxAreaUnit: 0, baseboards: 1, doorways: 1, doorWidth: 3, pieceLength: 8, insideCorners: 4, outsideCorners: 0, transitions: 1, trimPrice: 0 },
   drywall: { length: 12, width: 10, height: 8, openings: 21, includeCeiling: 0, sheetSize: 0, waste: 10, price: 0, dimensionUnit: 0, openingsUnit: 0 },
 };
 
@@ -158,7 +167,7 @@ export class CalculatorPage {
   private readonly unitPreference = inject(UnitPreferenceService);
   protected readonly unitSystem = this.unitPreference.system;
   private previousUnitSystem: UnitSystem = this.unitPreference.system();
-  protected readonly fields = computed(() => {
+  private readonly allFields = computed(() => {
     const kind = this.calculator()?.kind;
     const system = this.unitPreference.system();
     return kind && kind !== 'area'
@@ -175,6 +184,11 @@ export class CalculatorPage {
       }))
       : [];
   });
+  protected readonly fields = computed(() => this.allFields().filter((field) => !field.group));
+  /** Laminate baseboards and trim: shown only when the section is switched on. */
+  protected readonly trimFields = computed(() => this.number(this.values(), 'baseboards') === 1 ? this.allFields().filter((field) => field.group === 'trim') : []);
+  protected readonly hasTrim = computed(() => this.calculator()?.kind === 'flooring');
+
   protected readonly formattedRows = computed(() => (this.result()?.rows ?? [])
     .filter((row) => !(this.unitPreference.system() === 'metric' && row.label === 'Metric equivalent'))
     .map((row) => {
@@ -194,7 +208,8 @@ export class CalculatorPage {
     if ((calculator.kind === 'concrete' || calculator.kind === 'mulch') && volume) return `${volume.displayValue} including waste.`;
     const boxes = rows.find((row) => row.label === 'Boxes needed');
     const boxed = rows.find((row) => row.label === 'Flooring in those boxes');
-    if (calculator.kind === 'flooring' && boxes && boxed) return `Plan for ${boxes.displayValue} (${boxed.displayValue}) including waste.`;
+    const pieces = rows.find((row) => row.label === 'Baseboard pieces');
+    if (calculator.kind === 'flooring' && boxes && boxed) return `Plan for ${boxes.displayValue} (${boxed.displayValue})${pieces ? ` and ${pieces.displayValue} of baseboard` : ''}, including waste.`;
     if (calculator.kind === 'gravel' && volume) return `${volume.displayValue}${weight ? ` (about ${weight.displayValue})` : ''} including waste.`;
     return result.summary;
   });
@@ -244,7 +259,7 @@ export class CalculatorPage {
       const unitKey = key;
       const previousUnit = this.number(current, unitKey);
       const valueKeys = ({
-        dimensionUnit: ['length', 'width', 'height'],
+        dimensionUnit: ['length', 'width', 'height', 'doorWidth', 'pieceLength'],
         boxAreaUnit: ['boxArea'],
         depthUnit: ['depth'],
         tileUnit: ['tileLength', 'tileWidth'],
@@ -298,6 +313,10 @@ export class CalculatorPage {
     if (metric) {
       for (const key of ['length', 'width', 'height']) {
         if (defaults[key] !== undefined) defaults[key] = Number(this.convertLength(defaults[key], 0, 2).toFixed(2));
+      }
+      if (kind === 'flooring') {
+        defaults['doorWidth'] = 0.9;
+        defaults['pieceLength'] = 2.5;
       }
       if (defaults['boxArea'] !== undefined) {
         defaults['boxArea'] = Number(this.convertArea(defaults['boxArea'], 0, 2).toFixed(2));
@@ -421,7 +440,7 @@ export class CalculatorPage {
     const targetSmall = to === 'us' ? 1 : 3;
     const targetArea = to === 'us' ? 0 : 2;
 
-    for (const key of ['length', 'width', 'height']) {
+    for (const key of ['length', 'width', 'height', 'doorWidth', 'pieceLength']) {
       if (values[key] !== undefined) {
         values[key] = this.convertLength(this.number(values, key), this.number(values, 'dimensionUnit'), targetLength);
       }
@@ -524,6 +543,7 @@ export class CalculatorPage {
       'cu yd': { label: row.label, unit: 'cu m', factor: 0.764554858, precision: 3 },
       'US tons': { label: row.label, unit: 'metric tonnes', factor: 0.90718474, precision: 2 },
       gallons: { label: row.label, unit: 'liters', factor: 3.785411784, precision: 2 },
+      ft: { label: row.label, unit: 'm', factor: 0.3048, precision: 2 },
     };
     const conversion = conversions[row.unit];
     if (!conversion) return row;
@@ -616,6 +636,14 @@ export class CalculatorPage {
       price: this.number(values, 'price'),
       dimensionUnit: this.number(values, 'dimensionUnit'),
       boxAreaUnit: this.number(values, 'boxAreaUnit'),
+      baseboards: this.number(values, 'baseboards') === 1,
+      doorways: this.number(values, 'doorways'),
+      doorWidth: this.number(values, 'doorWidth'),
+      pieceLength: this.number(values, 'pieceLength'),
+      insideCorners: this.number(values, 'insideCorners'),
+      outsideCorners: this.number(values, 'outsideCorners'),
+      transitions: this.number(values, 'transitions'),
+      trimPrice: this.number(values, 'trimPrice'),
     };
   }
 

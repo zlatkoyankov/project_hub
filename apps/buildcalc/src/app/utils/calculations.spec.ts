@@ -160,4 +160,26 @@ describe('calculation utilities', () => {
   it('rejects openings larger than the walls', () => {
     expect(() => calculateDrywall({ length: 2, width: 2, height: 2, openings: 100, includeCeiling: false, sheetSize: 0, waste: 0 })).toThrow();
   });
+
+  it('adds baseboard pieces, corners, end caps and connectors for laminate', () => {
+    const result = calculateFlooring({
+      length: 14, width: 12, waste: 10, boxArea: 20,
+      baseboards: true, doorways: 1, doorWidth: 3, pieceLength: 8, insideCorners: 4, outsideCorners: 0, transitions: 1,
+    });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value;
+    expect(row('Room perimeter')).toBeCloseTo(52, 6);
+    expect(row('Baseboard length')).toBeCloseTo(53.9, 6);
+    expect(row('Baseboard pieces')).toBe(7);
+    expect(row('Inside corners')).toBe(4);
+    expect(row('Outside corners')).toBeUndefined();
+    expect(row('End caps')).toBe(2);
+    expect(row('Connectors')).toBe(4);
+    expect(row('Transition strips')).toBe(1);
+    expect(result.summary).toContain('7 baseboard pieces');
+  });
+
+  it('leaves trim out when baseboards are off', () => {
+    const result = calculateFlooring({ length: 14, width: 12, waste: 10, boxArea: 20, baseboards: false });
+    expect(result.rows.some((item) => item.label === 'Baseboard pieces')).toBe(false);
+  });
 });
