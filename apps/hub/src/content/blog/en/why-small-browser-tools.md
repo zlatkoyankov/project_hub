@@ -4,7 +4,7 @@ description: 'What Zyankov.eu is for, why each tool does one job, runs in your b
 date: 2026-11-04
 lang: en
 tags: [about, projects]
-draft: true
+draft: false
 ---
 
 <!-- DRAFT: Zlatko, please rewrite this in your own words before publishing (set draft: false). -->
