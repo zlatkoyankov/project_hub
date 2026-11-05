@@ -1,0 +1,336 @@
+/* Playful, decorative art for the word tools. Everything here is aria-hidden. */
+
+.intro,
+.wordle-intro {
+  position: relative;
+  isolation: isolate;
+}
+
+.play-decor {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.play-cluster {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  gap: 8px;
+  transform: translateY(-50%);
+}
+
+.play-cluster--left {
+  left: 0;
+}
+
+.play-cluster--right {
+  right: 0;
+}
+
+.play-tile,
+.cross-cell,
+.comb-hex {
+  position: relative;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.play-tile {
+  width: 42px;
+  height: 42px;
+  color: var(--tile-ink);
+  background: var(--tile-white);
+  border-radius: 8px;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--shadow-color) 22%, transparent), var(--shadow-soft);
+  font-size: 21px;
+  rotate: calc((var(--i) - 1.5) * 6deg);
+  translate: 0 calc(var(--i) * var(--i) * -2px + 6px);
+  animation: play-bob 5.5s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.9s);
+}
+
+.play-cluster--right .play-tile {
+  rotate: calc((1.5 - var(--i)) * 6deg);
+  translate: 0 calc((3 - var(--i)) * (3 - var(--i)) * -2px + 6px);
+}
+
+.play-tile small {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.tone-yellow { background: var(--tile-yellow); }
+.tone-coral { background: var(--tile-coral); }
+.tone-blue { background: var(--tile-blue); }
+.tone-mint { background: var(--tile-mint); }
+.tone-white { background: var(--tile-white); }
+
+.tone-correct,
+.tone-present,
+.tone-absent {
+  color: var(--game-ink);
+  border-radius: 4px;
+  box-shadow: var(--shadow-soft);
+  font-family: var(--font-body);
+  font-weight: 800;
+}
+
+.tone-correct { background: var(--game-correct); }
+.tone-present { background: var(--game-present); }
+.tone-absent { background: var(--game-absent); }
+
+.tone-blank {
+  color: var(--text-subtle);
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 4px;
+  box-shadow: none;
+  font-family: var(--font-body);
+  font-weight: 700;
+}
+
+/* Mini crossword */
+.play-cross {
+  display: grid;
+  grid-template-columns: repeat(3, 32px);
+  gap: 0;
+  border: 2px solid var(--line-strong);
+  background: var(--line-strong);
+  rotate: -6deg;
+  box-shadow: var(--shadow-soft);
+}
+
+.cross-cell {
+  width: 32px;
+  height: 32px;
+  color: var(--text);
+  background: var(--surface);
+  outline: 1px solid var(--line-strong);
+  font-size: 17px;
+}
+
+.cross-cell.is-block {
+  background: var(--line-strong);
+}
+
+.cross-cell small {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-family: var(--font-body);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Honeycomb + bee */
+.play-comb {
+  gap: 0;
+  align-items: center;
+}
+
+.comb-hex {
+  width: 50px;
+  height: 56px;
+  margin-inline: -2px;
+  color: var(--yellow-ink);
+  background: var(--tile-yellow);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  font-size: 21px;
+  translate: 0 calc((var(--i) - 1) * (var(--i) - 1) * 14px - 6px);
+  animation: play-bob 6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -1.4s);
+}
+
+.comb-hex.is-centre {
+  color: var(--cta-ink);
+  background: var(--coral);
+}
+
+.play-bee-wrap {
+  width: 170px;
+  height: 80px;
+  scale: -1 1; /* fly towards the heading */
+}
+
+.bee-trail {
+  position: absolute;
+  inset: 0;
+  width: 150px;
+  height: 66px;
+}
+
+.bee-trail path {
+  fill: none;
+  stroke: var(--text-subtle);
+  stroke-width: 2;
+  stroke-dasharray: 2 7;
+  stroke-linecap: round;
+  opacity: 0.7;
+}
+
+.play-bee {
+  width: 58px;
+  height: 44px;
+  overflow: visible;
+}
+
+.play-bee-wrap .play-bee {
+  scale: -1 1; /* the wrap is mirrored; keep the bee facing the heading */
+  position: absolute;
+  top: -18px;
+  right: 0;
+  animation: bee-hover 3.2s ease-in-out infinite;
+}
+
+.bee-body { fill: var(--yellow); stroke: var(--line-strong); stroke-width: 2; }
+.bee-stripe { fill: var(--line-strong); }
+.bee-wing { fill: color-mix(in srgb, var(--surface) 80%, transparent); stroke: var(--line-strong); stroke-width: 1.6; animation: bee-wing 0.25s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: bottom center; }
+.bee-eye { fill: var(--line-strong); }
+.bee-smile { fill: none; stroke: var(--line-strong); stroke-width: 1.6; stroke-linecap: round; }
+
+/* Empty-state art */
+.empty-art {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+}
+
+.empty-art .play-tile {
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  translate: 0;
+  rotate: calc((var(--i) - 2) * 4deg);
+  animation: play-flip 3.6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.18s);
+}
+
+.empty-art--cross {
+  gap: 0;
+  border: 2px solid var(--line-strong);
+  min-height: 0;
+}
+
+.empty-art--cross .cross-cell:nth-child(2) {
+  color: var(--coral-strong);
+  animation: play-blink 1.2s steps(2, jump-none) infinite;
+}
+
+.empty-art--bee .play-bee {
+  width: 64px;
+  height: 48px;
+  animation: bee-hover 3.2s ease-in-out infinite;
+}
+
+@keyframes play-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes play-flip {
+  0%, 70%, 100% { transform: rotateX(0); }
+  80% { transform: rotateX(90deg); }
+  90% { transform: rotateX(0); }
+}
+
+@keyframes play-blink {
+  50% { opacity: 0.25; }
+}
+
+@keyframes bee-hover {
+  0%, 100% { transform: translate(0, 0) rotate(-4deg); }
+  50% { transform: translate(-6px, -5px) rotate(4deg); }
+}
+
+@keyframes bee-wing {
+  to { transform: scaleY(0.7); }
+}
+
+/* The finder hero has the CREATE art on the right; keep only a few tiles on the far left. */
+.play-decor--finder .play-cluster--right {
+  display: none;
+}
+
+.play-decor--finder .play-cluster--left {
+  top: 14px;
+  left: 0;
+  transform: none;
+  opacity: 0.85;
+}
+
+.play-decor--finder .play-tile {
+  width: 30px;
+  height: 30px;
+  font-size: 15px;
+}
+
+/* Medium widths: smaller and softer so the heading stays the focus. */
+@media (max-width: 1100px) {
+  .wordle-intro .play-cluster {
+    scale: 0.8;
+    opacity: 0.8;
+  }
+
+  .wordle-intro .play-cluster--left { transform-origin: left center; }
+  .wordle-intro .play-cluster--right { transform-origin: right center; }
+}
+
+/* Phones: one small row above the heading instead of side clusters. */
+@media (max-width: 860px) {
+  .play-decor {
+    position: static;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 14px;
+  }
+
+  .play-decor .play-cluster {
+    position: relative;
+    inset: auto;
+    transform: none;
+    scale: 0.75;
+    opacity: 1;
+  }
+
+  .play-decor .play-cluster--right:not(.play-bee-wrap) {
+    display: none;
+  }
+
+  .play-decor .play-bee-wrap .bee-trail {
+    width: 100%;
+  }
+
+  .play-decor .play-bee-wrap {
+    width: 120px;
+    scale: -0.75 0.75;
+  }
+
+  .play-decor--finder {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .play-tile,
+  .comb-hex,
+  .play-bee,
+  .bee-wing,
+  .empty-art .play-tile,
+  .empty-art--cross .cross-cell {
+    animation: none !important;
+  }
+}
