@@ -49,9 +49,9 @@ const page = flooring
       en: '/calculators/drywall-calculator/',
       tool: 'drywall-calculator',
       title: 'Калкулатор за гипсокартон: колко плоскости ми трябват | Zyankov.eu',
-      description: 'Изчисли колко плоскости гипсокартон трябват за стените и тавана на стаята, без вратите и прозорците, с фира. В метри и евро.',
+      description: 'Изчисли плоскостите гипсокартон за стените и тавана, CW и UW профилите, винтовете, лентата и шпакловката за фугите. В метри и евро.',
       h1: 'Колко гипсокартон ми трябва?',
-      intro: 'Въведи размерите на стаята, височината на стените и отворите. Избери размер на плоскостта и виж колко цели плоскости трябват за стените и тавана.',
+      intro: 'Въведи размерите на стаята, височината на стените и отворите. Виж колко цели плоскости трябват за стените и тавана, и колко профили, винтове, лента и шпакловка да купиш.',
       big: 'плоскости',
       bigOne: 'плоскост',
       formula: 'плоскости = (стени + таван − отвори) × (1 + фира) ÷ площ на плоскост',
@@ -90,6 +90,15 @@ const trimFields: Field[] = [
   { name: 'transitions', label: 'Прагове (преходни лайсни)', unit: 'бр.', value: 1, step: '1', hint: 'Където ламинатът среща друг под, обикновено на вратата.' },
   { name: 'trimPrice', label: 'Цена за лайсна', unit: '€', value: 0, step: '0.01', optional: true },
 ]
+
+const supplyFields: Field[] = [
+  { name: 'studSpacing', label: 'Разстояние между профилите', unit: 'м', value: 0.6, step: '0.01', hint: 'Обикновено 0,6 м. При 0,4 м стената е по-здрава.' },
+  { name: 'profileLength', label: 'Дължина на профила', unit: 'м', value: 3, step: '0.01', hint: 'CW и UW профилите са обикновено 2,6, 3 или 4 м.' },
+]
+const extraFields = flooring ? trimFields : supplyFields
+const extra = flooring
+  ? { name: 'trim', legend: 'Первази и лайсни', label: 'Первази', on: 'Включи первази и лайсни', off: 'Само ламинат' }
+  : { name: 'supplies', legend: 'Профили и консумативи', label: 'Консумативи', on: 'Включи профили, винтове, лента и шпакловка', off: 'Само плоскости' }
 
 const posts = (await getPosts('bg')).filter((post) => post.data.tool === page.tool)
 const jsonLd = {
@@ -145,18 +154,17 @@ const jsonLd = {
             )}
           </div>
 
-          {flooring && (
-            <fieldset class="tool-fieldset">
-              <legend>Первази и лайсни</legend>
+          <fieldset class="tool-fieldset">
+              <legend>{extra.legend}</legend>
               <div class="tool-field">
-                <label for="mat-trim">Первази</label>
-                <select id="mat-trim" name="trim">
-                  <option value="1">Включи первази и лайсни</option>
-                  <option value="0">Само ламинат</option>
+                <label for={`mat-${extra.name}`}>{extra.label}</label>
+                <select id={`mat-${extra.name}`} name={extra.name} data-extra-toggle>
+                  <option value="1">{extra.on}</option>
+                  <option value="0">{extra.off}</option>
                 </select>
               </div>
-              <div class="tool-fields" data-trim-fields>
-                {trimFields.map((field) => (
+              <div class="tool-fields" data-extra-fields>
+                {extraFields.map((field) => (
                   <div class="tool-field">
                     <label for={`mat-${field.name}`}>{field.label}{field.optional && <span class="tool-optional"> (по желание)</span>}</label>
                     <div class="tool-input"><input id={`mat-${field.name}`} name={field.name} type="number" inputmode="decimal" min="0" step={field.step ?? 'any'} value={field.optional && field.value === 0 ? '' : field.value} placeholder={field.optional ? '0' : undefined} aria-describedby={field.hint ? `mat-${field.name}-hint` : undefined} /><span>{field.unit}</span></div>
@@ -165,7 +173,6 @@ const jsonLd = {
                 ))}
               </div>
             </fieldset>
-          )}
         </form>
 
         <aside class="tool-result" aria-live="polite">
@@ -238,10 +245,11 @@ const jsonLd = {
     }
 
     const update = () => {
+      const extraOn = root.querySelector<HTMLSelectElement>('[data-extra-toggle]')?.value === '1'
+      const extraBox = root.querySelector<HTMLElement>('[data-extra-fields]')
+      if (extraBox) extraBox.hidden = !extraOn
       if (kind === 'flooring') {
-        const trimOn = field('trim')?.value === '1'
-        const trimBox = root.querySelector<HTMLElement>('[data-trim-fields]')
-        if (trimBox) trimBox.hidden = !trimOn
+        const trimOn = extraOn
         const result = estimateFlooring({
           length: num('length'), width: num('width'), waste: num('waste'), boxArea: num('boxArea'), price: num('price'),
           trim: trimOn, doorways: num('doorways'), doorWidth: num('doorWidth'), pieceLength: num('pieceLength'),
@@ -272,6 +280,7 @@ const jsonLd = {
         const result = estimateDrywall({
           length: num('length'), width: num('width'), height: num('height'), openings: num('openings'),
           ceiling: field('ceiling')?.value === '1', sheet: Number(field('sheet')?.value ?? 1), waste: num('waste'), price: num('price'),
+          supplies: extraOn, studSpacing: num('studSpacing'), profileLength: num('profileLength'),
         })
         if (!result) return render(null, [])
         const rows: [string, string, string?][] = [['Площ на стените', `${fmt(result.walls)} м²`]]
@@ -282,6 +291,18 @@ const jsonLd = {
           ['С фирата', `${fmt(result.withWaste)} м²`],
           ['Плоскост', result.sheetLabel, 'закръглено до цели плоскости'],
         )
+        if (result.supplies) {
+          const supplies = result.supplies
+          rows.push(
+            ['CW профили (стойки)', `${supplies.studs} бр.`, 'само за стените, по една в края на всяка стена'],
+            ['CW профили за купуване', `${supplies.studPieces} бр.`],
+            ['UW профили (под и таван)', `${fmt(supplies.trackLength, 1)} м`, 'само за стените, с фирата'],
+            ['UW профили за купуване', `${supplies.trackPieces} бр.`],
+            ['Винтове', `${supplies.screws} бр.`, 'около 11 на м² плоскост'],
+            ['Лента за фуги', `${fmt(supplies.tape, 0)} м`, 'фугите и вътрешните ъгли'],
+            ['Шпакловка за фуги', `${fmt(supplies.compound, 1)} кг`, 'около 0,5 кг/м² стени и 0,3 кг/м² таван'],
+          )
+        }
         if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
         render(result.sheets, rows)
       }

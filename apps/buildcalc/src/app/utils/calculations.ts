@@ -403,6 +403,41 @@ export interface DrywallInput {
   price?: number;
   dimensionUnit?: number;
   openingsUnit?: number;
+  /** Studs, tracks and finishing supplies for the walls. */
+  supplies?: boolean;
+  studSpacing?: number;
+  spacingUnit?: number;
+  /** Length of one stud or track, in the room's dimension unit. */
+  studLength?: number;
+}
+
+/** Rules of thumb for finishing (see the drywall guide): about one screw per sq ft of board,
+ *  0.4 ft of joint tape per sq ft, and one 4.5-gallon box of premixed compound per 475 sq ft. */
+export const DRYWALL_SUPPLY_RATES = { screwsPerSqFt: 1, tapeFtPerSqFt: 0.4, sqFtPerCompoundBox: 475 };
+
+export interface FramingEstimate {
+  trackLength: number;
+  trackPieces: number;
+  studs: number;
+  studPieces: number;
+}
+
+/** Metal (or wood) framing for the four walls of a rectangular room; lengths in feet.
+ *  Studs at the given spacing along each wall, plus one at each wall's end; floor and ceiling tracks. */
+export function estimateFraming(length: number, width: number, height: number, spacing: number, pieceLength: number, waste: number): FramingEstimate {
+  positive(spacing, 'Stud spacing');
+  positive(pieceLength, 'Stud length');
+  const whole = (value: number) => Math.ceil(value - 1e-6);
+  const perimeter = 2 * (length + width);
+  const trackLength = 2 * perimeter * wasteMultiplier(waste);
+  const studsPerWall = (wall: number) => whole(wall / spacing) + 1;
+  const studs = 2 * studsPerWall(length) + 2 * studsPerWall(width);
+  return {
+    trackLength,
+    trackPieces: whole(trackLength / pieceLength),
+    studs,
+    studPieces: studs * whole(height / pieceLength),
+  };
 }
 
 export function calculateDrywall(values: DrywallInput): Estimate {
@@ -428,6 +463,22 @@ export function calculateDrywall(values: DrywallInput): Estimate {
   const sheets = Math.ceil(withWaste / sheet.squareFeet - 1e-6);
   const price = values.price ?? 0;
   nonNegative(price, 'Price');
+  const framing = values.supplies
+    ? estimateFraming(length, width, height, (values.studSpacing ?? 0) * unitFactor(FEET_PER_UNIT, values.spacingUnit ?? 1), (values.studLength ?? 0) * dimensionFactor, values.waste)
+    : null;
+  const count = (label: string, value: number, one: string, many: string, detail?: string) =>
+    ({ label, value, unit: value === 1 ? one : many, precision: 0, ...(detail ? { detail } : {}) });
+  const supplies = values.supplies ? [
+    ...(framing ? [
+      count('Studs', framing.studs, 'stud', 'studs', 'walls only, plus one at each wall end'),
+      count('Stud pieces to buy', framing.studPieces, 'piece', 'pieces'),
+      { label: 'Floor and ceiling track', value: framing.trackLength, unit: 'ft', precision: 1, detail: 'walls only, with waste' },
+      count('Track pieces to buy', framing.trackPieces, 'piece', 'pieces'),
+    ] : []),
+    count('Drywall screws', Math.ceil(net * DRYWALL_SUPPLY_RATES.screwsPerSqFt - 1e-6), 'screw', 'screws', 'about one per sq ft (11 per m²) of board'),
+    { label: 'Joint tape', value: net * DRYWALL_SUPPLY_RATES.tapeFtPerSqFt, unit: 'ft', precision: 0, detail: 'about 0.4 ft per sq ft (1.3 m per m²)' },
+    count('Joint compound', Math.ceil(net / DRYWALL_SUPPLY_RATES.sqFtPerCompoundBox - 1e-6), 'box', 'boxes', '4.5-gallon boxes of premixed compound'),
+  ] : [];
 
   return {
     rows: [
@@ -437,6 +488,7 @@ export function calculateDrywall(values: DrywallInput): Estimate {
       { label: 'Area to cover', value: net, unit: 'sq ft', precision: 2 },
       { label: 'Area with waste', value: withWaste, unit: 'sq ft', precision: 2 },
       { label: 'Sheets needed', value: sheets, unit: sheets === 1 ? 'sheet' : 'sheets', precision: 0, detail: `${sheet.label} sheets, rounded up` },
+      ...supplies,
       ...(price > 0 ? [{ label: 'Estimated material cost', value: sheets * price, unit: 'USD', precision: 2 }] : []),
     ],
     summary: `Plan for ${sheets} sheet${sheets === 1 ? '' : 's'} of ${sheet.label} drywall, including waste.`,

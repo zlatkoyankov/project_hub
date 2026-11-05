@@ -1,5 +1,5 @@
 import {
-  calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
+  calculateArea, calculateConcrete, calculateDrywall, estimateFraming, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
 
 describe('calculation utilities', () => {
@@ -145,6 +145,25 @@ describe('calculation utilities', () => {
     // 4 m × 3 m = 12 m², +10% = 13.2 m², boxes of 2.2 m² → exactly 6 boxes.
     const result = calculateFlooring({ length: 4, width: 3, waste: 10, boxArea: 2.2, dimensionUnit: 2, boxAreaUnit: 2 });
     expect(result.rows.find((row) => row.label === 'Boxes needed')?.value).toBe(6);
+  });
+
+  it('adds studs, tracks and finishing supplies to the drywall estimate', () => {
+    const result = calculateDrywall({ length: 12, width: 10, height: 8, openings: 21, includeCeiling: false, sheetSize: 0, waste: 10, supplies: true, studSpacing: 16, spacingUnit: 1, studLength: 8 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value;
+    // 12 ft wall: 9 spaces of 16 in + 1 = 10 studs; 10 ft wall: 8 + 1 = 9; two of each.
+    expect(row('Studs')).toBe(38);
+    expect(row('Stud pieces to buy')).toBe(38);
+    expect(row('Floor and ceiling track')).toBeCloseTo(96.8);
+    expect(row('Track pieces to buy')).toBe(13);
+    expect(row('Drywall screws')).toBe(331);
+    expect(row('Joint tape')).toBeCloseTo(132.4);
+    expect(row('Joint compound')).toBe(1);
+  });
+
+  it('works out framing in metric, with studs taller than one piece', () => {
+    const framing = estimateFraming(4 * 3.280839895, 3.5 * 3.280839895, 3.2 * 3.280839895, 0.6 * 3.280839895, 3 * 3.280839895, 0);
+    expect(framing.studs).toBe(2 * (7 + 1) + 2 * (6 + 1));
+    expect(framing.studPieces).toBe(framing.studs * 2);
   });
 
   it('counts drywall sheets for walls, minus openings, plus ceiling when asked', () => {
