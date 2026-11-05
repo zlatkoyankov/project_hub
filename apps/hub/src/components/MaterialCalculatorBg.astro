@@ -3,12 +3,12 @@
 // The English versions live in BuildCalc; the maths is in src/lib/materials.ts.
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { getPosts, ogKey, postPath } from '../lib/site'
-import { DRYWALL_SHEETS } from '../lib/materials'
+import { DRYWALL_SHEETS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
 interface Props {
-  kind: 'flooring' | 'drywall'
+  kind: 'flooring' | 'drywall' | 'adhesive'
 }
 
 interface Field {
@@ -23,8 +23,29 @@ interface Field {
 
 const { kind } = Astro.props
 const flooring = kind === 'flooring'
+const adhesive = kind === 'adhesive'
 
-const page = flooring
+const adhesivePage = {
+      path: '/bg/lepilo-i-fuga/',
+      en: '/calculators/tile-adhesive-grout-calculator/',
+      tool: 'tile-adhesive-grout-calculator',
+      title: 'Калкулатор за лепило и фуга за плочки: колко торби | Zyankov.eu',
+      description: 'Изчисли колко лепило и фугираща смес трябват за плочките по площ, размер на плочката, фуга и зъб на маламашката. В кг, торби и евро.',
+      h1: 'Колко лепило и фуга ми трябват?',
+      intro: 'Въведи площта, размера и дебелината на плочката и ширината на фугата. Калкулаторът избира зъб на маламашката, добавя фира и закръгля до цели торби.',
+      big: 'торби лепило',
+      bigOne: 'торба лепило',
+      formula: 'фуга кг/м² = (дължина + ширина) ÷ (дължина × ширина) × фуга × дебелина × 1,6',
+      how: 'Лепилото е площта по типичния разход за зъба на маламашката (по данни на Ceresit CM 11). Фугата се смята от обема на фугите: колкото по-малки са плочките, толкова повече фуги има на квадратен метър. Добавя се фира и се закръгля до цели торби.',
+      tips: [
+        'Големите плочки искат по-дълбок зъб, за да легнат изцяло в лепилото. При плочки над 60 см намажи и гърба на плочката.',
+        'Купи фугата от една партида. Различните партиди може да се различават по цвят.',
+        'Фугирай след като лепилото е изсъхнало, обикновено след 24 часа. Виж указанията на производителя.',
+      ],
+      jsonName: 'Калкулатор за лепило и фуга',
+    }
+
+const page = adhesive ? adhesivePage : flooring
   ? {
       path: '/bg/kalkulator-laminat/',
       en: '/calculators/laminate-flooring-calculator/',
@@ -64,7 +85,20 @@ const page = flooring
       jsonName: 'Калкулатор за гипсокартон',
     }
 
-const mainFields: Field[] = flooring
+const adhesiveFields: Field[] = [
+  { name: 'area', label: 'Площ за облицоване', unit: 'м²', value: 12, step: '0.01', hint: 'Под или стени. Ако правиш и двете, събери площите.' },
+  { name: 'tileLength', label: 'Дължина на плочката', unit: 'см', value: 60, step: '0.1' },
+  { name: 'tileWidth', label: 'Ширина на плочката', unit: 'см', value: 60, step: '0.1' },
+  { name: 'thickness', label: 'Дебелина на плочката', unit: 'мм', value: 10, step: '0.5', hint: 'Фугата обикновено се пълни до цялата дебелина.' },
+  { name: 'joint', label: 'Ширина на фугата', unit: 'мм', value: 3, step: '0.5' },
+  { name: 'waste', label: 'Фира', unit: '%', value: 10, step: '1' },
+  { name: 'adhesiveBag', label: 'Торба лепило', unit: 'кг', value: 25, step: '1' },
+  { name: 'groutBag', label: 'Торба фуга', unit: 'кг', value: 5, step: '1', hint: 'Често 2 или 5 кг.' },
+  { name: 'adhesivePrice', label: 'Цена за торба лепило', unit: '€', value: 0, step: '0.01', optional: true },
+  { name: 'groutPrice', label: 'Цена за торба фуга', unit: '€', value: 0, step: '0.01', optional: true },
+]
+
+const mainFields: Field[] = adhesive ? adhesiveFields : flooring
   ? [
       { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
       { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
@@ -96,7 +130,7 @@ const supplyFields: Field[] = [
   { name: 'profileLength', label: 'Дължина на профила', unit: 'м', value: 3, step: '0.01', hint: 'CW и UW профилите са обикновено 2,6, 3 или 4 м.' },
 ]
 const extraFields = flooring ? trimFields : supplyFields
-const extra = flooring
+const extra = adhesive ? null : flooring
   ? { name: 'trim', legend: 'Первази и лайсни', label: 'Первази', on: 'Включи первази и лайсни', off: 'Само ламинат' }
   : { name: 'supplies', legend: 'Профили и консумативи', label: 'Консумативи', on: 'Включи профили, винтове, лента и шпакловка', off: 'Само плоскости' }
 
@@ -125,8 +159,8 @@ const jsonLd = {
 
       <section class="tool-layout" aria-label={page.h1} data-material={kind}>
         <form class="tool-form" novalidate>
-          <h2>Твоята стая</h2>
-          <p class="tool-form__hint">Всички мерки са в метри. Цените не са задължителни.</p>
+          <h2>{adhesive ? 'Площ и плочки' : 'Твоята стая'}</h2>
+          <p class="tool-form__hint">{adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
           <div class="tool-fields">
             {mainFields.map((field) => (
               <div class="tool-field">
@@ -135,7 +169,16 @@ const jsonLd = {
                 {field.hint && <small id={`mat-${field.name}-hint`}>{field.hint}</small>}
               </div>
             ))}
-            {!flooring && (
+            {adhesive && (
+              <div class="tool-field">
+                <label for="mat-notch">Зъб на маламашката</label>
+                <select id="mat-notch" name="notch">
+                  <option value="-1">Според размера на плочката</option>
+                  {TROWEL_NOTCHES.map((notch, index) => <option value={index}>{notch.mm} мм (около {notch.kgPerM2.toLocaleString('bg-BG')} кг/м²)</option>)}
+                </select>
+              </div>
+            )}
+            {kind === 'drywall' && (
               <>
                 <div class="tool-field">
                   <label for="mat-sheet">Размер на плоскостта</label>
@@ -154,6 +197,7 @@ const jsonLd = {
             )}
           </div>
 
+          {extra && (
           <fieldset class="tool-fieldset">
               <legend>{extra.legend}</legend>
               <div class="tool-field">
@@ -173,6 +217,7 @@ const jsonLd = {
                 ))}
               </div>
             </fieldset>
+          )}
         </form>
 
         <aside class="tool-result" aria-live="polite">
@@ -217,7 +262,7 @@ const jsonLd = {
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { estimateDrywall, estimateFlooring } from '../lib/materials'
+  import { estimateAdhesive, estimateDrywall, estimateFlooring } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -276,6 +321,26 @@ const jsonLd = {
         if (result.transitions > 0) rows.push(['Прагове', `${result.transitions} бр.`])
         if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
         render(result.boxes, rows)
+      } else if (kind === 'adhesive') {
+        const result = estimateAdhesive({
+          area: num('area'), tileLength: num('tileLength'), tileWidth: num('tileWidth'), thickness: num('thickness'), joint: num('joint'),
+          notch: Number(field('notch')?.value ?? -1), waste: num('waste'), adhesiveBag: num('adhesiveBag'), groutBag: num('groutBag'),
+          adhesivePrice: num('adhesivePrice'), groutPrice: num('groutPrice'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Площ с фирата', `${fmt(result.areaWithWaste)} м²`],
+          ['Зъб на маламашката', `${result.notchMm} мм`, result.suggested ? 'според размера на плочката' : undefined],
+          ['Лепило', `${fmt(result.adhesive, 1)} кг`, `около ${fmt(result.adhesivePerM2, 1)} кг/м²`],
+        ]
+        if (result.grout > 0) {
+          rows.push(
+            ['Фугираща смес', `${fmt(result.grout, 1)} кг`, `около ${fmt(result.groutPerM2, 2)} кг/м²`],
+            ['Торби фуга', `${result.groutBags} бр.`, `по ${fmt(num('groutBag'), 1)} кг`],
+          )
+        }
+        if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
+        render(result.adhesiveBags, rows)
       } else {
         const result = estimateDrywall({
           length: num('length'), width: num('width'), height: num('height'), openings: num('openings'),

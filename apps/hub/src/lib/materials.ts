@@ -153,3 +153,67 @@ export function estimateDrywall(input: DrywallInput): DrywallEstimate | null {
   }
   return { walls, ceiling, openings, net, withWaste: total, sheets, sheetLabel: sheet.label, cost: sheets * Math.max(0, input.price), supplies }
 }
+
+/** Notched-trowel sizes with typical cement adhesive use (kg/m²), from Ceresit CM 11's data sheet. */
+export const TROWEL_NOTCHES = [
+  { mm: 4, kgPerM2: 2.0 },
+  { mm: 6, kgPerM2: 2.7 },
+  { mm: 8, kgPerM2: 3.4 },
+  { mm: 10, kgPerM2: 4.2 },
+  { mm: 12, kgPerM2: 4.8 },
+]
+
+/** Notch by the tile's longest side in cm: the usual rule from adhesive data sheets. */
+export const suggestedNotch = (longestCm: number) => (longestCm <= 10 ? 0 : longestCm <= 15 ? 1 : longestCm <= 25 ? 2 : longestCm <= 31 ? 3 : 4)
+
+/** Grout in kg/m²: (L + W) / (L × W) × joint width × joint depth × 1.6, all in mm. */
+export const groutPerM2 = (lengthMm: number, widthMm: number, jointMm: number, depthMm: number) =>
+  ((lengthMm + widthMm) / (lengthMm * widthMm)) * jointMm * depthMm * 1.6
+
+export interface AdhesiveInput {
+  area: number
+  /** cm */
+  tileLength: number
+  tileWidth: number
+  /** mm */
+  thickness: number
+  joint: number
+  /** -1: pick from the tile size */
+  notch: number
+  waste: number
+  adhesiveBag: number
+  groutBag: number
+  adhesivePrice: number
+  groutPrice: number
+}
+
+export interface AdhesiveEstimate {
+  areaWithWaste: number
+  notchMm: number
+  suggested: boolean
+  adhesivePerM2: number
+  adhesive: number
+  adhesiveBags: number
+  groutPerM2: number
+  grout: number
+  groutBags: number
+  cost: number
+}
+
+export function estimateAdhesive(input: AdhesiveInput): AdhesiveEstimate | null {
+  if (!(input.area > 0 && input.tileLength > 0 && input.tileWidth > 0 && input.thickness > 0 && input.adhesiveBag > 0 && input.groutBag > 0)) return null
+  const areaWithWaste = withWaste(input.area, input.waste)
+  const suggested = input.notch < 0
+  const notch = TROWEL_NOTCHES[suggested ? suggestedNotch(Math.max(input.tileLength, input.tileWidth)) : input.notch]
+  if (!notch) return null
+  const adhesive = areaWithWaste * notch.kgPerM2
+  const perM2 = groutPerM2(input.tileLength * 10, input.tileWidth * 10, Math.max(0, input.joint), input.thickness)
+  const grout = areaWithWaste * perM2
+  const adhesiveBags = wholeUp(adhesive / input.adhesiveBag)
+  const groutBags = grout > 0 ? Math.max(1, wholeUp(grout / input.groutBag)) : 0
+  return {
+    areaWithWaste, notchMm: notch.mm, suggested, adhesivePerM2: notch.kgPerM2, adhesive, adhesiveBags,
+    groutPerM2: perM2, grout, groutBags,
+    cost: adhesiveBags * Math.max(0, input.adhesivePrice) + groutBags * Math.max(0, input.groutPrice),
+  }
+}

@@ -494,3 +494,96 @@ export function calculateDrywall(values: DrywallInput): Estimate {
     summary: `Plan for ${sheets} sheet${sheets === 1 ? '' : 's'} of ${sheet.label} drywall, including waste.`,
   };
 }
+
+/** Notched-trowel sizes with typical cement adhesive use (kg per m²), from Ceresit CM 11's data sheet. */
+export const TROWEL_NOTCHES = [
+  { mm: 4, label: '4 mm (5/32 in)', kgPerM2: 2.0 },
+  { mm: 6, label: '6 mm (1/4 in)', kgPerM2: 2.7 },
+  { mm: 8, label: '8 mm (5/16 in)', kgPerM2: 3.4 },
+  { mm: 10, label: '10 mm (3/8 in)', kgPerM2: 4.2 },
+  { mm: 12, label: '12 mm (1/2 in)', kgPerM2: 4.8 },
+];
+
+/** Notch for a tile, by its longest side in cm: the usual rule from adhesive data sheets. */
+export function suggestedNotch(longestSideCm: number): number {
+  if (longestSideCm <= 10) return 0;
+  if (longestSideCm <= 15) return 1;
+  if (longestSideCm <= 25) return 2;
+  if (longestSideCm <= 31) return 3;
+  return 4;
+}
+
+/** Grout in kg per m²: (L + W) / (L × W) × joint width × joint depth × density, all in mm (density in kg/L). */
+export function groutPerSquareMeter(lengthMm: number, widthMm: number, jointMm: number, depthMm: number, density = 1.6): number {
+  return ((lengthMm + widthMm) / (lengthMm * widthMm)) * jointMm * depthMm * density;
+}
+
+export interface AdhesiveInput {
+  surfaceArea: number;
+  tileLength: number;
+  tileWidth: number;
+  tileThickness: number;
+  grout: number;
+  /** -1 picks the notch from the tile size. */
+  notch: number;
+  waste: number;
+  adhesiveBag: number;
+  groutBag: number;
+  /** Area unit of surfaceArea (sq ft, sq in, sq m, sq cm). */
+  openingsUnit?: number;
+  /** Unit of the tile sizes and thickness (in, cm, mm). */
+  tileUnit?: number;
+  groutUnit?: number;
+  /** 0 lb, 1 kg for the bag sizes. */
+  weightUnit?: number;
+}
+
+const KG_PER_LB = 0.45359237;
+const MM_PER_UNIT = [304.8, 25.4, 1000, 10, 1];
+
+export function calculateAdhesive(values: AdhesiveInput): Estimate {
+  positive(values.surfaceArea, 'Area to tile');
+  positive(values.tileLength, 'Tile length');
+  positive(values.tileWidth, 'Tile width');
+  positive(values.tileThickness, 'Tile thickness');
+  nonNegative(values.grout, 'Grout joint width');
+  positive(values.adhesiveBag, 'Adhesive bag size');
+  positive(values.groutBag, 'Grout bag size');
+
+  const squareFeet = values.surfaceArea * unitFactor(SQUARE_FEET_PER_UNIT, values.openingsUnit);
+  const squareMeters = squareFeet / 10.7639104;
+  const withWaste = squareMeters * wasteMultiplier(values.waste);
+  const mm = (value: number, unit: number | undefined) => value * (MM_PER_UNIT[unit ?? 1] ?? 25.4);
+  const length = mm(values.tileLength, values.tileUnit);
+  const width = mm(values.tileWidth, values.tileUnit);
+  const thickness = mm(values.tileThickness, values.tileUnit);
+  const joint = mm(values.grout, values.groutUnit);
+
+  const notchIndex = values.notch >= 0 ? values.notch : suggestedNotch(Math.max(length, width) / 10);
+  const notch = TROWEL_NOTCHES[notchIndex];
+  if (!notch) throw new Error('Choose a trowel notch size.');
+  const adhesiveKg = withWaste * notch.kgPerM2;
+  const groutKg = withWaste * groutPerSquareMeter(length, width, joint, thickness);
+
+  const kgBags = values.weightUnit === 1;
+  const bagKg = (bag: number) => (kgBags ? bag : bag * KG_PER_LB);
+  const bagLabel = (bag: number) => `${bag} ${kgBags ? 'kg' : 'lb'} bags`;
+  const adhesiveBags = Math.ceil(adhesiveKg / bagKg(values.adhesiveBag) - 1e-6);
+  const groutBags = joint > 0 ? Math.max(1, Math.ceil(groutKg / bagKg(values.groutBag) - 1e-6)) : 0;
+  const lb = (kg: number) => kg / KG_PER_LB;
+
+  return {
+    rows: [
+      { label: 'Area to tile', value: squareFeet, unit: 'sq ft', precision: 2 },
+      { label: 'Area with waste', value: withWaste * 10.7639104, unit: 'sq ft', precision: 2 },
+      { label: 'Trowel notch', value: notch.mm, unit: 'mm', precision: 0, detail: values.notch >= 0 ? notch.label : `${notch.label}, suggested for this tile size` },
+      { label: 'Tile adhesive', value: lb(adhesiveKg), unit: 'lb', precision: 1, detail: `about ${notch.kgPerM2} kg per m² (${(notch.kgPerM2 / KG_PER_LB / 10.7639104).toFixed(2)} lb per sq ft)` },
+      { label: 'Adhesive bags', value: adhesiveBags, unit: adhesiveBags === 1 ? 'bag' : 'bags', precision: 0, detail: bagLabel(values.adhesiveBag) },
+      ...(joint > 0 ? [
+        { label: 'Grout', value: lb(groutKg), unit: 'lb', precision: 1, detail: `about ${(groutKg / withWaste).toFixed(2)} kg per m²` },
+        { label: 'Grout bags', value: groutBags, unit: groutBags === 1 ? 'bag' : 'bags', precision: 0, detail: bagLabel(values.groutBag) },
+      ] : []),
+    ],
+    summary: `Plan for ${adhesiveBags} bag${adhesiveBags === 1 ? '' : 's'} of tile adhesive${joint > 0 ? ` and ${groutBags} bag${groutBags === 1 ? '' : 's'} of grout` : ''}, including waste.`,
+  };
+}
