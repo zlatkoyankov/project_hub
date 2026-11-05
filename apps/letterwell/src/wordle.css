@@ -573,3 +573,71 @@
 .meaning-links a:hover {
   border-color: var(--border-strong);
 }
+
+/* Crossword helper */
+.pattern-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 14px;
+}
+
+.pattern-square {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 38px;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--surface), var(--surface-soft));
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: 0 2px 0 var(--border-strong);
+  font: 700 18px var(--font-display);
+}
+
+.pattern-square.is-gap {
+  background: var(--bg);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.pattern-count {
+  margin-left: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.crossword-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 10px;
+}
+
+.crossword-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crossword-filters .filter-input {
+  height: 46px;
+  font-size: 16px;
+}
+
+.show-more {
+  margin-top: 14px;
+}
+
+@media (max-width: 520px) {
+  .crossword-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .pattern-square {
+    width: 30px;
+    height: 32px;
+    font-size: 16px;
+  }
+}

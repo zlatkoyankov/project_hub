@@ -14,19 +14,21 @@ export function languageFromPath(path: string): Language {
   return /\/letterwell\/bg(\/|$)/.test(path) ? 'bg' : 'en'
 }
 
-// Letterwell pages: the word finder and the Wordle helper, each in both languages.
-export type Page = 'finder' | 'wordle'
+// Letterwell pages: the word finder, the Wordle helper and the crossword helper, each in both languages.
+export type Page = 'finder' | 'wordle' | 'crossword'
 
-export const pages: Page[] = ['finder', 'wordle']
+export const pages: Page[] = ['finder', 'wordle', 'crossword']
 
-/** Path of a Letterwell page in a language: /letterwell/wordle-solver/ and /letterwell/bg/wordle/. */
+/** Path of a Letterwell page in a language, e.g. /letterwell/wordle-solver/ and /letterwell/bg/wordle/. */
 export function pagePath(page: Page, language: Language): string {
   if (page === 'finder') return languagePath(language)
+  if (page === 'crossword') return language === 'bg' ? '/letterwell/bg/krastoslovitsi/' : '/letterwell/crossword-solver/'
   return language === 'bg' ? '/letterwell/bg/wordle/' : '/letterwell/wordle-solver/'
 }
 
 /** Page from a URL path. */
 export function pageFromPath(path: string): Page {
+  if (/\/(crossword-solver|krastoslovitsi)\/?$/.test(path)) return 'crossword'
   return /\/wordle(-solver)?\/?$/.test(path) ? 'wordle' : 'finder'
 }
 
@@ -89,8 +91,29 @@ export const wordleMetadata: Record<Language, { title: string; description: stri
   },
 }
 
+export const crosswordSocialDescriptions: Record<Language, string> = {
+  en: 'Type the letters you know and a ? for each gap, and see every word that fits your crossword.',
+  bg: 'Въведи буквите, които знаеш, и ? за всяка празна, и виж всички думи, които пасват на кръстословицата.',
+}
+
+export const crosswordMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
+  en: {
+    title: 'Crossword Solver: Find Words by Pattern | Letterwell',
+    description: 'Stuck on a crossword clue? Type the letters you know, a ? for each gap, and see every word that fits. Filter by letters to include or leave out.',
+    structuredDescription: 'A crossword helper that lists every English word matching a pattern of known letters and gaps.',
+    features: ['Crossword pattern search', 'Letters to include', 'Letters to leave out', 'Links to dictionary definitions'],
+  },
+  bg: {
+    title: 'Помощник за кръстословици: думи по шаблон | Letterwell',
+    description: 'Заседна на кръстословица? Въведи буквите, които знаеш, и ? за всяка празна. Виж всички български думи, които пасват, и значенията им в речника.',
+    structuredDescription: 'Помощник за кръстословици, който показва всички български думи по шаблон от известни букви и празни места.',
+    features: ['Търсене на думи по шаблон', 'Букви, които трябва да има', 'Букви, които да няма', 'Линкове към тълковен речник'],
+  },
+}
+
 /** Head metadata of any Letterwell page. */
 export function pageMeta(page: Page, language: Language) {
+  if (page === 'crossword') return { meta: crosswordMetadata[language], social: crosswordSocialDescriptions[language] }
   return page === 'wordle'
     ? { meta: wordleMetadata[language], social: wordleSocialDescriptions[language] }
     : { meta: seoMetadata[language], social: socialDescriptions[language] }

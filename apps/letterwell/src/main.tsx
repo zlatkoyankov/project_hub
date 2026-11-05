@@ -6,13 +6,16 @@ import '@zyankov/design-system/shell.css'
 import './index.css'
 import App from './App.tsx'
 import WordleSolver from './WordleSolver.tsx'
+import CrosswordSolver from './CrosswordSolver.tsx'
 import { languageFromPath, pageFromPath } from './seo'
 
 hydrateRoot(
   document.getElementById('root')!,
   <StrictMode>
-    {pageFromPath(window.location.pathname) === 'wordle'
-      ? <WordleSolver language={languageFromPath(window.location.pathname)} />
-      : <App language={languageFromPath(window.location.pathname)} />}
+    {{
+      wordle: <WordleSolver language={languageFromPath(window.location.pathname)} />,
+      crossword: <CrosswordSolver language={languageFromPath(window.location.pathname)} />,
+      finder: <App language={languageFromPath(window.location.pathname)} />,
+    }[pageFromPath(window.location.pathname)]}
   </StrictMode>,
 )

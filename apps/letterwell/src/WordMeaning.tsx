@@ -15,7 +15,7 @@ const copy = {
     formOf: 'form of',
     close: 'Close',
     source: 'Source: Wiktionary (CC BY-SA)',
-    lookUp: '',
+    lookUp: 'Look up this word in:',
   },
   bg: {
     show: (word: string) => `Значение на ${word}`,
@@ -60,9 +60,15 @@ export function MeaningButton({ word, language, available, onOpen }: {
 type State = { status: 'loading' } | { status: 'error' } | { status: 'done'; meaning: Meaning | null }
 
 /** The balloon with the meaning: under the word on wide screens, a sheet at the bottom on phones. */
-export function MeaningPopover({ open, language, onClose }: { open: OpenMeaning; language: Language; onClose: () => void }) {
+export function MeaningPopover({ open, language, onClose, linksOnly = false }: {
+  open: OpenMeaning
+  language: Language
+  onClose: () => void
+  /** Only links to online dictionaries (Bulgarian words, the crossword helper). */
+  linksOnly?: boolean
+}) {
   const text = copy[language]
-  const bulgarian = language === 'bg'
+  const bulgarian = linksOnly || language === 'bg'
   const [state, setState] = useState<State>({ status: 'loading' })
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null)
   const panel = useRef<HTMLDivElement>(null)
@@ -128,7 +134,7 @@ export function MeaningPopover({ open, language, onClose }: { open: OpenMeaning;
         <div className="meaning-links">
           <p>{text.lookUp}</p>
           <ul>
-            {dictionaryLinks(open.word).map((link) => (
+            {dictionaryLinks(open.word, language).map((link) => (
               <li key={link.href}><a href={link.href} target="_blank" rel="noopener">{link.label} <span aria-hidden="true">↗</span></a></li>
             ))}
           </ul>
