@@ -641,3 +641,135 @@
     font-size: 16px;
   }
 }
+
+/* Spelling Bee helper */
+.bee-inputs {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.bee-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bee-centre-input {
+  text-align: center;
+  font-weight: 700;
+}
+
+.honeycomb {
+  position: relative;
+  width: 210px;
+  height: 196px;
+  margin: 22px auto 4px;
+}
+
+.hex {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 60px;
+  color: var(--text);
+  background: linear-gradient(180deg, var(--surface), var(--surface-soft));
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+  font: 700 22px var(--font-display);
+}
+
+.hex.is-centre {
+  color: var(--game-ink);
+  background: linear-gradient(180deg, var(--cta-top), var(--cta-bottom));
+}
+
+.hex.is-empty {
+  opacity: 0.45;
+}
+
+/* Centre, then clockwise from the top */
+.hex-0 { left: 71px; top: 68px; }
+.hex-1 { left: 71px; top: 4px; }
+.hex-2 { left: 125px; top: 36px; }
+.hex-3 { left: 125px; top: 100px; }
+.hex-4 { left: 71px; top: 132px; }
+.hex-5 { left: 17px; top: 100px; }
+.hex-6 { left: 17px; top: 36px; }
+
+.bee-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 4px 0 14px;
+  color: var(--text-muted);
+}
+
+.bee-stats strong {
+  color: var(--text);
+  font-size: 20px;
+}
+
+.bee-subtitle {
+  margin: 16px 0 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bee-grid-wrap {
+  overflow-x: auto;
+}
+
+.bee-grid {
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bee-grid th,
+.bee-grid td {
+  min-width: 34px;
+  padding: 5px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.bee-grid thead th {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.bee-grid tbody th {
+  font-family: var(--font-display);
+}
+
+.bee-sum {
+  font-weight: 700;
+}
+
+.bee-starts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 0;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.bee-reveal {
+  margin-top: 18px;
+}
+
+.answer-word.is-pangram {
+  font-weight: 700;
+  color: var(--coral-strong);
+}
+
+@media (max-width: 520px) {
+  .bee-inputs {
+    grid-template-columns: 1fr;
+  }
+}

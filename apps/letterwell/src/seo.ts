@@ -14,20 +14,22 @@ export function languageFromPath(path: string): Language {
   return /\/letterwell\/bg(\/|$)/.test(path) ? 'bg' : 'en'
 }
 
-// Letterwell pages: the word finder, the Wordle helper and the crossword helper, each in both languages.
-export type Page = 'finder' | 'wordle' | 'crossword'
+// Letterwell pages: the word finder and the Wordle, crossword and Spelling Bee helpers, each in both languages.
+export type Page = 'finder' | 'wordle' | 'crossword' | 'bee'
 
-export const pages: Page[] = ['finder', 'wordle', 'crossword']
+export const pages: Page[] = ['finder', 'wordle', 'crossword', 'bee']
 
 /** Path of a Letterwell page in a language, e.g. /letterwell/wordle-solver/ and /letterwell/bg/wordle/. */
 export function pagePath(page: Page, language: Language): string {
   if (page === 'finder') return languagePath(language)
+  if (page === 'bee') return language === 'bg' ? '/letterwell/bg/spelling-bee/' : '/letterwell/spelling-bee-solver/'
   if (page === 'crossword') return language === 'bg' ? '/letterwell/bg/krastoslovitsi/' : '/letterwell/crossword-solver/'
   return language === 'bg' ? '/letterwell/bg/wordle/' : '/letterwell/wordle-solver/'
 }
 
 /** Page from a URL path. */
 export function pageFromPath(path: string): Page {
+  if (/\/(spelling-bee-solver|spelling-bee)\/?$/.test(path)) return 'bee'
   if (/\/(crossword-solver|krastoslovitsi)\/?$/.test(path)) return 'crossword'
   return /\/wordle(-solver)?\/?$/.test(path) ? 'wordle' : 'finder'
 }
@@ -111,8 +113,29 @@ export const crosswordMetadata: Record<Language, { title: string; description: s
   },
 }
 
+export const beeSocialDescriptions: Record<Language, string> = {
+  en: 'Enter the seven letters of today’s Spelling Bee: hints by first letter and length first, then every word and pangram when you want them.',
+  bg: 'Въведи седемте букви на Spelling Bee: първо подсказки по първа буква и дължина, после всички думи и панграми, когато поискаш.',
+}
+
+export const beeMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
+  en: {
+    title: 'Spelling Bee Solver & Hints: Words and Pangrams | Letterwell',
+    description: 'Stuck on the Spelling Bee? Enter the centre letter and the six around it. Get hints by first letter and length, then reveal the words and pangrams when you are ready.',
+    structuredDescription: 'A Spelling Bee helper that lists words made from seven letters that always use the centre letter, with spoiler-free hints and pangrams.',
+    features: ['Spoiler-free hint grid', 'Two-letter starts', 'Pangram finder', 'Points total'],
+  },
+  bg: {
+    title: 'Помощник за Spelling Bee: подсказки, думи и панграми | Letterwell',
+    description: 'Въведи централната буква и шестте около нея. Виж подсказки по първа буква и дължина, а после думите и панграмите, когато поискаш. На английски и български.',
+    structuredDescription: 'Помощник за Spelling Bee, който показва думите от седем букви с централната буква, с подсказки без спойлери и панграми.',
+    features: ['Таблица с подсказки', 'Първи две букви', 'Панграми', 'Точки'],
+  },
+}
+
 /** Head metadata of any Letterwell page. */
 export function pageMeta(page: Page, language: Language) {
+  if (page === 'bee') return { meta: beeMetadata[language], social: beeSocialDescriptions[language] }
   if (page === 'crossword') return { meta: crosswordMetadata[language], social: crosswordSocialDescriptions[language] }
   return page === 'wordle'
     ? { meta: wordleMetadata[language], social: wordleSocialDescriptions[language] }

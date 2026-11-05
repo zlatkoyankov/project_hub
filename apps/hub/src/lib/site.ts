@@ -45,6 +45,7 @@ export function readingMinutes(body = '') {
 export const TOOLS = {
   letterwell: { en: { href: '/letterwell/', name: 'Letterwell', cta: 'Find words with Letterwell' }, bg: { href: '/letterwell/bg/', name: 'Letterwell', cta: 'Търси думи с Letterwell' } },
   'wordle-solver': { en: { href: '/letterwell/wordle-solver/', name: 'Wordle helper', cta: 'Open the Wordle helper' }, bg: { href: '/letterwell/bg/wordle/', name: 'Помощник за Wordle', cta: 'Към помощника за Wordle' } },
+  'spelling-bee': { en: { href: '/letterwell/spelling-bee-solver/', name: 'Spelling Bee helper', cta: 'Open the Spelling Bee helper' }, bg: { href: '/letterwell/bg/spelling-bee/', name: 'Помощник за Spelling Bee', cta: 'Към помощника за Spelling Bee' } },
   'crossword-solver': { en: { href: '/letterwell/crossword-solver/', name: 'Crossword helper', cta: 'Open the crossword helper' }, bg: { href: '/letterwell/bg/krastoslovitsi/', name: 'Помощник за кръстословици', cta: 'Към помощника за кръстословици' } },
   'energy-cost-calculator': { en: { href: '/energy-cost-calculator/', name: 'Energy cost calculator', cta: 'Open the energy cost calculator' }, bg: { href: '/bg/razhod-na-tok/', name: 'Калкулатор за разход на ток', cta: 'Към калкулатора за ток' } },
   'concrete-calculator': { en: { href: '/calculators/concrete-calculator/', name: 'Concrete calculator', cta: 'Open the concrete calculator' }, bg: { href: '/calculators/concrete-calculator/', name: 'Калкулатор за бетон', cta: 'Към калкулатора за бетон' } },

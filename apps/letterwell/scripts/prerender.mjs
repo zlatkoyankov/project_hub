@@ -62,9 +62,10 @@ try {
   const { default: App } = await vite.ssrLoadModule('/src/App.tsx')
   const { default: WordleSolver } = await vite.ssrLoadModule('/src/WordleSolver.tsx')
   const { default: CrosswordSolver } = await vite.ssrLoadModule('/src/CrosswordSolver.tsx')
+  const { default: BeeSolver } = await vite.ssrLoadModule('/src/BeeSolver.tsx')
   const { languages, pages, pagePath, pageMeta, pageOgKey } = await vite.ssrLoadModule('/src/seo.ts')
-  const components = { finder: App, wordle: WordleSolver, crossword: CrosswordSolver }
-  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper', crossword: 'Letterwell crossword helper' }
+  const components = { finder: App, wordle: WordleSolver, crossword: CrosswordSolver, bee: BeeSolver }
+  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper', crossword: 'Letterwell crossword helper', bee: 'Letterwell Spelling Bee helper' }
   const template = await readFile(resolve('dist/index.html'), 'utf8')
   if (!template.includes(placeholder)) throw new Error('Could not find the Letterwell root element to prerender.')
 

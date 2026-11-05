@@ -36,4 +36,16 @@
     <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/krastoslovitsi/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/crossword-solver/" />
   </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/spelling-bee-solver/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zyankov.eu/letterwell/spelling-bee-solver/" />
+    <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/spelling-bee/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/spelling-bee-solver/" />
+  </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/bg/spelling-bee/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zyankov.eu/letterwell/spelling-bee-solver/" />
+    <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/spelling-bee/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/spelling-bee-solver/" />
+  </url>
 </urlset>

@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee'
 
 export interface Tool {
   id: string
@@ -30,6 +30,16 @@ export const TOOL_CATALOG: Tool[] = [
       bg: 'Оцвети плочките и виж всички думи, които още пасват, и най-добрия следващ опит.',
     },
     keywords: 'wordle solver helper five letters уърдъл думи пет букви',
+    isNew: true,
+  },
+  {
+    id: 'spelling-bee',
+    category: 'words',
+    icon: 'bee',
+    href: { en: '/letterwell/spelling-bee-solver/', bg: '/letterwell/bg/spelling-bee/' },
+    name: { en: 'Spelling Bee helper', bg: 'Помощник за Spelling Bee' },
+    description: { en: 'Seven letters: spoiler-free hints first, then every word and pangram.', bg: 'Седем букви: първо подсказки без спойлери, после думите и панграмите.' },
+    keywords: 'spelling bee solver hints pangram nyt seven letters панграма седем букви',
     isNew: true,
   },
   {
@@ -202,6 +212,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   area: '<path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/>',
   energy: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
   flooring: '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.3h18M3 14.6h18M10 4v5.3M16 9.3v5.3M8 14.6V20"/>',
+  bee: '<path d="M12 3l4 2.3v4.6L12 12l-4-2.1V5.3z"/><path d="M8 12l4 2.1V19l-4 2.3-4-2.3v-4.6z"/><path d="M16 12l4 2.1V19l-4 2.3-4-2.3v-4.6z"/>',
   masonry: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 9.7h18M3 14.3h18M9 5v4.7M15 9.7v4.6M9 14.3V19"/>',
   insulation: '<path d="M4 4h6v16H4z"/><path d="M10 7h10M10 12h10M10 17h10"/><path d="M14 4v16"/>',
   screed: '<path d="M3 17h18v3H3z"/><path d="M5 17l3-5h8l3 5"/><path d="M10 12V5h6"/><path d="M14 3l2 2-2 2"/>',
@@ -214,5 +225,5 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
 /** Blog category of a post, from the tool it links to. */
 export function postCategory(tool?: string): ToolCategory | 'general' {
   if (!tool) return 'general'
-  return tool === 'letterwell' || tool === 'wordle-solver' || tool === 'crossword-solver' ? 'words' : 'home'
+  return tool === 'letterwell' || tool === 'wordle-solver' || tool === 'crossword-solver' || tool === 'spelling-bee' ? 'words' : 'home'
 }

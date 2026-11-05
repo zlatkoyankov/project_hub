@@ -145,6 +145,7 @@ function CrosswordSolver({ language }: { language: Language }) {
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
           <a className="topbar-link" href={pagePath('finder', language)}>{text.finder}</a>
           <a className="topbar-link" href={pagePath('wordle', language)}>{text.wordle}</a>
+          <a className="topbar-link" href={pagePath('bee', language)}>Spelling Bee</a>
           <label className="language-picker">
             <span className="sr-only">{language === 'bg' ? 'Език' : 'Language'}</span>
             <select
