@@ -9,6 +9,11 @@
     "./fonts.css": "./fonts.css",
     "./fonts/*": "./fonts/*",
     "./shell.css": "./shell.css",
+    "./boards.css": "./boards.css",
+    "./boards": {
+      "types": "./boards.d.ts",
+      "default": "./boards.js"
+    },
     "./base.css": "./base.css",
     "./projects.json": "./projects.json",
     "./theme": {

@@ -8,6 +8,7 @@ import { CALCULATORS, CATEGORIES } from '../data/calculators';
   standalone: true,
   imports: [RouterLink, MaterialArtComponent],
   templateUrl: './directory.html',
+  host: { class: 'zy-board', 'data-board': 'blueprint', style: 'display: block' },
 })
 export class DirectoryPage {
   private readonly route = inject(ActivatedRoute);
