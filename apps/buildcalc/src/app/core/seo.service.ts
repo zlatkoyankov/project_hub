@@ -43,6 +43,7 @@ export class SeoService {
       canonical.remove();
     }
     if (canonicalUrl) this.setMeta('og:url', canonicalUrl, 'property');
+    this.setAlternates(route.data['noindex'] ? undefined : CALCULATORS.find((item) => path === `/${item.slug}`), canonicalUrl);
 
     this.setJsonLd(route.data['noindex'] ? [] : this.structuredData(path, title, description));
   }
@@ -109,6 +110,20 @@ export class SeoService {
       });
     }
     return data;
+  }
+
+  // hreflang links between an English calculator and its Bulgarian version on the hub.
+  private setAlternates(calculator: (typeof CALCULATORS)[number] | undefined, url: string): void {
+    this.document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((link) => link.remove());
+    if (!calculator?.bg || !url) return;
+    const bg = new URL(calculator.bg, SITE_BASE_URL).href;
+    for (const [lang, href] of [['en', url], ['bg', bg], ['x-default', url]]) {
+      const link = this.document.createElement('link');
+      link.rel = 'alternate';
+      link.hreflang = lang;
+      link.href = href;
+      this.document.head.appendChild(link);
+    }
   }
 
   private setJsonLd(data: object[]): void {

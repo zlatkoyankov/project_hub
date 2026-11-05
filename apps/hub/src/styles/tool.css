@@ -609,3 +609,42 @@ select {
   text-align: right;
   white-space: nowrap;
 }
+
+/* Optional group of fields (laminate: baseboards and trim) */
+.tool-fieldset {
+  margin: 22px 0 0;
+  padding: 16px 18px 20px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 16px;
+}
+
+.tool-fieldset legend {
+  padding: 0 8px;
+  font-weight: 700;
+}
+
+.tool-fieldset [hidden] {
+  display: none;
+}
+
+.tool-optional {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.tool-result dt small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.tool-switch {
+  margin-top: 14px;
+  font-size: 15px;
+}
+
+.tool-switch a {
+  color: var(--accent);
+  font-weight: 700;
+}
