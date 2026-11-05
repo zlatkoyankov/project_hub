@@ -7,7 +7,7 @@ import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.servi
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
 import {
-  AdhesiveInput, calculateAdhesive, calculateInsulation, InsulationInput, INSULATION_BOARDS, calculateScreed, calculateWallpaper, ScreedInput, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, SCREED_MATERIALS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
+  AdhesiveInput, calculateAdhesive, calculateInsulation, calculateMasonry, MasonryInput, MASONRY_UNITS, InsulationInput, INSULATION_BOARDS, calculateScreed, calculateWallpaper, ScreedInput, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, SCREED_MATERIALS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
 } from '../utils/calculations';
 
 interface Field {
@@ -57,6 +57,7 @@ const AREA_UNITS = [
 const US_AREA_UNITS = AREA_UNITS.slice(0, 2);
 const METRIC_AREA_UNITS = AREA_UNITS.slice(2);
 const DENSITY_UNITS = [{ value: 0, label: 'lb / cu yd' }, { value: 1, label: 'kg / cu m' }];
+const YIELD_UNITS = [{ value: 0, label: 'cu ft' }, { value: 1, label: 'L' }];
 const WEIGHT_UNITS = [{ value: 0, label: 'lb' }, { value: 1, label: 'kg' }];
 const COVERAGE_UNITS = [{ value: 0, label: 'sq ft / gal' }, { value: 1, label: 'sq m / L' }];
 
@@ -129,6 +130,14 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'adhesiveBag', label: 'Adhesive bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Thinset is usually sold in 50 lb or 25 kg bags.' },
     { key: 'groutBag', label: 'Grout bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Often 25 lb, or 2 to 5 kg.' },
   ],
+  masonry: [
+    { key: 'length', label: 'Wall length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'height', label: 'Wall height', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
+    { key: 'openings', label: 'Doors and windows', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0, step: 1 },
+    { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1, hint: 'About 5% for broken and cut units.' },
+    { key: 'mortarYield', label: 'Mortar per bag', unit: 'cu ft', unitKey: 'yieldUnit', unitOptions: YIELD_UNITS, min: 0.01, step: 0.05, hint: 'On the bag: about 0.6 cu ft for 80 lb, or 16 L for 25 kg.' },
+    { key: 'price', label: 'Price per brick or block', unit: '$', min: 0, step: 0.01, optional: true },
+  ],
   insulation: [
     { key: 'surfaceArea', label: 'Wall area', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0.01, step: 1 },
     { key: 'openings', label: 'Doors and windows', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0, step: 1 },
@@ -170,6 +179,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
   concrete: { length: 10, width: 10, depth: 4, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   area: {},
   adhesive: { surfaceArea: 120, tileLength: 12, tileWidth: 12, tileThickness: 0.375, grout: 0.125, notch: -1, waste: 10, adhesiveBag: 50, groutBag: 25, openingsUnit: 0, tileUnit: 1, groutUnit: 1, weightUnit: 0 },
+  masonry: { length: 20, height: 8, openings: 21, unit: 0, waste: 5, mortarYield: 0.6, price: 0, dimensionUnit: 0, openingsUnit: 0, yieldUnit: 0 },
   insulation: { surfaceArea: 1000, openings: 150, board: 0, thickness: 2, waste: 5, supplies: 0, price: 0, openingsUnit: 0, depthUnit: 1 },
   screed: { surfaceArea: 150, thickness: 1.5, material: 0, consumption: 0, waste: 10, bagSize: 50, price: 0, openingsUnit: 0, depthUnit: 1, weightUnit: 0 },
   wallpaper: { length: 12, width: 10, height: 8, openings: 21, rollWidth: 20.5, rollLength: 33, patternRepeat: 0, price: 0, dimensionUnit: 0, openingsUnit: 0, rollUnit: 1 },
@@ -220,7 +230,7 @@ export class CalculatorPage {
           if (field.unitKey === 'dimensionUnit') return system === 'us' ? US_DISTANCE_UNITS.some((item) => item.value === unit.value) : METRIC_DISTANCE_UNITS.some((item) => item.value === unit.value);
           if (field.unitKey === 'depthUnit' || field.unitKey === 'tileUnit' || field.unitKey === 'groutUnit' || field.unitKey === 'spacingUnit' || field.unitKey === 'rollUnit') return system === 'us' ? US_SMALL_UNITS.some((item) => item.value === unit.value) : METRIC_SMALL_UNITS.some((item) => item.value === unit.value);
           if (field.unitKey === 'openingsUnit' || field.unitKey === 'boxAreaUnit') return system === 'us' ? US_AREA_UNITS.some((item) => item.value === unit.value) : METRIC_AREA_UNITS.some((item) => item.value === unit.value);
-          if (field.unitKey === 'densityUnit' || field.unitKey === 'coverageUnit' || field.unitKey === 'weightUnit') return unit.value === (system === 'us' ? 0 : 1);
+          if (field.unitKey === 'densityUnit' || field.unitKey === 'coverageUnit' || field.unitKey === 'weightUnit' || field.unitKey === 'yieldUnit') return unit.value === (system === 'us' ? 0 : 1);
           return true;
         }),
       }))
@@ -320,6 +330,7 @@ export class CalculatorPage {
         groutUnit: ['grout'],
         openingsUnit: ['openings', 'surfaceArea'],
         weightUnit: ['adhesiveBag', 'groutBag', 'bagSize'],
+        yieldUnit: ['mortarYield'],
         densityUnit: ['density'],
         coverageUnit: ['coverage'],
       }[unitKey] ?? []).filter((candidate) => current[candidate] !== undefined);
@@ -327,6 +338,7 @@ export class CalculatorPage {
         const currentValue = this.number(current, valueKey);
         if (unitKey === 'openingsUnit' || unitKey === 'boxAreaUnit') updated[valueKey] = this.convertArea(currentValue, previousUnit, nextUnit);
         else if (unitKey === 'densityUnit') updated[valueKey] = tidy(previousUnit === 0 ? currentValue * 0.593276 : currentValue / 0.593276);
+        else if (unitKey === 'yieldUnit') updated[valueKey] = tidy(previousUnit === nextUnit ? currentValue : nextUnit === 1 ? currentValue * 28.3168466 : currentValue / 28.3168466);
         else if (unitKey === 'weightUnit') updated[valueKey] = tidy(previousUnit === nextUnit ? currentValue : nextUnit === 1 ? currentValue * 0.45359237 : currentValue / 0.45359237);
         else if (unitKey === 'coverageUnit') updated[valueKey] = tidy(previousUnit === 0 ? currentValue / 40.745 : currentValue * 40.745);
         else updated[valueKey] = this.convertLength(currentValue, previousUnit, nextUnit);
@@ -355,6 +367,7 @@ export class CalculatorPage {
         case 'wallpaper': estimate = calculateWallpaper(this.toWallpaperInput(this.values())); break;
         case 'screed': estimate = calculateScreed(this.toScreedInput(this.values())); break;
         case 'insulation': estimate = calculateInsulation(this.toInsulationInput(this.values())); break;
+        case 'masonry': estimate = calculateMasonry(this.toMasonryInput(this.values())); break;
       }
       this.result.set(estimate);
       this.copied.set(false);
@@ -400,6 +413,9 @@ export class CalculatorPage {
       defaults['densityUnit'] = 1;
       defaults['coverageUnit'] = 1;
       if (kind === 'gravel') defaults['density'] = 1600;
+      if (kind === 'masonry') {
+        Object.assign(defaults, { length: 10, height: 2.8, openings: 4, unit: 4, mortarYield: 16, yieldUnit: 1 });
+      }
       if (kind === 'insulation') {
         Object.assign(defaults, { surfaceArea: 100, openings: 15, board: 2, thickness: 10, depthUnit: 3 });
       }
@@ -468,6 +484,7 @@ export class CalculatorPage {
       area: 'This totals rectangular measurements. Break irregular shapes into separate rectangles without overlap.',
       mulch: 'Depth needs vary with material and intended use. Follow local horticultural guidance and keep mulch clear of plant stems and trunks.',
       flooring: 'This covers a rectangular room. Add closets and alcoves as extra area, check the coverage on your box and follow the manufacturer’s expansion-gap and underlayment instructions.',
+      masonry: 'This counts units for a plain wall with standard joints. Corners, lintels, half units and cutting around openings are not modeled, and mortar varies with the joint and the mason. It is not a structural design.',
       insulation: 'This counts boards for flat walls. Corners, reveals around windows and starter tracks are not included, and the supply rates are typical values; anchor patterns depend on wind load and building height, so follow the system manufacturer or your designer.',
       screed: 'Consumption is a typical value from manufacturers’ data sheets; your product may differ, so enter its own figure when you have it. Uneven floors and walls vary in thickness, so measure in several places. This is not a structural or moisture assessment.',
       wallpaper: 'This assumes a rectangular room with walls of one height and whole strips from floor to ceiling. Sloped ceilings, alcoves and half-drop patterns can need more; keep a spare roll from the same batch.',
@@ -552,6 +569,7 @@ export class CalculatorPage {
       Object.assign(values, to === 'us' ? { adhesiveBag: 50, groutBag: 25, weightUnit: 0 } : { adhesiveBag: 25, groutBag: 5, weightUnit: 1 });
     }
     if (values['bagSize'] !== undefined) Object.assign(values, to === 'us' ? { bagSize: 50, weightUnit: 0 } : { bagSize: 25, weightUnit: 1 });
+    if (values['mortarYield'] !== undefined) Object.assign(values, to === 'us' ? { mortarYield: 0.6, yieldUnit: 0 } : { mortarYield: 16, yieldUnit: 1 });
     if (values['density'] !== undefined) {
       const current = this.number(values, 'density');
       values['density'] = tidy(from === 'us' ? current * 0.593276 : current / 0.593276);
@@ -633,6 +651,7 @@ export class CalculatorPage {
       gallons: { label: row.label, unit: 'liters', factor: 3.785411784, precision: 2 },
       ft: { label: row.label, unit: 'm', factor: 0.3048, precision: 2 },
       lb: { label: row.label, unit: 'kg', factor: 0.45359237, precision: 1 },
+      'per sq ft': { label: 'Units per sq m', unit: 'per sq m', factor: 10.7639104, precision: 2 },
     };
     const conversion = conversions[row.unit];
     if (!conversion) return row;
@@ -761,6 +780,23 @@ export class CalculatorPage {
   protected readonly materialOptions = SCREED_MATERIALS.map((material, index) => ({ value: index, label: `${material.label} (about ${material.kgPerM2PerMm} kg/m² per mm)` }));
 
   protected readonly boardOptions = INSULATION_BOARDS.map((board, index) => ({ value: index, label: board.label }));
+
+  protected readonly unitOptions = MASONRY_UNITS.map((unit, index) => ({ value: index, label: unit.label }));
+
+  private toMasonryInput(values: Values): MasonryInput {
+    return {
+      length: this.number(values, 'length'),
+      height: this.number(values, 'height'),
+      openings: this.number(values, 'openings'),
+      unit: this.number(values, 'unit'),
+      waste: this.number(values, 'waste'),
+      mortarYield: this.number(values, 'mortarYield'),
+      price: this.number(values, 'price'),
+      dimensionUnit: this.number(values, 'dimensionUnit'),
+      openingsUnit: this.number(values, 'openingsUnit'),
+      yieldUnit: this.number(values, 'yieldUnit'),
+    };
+  }
 
   private toInsulationInput(values: Values): InsulationInput {
     return {

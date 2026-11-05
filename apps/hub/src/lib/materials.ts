@@ -341,3 +341,56 @@ export function estimateInsulation(input: InsulationInput): InsulationEstimate |
     : null
   return { net, boards, boardArea, volume: boardArea * (input.thickness / 100), supplies, cost: boardArea * Math.max(0, input.price) }
 }
+
+/** Bricks and blocks common in Bulgaria: face length and height, wall depth and joint, in metres.
+ *  headJoints is false for interlocking ends (no mortar in the vertical joints). */
+export const MASONRY_UNITS = [
+  { label: 'Плътна тухла 25 × 12 × 6,5 см, стена 12 см', length: 0.25, height: 0.065, depth: 0.12, joint: 0.01, headJoints: true },
+  { label: 'Плътна тухла 25 × 12 × 6,5 см, стена 25 см', length: 0.12, height: 0.065, depth: 0.25, joint: 0.01, headJoints: true },
+  { label: 'Керамичен блок 25 см (Porotherm 25)', length: 0.373, height: 0.238, depth: 0.25, joint: 0.012, headJoints: false },
+  { label: 'Керамичен блок 11,5 см (Porotherm 11,5)', length: 0.5, height: 0.238, depth: 0.115, joint: 0.012, headJoints: false },
+  { label: 'Газобетон 62,5 × 25 см, стена 25 см', length: 0.625, height: 0.25, depth: 0.25, joint: 0.002, headJoints: false },
+  { label: 'Газобетон 62,5 × 25 см, стена 10 см', length: 0.625, height: 0.25, depth: 0.1, joint: 0.002, headJoints: false },
+]
+
+/** Units per m² and mortar per m² (m³): bed joints, and head joints when the unit has them, through the wall depth. */
+export function masonryPerM2(unit: (typeof MASONRY_UNITS)[number]) {
+  const units = 1 / ((unit.length + (unit.headJoints ? unit.joint : 0)) * (unit.height + unit.joint))
+  const bed = (unit.depth * unit.joint) / (unit.height + unit.joint)
+  const head = unit.headJoints ? units * unit.height * unit.joint * unit.depth : 0
+  return { units, mortar: bed + head }
+}
+
+export interface MasonryInput {
+  length: number
+  height: number
+  openings: number
+  unit: number
+  waste: number
+  /** litres of mortar from one bag */
+  mortarYield: number
+  price: number
+}
+
+export interface MasonryEstimate {
+  net: number
+  perM2: number
+  units: number
+  mortarLitres: number
+  bags: number
+  headJoints: boolean
+  cost: number
+}
+
+export function estimateMasonry(input: MasonryInput): MasonryEstimate | null {
+  const unit = MASONRY_UNITS[input.unit]
+  if (!unit || !(input.length > 0 && input.height > 0 && input.mortarYield > 0)) return null
+  const net = Math.max(0, input.length * input.height - Math.max(0, input.openings))
+  const rate = masonryPerM2(unit)
+  const units = wholeUp(withWaste(net * rate.units, input.waste))
+  const mortarLitres = withWaste(net * rate.mortar, input.waste) * 1000
+  return {
+    net, perM2: rate.units, units, mortarLitres, bags: mortarLitres > 0 ? wholeUp(mortarLitres / input.mortarYield) : 0,
+    headJoints: unit.headJoints, cost: units * Math.max(0, input.price),
+  }
+}

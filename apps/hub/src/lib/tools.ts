@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry'
 
 export interface Tool {
   id: string
@@ -104,6 +104,16 @@ export const TOOL_CATALOG: Tool[] = [
     isNew: true,
   },
   {
+    id: 'masonry',
+    category: 'home',
+    icon: 'masonry',
+    href: { en: '/calculators/brick-block-calculator/', bg: '/bg/kalkulator-tuhli/' },
+    name: { en: 'Bricks & blocks', bg: 'Тухли и блокчета' },
+    description: { en: 'Bricks or blocks for a wall, with mortar and mortar bags.', bg: 'Тухли или блокове за стена, с разтвора и торбите.' },
+    keywords: 'bricks blocks CMU mortar wall masonry тухли блокчета газобетон Porotherm разтвор зидария',
+    isNew: true,
+  },
+  {
     id: 'insulation',
     category: 'home',
     icon: 'insulation',
@@ -192,6 +202,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   area: '<path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/>',
   energy: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
   flooring: '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.3h18M3 14.6h18M10 4v5.3M16 9.3v5.3M8 14.6V20"/>',
+  masonry: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 9.7h18M3 14.3h18M9 5v4.7M15 9.7v4.6M9 14.3V19"/>',
   insulation: '<path d="M4 4h6v16H4z"/><path d="M10 7h10M10 12h10M10 17h10"/><path d="M14 4v16"/>',
   screed: '<path d="M3 17h18v3H3z"/><path d="M5 17l3-5h8l3 5"/><path d="M10 12V5h6"/><path d="M14 3l2 2-2 2"/>',
   wallpaper: '<path d="M5 3h10v18H5z"/><path d="M15 5h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3"/><path d="M8 7l2 2-2 2M12 13l-2 2 2 2"/>',

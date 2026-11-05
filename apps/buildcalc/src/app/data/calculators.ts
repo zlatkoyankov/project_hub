@@ -1,4 +1,4 @@
-export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation';
+export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry';
 
 export interface CalculatorInfo {
   slug: string;
@@ -162,12 +162,24 @@ export const CALCULATORS: CalculatorInfo[] = [
       { question: 'Are the adhesive and anchor figures exact?', answer: 'No. They are typical values from a common system (Ceresit CT 85) and a usual six anchors per m². Wind load, building height and the wall material change the anchor pattern, so follow the system manufacturer or your designer.' },
     ],
   },
+  {
+    slug: 'brick-block-calculator', bg: '/bg/kalkulator-tuhli/', title: 'Brick & Block Calculator', shortTitle: 'Bricks & blocks', category: 'Concrete & Masonry',
+    description: 'Estimate bricks or blocks for a wall, and the mortar and mortar bags, from the wall size and the unit you build with.',
+    intro: 'Enter the wall length and height, subtract doors and windows, and choose the brick or block. The estimate counts units per square foot with their joints and works out the mortar in the joints.',
+    kind: 'masonry', icon: 'concrete', keywords: ['bricks', 'blocks', 'CMU', 'mortar', 'wall', 'masonry', 'Porotherm', 'aerated concrete'],
+    example: 'A wall of modular brick with 3/8 in joints takes about 6.9 bricks per sq ft; 8 × 16 in concrete blocks about 1.125 per sq ft.',
+    formula: 'Units per area = 1 ÷ ((unit length + joint) × (unit height + joint)). Mortar fills the bed joints, and the head joints when the units have them, through the wall depth.',
+    faqs: [
+      { question: 'Why are no head joints counted for some blocks?', answer: 'Clay blocks such as Porotherm and many aerated concrete blocks have interlocking tongue-and-groove ends, so only the horizontal bed joints take mortar.' },
+      { question: 'How much mortar does one bag make?', answer: 'It is printed on the bag. An 80 lb bag of premixed mortar makes about 0.6 to 0.7 cu ft; a 25 kg bag of dry mortar about 16 L. Thin-bed adhesive for aerated concrete yields differently, so check the bag.' },
+    ],
+  },
 ];
 
 export const FEATURED_SLUGS = [
   'gravel-calculator', 'paint-calculator', 'tile-calculator',
   'concrete-calculator', 'square-footage-calculator', 'mulch-calculator',
-  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'wallpaper-calculator', 'screed-plaster-calculator', 'insulation-board-calculator',
+  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'wallpaper-calculator', 'screed-plaster-calculator', 'insulation-board-calculator', 'brick-block-calculator',
 ];
 
 export const CATEGORIES = [...new Set(CALCULATORS.map((calculator) => calculator.category))];

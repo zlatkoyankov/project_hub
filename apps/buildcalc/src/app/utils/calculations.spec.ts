@@ -1,5 +1,5 @@
 import {
-  calculateAdhesive, calculateArea, calculateInsulation, calculateScreed, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
+  calculateAdhesive, calculateArea, calculateInsulation, calculateMasonry, MASONRY_UNITS, masonryPerSquareFoot, calculateScreed, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
 
 describe('calculation utilities', () => {
@@ -279,5 +279,32 @@ describe('calculation utilities', () => {
     expect(row('Base coat') * 0.45359237).toBeCloseTo(85 * 4, 3);
     expect(row('Reinforcing mesh') * 0.09290304).toBeCloseTo(93.5, 3);
     expect(row('Anchors')).toBe(510);
+  });
+
+  it('matches the usual units per area for bricks and blocks', () => {
+    const perM2 = (index: number) => masonryPerSquareFoot(MASONRY_UNITS[index]).units * 10.7639104;
+    // 8 × 2-5/8 in with joints; 6.75 is quoted for 3 courses in 8 in.
+    expect(masonryPerSquareFoot(MASONRY_UNITS[0]).units).toBeCloseTo(6.86, 2);
+    expect(masonryPerSquareFoot(MASONRY_UNITS[1]).units).toBeCloseTo(1.125, 3);
+    expect(perM2(4)).toBeCloseTo(10.7, 1);
+    expect(perM2(5)).toBeCloseTo(8, 1);
+  });
+
+  it('works out mortar close to the Brick Industry Association figure', () => {
+    // BIA: about 7.5 cu ft of mortar per 1,000 modular bricks with 3/8 in joints.
+    const rate = masonryPerSquareFoot(MASONRY_UNITS[0]);
+    expect((rate.mortar / rate.units) * 1000).toBeGreaterThan(7);
+    expect((rate.mortar / rate.units) * 1000).toBeLessThan(9);
+  });
+
+  it('counts bricks and mortar bags for a metric wall', () => {
+    // 10 m × 2.8 m wall minus 4 m² openings = 24 m² of 12 cm solid brick wall.
+    const result = calculateMasonry({ length: 10, height: 2.8, openings: 4, unit: 2, waste: 5, mortarYield: 16, dimensionUnit: 2, openingsUnit: 2, yieldUnit: 1 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value ?? 0;
+    const perM2 = 1 / (0.26 * 0.075);
+    expect(row('Bricks or blocks')).toBe(Math.ceil(24 * perM2 * 1.05));
+    const litres = row('Mortar') * 28.3168466;
+    expect(litres / 24 / 1.05).toBeCloseTo(0.12 * 0.01 / 0.075 * 1000 + perM2 * 0.065 * 0.01 * 0.12 * 1000, 1);
+    expect(row('Mortar bags')).toBe(Math.ceil(litres / 16));
   });
 });

@@ -3,12 +3,12 @@
 // The English versions live in BuildCalc; the maths is in src/lib/materials.ts.
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { getPosts, ogKey, postPath } from '../lib/site'
-import { DRYWALL_SHEETS, INSULATION_BOARDS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
+import { DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
 interface Props {
-  kind: 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation'
+  kind: 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry'
 }
 
 interface Field {
@@ -27,6 +27,27 @@ const adhesive = kind === 'adhesive'
 const wallpaper = kind === 'wallpaper'
 const screed = kind === 'screed'
 const insulation = kind === 'insulation'
+const masonry = kind === 'masonry'
+
+const masonryPage = {
+  path: '/bg/kalkulator-tuhli/',
+  en: '/calculators/brick-block-calculator/',
+  tool: 'brick-block-calculator',
+  title: 'Калкулатор за тухли и блокчета: брой и разтвор | Zyankov.eu',
+  description: 'Изчисли колко тухли, керамични блокове или газобетон трябват за стена и колко разтвор и торби да купиш. С фугите, по размерите на стената.',
+  h1: 'Колко тухли ми трябват?',
+  intro: 'Въведи дължината и височината на стената, извади вратите и прозорците и избери тухлата или блока. Калкулаторът брои колко броя има на м² с фугите и смята разтвора във фугите.',
+  big: 'броя',
+  bigOne: 'брой',
+  formula: 'брой на м² = 1 ÷ ((дължина + фуга) × (височина + фуга))',
+  how: 'Всяка тухла заема лицето си плюс по една фуга. Броят на м² е единица, разделена на тази площ. Разтворът е в хоризонталните фуги и, при обикновените тухли, във вертикалните, по цялата дебелина на стената. Керамичните блокове с „нут и перо“ нямат вертикални фуги, а газобетонът се реди на тънък слой лепило.',
+  tips: [
+    'Купи 5% в повече за счупени и рязани тухли. При много ъгли и отвори – повече.',
+    'Разтворът зависи от майстора и фугата. Колко литра излизат от торба пише на нея.',
+    'За газобетон се ползва специално лепило за тънки фуги, а не обикновен разтвор.',
+  ],
+  jsonName: 'Калкулатор за тухли и блокчета',
+}
 
 const insulationPage = {
   path: '/bg/kalkulator-izolatsiya/',
@@ -108,7 +129,7 @@ const adhesivePage = {
       jsonName: 'Калкулатор за лепило и фуга',
     }
 
-const page = insulation ? insulationPage : screed ? screedPage : wallpaper ? wallpaperPage : adhesive ? adhesivePage : flooring
+const page = masonry ? masonryPage : insulation ? insulationPage : screed ? screedPage : wallpaper ? wallpaperPage : adhesive ? adhesivePage : flooring
   ? {
       path: '/bg/kalkulator-laminat/',
       en: '/calculators/laminate-flooring-calculator/',
@@ -189,7 +210,16 @@ const insulationFields: Field[] = [
   { name: 'price', label: 'Цена за м² плоча', unit: '€', value: 0, step: '0.01', optional: true },
 ]
 
-const mainFields: Field[] = insulation ? insulationFields : screed ? screedFields : wallpaper ? wallpaperFields : adhesive ? adhesiveFields : flooring
+const masonryFields: Field[] = [
+  { name: 'length', label: 'Дължина на стената', unit: 'м', value: 10, step: '0.01', hint: 'За няколко стени събери дължините.' },
+  { name: 'height', label: 'Височина на стената', unit: 'м', value: 2.8, step: '0.01' },
+  { name: 'openings', label: 'Врати и прозорци', unit: 'м²', value: 4, step: '0.01' },
+  { name: 'waste', label: 'Фира', unit: '%', value: 5, step: '1' },
+  { name: 'mortarYield', label: 'Разтвор от торба', unit: 'л', value: 16, step: '0.5', hint: 'Пише на торбата. Около 16 л от 25 кг зидарски разтвор.' },
+  { name: 'price', label: 'Цена за брой', unit: '€', value: 0, step: '0.01', optional: true },
+]
+
+const mainFields: Field[] = masonry ? masonryFields : insulation ? insulationFields : screed ? screedFields : wallpaper ? wallpaperFields : adhesive ? adhesiveFields : flooring
   ? [
       { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
       { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
@@ -221,7 +251,7 @@ const supplyFields: Field[] = [
   { name: 'profileLength', label: 'Дължина на профила', unit: 'м', value: 3, step: '0.01', hint: 'CW и UW профилите са обикновено 2,6, 3 или 4 м.' },
 ]
 const extraFields = flooring ? trimFields : insulation ? [] : supplyFields
-const extra = adhesive || wallpaper || screed ? null : insulation
+const extra = adhesive || wallpaper || screed || masonry ? null : insulation
   ? { name: 'supplies', legend: 'Лепило, мрежа и дюбели', label: 'Консумативи', on: 'Включи лепило, шпакловка, мрежа и дюбели', off: 'Само плочи' }
   : flooring
   ? { name: 'trim', legend: 'Первази и лайсни', label: 'Первази', on: 'Включи первази и лайсни', off: 'Само ламинат' }
@@ -252,8 +282,8 @@ const jsonLd = {
 
       <section class="tool-layout" aria-label={page.h1} data-material={kind}>
         <form class="tool-form" novalidate>
-          <h2>{adhesive ? 'Площ и плочки' : screed ? 'Площ и дебелина' : insulation ? 'Фасада' : 'Твоята стая'}</h2>
-          <p class="tool-form__hint">{adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : wallpaper ? 'Стаята е в метри, ролката и раппортът в сантиметри. Цената не е задължителна.' : screed ? 'Площта е в м², дебелината в милиметри. Цената не е задължителна.' : insulation ? 'Площите са в м², дебелината в сантиметри. Цената не е задължителна.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
+          <h2>{adhesive ? 'Площ и плочки' : screed ? 'Площ и дебелина' : insulation ? 'Фасада' : masonry ? 'Стената' : 'Твоята стая'}</h2>
+          <p class="tool-form__hint">{adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : wallpaper ? 'Стаята е в метри, ролката и раппортът в сантиметри. Цената не е задължителна.' : screed ? 'Площта е в м², дебелината в милиметри. Цената не е задължителна.' : insulation ? 'Площите са в м², дебелината в сантиметри. Цената не е задължителна.' : masonry ? 'Стената е в метри, отворите в м². Цената не е задължителна.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
           <div class="tool-fields">
             {mainFields.map((field) => (
               <div class="tool-field">
@@ -262,6 +292,14 @@ const jsonLd = {
                 {field.hint && <small id={`mat-${field.name}-hint`}>{field.hint}</small>}
               </div>
             ))}
+            {masonry && (
+              <div class="tool-field">
+                <label for="mat-unit">Тухла или блок</label>
+                <select id="mat-unit" name="unit">
+                  {MASONRY_UNITS.map((unit, index) => <option value={index}>{unit.label}</option>)}
+                </select>
+              </div>
+            )}
             {insulation && (
               <div class="tool-field">
                 <label for="mat-board">Плоча</label>
@@ -371,7 +409,7 @@ const jsonLd = {
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { estimateAdhesive, estimateDrywall, estimateFlooring, estimateInsulation, estimateScreed, estimateWallpaper } from '../lib/materials'
+  import { estimateAdhesive, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -430,6 +468,20 @@ const jsonLd = {
         if (result.transitions > 0) rows.push(['Прагове', `${result.transitions} бр.`])
         if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
         render(result.boxes, rows)
+      } else if (kind === 'masonry') {
+        const result = estimateMasonry({
+          length: num('length'), height: num('height'), openings: num('openings'), unit: Number(field('unit')?.value ?? 0),
+          waste: num('waste'), mortarYield: num('mortarYield'), price: num('price'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Площ на стената', `${fmt(result.net)} м²`, 'без вратите и прозорците'],
+          ['Брой на м²', fmt(result.perM2, 1), 'с фугите'],
+          ['Разтвор', `${fmt(result.mortarLitres, 0)} л`, result.headJoints ? 'хоризонтални и вертикални фуги, с фирата' : 'само хоризонтални фуги, с фирата'],
+          ['Торби разтвор', `${result.bags} бр.`, `по ${fmt(num('mortarYield'), 1)} л от торба`],
+        ]
+        if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
+        render(result.units, rows)
       } else if (kind === 'insulation') {
         const result = estimateInsulation({
           area: num('area'), openings: num('openings'), board: Number(field('board')?.value ?? 0), thickness: num('thickness'),
