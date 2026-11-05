@@ -1,5 +1,5 @@
 import {
-  calculateAdhesive, calculateArea, calculateScreed, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
+  calculateAdhesive, calculateArea, calculateInsulation, calculateScreed, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
 
 describe('calculation utilities', () => {
@@ -267,5 +267,17 @@ describe('calculation utilities', () => {
     const kg = (100 / 10.7639104) * 6.35 * 1.6;
     expect(row('Dry mix') * 0.45359237).toBeCloseTo(kg, 3);
     expect(row('Bags')).toBe(Math.ceil(kg / (50 * 0.45359237)));
+  });
+
+  it('counts insulation boards and EIFS supplies', () => {
+    // 100 m² of wall minus 15 m² of openings = 85 m²; +5% = 89.25 m² ÷ 0.5 m² = 179 boards.
+    const result = calculateInsulation({ surfaceArea: 100, openings: 15, board: 2, thickness: 10, waste: 5, supplies: true, openingsUnit: 2, depthUnit: 3 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value ?? 0;
+    expect(row('Boards')).toBe(179);
+    expect(row('Insulation volume') * 0.0283168466).toBeCloseTo(179 * 0.5 * 0.1, 3);
+    expect(row('Board adhesive') * 0.45359237).toBeCloseTo(85 * 5.5, 3);
+    expect(row('Base coat') * 0.45359237).toBeCloseTo(85 * 4, 3);
+    expect(row('Reinforcing mesh') * 0.09290304).toBeCloseTo(93.5, 3);
+    expect(row('Anchors')).toBe(510);
   });
 });

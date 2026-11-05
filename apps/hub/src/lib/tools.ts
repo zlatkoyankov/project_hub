@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation'
 
 export interface Tool {
   id: string
@@ -104,6 +104,16 @@ export const TOOL_CATALOG: Tool[] = [
     isNew: true,
   },
   {
+    id: 'insulation',
+    category: 'home',
+    icon: 'insulation',
+    href: { en: '/calculators/insulation-board-calculator/', bg: '/bg/kalkulator-izolatsiya/' },
+    name: { en: 'Insulation boards', bg: 'Топлоизолация' },
+    description: { en: 'Foam or mineral wool boards, adhesive, mesh and anchors for a wall.', bg: 'Плочи стиропор или вата, лепило, мрежа и дюбели за фасада.' },
+    keywords: 'insulation EPS XPS mineral wool EIFS ETICS boards anchors топлоизолация стиропор вата фасада дюбели мрежа',
+    isNew: true,
+  },
+  {
     id: 'screed',
     category: 'home',
     icon: 'screed',
@@ -182,6 +192,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   area: '<path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/>',
   energy: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
   flooring: '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.3h18M3 14.6h18M10 4v5.3M16 9.3v5.3M8 14.6V20"/>',
+  insulation: '<path d="M4 4h6v16H4z"/><path d="M10 7h10M10 12h10M10 17h10"/><path d="M14 4v16"/>',
   screed: '<path d="M3 17h18v3H3z"/><path d="M5 17l3-5h8l3 5"/><path d="M10 12V5h6"/><path d="M14 3l2 2-2 2"/>',
   wallpaper: '<path d="M5 3h10v18H5z"/><path d="M15 5h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3"/><path d="M8 7l2 2-2 2M12 13l-2 2 2 2"/>',
   adhesive: '<path d="M4 20h10l6-6V4H4z"/><path d="M4 14h4v6M10 14h4v6M16 14h4"/><path d="M8 4v4M12 4v4M16 4v4"/>',
