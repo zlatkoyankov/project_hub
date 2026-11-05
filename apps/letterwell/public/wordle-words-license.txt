@@ -10,3 +10,9 @@ The frequency order comes from FrequencyWords by Hermit Dave
 (https://github.com/hermitdave/FrequencyWords), whose word lists are licensed under
 Creative Commons Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
 These two files are adapted from that work and are shared under the same license.
+
+Word meanings (public/meanings/) come from Wiktionary (https://en.wiktionary.org/),
+via the wiktextract-based dictionaries at https://github.com/Vuizur/Wiktionary-Dictionaries.
+They are shortened, and are available under the Creative Commons Attribution-ShareAlike 3.0
+licence (https://creativecommons.org/licenses/by-sa/3.0/) and the GNU FDL, like Wiktionary.
+Rebuild them with: node scripts/build-meanings.mjs <path to that repository>
