@@ -297,3 +297,47 @@ export function estimateScreed(input: ScreedInput): ScreedEstimate | null {
   const bags = wholeUp(kg / input.bag)
   return { volume: (input.area * input.thickness) / 1000, rate, custom, kg, bags, cost: bags * Math.max(0, input.price) }
 }
+
+/** Insulation boards common in Bulgarian shops, face area in m². */
+export const INSULATION_BOARDS = [
+  { label: 'EPS (стиропор) 1 × 0,5 м', area: 0.5 },
+  { label: 'XPS 1,25 × 0,6 м', area: 0.75 },
+  { label: 'Минерална вата 1,2 × 0,6 м', area: 0.72 },
+]
+
+/** Per m² of board: adhesive and base coat from Ceresit CT 85, mesh with 10% overlaps, six anchors. */
+export const INSULATION_RATES = { adhesiveKg: 5.5, baseCoatKg: 4.0, meshOverlap: 1.1, anchors: 6 }
+
+export interface InsulationInput {
+  area: number
+  openings: number
+  board: number
+  /** cm */
+  thickness: number
+  waste: number
+  supplies: boolean
+  /** price per m² of board */
+  price: number
+}
+
+export interface InsulationEstimate {
+  net: number
+  boards: number
+  boardArea: number
+  volume: number
+  supplies: null | { adhesive: number; baseCoat: number; bags: number; mesh: number; anchors: number }
+  cost: number
+}
+
+export function estimateInsulation(input: InsulationInput): InsulationEstimate | null {
+  const board = INSULATION_BOARDS[input.board]
+  if (!board || !(input.area > 0 && input.thickness > 0)) return null
+  const net = Math.max(0, input.area - Math.max(0, input.openings))
+  const boards = wholeUp(withWaste(net, input.waste) / board.area)
+  const boardArea = boards * board.area
+  const r = INSULATION_RATES
+  const supplies = input.supplies
+    ? { adhesive: net * r.adhesiveKg, baseCoat: net * r.baseCoatKg, bags: wholeUp((net * (r.adhesiveKg + r.baseCoatKg)) / 25), mesh: net * r.meshOverlap, anchors: wholeUp(net * r.anchors) }
+    : null
+  return { net, boards, boardArea, volume: boardArea * (input.thickness / 100), supplies, cost: boardArea * Math.max(0, input.price) }
+}

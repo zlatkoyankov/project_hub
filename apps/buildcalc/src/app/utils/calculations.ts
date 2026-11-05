@@ -707,3 +707,65 @@ export function calculateScreed(values: ScreedInput): Estimate {
     summary: `Plan for ${bags} bag${bags === 1 ? '' : 's'} of ${(custom ? 'dry mix' : material.label.toLowerCase())}, including waste.`,
   };
 }
+
+/** Common insulation board sizes, with the face area in sq ft. */
+export const INSULATION_BOARDS = [
+  { label: '4 × 8 ft sheet', sqFt: 32 },
+  { label: '2 × 8 ft board', sqFt: 16 },
+  { label: '1 × 0.5 m (EPS facade board)', sqFt: 0.5 * 10.7639104 },
+  { label: '1.25 × 0.6 m (XPS board)', sqFt: 0.75 * 10.7639104 },
+  { label: '1.2 × 0.6 m (mineral wool slab)', sqFt: 0.72 * 10.7639104 },
+];
+
+/** Exterior insulation (EIFS/ETICS) supplies per m² of board: adhesive and base coat from Ceresit CT 85's
+ *  data sheet, mesh with 10% for overlaps, and a common rule of six anchors per m². */
+export const INSULATION_SUPPLY_RATES = { adhesiveKgPerM2: 5.5, baseCoatKgPerM2: 4.0, meshOverlap: 1.1, anchorsPerM2: 6 };
+
+export interface InsulationInput {
+  surfaceArea: number;
+  openings: number;
+  board: number;
+  thickness: number;
+  waste: number;
+  supplies?: boolean;
+  price?: number;
+  openingsUnit?: number;
+  depthUnit?: number;
+}
+
+export function calculateInsulation(values: InsulationInput): Estimate {
+  positive(values.surfaceArea, 'Wall area');
+  nonNegative(values.openings, 'Doors and windows');
+  positive(values.thickness, 'Thickness');
+  const price = values.price ?? 0;
+  nonNegative(price, 'Price');
+  const board = INSULATION_BOARDS[values.board];
+  if (!board) throw new Error('Choose a board size.');
+
+  const areaFactor = unitFactor(SQUARE_FEET_PER_UNIT, values.openingsUnit);
+  const gross = values.surfaceArea * areaFactor;
+  const openings = Math.min(values.openings * areaFactor, gross);
+  const net = gross - openings;
+  const withWaste = net * wasteMultiplier(values.waste);
+  const boards = Math.ceil(withWaste / board.sqFt - 1e-6);
+  const thicknessFt = values.thickness * unitFactor(FEET_PER_UNIT, values.depthUnit ?? 1);
+  const squareMeters = net / 10.7639104;
+  const lb = (kg: number) => kg / 0.45359237;
+  const rates = INSULATION_SUPPLY_RATES;
+
+  return {
+    rows: [
+      { label: 'Area to insulate', value: net, unit: 'sq ft', precision: 2, detail: 'walls minus doors and windows' },
+      { label: 'Boards', value: boards, unit: boards === 1 ? 'board' : 'boards', precision: 0, detail: `${board.label}, with waste, rounded up` },
+      { label: 'Insulation volume', value: boards * board.sqFt * thicknessFt, unit: 'cu ft', precision: 2 },
+      ...(values.supplies ? [
+        { label: 'Board adhesive', value: lb(squareMeters * rates.adhesiveKgPerM2), unit: 'lb', precision: 0, detail: `about ${rates.adhesiveKgPerM2} kg per m²` },
+        { label: 'Base coat', value: lb(squareMeters * rates.baseCoatKgPerM2), unit: 'lb', precision: 0, detail: `about ${rates.baseCoatKgPerM2} kg per m², with the mesh` },
+        { label: 'Reinforcing mesh', value: net * rates.meshOverlap, unit: 'sq ft', precision: 0, detail: 'with 10% for overlaps' },
+        { label: 'Anchors', value: Math.ceil(squareMeters * rates.anchorsPerM2 - 1e-6), unit: 'anchors', precision: 0, detail: 'about 6 per m²; more at corners and on tall walls' },
+      ] : []),
+      ...(price > 0 ? [{ label: 'Estimated cost', value: boards * price, unit: '$', precision: 2 }] : []),
+    ],
+    summary: `Plan for ${boards} board${boards === 1 ? '' : 's'} of insulation, including waste.`,
+  };
+}

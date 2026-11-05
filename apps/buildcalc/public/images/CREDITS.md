@@ -16,3 +16,4 @@ Photos are from Unsplash and are free to use under the Unsplash License (https:/
 | adhesive.webp | https://unsplash.com/photos/1570881826833-ad7b98b7dffe (same photo as tile.webp) |
 | wallpaper.webp | https://unsplash.com/photos/1562259949-e8e7689d7828 (same photo as paint.webp) |
 | screed.webp | https://unsplash.com/photos/1531834685032-c34bf0d84c77 (same photo as concrete.webp) |
+| insulation.webp | Generated illustration (zyankov.eu), same as drywall.webp |

@@ -1,4 +1,4 @@
-export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed';
+export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation';
 
 export interface CalculatorInfo {
   slug: string;
@@ -150,12 +150,24 @@ export const CALCULATORS: CalculatorInfo[] = [
       { question: 'Where do I find the consumption?', answer: 'On the bag or the product data sheet, usually as kg per m² per mm (or per cm). Enter it as a custom consumption to match your product exactly.' },
     ],
   },
+  {
+    slug: 'insulation-board-calculator', bg: '/bg/kalkulator-izolatsiya/', title: 'Insulation Board Calculator', shortTitle: 'Insulation boards', category: 'General Construction',
+    description: 'Estimate rigid foam or mineral wool boards for a wall, and the adhesive, base coat, mesh and anchors for exterior insulation (EIFS).',
+    intro: 'Enter the wall area, subtract doors and windows, and choose a board size and thickness. Optionally add the supplies for an exterior insulation system.',
+    kind: 'insulation', icon: 'drywall', keywords: ['rigid foam', 'EPS', 'XPS', 'mineral wool', 'EIFS', 'ETICS', 'facade', 'boards'],
+    example: '85 m² of wall with 1 × 0.5 m boards needs about 179 boards with 5% waste.',
+    formula: 'Boards = (wall area − openings) × (1 + waste) ÷ board area, rounded up. Supplies use typical rates per m² of board.',
+    faqs: [
+      { question: 'How thick should the insulation be?', answer: 'That depends on your climate, the wall and local energy rules. This calculator counts boards for a thickness you choose; it does not size the insulation.' },
+      { question: 'Are the adhesive and anchor figures exact?', answer: 'No. They are typical values from a common system (Ceresit CT 85) and a usual six anchors per m². Wind load, building height and the wall material change the anchor pattern, so follow the system manufacturer or your designer.' },
+    ],
+  },
 ];
 
 export const FEATURED_SLUGS = [
   'gravel-calculator', 'paint-calculator', 'tile-calculator',
   'concrete-calculator', 'square-footage-calculator', 'mulch-calculator',
-  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'wallpaper-calculator', 'screed-plaster-calculator',
+  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'wallpaper-calculator', 'screed-plaster-calculator', 'insulation-board-calculator',
 ];
 
 export const CATEGORIES = [...new Set(CALCULATORS.map((calculator) => calculator.category))];

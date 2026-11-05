@@ -7,7 +7,7 @@ import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.servi
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
 import {
-  AdhesiveInput, calculateAdhesive, calculateScreed, calculateWallpaper, ScreedInput, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, SCREED_MATERIALS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
+  AdhesiveInput, calculateAdhesive, calculateInsulation, InsulationInput, INSULATION_BOARDS, calculateScreed, calculateWallpaper, ScreedInput, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, SCREED_MATERIALS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
 } from '../utils/calculations';
 
 interface Field {
@@ -129,6 +129,13 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'adhesiveBag', label: 'Adhesive bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Thinset is usually sold in 50 lb or 25 kg bags.' },
     { key: 'groutBag', label: 'Grout bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Often 25 lb, or 2 to 5 kg.' },
   ],
+  insulation: [
+    { key: 'surfaceArea', label: 'Wall area', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0.01, step: 1 },
+    { key: 'openings', label: 'Doors and windows', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0, step: 1 },
+    { key: 'thickness', label: 'Board thickness', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.25 },
+    { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1, hint: 'About 5% for plain walls, more with many corners and openings.' },
+    { key: 'price', label: 'Price per board', unit: '$', min: 0, step: 0.01, optional: true },
+  ],
   screed: [
     { key: 'surfaceArea', label: 'Area', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0.01, step: 0.5 },
     { key: 'thickness', label: 'Average thickness', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.01, hint: 'Measure the gaps under a straightedge in a few places and average them.' },
@@ -163,6 +170,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
   concrete: { length: 10, width: 10, depth: 4, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   area: {},
   adhesive: { surfaceArea: 120, tileLength: 12, tileWidth: 12, tileThickness: 0.375, grout: 0.125, notch: -1, waste: 10, adhesiveBag: 50, groutBag: 25, openingsUnit: 0, tileUnit: 1, groutUnit: 1, weightUnit: 0 },
+  insulation: { surfaceArea: 1000, openings: 150, board: 0, thickness: 2, waste: 5, supplies: 0, price: 0, openingsUnit: 0, depthUnit: 1 },
   screed: { surfaceArea: 150, thickness: 1.5, material: 0, consumption: 0, waste: 10, bagSize: 50, price: 0, openingsUnit: 0, depthUnit: 1, weightUnit: 0 },
   wallpaper: { length: 12, width: 10, height: 8, openings: 21, rollWidth: 20.5, rollLength: 33, patternRepeat: 0, price: 0, dimensionUnit: 0, openingsUnit: 0, rollUnit: 1 },
   mulch: { length: 10, width: 10, depth: 3, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
@@ -224,6 +232,7 @@ export class CalculatorPage {
     const kind = this.calculator()?.kind;
     if (kind === 'flooring') return { key: 'baseboards', legend: 'Baseboards and trim', label: 'Baseboards', on: 'Include baseboards and trim', off: 'Flooring only' };
     if (kind === 'drywall') return { key: 'supplies', legend: 'Studs and finishing supplies', label: 'Supplies', on: 'Include studs, screws, tape and compound', off: 'Sheets only' };
+    if (kind === 'insulation') return { key: 'supplies', legend: 'Exterior insulation supplies', label: 'Supplies', on: 'Include adhesive, base coat, mesh and anchors', off: 'Boards only' };
     return null;
   });
   /** Fields of the optional section: shown only when it is switched on. */
@@ -345,6 +354,7 @@ export class CalculatorPage {
         case 'adhesive': estimate = calculateAdhesive(this.toAdhesiveInput(this.values())); break;
         case 'wallpaper': estimate = calculateWallpaper(this.toWallpaperInput(this.values())); break;
         case 'screed': estimate = calculateScreed(this.toScreedInput(this.values())); break;
+        case 'insulation': estimate = calculateInsulation(this.toInsulationInput(this.values())); break;
       }
       this.result.set(estimate);
       this.copied.set(false);
@@ -390,6 +400,9 @@ export class CalculatorPage {
       defaults['densityUnit'] = 1;
       defaults['coverageUnit'] = 1;
       if (kind === 'gravel') defaults['density'] = 1600;
+      if (kind === 'insulation') {
+        Object.assign(defaults, { surfaceArea: 100, openings: 15, board: 2, thickness: 10, depthUnit: 3 });
+      }
       if (kind === 'screed') {
         Object.assign(defaults, { surfaceArea: 15, thickness: 40, depthUnit: 4, bagSize: 25, weightUnit: 1 });
       }
@@ -455,6 +468,7 @@ export class CalculatorPage {
       area: 'This totals rectangular measurements. Break irregular shapes into separate rectangles without overlap.',
       mulch: 'Depth needs vary with material and intended use. Follow local horticultural guidance and keep mulch clear of plant stems and trunks.',
       flooring: 'This covers a rectangular room. Add closets and alcoves as extra area, check the coverage on your box and follow the manufacturer’s expansion-gap and underlayment instructions.',
+      insulation: 'This counts boards for flat walls. Corners, reveals around windows and starter tracks are not included, and the supply rates are typical values; anchor patterns depend on wind load and building height, so follow the system manufacturer or your designer.',
       screed: 'Consumption is a typical value from manufacturers’ data sheets; your product may differ, so enter its own figure when you have it. Uneven floors and walls vary in thickness, so measure in several places. This is not a structural or moisture assessment.',
       wallpaper: 'This assumes a rectangular room with walls of one height and whole strips from floor to ceiling. Sloped ceilings, alcoves and half-drop patterns can need more; keep a spare roll from the same batch.',
       adhesive: 'Consumption depends on the adhesive, the evenness of the surface and how well the tiles are bedded. The trowel figures are typical values for cement adhesive (Ceresit CM 11); check your product’s data sheet. Grout assumes joints filled to the full tile thickness.',
@@ -745,6 +759,22 @@ export class CalculatorPage {
   protected readonly notchOptions = [{ value: -1, label: 'Suggest from tile size' }, ...TROWEL_NOTCHES.map((notch, index) => ({ value: index, label: notch.label }))];
 
   protected readonly materialOptions = SCREED_MATERIALS.map((material, index) => ({ value: index, label: `${material.label} (about ${material.kgPerM2PerMm} kg/m² per mm)` }));
+
+  protected readonly boardOptions = INSULATION_BOARDS.map((board, index) => ({ value: index, label: board.label }));
+
+  private toInsulationInput(values: Values): InsulationInput {
+    return {
+      surfaceArea: this.number(values, 'surfaceArea'),
+      openings: this.number(values, 'openings'),
+      board: this.number(values, 'board'),
+      thickness: this.number(values, 'thickness'),
+      waste: this.number(values, 'waste'),
+      supplies: this.number(values, 'supplies') === 1,
+      price: this.number(values, 'price'),
+      openingsUnit: this.number(values, 'openingsUnit'),
+      depthUnit: this.number(values, 'depthUnit'),
+    };
+  }
 
   private toScreedInput(values: Values): ScreedInput {
     return {
