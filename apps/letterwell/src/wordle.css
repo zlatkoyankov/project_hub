@@ -541,3 +541,35 @@
     max-height: 55vh;
   }
 }
+
+.meaning-links p {
+  margin: 8px 0 6px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.meaning-links ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.meaning-links li + li {
+  margin-top: 6px;
+}
+
+.meaning-links a {
+  display: block;
+  padding: 9px 12px;
+  color: var(--text);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.meaning-links a:hover {
+  border-color: var(--border-strong);
+}

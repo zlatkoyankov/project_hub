@@ -1,5 +1,5 @@
 // Short Wiktionary meanings for the Wordle helper, built by scripts/build-meanings.mjs.
-// index.txt says which words have a meaning (one bit per word of the Wordle list), so a page can
+// English only. index.txt says which words have a meaning (one bit per word of the Wordle list), so a page can
 // grey out the button without loading anything else; the meanings themselves are split by first
 // letter and fetched only when someone asks for one.
 import type { Language } from './seo'
@@ -48,19 +48,17 @@ export async function loadMeaning(language: Language, word: string): Promise<Mea
   return Array.isArray(entry) ? { word, parts: entry } : { word, headword: entry.f, parts: entry.m }
 }
 
-const PARTS_BG: Record<string, string> = {
-  noun: 'съществително', verb: 'глагол', adj: 'прилагателно', adv: 'наречие', pron: 'местоимение',
-  prep: 'предлог', conj: 'съюз', intj: 'междуметие', num: 'числително', name: 'собствено име',
-  particle: 'частица', character: 'буква', phrase: 'израз', prefix: 'представка', suffix: 'наставка',
-  det: 'определител', abbrev: 'съкращение', article: 'член', contraction: 'съкращение',
-}
 const PARTS_EN: Record<string, string> = {
   adj: 'adjective', adv: 'adverb', pron: 'pronoun', prep: 'preposition', conj: 'conjunction',
   intj: 'interjection', num: 'numeral', name: 'proper noun', det: 'determiner', abbrev: 'abbreviation',
 }
 
-export const partLabel = (part: string, language: Language) =>
-  (language === 'bg' ? PARTS_BG[part] : PARTS_EN[part]) ?? part
+export const partLabel = (part: string) => PARTS_EN[part] ?? part
 
-export const wiktionaryUrl = (word: string, language: Language) =>
-  `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}#${language === 'bg' ? 'Bulgarian' : 'English'}`
+export const wiktionaryUrl = (word: string) => `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}#English`
+
+/** Bulgarian words: no built-in meanings, links to Bulgarian dictionaries instead. */
+export const dictionaryLinks = (word: string) => [
+  { label: 'Речник на българския език (БАН)', href: `https://ibl.bas.bg/rbe/lang/bg/${encodeURIComponent(word)}/` },
+  { label: 'Уикиречник', href: `https://bg.wiktionary.org/wiki/${encodeURIComponent(word)}` },
+]

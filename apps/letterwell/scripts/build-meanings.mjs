@@ -1,7 +1,7 @@
 // Builds short word meanings for the Wordle helper from Wiktionary.
 //
 // Source: the tab-separated Wiktionary dictionaries in https://github.com/Vuizur/Wiktionary-Dictionaries
-// ("English-English Wiktionary dictionary.tsv" and "Bulgarian-English Wiktionary dictionary.tsv"),
+// ("English-English Wiktionary dictionary.tsv"),
 // extracted from the English Wiktionary with wiktextract. Licence: CC BY-SA 3.0 / GFDL, like Wiktionary.
 //
 // Usage: node scripts/build-meanings.mjs <path to the Wiktionary-Dictionaries checkout>
@@ -16,7 +16,9 @@ import { join } from 'node:path'
 const source = process.argv[2]
 if (!source) throw new Error('Usage: node scripts/build-meanings.mjs <Wiktionary-Dictionaries checkout>')
 
-const SOURCES = { en: 'English-English Wiktionary dictionary.tsv', bg: 'Bulgarian-English Wiktionary dictionary.tsv' }
+// English only: for Bulgarian words Wiktionary mostly gives English glosses, so the Bulgarian page
+// links to Bulgarian dictionaries instead (see dictionaryLinks in src/meanings.ts).
+const SOURCES = { en: 'English-English Wiktionary dictionary.tsv' }
 const MAX_PARTS = 2
 const MAX_SENSES = 2
 const MAX_CHARS = 150

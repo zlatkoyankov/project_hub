@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { Info, X } from 'lucide-react'
 import { track } from '@zyankov/design-system/analytics'
 import type { Language } from './seo'
-import { loadMeaning, partLabel, wiktionaryUrl, type Meaning } from './meanings'
+import { dictionaryLinks, loadMeaning, partLabel, wiktionaryUrl, type Meaning } from './meanings'
 
 const copy = {
   en: {
@@ -15,18 +15,18 @@ const copy = {
     formOf: 'form of',
     close: 'Close',
     source: 'Source: Wiktionary (CC BY-SA)',
-    note: '',
+    lookUp: '',
   },
   bg: {
     show: (word: string) => `Значение на ${word}`,
     none: (word: string) => `Няма намерено значение за ${word}`,
-    loading: 'Търсим значението…',
-    failed: 'Значението не може да се зареди. Опитай пак след малко.',
-    missing: 'Няма намерено значение за тази дума.',
-    formOf: 'форма на',
+    loading: '',
+    failed: '',
+    missing: '',
+    formOf: '',
     close: 'Затвори',
-    source: 'Източник: Wiktionary (CC BY-SA)',
-    note: 'Обяснението е на английски.',
+    source: '',
+    lookUp: 'Виж значението на думата в:',
   },
 }
 
@@ -62,19 +62,21 @@ type State = { status: 'loading' } | { status: 'error' } | { status: 'done'; mea
 /** The balloon with the meaning: under the word on wide screens, a sheet at the bottom on phones. */
 export function MeaningPopover({ open, language, onClose }: { open: OpenMeaning; language: Language; onClose: () => void }) {
   const text = copy[language]
+  const bulgarian = language === 'bg'
   const [state, setState] = useState<State>({ status: 'loading' })
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null)
   const panel = useRef<HTMLDivElement>(null)
   const locale = language === 'bg' ? 'bg-BG' : 'en'
 
   useEffect(() => {
+    track('wordle_meaning', { language })
+    if (bulgarian) return
     let active = true
     loadMeaning(language, open.word)
       .then((meaning) => { if (active) setState({ status: 'done', meaning }) })
       .catch(() => { if (active) setState({ status: 'error' }) })
-    track('wordle_meaning', { language })
     return () => { active = false }
-  }, [language, open.word])
+  }, [language, bulgarian, open.word])
 
   useLayoutEffect(() => {
     const place = () => {
@@ -122,20 +124,29 @@ export function MeaningPopover({ open, language, onClose }: { open: OpenMeaning;
         {meaning?.headword && <span className="meaning-form">{text.formOf} <b>{meaning.headword}</b></span>}
         <button type="button" className="meaning-close" aria-label={text.close} onClick={onClose}><X size={16} /></button>
       </div>
-      {state.status === 'loading' && <p className="meaning-status">{text.loading}</p>}
-      {state.status === 'error' && <p className="meaning-status">{text.failed}</p>}
-      {state.status === 'done' && !meaning && <p className="meaning-status">{text.missing}</p>}
+      {bulgarian && (
+        <div className="meaning-links">
+          <p>{text.lookUp}</p>
+          <ul>
+            {dictionaryLinks(open.word).map((link) => (
+              <li key={link.href}><a href={link.href} target="_blank" rel="noopener">{link.label} <span aria-hidden="true">↗</span></a></li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {!bulgarian && state.status === 'loading' && <p className="meaning-status">{text.loading}</p>}
+      {!bulgarian && state.status === 'error' && <p className="meaning-status">{text.failed}</p>}
+      {!bulgarian && state.status === 'done' && !meaning && <p className="meaning-status">{text.missing}</p>}
       {meaning && (
         <>
           {meaning.parts.map(([part, senses], index) => (
             <div className="meaning-part" key={`${part}-${index}`}>
-              <span className="meaning-pos">{partLabel(part, language)}</span>
+              <span className="meaning-pos">{partLabel(part)}</span>
               <ol>{senses.map((sense) => <li key={sense}>{sense}</li>)}</ol>
             </div>
           ))}
           <p className="meaning-source">
-            {text.note && <span>{text.note} </span>}
-            <a href={wiktionaryUrl(meaning.headword ?? meaning.word, language)} target="_blank" rel="noopener">{text.source}</a>
+            <a href={wiktionaryUrl(meaning.headword ?? meaning.word)} target="_blank" rel="noopener">{text.source}</a>
           </p>
         </>
       )}

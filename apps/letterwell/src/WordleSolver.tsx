@@ -109,7 +109,7 @@ const copy = {
     guide: [
       'Всеки опит се сравнява с всяка дума от пет букви в списъка. Остават само думите, които биха дали точно същите зелени, жълти и сиви плочки, така че повтарящите се букви се отчитат като в играта.',
       'Предложеният следващ опит е често срещаната дума, която разделя останалите възможности на най-малки групи. Каквито и цветове да получиш, ще останат по-малко думи. Списъкът не е официалният на играта, затова го приемай като помощ, а не като гаранция.',
-      'Натисни ⓘ до дума, за да видиш кратко значение от Уикиречника (на английски). Сиво ⓘ означава, че нямаме значение за тази дума. Бутоните се скриват с „Показвай значения“.',
+      'Натисни ⓘ до дума, за да видиш линкове към нейното значение в Речника на българския език на БАН и в Уикиречника. Бутоните се скриват с „Показвай значения“.',
     ],
     readMore: 'Прочети още',
     articles: [{ href: '/bg/blog/kak-da-reshavash-wordle-na-balgarski/', label: 'Как да решаваш Wordle на български' }],
@@ -149,7 +149,7 @@ function WordleSolver({ language }: { language: Language }) {
 
   // Which words have a meaning: a small bitmap, loaded once the word list is in.
   useEffect(() => {
-    if (!list) return
+    if (!list || language === 'bg') return
     let active = true
     loadMeaningIndex(language, list).then((index) => { if (active) setMeaningIndex(index) })
     return () => { active = false }
@@ -161,10 +161,13 @@ function WordleSolver({ language }: { language: Language }) {
     try { localStorage.setItem(MEANINGS_KEY, on ? '1' : '0') } catch { /* storage unavailable */ }
   }
 
+  // Bulgarian words always open links to Bulgarian dictionaries; English ones need a built-in meaning.
+  const hasMeaning = (word: string) => language === 'bg' || meaningIndex.has(word)
+
   const wordChip = (word: string) => (
     <span className="answer-word" key={word}>
       {word}
-      {showMeanings && <MeaningButton word={word} language={language} available={meaningIndex.has(word)} onOpen={setOpenMeaning} />}
+      {showMeanings && <MeaningButton word={word} language={language} available={hasMeaning(word)} onOpen={setOpenMeaning} />}
     </span>
   )
 
@@ -321,7 +324,7 @@ function WordleSolver({ language }: { language: Language }) {
                       <span className="result-meta">{text.suggestion}</span>
                       <strong className="suggestion-word" aria-label={suggestion.word.toLocaleUpperCase(locale)}>
                         {[...suggestion.word.toLocaleUpperCase(locale)].map((letter, index) => <span className="mini-tile" aria-hidden="true" key={index}>{letter}</span>)}
-                        {showMeanings && <MeaningButton word={suggestion.word} language={language} available={meaningIndex.has(suggestion.word)} onOpen={setOpenMeaning} />}
+                        {showMeanings && <MeaningButton word={suggestion.word} language={language} available={hasMeaning(suggestion.word)} onOpen={setOpenMeaning} />}
                       </strong>
                       <p>{total === 1 ? text.suggestionFound : `${text.suggestionText(formatLeft(suggestion.expectedLeft))}${suggestion.possibleAnswer ? ` ${text.suggestionAnswer}` : ''}`}</p>
                     </div>
