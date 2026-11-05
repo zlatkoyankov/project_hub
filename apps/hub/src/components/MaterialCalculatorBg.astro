@@ -2,6 +2,7 @@
 // Bulgarian, metric laminate and drywall calculators (/bg/kalkulator-laminat/, /bg/kalkulator-gipsokarton/).
 // The English versions live in BuildCalc; the maths is in src/lib/materials.ts.
 import BaseLayout from '../layouts/BaseLayout.astro'
+import RelatedTools from './RelatedTools.astro'
 import { getPosts, ogKey, postPath } from '../lib/site'
 import { DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
@@ -387,6 +388,8 @@ const jsonLd = {
           <p class="tool-switch"><a href={page.en} hreflang="en">In English, in feet or metres →</a></p>
         </article>
       </section>
+
+      <RelatedTools lang="bg" id={kind} />
 
       {posts.length > 0 && (
         <section class="tool-articles" aria-labelledby="tool-articles-title">

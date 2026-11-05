@@ -1,7 +1,7 @@
 ---
 // The homepage in English (/) and Bulgarian (/bg/): tool search, the tools by category, latest posts.
 import { analyticsEnabled } from '@zyankov/design-system/render'
-import { TOOL_CATALOG, TOOL_ICONS, postCategory } from '../lib/tools'
+import { HOME_GROUPS, TOOL_CATALOG, TOOL_ICONS, postCategory } from '../lib/tools'
 import { ogKey, postPath, readingMinutes, type Lang, type Post } from '../lib/site'
 import '../styles/home.css'
 
@@ -15,6 +15,7 @@ const bg = lang === 'bg'
 const blogPath = bg ? '/bg/blog/' : '/blog/'
 const words = TOOL_CATALOG.filter((tool) => tool.category === 'words')
 const home = TOOL_CATALOG.filter((tool) => tool.category === 'home')
+const homeGroups = HOME_GROUPS.map((group) => ({ ...group, items: group.tools.map((id) => home.find((tool) => tool.id === id)).filter((tool): tool is (typeof home)[number] => Boolean(tool)) }))
 const wordle = words.find((tool) => tool.id === 'wordle-solver')!
 const finder = words.find((tool) => tool.id === 'word-finder')!
 
@@ -207,32 +208,31 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
         </div>
         <a class="home-section__more" href="/calculators/all-calculators/">{t.homeAll} <span aria-hidden="true">→</span></a>
       </div>
-      <ul class="tool-grid">
-        {home.map((tool) => (
-          <li data-tool={searchText(tool)}>
-            {tool.comingSoon ? (
-              <div class="tool-tile tool-tile--soon">
-                <span class="tool-tile__icon tool-tile__icon--soon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon!]} /></span>
-                <strong>{tool.name[lang]} <span class="badge badge--soon">{t.soon}</span></strong>
-                <span>{tool.description[lang]}</span>
-              </div>
-            ) : (
-              <a class="tool-tile" href={tool.href[lang]}>
-                <span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon!]} /></span>
-                <strong>{tool.name[lang]} {tool.isNew && <span class="badge badge--new">{t.new}</span>}</strong>
-                <span>{tool.description[lang]}</span>
-              </a>
+      {homeGroups.map((group, groupIndex) => (
+        <div class="tool-group" data-tool-group>
+          <h3 class="tool-group__title">{group.name[lang]}</h3>
+          <ul class="tool-grid">
+            {group.items.map((tool) => (
+              <li data-tool={searchText(tool)}>
+                <a class="tool-tile" href={tool.href[lang]}>
+                  <span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon!]} /></span>
+                  <strong>{tool.name[lang]} {tool.isNew && <span class="badge badge--new">{t.new}</span>}</strong>
+                  <span>{tool.description[lang]}</span>
+                </a>
+              </li>
+            ))}
+            {groupIndex === homeGroups.length - 1 && (
+              <li data-tool="embed widget website blog shop вграждане сайт блог магазин">
+                <a class="tool-tile tool-tile--embed" href="/calculators/concrete-calculator/#embed-title">
+                  <strong>{t.embedTitle}</strong>
+                  <span>{t.embedText}</span>
+                  <span class="tool-tile__cta">{t.embedLink} <span aria-hidden="true">→</span></span>
+                </a>
+              </li>
             )}
-          </li>
-        ))}
-        <li data-tool="embed widget website blog shop вграждане сайт блог магазин">
-          <a class="tool-tile tool-tile--embed" href="/calculators/concrete-calculator/#embed-title">
-            <strong>{t.embedTitle}</strong>
-            <span>{t.embedText}</span>
-            <span class="tool-tile__cta">{t.embedLink} <span aria-hidden="true">→</span></span>
-          </a>
-        </li>
-      </ul>
+          </ul>
+        </div>
+      ))}
     </section>
 
     <section class="trust" aria-label={t.trust[0][0]}>
@@ -306,6 +306,9 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
     const found = new Set(matches())
     const searching = Boolean(input.value.trim())
     for (const item of items) item.hidden = searching && !found.has(item)
+    for (const group of document.querySelectorAll<HTMLElement>('[data-tool-group]')) {
+      group.hidden = searching && ![...group.querySelectorAll<HTMLElement>('[data-tool]')].some((item) => !item.hidden)
+    }
     if (empty) empty.hidden = !searching || found.size > 0
   })
   form?.addEventListener('submit', (event) => {

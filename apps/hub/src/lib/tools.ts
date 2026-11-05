@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder'
 
 export interface Tool {
   id: string
@@ -23,6 +23,7 @@ export const TOOL_CATALOG: Tool[] = [
   {
     id: 'wordle-solver',
     category: 'words',
+    icon: 'wordle',
     href: { en: '/letterwell/wordle-solver/', bg: '/letterwell/bg/wordle/' },
     name: { en: 'Wordle helper', bg: 'Помощник за Wordle' },
     description: {
@@ -58,6 +59,7 @@ export const TOOL_CATALOG: Tool[] = [
   {
     id: 'word-finder',
     category: 'words',
+    icon: 'finder',
     href: { en: '/letterwell/', bg: '/letterwell/bg/' },
     name: { en: 'Word finder', bg: 'Търсачка за думи' },
     description: {
@@ -217,6 +219,8 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   insulation: '<path d="M4 4h6v16H4z"/><path d="M10 7h10M10 12h10M10 17h10"/><path d="M14 4v16"/>',
   screed: '<path d="M3 17h18v3H3z"/><path d="M5 17l3-5h8l3 5"/><path d="M10 12V5h6"/><path d="M14 3l2 2-2 2"/>',
   wallpaper: '<path d="M5 3h10v18H5z"/><path d="M15 5h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3"/><path d="M8 7l2 2-2 2M12 13l-2 2 2 2"/>',
+  wordle: '<rect x="2.5" y="8" width="5.5" height="8" rx="1"/><rect x="9.25" y="8" width="5.5" height="8" rx="1"/><rect x="16" y="8" width="5.5" height="8" rx="1"/>',
+  finder: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/><path d="M8 13l2.5-6 2.5 6M8.9 11h3.2"/>',
   adhesive: '<path d="M4 20h10l6-6V4H4z"/><path d="M4 14h4v6M10 14h4v6M16 14h4"/><path d="M8 4v4M12 4v4M16 4v4"/>',
   crossword: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/><path d="M10.5 10.5h3v3h-3z"/>',
   drywall: '<rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/><path d="M5.5 6v.01M5.5 12v.01M5.5 18v.01M15.5 6v.01M15.5 12v.01M15.5 18v.01"/>',
@@ -227,3 +231,61 @@ export function postCategory(tool?: string): ToolCategory | 'general' {
   if (!tool) return 'general'
   return tool === 'letterwell' || tool === 'wordle-solver' || tool === 'crossword-solver' || tool === 'spelling-bee' ? 'words' : 'home'
 }
+
+/** Sub-groups of "Home & DIY" on the homepage, in display order. */
+export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: string[] }[] = [
+  { id: 'floors', name: { en: 'Floors and tiles', bg: 'Под и плочки' }, tools: ['tile', 'adhesive', 'flooring', 'screed'] },
+  { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
+  { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'gravel', 'mulch', 'area'] },
+  { id: 'energy', name: { en: 'Energy', bg: 'Енергия' }, tools: ['energy'] },
+]
+
+/** Tools that go together, for the "Related tools" block on tool pages and articles. */
+export const RELATED_TOOLS: Record<string, string[]> = {
+  'wordle-solver': ['word-finder', 'spelling-bee', 'crossword-solver'],
+  'word-finder': ['wordle-solver', 'crossword-solver', 'spelling-bee'],
+  'crossword-solver': ['word-finder', 'spelling-bee', 'wordle-solver'],
+  'spelling-bee': ['word-finder', 'wordle-solver', 'crossword-solver'],
+  tile: ['adhesive', 'screed', 'area'],
+  adhesive: ['tile', 'screed', 'flooring'],
+  flooring: ['screed', 'tile', 'area'],
+  screed: ['flooring', 'tile', 'concrete'],
+  paint: ['wallpaper', 'drywall', 'area'],
+  wallpaper: ['paint', 'drywall', 'area'],
+  drywall: ['paint', 'insulation', 'masonry'],
+  insulation: ['masonry', 'drywall', 'paint'],
+  masonry: ['insulation', 'concrete', 'drywall'],
+  concrete: ['gravel', 'masonry', 'screed'],
+  gravel: ['concrete', 'mulch', 'area'],
+  mulch: ['gravel', 'area', 'concrete'],
+  area: ['flooring', 'paint', 'tile'],
+  energy: ['insulation', 'paint', 'area'],
+}
+
+/** Catalogue id of the tool a blog post links to (the post's `tool` field). */
+export const POST_TOOL_IDS: Record<string, string> = {
+  letterwell: 'word-finder',
+  'wordle-solver': 'wordle-solver',
+  'crossword-solver': 'crossword-solver',
+  'spelling-bee': 'spelling-bee',
+  'energy-cost-calculator': 'energy',
+  'concrete-calculator': 'concrete',
+  'tile-calculator': 'tile',
+  'paint-calculator': 'paint',
+  'gravel-calculator': 'gravel',
+  'mulch-calculator': 'mulch',
+  'square-footage-calculator': 'area',
+  'laminate-flooring-calculator': 'flooring',
+  'drywall-calculator': 'drywall',
+  'tile-adhesive-grout-calculator': 'adhesive',
+  'wallpaper-calculator': 'wallpaper',
+  'screed-plaster-calculator': 'screed',
+  'insulation-board-calculator': 'insulation',
+  'brick-block-calculator': 'masonry',
+}
+
+export const toolById = (id: string) => TOOL_CATALOG.find((tool) => tool.id === id)
+
+/** Related tools for a catalogue id, skipping any that are missing. */
+export const relatedTools = (id: string | undefined) =>
+  (id ? RELATED_TOOLS[id] ?? [] : []).map(toolById).filter((tool): tool is Tool => Boolean(tool))

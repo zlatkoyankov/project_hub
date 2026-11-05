@@ -6,6 +6,7 @@ import './wordle.css'
 import { cleanLetters, cleanPattern, findMatches, MAX_PATTERN } from './crossword'
 import { getDictionary } from './dictionary'
 import { crosswordMetadata, pagePath, type Language } from './seo'
+import { MoreWordTools, ToolLinks } from './ToolNav'
 import { MeaningButton, MeaningPopover, type OpenMeaning } from './WordMeaning'
 
 const PAGE_SIZE = 200
@@ -143,9 +144,7 @@ function CrosswordSolver({ language }: { language: Language }) {
         </a>
         <div className="topbar-actions">
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
-          <a className="topbar-link" href={pagePath('finder', language)}>{text.finder}</a>
-          <a className="topbar-link" href={pagePath('wordle', language)}>{text.wordle}</a>
-          <a className="topbar-link" href={pagePath('bee', language)}>Spelling Bee</a>
+          <ToolLinks language={language} current="crossword" />
           <label className="language-picker">
             <span className="sr-only">{language === 'bg' ? 'Език' : 'Language'}</span>
             <select
@@ -271,6 +270,7 @@ function CrosswordSolver({ language }: { language: Language }) {
           {text.guide.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
           <p className="guide-links"><strong>{text.readMore}:</strong> <a href={text.article.href}>{text.article.label}</a></p>
         </section>
+        <MoreWordTools language={language} current="crossword" />
       </main>
     </div>
   )

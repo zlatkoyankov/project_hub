@@ -144,6 +144,9 @@
     <section class="faq-section calculator-faq"><p class="eyebrow">COMMON QUESTIONS</p><h2>About {{ calc.shortTitle.toLowerCase() }} estimates</h2>
       <div class="faq-list">@for (faq of calc.faqs; track faq.question) {<details><summary>{{ faq.question }}</summary><p>{{ faq.answer }}</p></details>}</div>
     </section>
+    @if (article(calc.slug); as post) {
+      <p class="guide-callout article-callout">Worked examples and tips: <a [href]="post.href">{{ post.title }} →</a></p>
+    }
     @if (guideSlug(calc.slug); as guide) {
       <p class="guide-callout">Want to understand the assumptions? <a [routerLink]="['/guides', guide]">Read the {{ calc.shortTitle.toLowerCase() }} estimating guide →</a></p>
     }

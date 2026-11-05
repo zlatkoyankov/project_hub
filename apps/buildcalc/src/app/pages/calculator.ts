@@ -5,7 +5,7 @@ import { track } from '@zyankov/design-system/analytics';
 import { SITE_BASE_URL } from '../core/seo.service';
 import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.service';
 import { GUIDES } from '../data/guides';
-import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
+import { ARTICLES, CalculatorInfo, CALCULATORS, CalculatorKind, RELATED_SLUGS } from '../data/calculators';
 import {
   AdhesiveInput, calculateAdhesive, calculateInsulation, calculateMasonry, MasonryInput, MASONRY_UNITS, InsulationInput, INSULATION_BOARDS, calculateScreed, calculateWallpaper, ScreedInput, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, SCREED_MATERIALS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
 } from '../utils/calculations';
@@ -472,7 +472,12 @@ export class CalculatorPage {
   }
 
   protected relatedCalculators(slug: string): CalculatorInfo[] {
-    return CALCULATORS.filter((item) => item.slug !== slug).slice(0, 3);
+    const picked = (RELATED_SLUGS[slug] ?? []).map((related) => CALCULATORS.find((item) => item.slug === related)).filter((item): item is CalculatorInfo => Boolean(item));
+    return picked.length ? picked : CALCULATORS.filter((item) => item.slug !== slug).slice(0, 3);
+  }
+
+  protected article(slug: string) {
+    return ARTICLES[slug];
   }
 
   protected limitationFor(kind: CalculatorKind): string {

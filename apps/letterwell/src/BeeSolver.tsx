@@ -6,6 +6,7 @@ import './wordle.css'
 import { beeHints, cleanBeeLetters, findBeeWords, MIN_LENGTH } from './bee'
 import { getDictionary } from './dictionary'
 import { beeMetadata, pagePath, type Language } from './seo'
+import { MoreWordTools, ToolLinks } from './ToolNav'
 import { MeaningButton, MeaningPopover, type OpenMeaning } from './WordMeaning'
 
 const copy = {
@@ -151,9 +152,7 @@ function BeeSolver({ language }: { language: Language }) {
         </a>
         <div className="topbar-actions">
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
-          <a className="topbar-link" href={pagePath('finder', language)}>{text.finder}</a>
-          <a className="topbar-link" href={pagePath('wordle', language)}>{text.wordle}</a>
-          <a className="topbar-link" href={pagePath('crossword', language)}>{text.crossword}</a>
+          <ToolLinks language={language} current="bee" />
           <label className="language-picker">
             <span className="sr-only">{language === 'bg' ? 'Език' : 'Language'}</span>
             <select value={language} onChange={(event) => window.location.assign(pagePath('bee', event.target.value as Language))} aria-label={language === 'bg' ? 'Език' : 'Language'}>
@@ -275,6 +274,7 @@ function BeeSolver({ language }: { language: Language }) {
           <h2 id="tool-guide-title">{text.guideTitle}</h2>
           {text.guide.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         </section>
+        <MoreWordTools language={language} current="bee" />
       </main>
     </div>
   )

@@ -5,6 +5,7 @@ import './App.css'
 
 import { getDictionary } from './dictionary'
 import { languagePath, pagePath, seoMetadata, socialDescriptions, type Language } from './seo'
+import { MoreWordTools, ToolLinks } from './ToolNav'
 
 const examples: Record<Language, string[]> = {
   en: ['triangle', 'listen', 'stream'],
@@ -351,9 +352,7 @@ function App({ language }: { language: Language }) {
         </a>
         <div className="topbar-actions">
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
-          <a className="topbar-link" href={pagePath('wordle', language)}>{language === 'bg' ? 'Помощник за Wordle' : 'Wordle helper'}</a>
-          <a className="topbar-link" href={pagePath('crossword', language)}>{language === 'bg' ? 'Кръстословици' : 'Crosswords'}</a>
-          <a className="topbar-link" href={pagePath('bee', language)}>Spelling Bee</a>
+          <ToolLinks language={language} current="finder" />
           <label className="language-picker">
             <span className="sr-only">{text.languageLabel}</span>
             <select
@@ -743,6 +742,7 @@ function App({ language }: { language: Language }) {
               : 'Switch dictionaries with the language menu. Searches run in your browser, so your letters are not sent to a server. Optional Scrabble, Words With Friends, and Boggle scores help you compare possible plays. The word list may differ from official game dictionaries, so check the rules for the game you are playing.'}
           </p>
         </section>
+        <MoreWordTools language={language} current="finder" />
       </main>
     </div>
   )

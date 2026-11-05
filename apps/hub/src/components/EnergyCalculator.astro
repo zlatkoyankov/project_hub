@@ -1,6 +1,7 @@
 ---
 // Appliance energy cost calculator, English (/energy-cost-calculator/) and Bulgarian (/bg/razhod-na-tok/).
 import BaseLayout from '../layouts/BaseLayout.astro'
+import RelatedTools from './RelatedTools.astro'
 import { getPosts, ogKey, postPath, readingMinutes, type Lang } from '../lib/site'
 import '../styles/tool.css'
 
@@ -264,6 +265,8 @@ const jsonLd = {
           <ul>{t.tips.map((tip) => <li>{tip}</li>)}</ul>
         </article>
       </section>
+
+      <RelatedTools lang={lang} id="energy" />
 
       {posts.length > 0 && (
         <section class="tool-articles" aria-labelledby="tool-articles-title">

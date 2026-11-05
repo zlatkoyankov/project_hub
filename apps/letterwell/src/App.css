@@ -1413,3 +1413,58 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Shared word-tool navigation */
+.tool-links {
+  display: contents;
+}
+
+.more-tools {
+  width: min(100%, 980px);
+  margin: 36px auto 0;
+  padding: 0 20px 8px;
+}
+
+.more-tools h2 {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.more-tools ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.more-tools a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  padding: 14px 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  text-decoration: none;
+}
+
+.more-tools a:hover {
+  border-color: var(--border-strong);
+}
+
+.more-tools a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.more-tools span {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
