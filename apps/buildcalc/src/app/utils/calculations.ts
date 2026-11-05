@@ -587,3 +587,68 @@ export function calculateAdhesive(values: AdhesiveInput): Estimate {
     summary: `Plan for ${adhesiveBags} bag${adhesiveBags === 1 ? '' : 's'} of tile adhesive${joint > 0 ? ` and ${groutBags} bag${groutBags === 1 ? '' : 's'} of grout` : ''}, including waste.`,
   };
 }
+
+export interface WallpaperInput {
+  length: number;
+  width: number;
+  height: number;
+  /** Area of doors and windows. */
+  openings: number;
+  rollWidth: number;
+  rollLength: number;
+  patternRepeat: number;
+  price?: number;
+  dimensionUnit?: number;
+  openingsUnit?: number;
+  /** Unit of roll width and pattern repeat (in, cm, mm). */
+  rollUnit?: number;
+}
+
+/** Extra length per strip for trimming at the ceiling and the floor: about 4 in (10 cm). */
+export const WALLPAPER_TRIM_FT = 1 / 3;
+
+/** Wallpaper by strips: each strip is the wall height (rounded up to whole pattern repeats) plus trim;
+ *  strips that fit in a roll are counted whole, and doors and windows reduce the strips by their width. */
+export function calculateWallpaper(values: WallpaperInput): Estimate {
+  positive(values.length, 'Room length');
+  positive(values.width, 'Room width');
+  positive(values.height, 'Wall height');
+  nonNegative(values.openings, 'Doors and windows');
+  positive(values.rollWidth, 'Roll width');
+  positive(values.rollLength, 'Roll length');
+  nonNegative(values.patternRepeat, 'Pattern repeat');
+  const price = values.price ?? 0;
+  nonNegative(price, 'Price');
+
+  const dimension = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const small = unitFactor(FEET_PER_UNIT, values.rollUnit ?? 1);
+  const length = values.length * dimension;
+  const width = values.width * dimension;
+  const height = values.height * dimension;
+  const rollWidth = values.rollWidth * small;
+  const rollLength = values.rollLength * dimension;
+  const repeat = values.patternRepeat * small;
+  const openings = values.openings * unitFactor(SQUARE_FEET_PER_UNIT, values.openingsUnit);
+
+  const whole = (value: number) => Math.ceil(value - 1e-6);
+  const perimeter = 2 * (length + width);
+  // Doors and windows mostly save whole strips across their width: width ≈ area ÷ wall height.
+  const wallToCover = Math.max(0, perimeter - openings / height);
+  const strips = whole(wallToCover / rollWidth);
+  const drop = (repeat > 0 ? whole(height / repeat) * repeat : height) + WALLPAPER_TRIM_FT;
+  const stripsPerRoll = Math.floor(rollLength / drop + 1e-6);
+  if (stripsPerRoll < 1) throw new Error('A roll is shorter than one strip: check the roll length and wall height.');
+  const rolls = whole(strips / stripsPerRoll);
+
+  return {
+    rows: [
+      { label: 'Wall perimeter', value: perimeter, unit: 'ft', precision: 2 },
+      { label: 'Strip length', value: drop, unit: 'ft', precision: 2, detail: repeat > 0 ? 'wall height in whole pattern repeats, plus trim' : 'wall height plus trim' },
+      { label: 'Strips needed', value: strips, unit: strips === 1 ? 'strip' : 'strips', precision: 0, detail: 'doors and windows deducted by their width' },
+      { label: 'Strips per roll', value: stripsPerRoll, unit: stripsPerRoll === 1 ? 'strip' : 'strips', precision: 0 },
+      { label: 'Rolls needed', value: rolls, unit: rolls === 1 ? 'roll' : 'rolls', precision: 0, detail: 'buy one spare from the same batch' },
+      ...(price > 0 ? [{ label: 'Estimated cost', value: rolls * price, unit: '$', precision: 2 }] : []),
+    ],
+    summary: `Plan for ${rolls} roll${rolls === 1 ? '' : 's'} of wallpaper (${strips} strips), plus a spare roll from the same batch.`,
+  };
+}

@@ -8,7 +8,7 @@ import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
 interface Props {
-  kind: 'flooring' | 'drywall' | 'adhesive'
+  kind: 'flooring' | 'drywall' | 'adhesive' | 'wallpaper'
 }
 
 interface Field {
@@ -24,6 +24,27 @@ interface Field {
 const { kind } = Astro.props
 const flooring = kind === 'flooring'
 const adhesive = kind === 'adhesive'
+const wallpaper = kind === 'wallpaper'
+
+const wallpaperPage = {
+  path: '/bg/kalkulator-tapeti/',
+  en: '/calculators/wallpaper-calculator/',
+  tool: 'wallpaper-calculator',
+  title: 'Калкулатор за тапети: колко ролки ми трябват | Zyankov.eu',
+  description: 'Изчисли колко ролки тапет трябват за стаята по размерите, височината, ролката и раппорта на десена. Брои цели ивици, както го прави майсторът.',
+  h1: 'Колко ролки тапет ми трябват?',
+  intro: 'Въведи размерите на стаята, височината на стените, вратите и прозорците и размера на ролката. Калкулаторът брои колко цели ивици излизат от една ролка, като спазва раппорта на десена.',
+  big: 'ролки',
+  bigOne: 'ролка',
+  formula: 'ролки = ивици ÷ ивици в ролка, а ивици = (периметър − ширина на отворите) ÷ ширина на ролката',
+  how: 'Тапетът се лепи на цели ивици от тавана до пода. Броят ивици е периметърът на стаята без ширината на вратите и прозорците, разделен на ширината на ролката. Всяка ивица е височината на стената, закръглена до цял раппорт, плюс 10 см за подрязване. Остатъкът в края на ролката обикновено е къс за още една ивица, затова се броят цели ивици в ролка.',
+  tips: [
+    'Купи една ролка в повече от същата партида. Различните партиди може да се различават по тон.',
+    'Провери номера на партидата на всяка ролка, преди да започнеш.',
+    'При голям раппорт или десен със смяна на половин раппорт (half-drop) фирата е по-голяма.',
+  ],
+  jsonName: 'Калкулатор за тапети',
+}
 
 const adhesivePage = {
       path: '/bg/lepilo-i-fuga/',
@@ -45,7 +66,7 @@ const adhesivePage = {
       jsonName: 'Калкулатор за лепило и фуга',
     }
 
-const page = adhesive ? adhesivePage : flooring
+const page = wallpaper ? wallpaperPage : adhesive ? adhesivePage : flooring
   ? {
       path: '/bg/kalkulator-laminat/',
       en: '/calculators/laminate-flooring-calculator/',
@@ -98,7 +119,18 @@ const adhesiveFields: Field[] = [
   { name: 'groutPrice', label: 'Цена за торба фуга', unit: '€', value: 0, step: '0.01', optional: true },
 ]
 
-const mainFields: Field[] = adhesive ? adhesiveFields : flooring
+const wallpaperFields: Field[] = [
+  { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
+  { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
+  { name: 'height', label: 'Височина на стените', unit: 'м', value: 2.6, step: '0.01' },
+  { name: 'openings', label: 'Врати и прозорци', unit: 'м²', value: 1.8, step: '0.01', hint: 'Една интериорна врата е около 1,8 м².' },
+  { name: 'rollWidth', label: 'Ширина на ролката', unit: 'см', value: 53, step: '0.1', hint: 'Стандартната ролка е 53 см, широката 106 см.' },
+  { name: 'rollLength', label: 'Дължина на ролката', unit: 'м', value: 10.05, step: '0.01', hint: 'Обикновено 10,05 м.' },
+  { name: 'repeat', label: 'Раппорт на десена', unit: 'см', value: 0, step: '0.1', hint: 'Пише на етикета. 0 за едноцветен тапет или свободно подреждане.' },
+  { name: 'price', label: 'Цена за ролка', unit: '€', value: 0, step: '0.01', optional: true },
+]
+
+const mainFields: Field[] = wallpaper ? wallpaperFields : adhesive ? adhesiveFields : flooring
   ? [
       { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
       { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
@@ -130,7 +162,7 @@ const supplyFields: Field[] = [
   { name: 'profileLength', label: 'Дължина на профила', unit: 'м', value: 3, step: '0.01', hint: 'CW и UW профилите са обикновено 2,6, 3 или 4 м.' },
 ]
 const extraFields = flooring ? trimFields : supplyFields
-const extra = adhesive ? null : flooring
+const extra = adhesive || wallpaper ? null : flooring
   ? { name: 'trim', legend: 'Первази и лайсни', label: 'Первази', on: 'Включи первази и лайсни', off: 'Само ламинат' }
   : { name: 'supplies', legend: 'Профили и консумативи', label: 'Консумативи', on: 'Включи профили, винтове, лента и шпакловка', off: 'Само плоскости' }
 
@@ -160,7 +192,7 @@ const jsonLd = {
       <section class="tool-layout" aria-label={page.h1} data-material={kind}>
         <form class="tool-form" novalidate>
           <h2>{adhesive ? 'Площ и плочки' : 'Твоята стая'}</h2>
-          <p class="tool-form__hint">{adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
+          <p class="tool-form__hint">{adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : wallpaper ? 'Стаята е в метри, ролката и раппортът в сантиметри. Цената не е задължителна.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
           <div class="tool-fields">
             {mainFields.map((field) => (
               <div class="tool-field">
@@ -262,7 +294,7 @@ const jsonLd = {
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { estimateAdhesive, estimateDrywall, estimateFlooring } from '../lib/materials'
+  import { estimateAdhesive, estimateDrywall, estimateFlooring, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -321,6 +353,21 @@ const jsonLd = {
         if (result.transitions > 0) rows.push(['Прагове', `${result.transitions} бр.`])
         if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
         render(result.boxes, rows)
+      } else if (kind === 'wallpaper') {
+        const result = estimateWallpaper({
+          length: num('length'), width: num('width'), height: num('height'), openings: num('openings'),
+          rollWidth: num('rollWidth'), rollLength: num('rollLength'), repeat: num('repeat'), price: num('price'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Периметър на стаята', `${fmt(result.perimeter)} м`],
+          ['Дължина на ивицата', `${fmt(result.drop)} м`, num('repeat') > 0 ? 'височината в цели раппорти, плюс 10 см' : 'височината плюс 10 см за подрязване'],
+          ['Ивици', `${result.strips} бр.`, 'вратите и прозорците са извадени по ширина'],
+          ['Ивици от една ролка', `${result.stripsPerRoll} бр.`],
+        ]
+        if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
+        rows.push(['Резервна ролка', '+1', 'от същата партида'])
+        render(result.rolls, rows)
       } else if (kind === 'adhesive') {
         const result = estimateAdhesive({
           area: num('area'), tileLength: num('tileLength'), tileWidth: num('tileWidth'), thickness: num('thickness'), joint: num('joint'),

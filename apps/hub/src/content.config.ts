@@ -13,7 +13,7 @@ const blog = defineCollection({
     lang: z.enum(['en', 'bg']),
     tags: z.array(z.string()).default([]),
     /** Key of TOOLS in src/lib/site.ts: shows a "try the tool" card. */
-    tool: z.enum(['letterwell', 'wordle-solver', 'energy-cost-calculator', 'concrete-calculator', 'tile-calculator', 'paint-calculator', 'gravel-calculator', 'mulch-calculator', 'square-footage-calculator', 'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'crossword-solver']).optional(),
+    tool: z.enum(['letterwell', 'wordle-solver', 'energy-cost-calculator', 'concrete-calculator', 'tile-calculator', 'paint-calculator', 'gravel-calculator', 'mulch-calculator', 'square-footage-calculator', 'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'crossword-solver', 'wallpaper-calculator']).optional(),
     /** Collection id of the same post in the other language, e.g. "bg/dumi-ot-bukvi". */
     translation: z.string().optional(),
     draft: z.boolean().default(false),
