@@ -1,5 +1,5 @@
 import {
-  calculateAdhesive, calculateArea, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
+  calculateAdhesive, calculateArea, calculateScreed, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
 
 describe('calculation utilities', () => {
@@ -249,5 +249,23 @@ describe('calculation utilities', () => {
     expect(row('Strip length') * 0.3048).toBeCloseTo(3.2 + 0.1016, 3);
     expect(row('Strips per roll')).toBe(3);
     expect(row('Rolls needed')).toBe(9);
+  });
+
+  it('estimates screed bags from area, thickness and consumption per mm', () => {
+    // 15 m² × 40 mm × 2.0 kg/m²/mm = 1,200 kg, + 10% = 1,320 kg = 53 bags of 25 kg.
+    const result = calculateScreed({ surfaceArea: 15, thickness: 40, material: 0, waste: 10, bagSize: 25, openingsUnit: 2, depthUnit: 4, weightUnit: 1 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value ?? 0;
+    expect(row('Dry mix') * 0.45359237).toBeCloseTo(1320, 3);
+    expect(row('Bags')).toBe(53);
+    expect(row('Volume') * 0.0283168466).toBeCloseTo(0.6, 3);
+  });
+
+  it('uses a custom consumption and US units for screed', () => {
+    // 100 sq ft at 1/4 in of leveler at 1.6 kg/m²/mm, no waste, in 50 lb bags.
+    const result = calculateScreed({ surfaceArea: 100, thickness: 0.25, material: 1, consumption: 1.6, waste: 0, bagSize: 50, openingsUnit: 0, depthUnit: 1, weightUnit: 0 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value ?? 0;
+    const kg = (100 / 10.7639104) * 6.35 * 1.6;
+    expect(row('Dry mix') * 0.45359237).toBeCloseTo(kg, 3);
+    expect(row('Bags')).toBe(Math.ceil(kg / (50 * 0.45359237)));
   });
 });
