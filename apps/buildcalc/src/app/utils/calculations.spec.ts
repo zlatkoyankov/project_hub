@@ -1,5 +1,5 @@
 import {
-  calculateArea, calculateConcrete, calculateDrywall, estimateFraming, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
+  calculateAdhesive, calculateArea, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
 
 describe('calculation utilities', () => {
@@ -200,5 +200,35 @@ describe('calculation utilities', () => {
   it('leaves trim out when baseboards are off', () => {
     const result = calculateFlooring({ length: 14, width: 12, waste: 10, boxArea: 20, baseboards: false });
     expect(result.rows.some((item) => item.label === 'Baseboard pieces')).toBe(false);
+  });
+
+  it('works out grout per m² with the manufacturers’ formula', () => {
+    // 300 × 300 mm tile, 4 mm joint, 10 mm deep: 0.426 kg/m² (the worked example tilers use).
+    expect(groutPerSquareMeter(300, 300, 4, 10)).toBeCloseTo(0.4267, 3);
+  });
+
+  it('picks the trowel notch from the tile size', () => {
+    expect(suggestedNotch(10)).toBe(0);
+    expect(suggestedNotch(20)).toBe(2);
+    expect(suggestedNotch(30.48)).toBe(3);
+    expect(suggestedNotch(60)).toBe(4);
+  });
+
+  it('estimates adhesive and grout bags in metric', () => {
+    const result = calculateAdhesive({ surfaceArea: 12, openingsUnit: 2, tileLength: 600, tileWidth: 600, tileThickness: 10, tileUnit: 4, grout: 3, groutUnit: 4, notch: -1, waste: 10, adhesiveBag: 25, groutBag: 5, weightUnit: 1 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value ?? 0;
+    expect(row('Trowel notch')).toBe(12);
+    expect(row('Tile adhesive') * 0.45359237).toBeCloseTo(12 * 1.1 * 4.8, 3);
+    expect(row('Adhesive bags')).toBe(3);
+    expect(row('Grout') * 0.45359237).toBeCloseTo(12 * 1.1 * 0.16, 3);
+    expect(row('Grout bags')).toBe(1);
+  });
+
+  it('estimates adhesive and grout bags in US units', () => {
+    const result = calculateAdhesive({ surfaceArea: 120, openingsUnit: 0, tileLength: 12, tileWidth: 12, tileThickness: 0.375, tileUnit: 1, grout: 0.125, groutUnit: 1, notch: -1, waste: 10, adhesiveBag: 50, groutBag: 25, weightUnit: 0 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value ?? 0;
+    expect(row('Trowel notch')).toBe(10);
+    expect(row('Adhesive bags')).toBe(3);
+    expect(row('Grout bags')).toBe(1);
   });
 });

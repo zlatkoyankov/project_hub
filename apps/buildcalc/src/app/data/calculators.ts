@@ -1,4 +1,4 @@
-export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall';
+export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive';
 
 export interface CalculatorInfo {
   slug: string;
@@ -114,12 +114,24 @@ export const CALCULATORS: CalculatorInfo[] = [
       { question: 'Which sheet size should I use?', answer: 'Larger sheets mean fewer joints to tape but are heavier to handle. Choose a length that matches your wall height where possible and check what your supplier stocks.' },
     ],
   },
+  {
+    slug: 'tile-adhesive-grout-calculator', bg: '/bg/lepilo-i-fuga/', title: 'Tile Adhesive & Grout Calculator', shortTitle: 'Tile adhesive & grout', category: 'Flooring & Tile',
+    description: 'Estimate bags of tile adhesive (thinset) and grout from the area, tile size, joint width and trowel notch.',
+    intro: 'Enter the area to tile, the tile size and thickness and the joint width. The estimate picks a trowel notch for the tile size, adds waste and rounds up to whole bags.',
+    kind: 'adhesive', icon: 'tile', keywords: ['thinset', 'mortar', 'grout', 'tile adhesive', 'trowel', 'bags'],
+    example: 'Grout for 12 × 12 in tiles with 1/8 in joints, 3/8 in thick, is about 0.32 kg per m² (0.065 lb per sq ft).',
+    formula: 'Adhesive = area × the usual consumption for the trowel notch. Grout per m² = (tile length + width) ÷ (length × width) × joint width × tile thickness × 1.6, with sizes in mm. Waste is added and bags are rounded up.',
+    faqs: [
+      { question: 'Which trowel notch should I use?', answer: 'Bigger tiles need a deeper notch so the adhesive covers the whole back of the tile. Leave “Suggest from tile size” on, or pick the notch your adhesive’s data sheet recommends.' },
+      { question: 'Why does grout depend on tile size?', answer: 'Small tiles have many more joints per square foot, so mosaics use far more grout than large-format tiles with the same joint width.' },
+    ],
+  },
 ];
 
 export const FEATURED_SLUGS = [
   'gravel-calculator', 'paint-calculator', 'tile-calculator',
   'concrete-calculator', 'square-footage-calculator', 'mulch-calculator',
-  'laminate-flooring-calculator', 'drywall-calculator',
+  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator',
 ];
 
 export const CATEGORIES = [...new Set(CALCULATORS.map((calculator) => calculator.category))];

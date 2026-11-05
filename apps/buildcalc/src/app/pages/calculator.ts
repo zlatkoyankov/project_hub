@@ -7,7 +7,7 @@ import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.servi
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
 import {
-  calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
+  AdhesiveInput, calculateAdhesive, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
 } from '../utils/calculations';
 
 interface Field {
@@ -57,6 +57,7 @@ const AREA_UNITS = [
 const US_AREA_UNITS = AREA_UNITS.slice(0, 2);
 const METRIC_AREA_UNITS = AREA_UNITS.slice(2);
 const DENSITY_UNITS = [{ value: 0, label: 'lb / cu yd' }, { value: 1, label: 'kg / cu m' }];
+const WEIGHT_UNITS = [{ value: 0, label: 'lb' }, { value: 1, label: 'kg' }];
 const COVERAGE_UNITS = [{ value: 0, label: 'sq ft / gal' }, { value: 1, label: 'sq m / L' }];
 
 const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
@@ -118,6 +119,16 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'studSpacing', label: 'Stud spacing', unit: 'in', unitKey: 'spacingUnit', unitOptions: INCH_UNITS, min: 0.1, step: 1, group: 'extra', hint: 'Center to center: usually 16 or 24 in, or 40 or 60 cm.' },
     { key: 'studLength', label: 'Stud and track length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.1, step: 0.1, group: 'extra', hint: 'As sold, for example 8, 10 or 12 ft, or 3 m.' },
   ],
+  adhesive: [
+    { key: 'surfaceArea', label: 'Area to tile', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0.01, step: 0.5, hint: 'Floor or wall area. Add them together if you tile both.' },
+    { key: 'tileLength', label: 'Tile length', unit: 'in', unitKey: 'tileUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
+    { key: 'tileWidth', label: 'Tile width', unit: 'in', unitKey: 'tileUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.1 },
+    { key: 'tileThickness', label: 'Tile thickness', unit: 'in', unitKey: 'tileUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.01, hint: 'Grout joints are usually filled to the full tile thickness.' },
+    { key: 'grout', label: 'Grout joint width', unit: 'in', unitKey: 'groutUnit', unitOptions: INCH_UNITS, min: 0, step: 0.01 },
+    { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
+    { key: 'adhesiveBag', label: 'Adhesive bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Thinset is usually sold in 50 lb or 25 kg bags.' },
+    { key: 'groutBag', label: 'Grout bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Often 25 lb, or 2 to 5 kg.' },
+  ],
   mulch: [
     { key: 'length', label: 'Bed length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
     { key: 'width', label: 'Bed width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
@@ -133,6 +144,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
   tile: { length: 10, width: 12, tileLength: 12, tileWidth: 12, grout: 0.125, waste: 10, boxSize: 10, price: 0, priceUnit: 0, dimensionUnit: 0, tileUnit: 1, groutUnit: 1 },
   concrete: { length: 10, width: 10, depth: 4, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   area: {},
+  adhesive: { surfaceArea: 120, tileLength: 12, tileWidth: 12, tileThickness: 0.375, grout: 0.125, notch: -1, waste: 10, adhesiveBag: 50, groutBag: 25, openingsUnit: 0, tileUnit: 1, groutUnit: 1, weightUnit: 0 },
   mulch: { length: 10, width: 10, depth: 3, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   flooring: { length: 14, width: 12, boxArea: 20, waste: 10, price: 0, dimensionUnit: 0, boxAreaUnit: 0, baseboards: 1, doorways: 1, doorWidth: 3, pieceLength: 8, insideCorners: 4, outsideCorners: 0, transitions: 1, trimPrice: 0 },
   drywall: { length: 12, width: 10, height: 8, openings: 21, includeCeiling: 0, sheetSize: 0, waste: 10, price: 0, dimensionUnit: 0, openingsUnit: 0, supplies: 1, studSpacing: 16, spacingUnit: 1, studLength: 8 },
@@ -180,7 +192,7 @@ export class CalculatorPage {
           if (field.unitKey === 'dimensionUnit') return system === 'us' ? US_DISTANCE_UNITS.some((item) => item.value === unit.value) : METRIC_DISTANCE_UNITS.some((item) => item.value === unit.value);
           if (field.unitKey === 'depthUnit' || field.unitKey === 'tileUnit' || field.unitKey === 'groutUnit' || field.unitKey === 'spacingUnit') return system === 'us' ? US_SMALL_UNITS.some((item) => item.value === unit.value) : METRIC_SMALL_UNITS.some((item) => item.value === unit.value);
           if (field.unitKey === 'openingsUnit' || field.unitKey === 'boxAreaUnit') return system === 'us' ? US_AREA_UNITS.some((item) => item.value === unit.value) : METRIC_AREA_UNITS.some((item) => item.value === unit.value);
-          if (field.unitKey === 'densityUnit' || field.unitKey === 'coverageUnit') return unit.value === (system === 'us' ? 0 : 1);
+          if (field.unitKey === 'densityUnit' || field.unitKey === 'coverageUnit' || field.unitKey === 'weightUnit') return unit.value === (system === 'us' ? 0 : 1);
           return true;
         }),
       }))
@@ -274,9 +286,10 @@ export class CalculatorPage {
         boxAreaUnit: ['boxArea'],
         depthUnit: ['depth'],
         spacingUnit: ['studSpacing'],
-        tileUnit: ['tileLength', 'tileWidth'],
+        tileUnit: ['tileLength', 'tileWidth', 'tileThickness'],
         groutUnit: ['grout'],
-        openingsUnit: ['openings'],
+        openingsUnit: ['openings', 'surfaceArea'],
+        weightUnit: ['adhesiveBag', 'groutBag'],
         densityUnit: ['density'],
         coverageUnit: ['coverage'],
       }[unitKey] ?? []).filter((candidate) => current[candidate] !== undefined);
@@ -284,6 +297,7 @@ export class CalculatorPage {
         const currentValue = this.number(current, valueKey);
         if (unitKey === 'openingsUnit' || unitKey === 'boxAreaUnit') updated[valueKey] = this.convertArea(currentValue, previousUnit, nextUnit);
         else if (unitKey === 'densityUnit') updated[valueKey] = tidy(previousUnit === 0 ? currentValue * 0.593276 : currentValue / 0.593276);
+        else if (unitKey === 'weightUnit') updated[valueKey] = tidy(previousUnit === nextUnit ? currentValue : nextUnit === 1 ? currentValue * 0.45359237 : currentValue / 0.45359237);
         else if (unitKey === 'coverageUnit') updated[valueKey] = tidy(previousUnit === 0 ? currentValue / 40.745 : currentValue * 40.745);
         else updated[valueKey] = this.convertLength(currentValue, previousUnit, nextUnit);
       }
@@ -307,6 +321,7 @@ export class CalculatorPage {
         case 'area': estimate = calculateArea(this.areas()); break;
         case 'flooring': estimate = calculateFlooring(this.toFlooringInput(this.values())); break;
         case 'drywall': estimate = calculateDrywall(this.toDrywallInput(this.values())); break;
+        case 'adhesive': estimate = calculateAdhesive(this.toAdhesiveInput(this.values())); break;
       }
       this.result.set(estimate);
       this.copied.set(false);
@@ -352,6 +367,9 @@ export class CalculatorPage {
       defaults['densityUnit'] = 1;
       defaults['coverageUnit'] = 1;
       if (kind === 'gravel') defaults['density'] = 1600;
+      if (kind === 'adhesive') {
+        Object.assign(defaults, { surfaceArea: 12, tileLength: 60, tileWidth: 60, tileThickness: 1, grout: 0.3, adhesiveBag: 25, groutBag: 5, weightUnit: 1 });
+      }
       if (kind === 'paint') {
         defaults['coverage'] = 9;
         defaults['openings'] = 1.86;
@@ -408,6 +426,7 @@ export class CalculatorPage {
       area: 'This totals rectangular measurements. Break irregular shapes into separate rectangles without overlap.',
       mulch: 'Depth needs vary with material and intended use. Follow local horticultural guidance and keep mulch clear of plant stems and trunks.',
       flooring: 'This covers a rectangular room. Add closets and alcoves as extra area, check the coverage on your box and follow the manufacturer’s expansion-gap and underlayment instructions.',
+      adhesive: 'Consumption depends on the adhesive, the evenness of the surface and how well the tiles are bedded. The trowel figures are typical values for cement adhesive (Ceresit CM 11); check your product’s data sheet. Grout assumes joints filled to the full tile thickness.',
       drywall: 'This counts sheets for flat walls and ceilings. Studs and tracks are for the four walls only (not ceiling framing or extra studs around openings), and screws, tape and compound use rules of thumb, so check your manufacturer’s figures. Corner bead and building-code requirements such as fire-rated or moisture-resistant board are not included.',
     };
     return limitations[kind];
@@ -468,18 +487,24 @@ export class CalculatorPage {
     }
     // Sheet sizes differ by market: switch to the common size for the new system.
     if (values['sheetSize'] !== undefined) values['sheetSize'] = to === 'us' ? 0 : 4;
-    for (const key of ['depth', 'tileLength', 'tileWidth', 'grout', 'studSpacing']) {
-      const unitKey = key === 'tileLength' || key === 'tileWidth' ? 'tileUnit' : key === 'grout' ? 'groutUnit' : key === 'studSpacing' ? 'spacingUnit' : 'depthUnit';
+    // Read every unit before converting: several values share one unit (tile length, width and thickness).
+    const sourceUnits = { ...this.values() };
+    for (const key of ['depth', 'tileLength', 'tileWidth', 'tileThickness', 'grout', 'studSpacing']) {
+      const unitKey = key === 'tileLength' || key === 'tileWidth' || key === 'tileThickness' ? 'tileUnit' : key === 'grout' ? 'groutUnit' : key === 'studSpacing' ? 'spacingUnit' : 'depthUnit';
       if (values[key] !== undefined) {
-        const currentUnit = values[unitKey] ?? sourceSmall;
+        const currentUnit = sourceUnits[unitKey] ?? sourceSmall;
         values[key] = this.convertLength(this.number(values, key), currentUnit, targetSmall);
         values[unitKey] = targetSmall;
       }
     }
     if (values['dimensionUnit'] !== undefined) values['dimensionUnit'] = targetLength;
-    if (values['openings'] !== undefined) {
-      values['openings'] = this.convertArea(this.number(values, 'openings'), this.number(values, 'openingsUnit'), targetArea);
-      values['openingsUnit'] = targetArea;
+    for (const key of ['openings', 'surfaceArea']) {
+      if (values[key] !== undefined) values[key] = this.convertArea(this.number(values, key), this.number(values, 'openingsUnit'), targetArea);
+    }
+    if (values['openingsUnit'] !== undefined) values['openingsUnit'] = targetArea;
+    // Bags come in different sizes in each market: switch to the common ones.
+    if (values['adhesiveBag'] !== undefined) {
+      Object.assign(values, to === 'us' ? { adhesiveBag: 50, groutBag: 25, weightUnit: 0 } : { adhesiveBag: 25, groutBag: 5, weightUnit: 1 });
     }
     if (values['density'] !== undefined) {
       const current = this.number(values, 'density');
@@ -561,6 +586,7 @@ export class CalculatorPage {
       'US tons': { label: row.label, unit: 'metric tonnes', factor: 0.90718474, precision: 2 },
       gallons: { label: row.label, unit: 'liters', factor: 3.785411784, precision: 2 },
       ft: { label: row.label, unit: 'm', factor: 0.3048, precision: 2 },
+      lb: { label: row.label, unit: 'kg', factor: 0.45359237, precision: 1 },
     };
     const conversion = conversions[row.unit];
     if (!conversion) return row;
@@ -680,6 +706,27 @@ export class CalculatorPage {
       studSpacing: this.number(values, 'studSpacing'),
       spacingUnit: this.number(values, 'spacingUnit'),
       studLength: this.number(values, 'studLength'),
+    };
+  }
+
+  /** Trowel notch choices: -1 lets the calculator pick one from the tile size. */
+  protected readonly notchOptions = [{ value: -1, label: 'Suggest from tile size' }, ...TROWEL_NOTCHES.map((notch, index) => ({ value: index, label: notch.label }))];
+
+  private toAdhesiveInput(values: Values): AdhesiveInput {
+    return {
+      surfaceArea: this.number(values, 'surfaceArea'),
+      tileLength: this.number(values, 'tileLength'),
+      tileWidth: this.number(values, 'tileWidth'),
+      tileThickness: this.number(values, 'tileThickness'),
+      grout: this.number(values, 'grout'),
+      notch: this.number(values, 'notch'),
+      waste: this.number(values, 'waste'),
+      adhesiveBag: this.number(values, 'adhesiveBag'),
+      groutBag: this.number(values, 'groutBag'),
+      openingsUnit: this.number(values, 'openingsUnit'),
+      tileUnit: this.number(values, 'tileUnit'),
+      groutUnit: this.number(values, 'groutUnit'),
+      weightUnit: this.number(values, 'weightUnit'),
     };
   }
 

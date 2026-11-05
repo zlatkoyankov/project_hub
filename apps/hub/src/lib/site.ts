@@ -45,6 +45,7 @@ export function readingMinutes(body = '') {
 export const TOOLS = {
   letterwell: { en: { href: '/letterwell/', name: 'Letterwell', cta: 'Find words with Letterwell' }, bg: { href: '/letterwell/bg/', name: 'Letterwell', cta: 'Търси думи с Letterwell' } },
   'wordle-solver': { en: { href: '/letterwell/wordle-solver/', name: 'Wordle helper', cta: 'Open the Wordle helper' }, bg: { href: '/letterwell/bg/wordle/', name: 'Помощник за Wordle', cta: 'Към помощника за Wordle' } },
+  'crossword-solver': { en: { href: '/letterwell/crossword-solver/', name: 'Crossword helper', cta: 'Open the crossword helper' }, bg: { href: '/letterwell/bg/krastoslovitsi/', name: 'Помощник за кръстословици', cta: 'Към помощника за кръстословици' } },
   'energy-cost-calculator': { en: { href: '/energy-cost-calculator/', name: 'Energy cost calculator', cta: 'Open the energy cost calculator' }, bg: { href: '/bg/razhod-na-tok/', name: 'Калкулатор за разход на ток', cta: 'Към калкулатора за ток' } },
   'concrete-calculator': { en: { href: '/calculators/concrete-calculator/', name: 'Concrete calculator', cta: 'Open the concrete calculator' }, bg: { href: '/calculators/concrete-calculator/', name: 'Калкулатор за бетон', cta: 'Към калкулатора за бетон' } },
   'tile-calculator': { en: { href: '/calculators/tile-calculator/', name: 'Tile calculator', cta: 'Open the tile calculator' }, bg: { href: '/calculators/tile-calculator/', name: 'Калкулатор за плочки', cta: 'Към калкулатора за плочки' } },
@@ -53,6 +54,7 @@ export const TOOLS = {
   'square-footage-calculator': { en: { href: '/calculators/square-footage-calculator/', name: 'Square footage calculator', cta: 'Open the square footage calculator' }, bg: { href: '/calculators/square-footage-calculator/', name: 'Калкулатор за площ', cta: 'Към калкулатора за площ' } },
   'laminate-flooring-calculator': { en: { href: '/calculators/laminate-flooring-calculator/', name: 'Laminate flooring calculator', cta: 'Open the flooring calculator' }, bg: { href: '/bg/kalkulator-laminat/', name: 'Калкулатор за ламинат', cta: 'Към калкулатора за ламинат' } },
   'drywall-calculator': { en: { href: '/calculators/drywall-calculator/', name: 'Drywall calculator', cta: 'Open the drywall calculator' }, bg: { href: '/bg/kalkulator-gipsokarton/', name: 'Калкулатор за гипсокартон', cta: 'Към калкулатора за гипсокартон' } },
+  'tile-adhesive-grout-calculator': { en: { href: '/calculators/tile-adhesive-grout-calculator/', name: 'Tile adhesive & grout calculator', cta: 'Open the adhesive and grout calculator' }, bg: { href: '/bg/lepilo-i-fuga/', name: 'Калкулатор за лепило и фуга', cta: 'Към калкулатора за лепило и фуга' } },
   'gravel-calculator': { en: { href: '/calculators/gravel-calculator/', name: 'Gravel calculator', cta: 'Open the gravel calculator' }, bg: { href: '/calculators/gravel-calculator/', name: 'Калкулатор за чакъл', cta: 'Към калкулатора за чакъл' } },
 } as const
 
