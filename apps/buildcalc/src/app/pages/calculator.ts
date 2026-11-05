@@ -20,8 +20,8 @@ interface Field {
   optional?: boolean;
   unitKey?: string;
   unitOptions?: { value: number; label: string }[];
-  /** Fields shown in a separate, optional section (laminate baseboards and trim). */
-  group?: 'trim';
+  /** Fields shown in a separate, optional section (laminate trim, drywall framing and supplies). */
+  group?: 'extra';
 }
 
 interface AreaEntry {
@@ -100,13 +100,13 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'boxArea', label: 'Coverage per box', unit: 'sq ft', unitKey: 'boxAreaUnit', unitOptions: AREA_UNITS, min: 0.01, step: 0.01, hint: 'Printed on the box, for example 20 sq ft or 2.2 m².' },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1, hint: 'About 10% for a straight layout; more for diagonal or herringbone.' },
     { key: 'price', label: 'Price per box', unit: '$', min: 0, step: 0.01, optional: true },
-    { key: 'doorways', label: 'Doorways', unit: 'doors', min: 0, step: 1, group: 'trim', hint: 'Baseboards stop at each door frame.' },
-    { key: 'doorWidth', label: 'Doorway width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0, step: 0.1, group: 'trim' },
-    { key: 'pieceLength', label: 'Baseboard piece length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1, group: 'trim', hint: 'Check what your store sells, for example 8 ft or 2.5 m.' },
-    { key: 'insideCorners', label: 'Inside corners', unit: 'corners', min: 0, step: 1, group: 'trim', hint: 'A rectangular room has 4.' },
-    { key: 'outsideCorners', label: 'Outside corners', unit: 'corners', min: 0, step: 1, group: 'trim', hint: 'Where a wall sticks out, such as a chimney breast or alcove.' },
-    { key: 'transitions', label: 'Transition strips', unit: 'strips', min: 0, step: 1, group: 'trim', hint: 'At doorways where the floor meets a different floor.' },
-    { key: 'trimPrice', label: 'Price per baseboard piece', unit: '$', min: 0, step: 0.01, optional: true, group: 'trim' },
+    { key: 'doorways', label: 'Doorways', unit: 'doors', min: 0, step: 1, group: 'extra', hint: 'Baseboards stop at each door frame.' },
+    { key: 'doorWidth', label: 'Doorway width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0, step: 0.1, group: 'extra' },
+    { key: 'pieceLength', label: 'Baseboard piece length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1, group: 'extra', hint: 'Check what your store sells, for example 8 ft or 2.5 m.' },
+    { key: 'insideCorners', label: 'Inside corners', unit: 'corners', min: 0, step: 1, group: 'extra', hint: 'A rectangular room has 4.' },
+    { key: 'outsideCorners', label: 'Outside corners', unit: 'corners', min: 0, step: 1, group: 'extra', hint: 'Where a wall sticks out, such as a chimney breast or alcove.' },
+    { key: 'transitions', label: 'Transition strips', unit: 'strips', min: 0, step: 1, group: 'extra', hint: 'At doorways where the floor meets a different floor.' },
+    { key: 'trimPrice', label: 'Price per baseboard piece', unit: '$', min: 0, step: 0.01, optional: true, group: 'extra' },
   ],
   drywall: [
     { key: 'length', label: 'Room length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
@@ -115,6 +115,8 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'openings', label: 'Doors and windows to subtract', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0, step: 0.5, hint: 'A standard door is about 21 sq ft (2 m²).' },
     { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
     { key: 'price', label: 'Price per sheet', unit: '$', min: 0, step: 0.01, optional: true },
+    { key: 'studSpacing', label: 'Stud spacing', unit: 'in', unitKey: 'spacingUnit', unitOptions: INCH_UNITS, min: 0.1, step: 1, group: 'extra', hint: 'Center to center: usually 16 or 24 in, or 40 or 60 cm.' },
+    { key: 'studLength', label: 'Stud and track length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.1, step: 0.1, group: 'extra', hint: 'As sold, for example 8, 10 or 12 ft, or 3 m.' },
   ],
   mulch: [
     { key: 'length', label: 'Bed length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
@@ -133,7 +135,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
   area: {},
   mulch: { length: 10, width: 10, depth: 3, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   flooring: { length: 14, width: 12, boxArea: 20, waste: 10, price: 0, dimensionUnit: 0, boxAreaUnit: 0, baseboards: 1, doorways: 1, doorWidth: 3, pieceLength: 8, insideCorners: 4, outsideCorners: 0, transitions: 1, trimPrice: 0 },
-  drywall: { length: 12, width: 10, height: 8, openings: 21, includeCeiling: 0, sheetSize: 0, waste: 10, price: 0, dimensionUnit: 0, openingsUnit: 0 },
+  drywall: { length: 12, width: 10, height: 8, openings: 21, includeCeiling: 0, sheetSize: 0, waste: 10, price: 0, dimensionUnit: 0, openingsUnit: 0, supplies: 1, studSpacing: 16, spacingUnit: 1, studLength: 8 },
 };
 
 @Component({
@@ -176,7 +178,7 @@ export class CalculatorPage {
         label: this.localizedFieldLabel(field, system),
         unitOptions: field.unitOptions?.filter((unit) => {
           if (field.unitKey === 'dimensionUnit') return system === 'us' ? US_DISTANCE_UNITS.some((item) => item.value === unit.value) : METRIC_DISTANCE_UNITS.some((item) => item.value === unit.value);
-          if (field.unitKey === 'depthUnit' || field.unitKey === 'tileUnit' || field.unitKey === 'groutUnit') return system === 'us' ? US_SMALL_UNITS.some((item) => item.value === unit.value) : METRIC_SMALL_UNITS.some((item) => item.value === unit.value);
+          if (field.unitKey === 'depthUnit' || field.unitKey === 'tileUnit' || field.unitKey === 'groutUnit' || field.unitKey === 'spacingUnit') return system === 'us' ? US_SMALL_UNITS.some((item) => item.value === unit.value) : METRIC_SMALL_UNITS.some((item) => item.value === unit.value);
           if (field.unitKey === 'openingsUnit' || field.unitKey === 'boxAreaUnit') return system === 'us' ? US_AREA_UNITS.some((item) => item.value === unit.value) : METRIC_AREA_UNITS.some((item) => item.value === unit.value);
           if (field.unitKey === 'densityUnit' || field.unitKey === 'coverageUnit') return unit.value === (system === 'us' ? 0 : 1);
           return true;
@@ -185,9 +187,18 @@ export class CalculatorPage {
       : [];
   });
   protected readonly fields = computed(() => this.allFields().filter((field) => !field.group));
-  /** Laminate baseboards and trim: shown only when the section is switched on. */
-  protected readonly trimFields = computed(() => this.number(this.values(), 'baseboards') === 1 ? this.allFields().filter((field) => field.group === 'trim') : []);
-  protected readonly hasTrim = computed(() => this.calculator()?.kind === 'flooring');
+  /** The optional section of a calculator: its title and the switch that turns it on. */
+  protected readonly extra = computed(() => {
+    const kind = this.calculator()?.kind;
+    if (kind === 'flooring') return { key: 'baseboards', legend: 'Baseboards and trim', label: 'Baseboards', on: 'Include baseboards and trim', off: 'Flooring only' };
+    if (kind === 'drywall') return { key: 'supplies', legend: 'Studs and finishing supplies', label: 'Supplies', on: 'Include studs, screws, tape and compound', off: 'Sheets only' };
+    return null;
+  });
+  /** Fields of the optional section: shown only when it is switched on. */
+  protected readonly extraFields = computed(() => {
+    const extra = this.extra();
+    return extra && this.number(this.values(), extra.key) === 1 ? this.allFields().filter((field) => field.group === 'extra') : [];
+  });
 
   protected readonly formattedRows = computed(() => (this.result()?.rows ?? [])
     .filter((row) => !(this.unitPreference.system() === 'metric' && row.label === 'Metric equivalent'))
@@ -259,9 +270,10 @@ export class CalculatorPage {
       const unitKey = key;
       const previousUnit = this.number(current, unitKey);
       const valueKeys = ({
-        dimensionUnit: ['length', 'width', 'height', 'doorWidth', 'pieceLength'],
+        dimensionUnit: ['length', 'width', 'height', 'doorWidth', 'pieceLength', 'studLength'],
         boxAreaUnit: ['boxArea'],
         depthUnit: ['depth'],
+        spacingUnit: ['studSpacing'],
         tileUnit: ['tileLength', 'tileWidth'],
         groutUnit: ['grout'],
         openingsUnit: ['openings'],
@@ -317,6 +329,11 @@ export class CalculatorPage {
       if (kind === 'flooring') {
         defaults['doorWidth'] = 0.9;
         defaults['pieceLength'] = 2.5;
+      }
+      if (kind === 'drywall') {
+        defaults['studSpacing'] = 60;
+        defaults['spacingUnit'] = 3;
+        defaults['studLength'] = 3;
       }
       if (defaults['boxArea'] !== undefined) {
         defaults['boxArea'] = Number(this.convertArea(defaults['boxArea'], 0, 2).toFixed(2));
@@ -391,7 +408,7 @@ export class CalculatorPage {
       area: 'This totals rectangular measurements. Break irregular shapes into separate rectangles without overlap.',
       mulch: 'Depth needs vary with material and intended use. Follow local horticultural guidance and keep mulch clear of plant stems and trunks.',
       flooring: 'This covers a rectangular room. Add closets and alcoves as extra area, check the coverage on your box and follow the manufacturer’s expansion-gap and underlayment instructions.',
-      drywall: 'This counts sheets for flat walls and ceilings only. Joint compound, tape, screws, corner bead and building-code requirements such as fire-rated or moisture-resistant board are not included.',
+      drywall: 'This counts sheets for flat walls and ceilings. Studs and tracks are for the four walls only (not ceiling framing or extra studs around openings), and screws, tape and compound use rules of thumb, so check your manufacturer’s figures. Corner bead and building-code requirements such as fire-rated or moisture-resistant board are not included.',
     };
     return limitations[kind];
   }
@@ -440,7 +457,7 @@ export class CalculatorPage {
     const targetSmall = to === 'us' ? 1 : 3;
     const targetArea = to === 'us' ? 0 : 2;
 
-    for (const key of ['length', 'width', 'height', 'doorWidth', 'pieceLength']) {
+    for (const key of ['length', 'width', 'height', 'doorWidth', 'pieceLength', 'studLength']) {
       if (values[key] !== undefined) {
         values[key] = this.convertLength(this.number(values, key), this.number(values, 'dimensionUnit'), targetLength);
       }
@@ -451,8 +468,8 @@ export class CalculatorPage {
     }
     // Sheet sizes differ by market: switch to the common size for the new system.
     if (values['sheetSize'] !== undefined) values['sheetSize'] = to === 'us' ? 0 : 4;
-    for (const key of ['depth', 'tileLength', 'tileWidth', 'grout']) {
-      const unitKey = key === 'tileLength' || key === 'tileWidth' ? 'tileUnit' : key === 'grout' ? 'groutUnit' : 'depthUnit';
+    for (const key of ['depth', 'tileLength', 'tileWidth', 'grout', 'studSpacing']) {
+      const unitKey = key === 'tileLength' || key === 'tileWidth' ? 'tileUnit' : key === 'grout' ? 'groutUnit' : key === 'studSpacing' ? 'spacingUnit' : 'depthUnit';
       if (values[key] !== undefined) {
         const currentUnit = values[unitKey] ?? sourceSmall;
         values[key] = this.convertLength(this.number(values, key), currentUnit, targetSmall);
@@ -659,6 +676,10 @@ export class CalculatorPage {
       price: this.number(values, 'price'),
       dimensionUnit: this.number(values, 'dimensionUnit'),
       openingsUnit: this.number(values, 'openingsUnit'),
+      supplies: this.number(values, 'supplies') === 1,
+      studSpacing: this.number(values, 'studSpacing'),
+      spacingUnit: this.number(values, 'spacingUnit'),
+      studLength: this.number(values, 'studLength'),
     };
   }
 

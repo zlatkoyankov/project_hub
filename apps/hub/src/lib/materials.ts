@@ -89,6 +89,24 @@ export interface DrywallInput {
   waste: number
   /** price per sheet */
   price: number
+  /** Metal framing (UW/CW profiles) for the walls and finishing supplies. */
+  supplies?: boolean
+  studSpacing?: number
+  profileLength?: number
+}
+
+/** Approximate consumption per m² of board: screws about one per square foot; tape and joint
+ *  compound from Knauf's system data (0.75 m of tape; 0.5 kg compound on walls, 0.3 kg on ceilings). */
+export const SUPPLY_RATES = { screwsPerM2: 11, tapePerM2: 0.75, compoundWallKg: 0.5, compoundCeilingKg: 0.3 }
+
+export interface DrywallSupplies {
+  studs: number
+  studPieces: number
+  trackLength: number
+  trackPieces: number
+  screws: number
+  tape: number
+  compound: number
 }
 
 export interface DrywallEstimate {
@@ -100,6 +118,7 @@ export interface DrywallEstimate {
   sheets: number
   sheetLabel: string
   cost: number
+  supplies: DrywallSupplies | null
 }
 
 export function estimateDrywall(input: DrywallInput): DrywallEstimate | null {
@@ -111,5 +130,26 @@ export function estimateDrywall(input: DrywallInput): DrywallEstimate | null {
   const net = walls + ceiling - openings
   const total = withWaste(net, input.waste)
   const sheets = wholeUp(total / sheet.area)
-  return { walls, ceiling, openings, net, withWaste: total, sheets, sheetLabel: sheet.label, cost: sheets * Math.max(0, input.price) }
+  let supplies: DrywallSupplies | null = null
+  const spacing = input.studSpacing ?? 0
+  const pieceLength = input.profileLength ?? 0
+  if (input.supplies && spacing > 0 && pieceLength > 0) {
+    const perimeter = 2 * (input.length + input.width)
+    // CW studs along each wall at the spacing, plus one at each wall end; UW tracks on floor and ceiling.
+    const studsPerWall = (wall: number) => wholeUp(wall / spacing) + 1
+    const studs = 2 * studsPerWall(input.length) + 2 * studsPerWall(input.width)
+    const trackLength = withWaste(2 * perimeter, input.waste)
+    const wallBoard = Math.max(0, walls - openings)
+    supplies = {
+      studs,
+      studPieces: studs * wholeUp(input.height / pieceLength),
+      trackLength,
+      trackPieces: wholeUp(trackLength / pieceLength),
+      screws: wholeUp(net * SUPPLY_RATES.screwsPerM2),
+      // Joints in the board plus the four inside corners (and the ceiling edge, if the ceiling is boarded).
+      tape: net * SUPPLY_RATES.tapePerM2 + 4 * input.height + (ceiling > 0 ? perimeter : 0),
+      compound: wallBoard * SUPPLY_RATES.compoundWallKg + ceiling * SUPPLY_RATES.compoundCeilingKg,
+    }
+  }
+  return { walls, ceiling, openings, net, withWaste: total, sheets, sheetLabel: sheet.label, cost: sheets * Math.max(0, input.price), supplies }
 }

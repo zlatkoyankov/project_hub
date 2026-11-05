@@ -63,13 +63,17 @@
               </div>
             }
           </div>
-          @if (hasTrim()) {
+          @if (calc.kind === 'drywall') {
+            <label class="form-field compact-select"><span>Sheet size</span><select [ngModel]="values()['sheetSize']" (ngModelChange)="setValue('sheetSize', $event)" name="sheetSize">@for (sheet of sheetOptions(); track sheet.value) {<option [ngValue]="sheet.value">{{ sheet.label }}</option>}</select></label>
+            <label class="form-field compact-select"><span>Ceiling</span><select [ngModel]="values()['includeCeiling']" (ngModelChange)="setValue('includeCeiling', $event)" name="includeCeiling"><option [ngValue]="0">Walls only</option><option [ngValue]="1">Walls and ceiling</option></select></label>
+          }
+          @if (extra(); as section) {
             <fieldset class="trim-section">
-              <legend>Baseboards and trim</legend>
-              <label class="form-field compact-select"><span>Baseboards</span><select [ngModel]="values()['baseboards']" (ngModelChange)="setValue('baseboards', $event)" name="baseboards"><option [ngValue]="1">Include baseboards and trim</option><option [ngValue]="0">Flooring only</option></select></label>
-              @if (trimFields().length) {
+              <legend>{{ section.legend }}</legend>
+              <label class="form-field compact-select"><span>{{ section.label }}</span><select [ngModel]="values()[section.key]" (ngModelChange)="setValue(section.key, $event)" [name]="section.key"><option [ngValue]="1">{{ section.on }}</option><option [ngValue]="0">{{ section.off }}</option></select></label>
+              @if (extraFields().length) {
             <div class="fields-grid trim-fields">
-              @for (field of trimFields(); track field.key) {
+              @for (field of extraFields(); track field.key) {
                 <div class="form-field">
                   <label [for]="'calc-' + field.key">{{ field.label }} @if (field.optional) {<span class="optional">(optional)</span>}</label>
                   <div class="field-controls">
@@ -91,10 +95,6 @@
           }
           @if (calc.kind === 'gravel') {
             <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">{{ unitSystem() === 'metric' ? 'metric tonne' : 'US ton' }}</option><option [ngValue]="1">{{ unitSystem() === 'metric' ? 'cubic meter' : 'cubic yard' }}</option></select></label>
-          }
-          @if (calc.kind === 'drywall') {
-            <label class="form-field compact-select"><span>Sheet size</span><select [ngModel]="values()['sheetSize']" (ngModelChange)="setValue('sheetSize', $event)" name="sheetSize">@for (sheet of sheetOptions(); track sheet.value) {<option [ngValue]="sheet.value">{{ sheet.label }}</option>}</select></label>
-            <label class="form-field compact-select"><span>Ceiling</span><select [ngModel]="values()['includeCeiling']" (ngModelChange)="setValue('includeCeiling', $event)" name="includeCeiling"><option [ngValue]="0">Walls only</option><option [ngValue]="1">Walls and ceiling</option></select></label>
           }
           @if (calc.kind === 'tile') {
             <label class="form-field compact-select"><span>Price is entered per</span><select [ngModel]="values()['priceUnit']" (ngModelChange)="setValue('priceUnit', $event)" name="priceUnit"><option [ngValue]="0">tile</option><option [ngValue]="1">box</option></select></label>

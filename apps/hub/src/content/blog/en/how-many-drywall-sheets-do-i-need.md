@@ -57,10 +57,18 @@ Adding the 120 sq ft ceiling makes 451 sq ft to cover, or 496.1 sq ft with waste
 
 Larger sheets mean fewer joints to tape and finish, which saves time and gives a flatter result. But a 4 × 12 ft sheet is heavy and awkward on your own and may not fit up a staircase. A good rule is to pick a length that matches your wall: 8 ft sheets on 8 ft walls hung vertically, or longer sheets hung horizontally to reduce joints.
 
-## What this does not include
+## Studs, screws, tape and compound
 
-The sheet count is only part of the shopping list. You will also need screws, joint tape, joint compound and corner bead, and your local building code may require particular boards in some places, such as fire-rated board next to a garage or moisture-resistant board in bathrooms. Check those requirements before you buy.
+The sheet count is only part of the shopping list. Common rules of thumb for the rest, using the same 12 × 10 ft room with 8 ft walls:
+
+- **Studs** at 16 in on center along each wall, plus one at each wall's end: 10 on each 12 ft wall and 9 on each 10 ft wall, **38 studs** in all. With 8 ft walls, each stud is one 8 ft piece.
+- **Floor and ceiling track**: twice the perimeter, 2 × 44 = 88 ft, or about 97 ft with waste, which is **13 pieces** of 8 ft.
+- **Screws**: about one per square foot of board, so around **331**.
+- **Joint tape**: about 0.4 ft per square foot, roughly **132 ft**, so a single 250 ft roll is plenty.
+- **Joint compound**: one 4.5-gallon box of premixed compound covers about 475 sq ft, so **1 box**.
+
+These are estimates. Extra studs around doors and windows, ceiling framing and corner bead are not included, and your local building code may require particular boards in some places, such as fire-rated board next to a garage or moisture-resistant board in bathrooms. Check those requirements and your manufacturer's figures before you buy.
 
 ## Work it out for your room
 
-Enter the room size, wall height, openings and sheet size in the [drywall calculator](/calculators/drywall-calculator/). Choose whether to include the ceiling and it counts whole sheets, with the cost if you add a price per sheet. It works in feet or meters, with common sheet sizes for each.
+Enter the room size, wall height, openings and sheet size in the [drywall calculator](/calculators/drywall-calculator/). Choose whether to include the ceiling and it counts whole sheets, studs, track, screws, tape and compound, with the cost if you add a price per sheet. It works in feet or meters, with common sheet sizes for each.
