@@ -24,4 +24,16 @@
     <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/wordle/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/wordle-solver/" />
   </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/crossword-solver/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zyankov.eu/letterwell/crossword-solver/" />
+    <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/krastoslovitsi/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/crossword-solver/" />
+  </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/bg/krastoslovitsi/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zyankov.eu/letterwell/crossword-solver/" />
+    <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/krastoslovitsi/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/crossword-solver/" />
+  </url>
 </urlset>

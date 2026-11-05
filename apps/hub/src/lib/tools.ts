@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword'
 
 export interface Tool {
   id: string
@@ -30,6 +30,19 @@ export const TOOL_CATALOG: Tool[] = [
       bg: 'Оцвети плочките и виж всички думи, които още пасват, и най-добрия следващ опит.',
     },
     keywords: 'wordle solver helper five letters уърдъл думи пет букви',
+    isNew: true,
+  },
+  {
+    id: 'crossword-solver',
+    category: 'words',
+    icon: 'crossword',
+    href: { en: '/letterwell/crossword-solver/', bg: '/letterwell/bg/krastoslovitsi/' },
+    name: { en: 'Crossword helper', bg: 'Помощник за кръстословици' },
+    description: {
+      en: 'Type the letters you know and ? for the gaps: every word that fits, with dictionary links.',
+      bg: 'Въведи известните букви и ? за празните: всички думи, които пасват, с линк към речник.',
+    },
+    keywords: 'crossword solver pattern missing letters clue кръстословица шаблон липсващи букви',
     isNew: true,
   },
   {
@@ -139,11 +152,12 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   area: '<path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/>',
   energy: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
   flooring: '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.3h18M3 14.6h18M10 4v5.3M16 9.3v5.3M8 14.6V20"/>',
+  crossword: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/><path d="M10.5 10.5h3v3h-3z"/>',
   drywall: '<rect x="3" y="3" width="8" height="18" rx="1"/><rect x="13" y="3" width="8" height="18" rx="1"/><path d="M5.5 6v.01M5.5 12v.01M5.5 18v.01M15.5 6v.01M15.5 12v.01M15.5 18v.01"/>',
 }
 
 /** Blog category of a post, from the tool it links to. */
 export function postCategory(tool?: string): ToolCategory | 'general' {
   if (!tool) return 'general'
-  return tool === 'letterwell' || tool === 'wordle-solver' ? 'words' : 'home'
+  return tool === 'letterwell' || tool === 'wordle-solver' || tool === 'crossword-solver' ? 'words' : 'home'
 }

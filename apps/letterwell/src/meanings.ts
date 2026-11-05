@@ -57,8 +57,13 @@ export const partLabel = (part: string) => PARTS_EN[part] ?? part
 
 export const wiktionaryUrl = (word: string) => `https://en.wiktionary.org/wiki/${encodeURIComponent(word)}#English`
 
-/** Bulgarian words: no built-in meanings, links to Bulgarian dictionaries instead. */
-export const dictionaryLinks = (word: string) => [
-  { label: 'Речник на българския език (БАН)', href: `https://ibl.bas.bg/rbe/lang/bg/${encodeURIComponent(word)}/` },
-  { label: 'Уикиречник', href: `https://bg.wiktionary.org/wiki/${encodeURIComponent(word)}` },
-]
+/** Online dictionaries for a word: used for Bulgarian words and on the crossword helper. */
+export const dictionaryLinks = (word: string, language: Language) => language === 'bg'
+  ? [
+      { label: 'Речник на българския език (БАН)', href: `https://ibl.bas.bg/rbe/lang/bg/${encodeURIComponent(word)}/` },
+      { label: 'Уикиречник', href: `https://bg.wiktionary.org/wiki/${encodeURIComponent(word)}` },
+    ]
+  : [
+      { label: 'Wiktionary', href: wiktionaryUrl(word) },
+      { label: 'Merriam-Webster', href: `https://www.merriam-webster.com/dictionary/${encodeURIComponent(word)}` },
+    ]

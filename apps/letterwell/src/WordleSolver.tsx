@@ -221,6 +221,7 @@ function WordleSolver({ language }: { language: Language }) {
         <div className="topbar-actions">
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
           <a className="topbar-link" href={pagePath('finder', language)}>{text.finder}</a>
+          <a className="topbar-link" href={pagePath('crossword', language)}>{language === 'bg' ? 'Кръстословици' : 'Crosswords'}</a>
           <label className="language-picker">
             <span className="sr-only">{language === 'bg' ? 'Език' : 'Language'}</span>
             <select
