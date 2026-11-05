@@ -769,3 +769,73 @@ export function calculateInsulation(values: InsulationInput): Estimate {
     summary: `Plan for ${boards} board${boards === 1 ? '' : 's'} of insulation, including waste.`,
   };
 }
+
+/** Masonry units: face length and height, depth and mortar joint, all in inches; headJoints is false for
+ *  blocks with interlocking ends (no mortar in the vertical joints) and thin-bed systems. */
+export const MASONRY_UNITS = [
+  { label: 'Modular brick 7-5/8 × 2-1/4 in', length: 7.625, height: 2.25, depth: 3.625, joint: 0.375, headJoints: true },
+  { label: 'Concrete block 16 × 8 × 8 in (CMU)', length: 15.625, height: 7.625, depth: 7.625, joint: 0.375, headJoints: true },
+  { label: 'Solid brick 25 × 12 × 6.5 cm, 12 cm wall', length: 25 / 2.54, height: 6.5 / 2.54, depth: 12 / 2.54, joint: 1 / 2.54, headJoints: true },
+  { label: 'Solid brick 25 × 12 × 6.5 cm, 25 cm wall', length: 12 / 2.54, height: 6.5 / 2.54, depth: 25 / 2.54, joint: 1 / 2.54, headJoints: true },
+  { label: 'Clay block 25 cm (Porotherm 25)', length: 37.3 / 2.54, height: 23.8 / 2.54, depth: 25 / 2.54, joint: 1.2 / 2.54, headJoints: false },
+  { label: 'Clay block 11.5 cm (Porotherm 11.5)', length: 50 / 2.54, height: 23.8 / 2.54, depth: 11.5 / 2.54, joint: 1.2 / 2.54, headJoints: false },
+  { label: 'Aerated concrete block 62.5 × 25 cm, 25 cm wall', length: 62.5 / 2.54, height: 25 / 2.54, depth: 25 / 2.54, joint: 0.2 / 2.54, headJoints: false },
+];
+
+export interface MasonryInput {
+  length: number;
+  height: number;
+  openings: number;
+  unit: number;
+  waste: number;
+  /** Mortar from one bag, in cu ft (yieldUnit 0) or liters (yieldUnit 1). */
+  mortarYield: number;
+  price?: number;
+  dimensionUnit?: number;
+  openingsUnit?: number;
+  yieldUnit?: number;
+}
+
+/** Units per sq ft and mortar per sq ft (cu ft): one unit plus its joints per face, mortar in the bed joints
+ *  (and head joints when the unit has them) through the full wall depth. */
+export function masonryPerSquareFoot(unit: (typeof MASONRY_UNITS)[number]): { units: number; mortar: number } {
+  const ft = (inches: number) => inches / 12;
+  const [l, h, d, j] = [ft(unit.length), ft(unit.height), ft(unit.depth), ft(unit.joint)];
+  // Interlocking ends sit tight against each other: no joint along the course.
+  const units = 1 / ((l + (unit.headJoints ? j : 0)) * (h + j));
+  const bed = (d * j) / (h + j);
+  const head = unit.headJoints ? units * h * j * d : 0;
+  return { units, mortar: bed + head };
+}
+
+export function calculateMasonry(values: MasonryInput): Estimate {
+  positive(values.length, 'Wall length');
+  positive(values.height, 'Wall height');
+  nonNegative(values.openings, 'Doors and windows');
+  positive(values.mortarYield, 'Mortar per bag');
+  const price = values.price ?? 0;
+  nonNegative(price, 'Price');
+  const unit = MASONRY_UNITS[values.unit];
+  if (!unit) throw new Error('Choose a brick or block.');
+
+  const dimension = unitFactor(FEET_PER_UNIT, values.dimensionUnit);
+  const gross = values.length * dimension * values.height * dimension;
+  const net = Math.max(0, gross - values.openings * unitFactor(SQUARE_FEET_PER_UNIT, values.openingsUnit));
+  const rate = masonryPerSquareFoot(unit);
+  const units = Math.ceil(net * rate.units * wasteMultiplier(values.waste) - 1e-6);
+  const mortar = net * rate.mortar * wasteMultiplier(values.waste);
+  const yieldCubicFeet = values.yieldUnit === 1 ? values.mortarYield / 28.3168466 : values.mortarYield;
+  const bags = mortar > 0 ? Math.ceil(mortar / yieldCubicFeet - 1e-6) : 0;
+
+  return {
+    rows: [
+      { label: 'Wall area', value: net, unit: 'sq ft', precision: 2, detail: 'minus doors and windows' },
+      { label: 'Units per sq ft', value: rate.units, unit: 'per sq ft', precision: 2, detail: unit.label },
+      { label: 'Bricks or blocks', value: units, unit: units === 1 ? 'unit' : 'units', precision: 0, detail: 'with waste, rounded up' },
+      { label: 'Mortar', value: mortar, unit: 'cu ft', precision: 2, detail: unit.headJoints ? 'bed and head joints, with waste' : 'bed joints only (interlocking ends), with waste' },
+      { label: 'Mortar bags', value: bags, unit: bags === 1 ? 'bag' : 'bags', precision: 0, detail: `${values.mortarYield} ${values.yieldUnit === 1 ? 'L' : 'cu ft'} of mortar per bag` },
+      ...(price > 0 ? [{ label: 'Estimated cost', value: units * price, unit: '$', precision: 2 }] : []),
+    ],
+    summary: `Plan for ${units} bricks or blocks and ${bags} bag${bags === 1 ? '' : 's'} of mortar, including waste.`,
+  };
+}
