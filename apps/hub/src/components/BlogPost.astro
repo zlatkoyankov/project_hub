@@ -2,6 +2,8 @@
 // A blog post page in either language: article with a contents list and tool card beside it.
 import { render } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
+import RelatedTools from './RelatedTools.astro'
+import { POST_TOOL_IDS } from '../lib/tools'
 import { TOOLS, formatDate, getPosts, getTranslation, isoDate, ogKey, postPath, readingMinutes, type Post } from '../lib/site'
 import { postCategory } from '../lib/tools'
 import '../styles/page.css'
@@ -95,6 +97,8 @@ const jsonLd = {
           )}
         </aside>
       </div>
+
+      {post.data.tool && <RelatedTools lang={lang} id={POST_TOOL_IDS[post.data.tool]} title={lang === 'bg' ? 'Още полезни инструменти' : 'More tools you may need'} />}
 
       {related.length > 0 && (
         <section class="related" aria-labelledby="related-title">

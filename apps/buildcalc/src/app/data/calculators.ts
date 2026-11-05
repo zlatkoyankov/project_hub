@@ -176,6 +176,40 @@ export const CALCULATORS: CalculatorInfo[] = [
   },
 ];
 
+/** Calculators that go together, for the "Related calculators" block (slugs). */
+export const RELATED_SLUGS: Record<string, string[]> = {
+  'gravel-calculator': ['concrete-calculator', 'mulch-calculator', 'square-footage-calculator'],
+  'paint-calculator': ['wallpaper-calculator', 'drywall-calculator', 'square-footage-calculator'],
+  'tile-calculator': ['tile-adhesive-grout-calculator', 'laminate-flooring-calculator', 'square-footage-calculator'],
+  'concrete-calculator': ['gravel-calculator', 'brick-block-calculator', 'screed-plaster-calculator'],
+  'square-footage-calculator': ['laminate-flooring-calculator', 'paint-calculator', 'tile-calculator'],
+  'mulch-calculator': ['gravel-calculator', 'square-footage-calculator', 'concrete-calculator'],
+  'laminate-flooring-calculator': ['screed-plaster-calculator', 'tile-calculator', 'square-footage-calculator'],
+  'drywall-calculator': ['paint-calculator', 'insulation-board-calculator', 'brick-block-calculator'],
+  'tile-adhesive-grout-calculator': ['tile-calculator', 'screed-plaster-calculator', 'laminate-flooring-calculator'],
+  'wallpaper-calculator': ['paint-calculator', 'drywall-calculator', 'square-footage-calculator'],
+  'screed-plaster-calculator': ['laminate-flooring-calculator', 'tile-calculator', 'concrete-calculator'],
+  'insulation-board-calculator': ['brick-block-calculator', 'drywall-calculator', 'paint-calculator'],
+  'brick-block-calculator': ['insulation-board-calculator', 'concrete-calculator', 'drywall-calculator'],
+};
+
+/** The hub article (in English) that explains each calculator in depth. */
+export const ARTICLES: Record<string, { href: string; title: string }> = {
+  'gravel-calculator': { href: '/blog/how-much-gravel-for-a-driveway/', title: 'How much gravel do I need for a driveway?' },
+  'paint-calculator': { href: '/blog/how-much-paint-for-a-room/', title: 'How much paint do I need for a room?' },
+  'tile-calculator': { href: '/blog/tile-waste-percentage/', title: 'How much extra tile should I buy?' },
+  'concrete-calculator': { href: '/blog/how-much-concrete-for-a-slab/', title: 'How much concrete do I need for a slab?' },
+  'square-footage-calculator': { href: '/blog/how-to-measure-square-footage/', title: 'How to measure square footage' },
+  'mulch-calculator': { href: '/blog/how-much-mulch-do-i-need/', title: 'How much mulch do I need?' },
+  'laminate-flooring-calculator': { href: '/blog/how-much-laminate-flooring-do-i-need/', title: 'How much laminate flooring do I need?' },
+  'drywall-calculator': { href: '/blog/how-many-drywall-sheets-do-i-need/', title: 'How many drywall sheets do I need?' },
+  'tile-adhesive-grout-calculator': { href: '/blog/how-much-tile-adhesive-and-grout-do-i-need/', title: 'How much tile adhesive and grout do I need?' },
+  'wallpaper-calculator': { href: '/blog/how-much-wallpaper-do-i-need/', title: 'How much wallpaper do I need?' },
+  'screed-plaster-calculator': { href: '/blog/how-much-self-leveling-compound-do-i-need/', title: 'How much self-leveling compound or screed do I need?' },
+  'insulation-board-calculator': { href: '/blog/how-many-insulation-boards-do-i-need/', title: 'How many insulation boards do I need for a wall?' },
+  'brick-block-calculator': { href: '/blog/how-many-bricks-do-i-need/', title: 'How many bricks or blocks do I need for a wall?' },
+};
+
 export const FEATURED_SLUGS = [
   'gravel-calculator', 'paint-calculator', 'tile-calculator',
   'concrete-calculator', 'square-footage-calculator', 'mulch-calculator',

@@ -4,6 +4,7 @@ import { track } from '@zyankov/design-system/analytics'
 import './App.css'
 import './wordle.css'
 import { pagePath, wordleMetadata, type Language } from './seo'
+import { MoreWordTools, ToolLinks } from './ToolNav'
 import { loadMeaningIndex } from './meanings'
 import { MeaningButton, MeaningPopover, type OpenMeaning } from './WordMeaning'
 import { filterWords, loadWordleList, OPENERS, suggestGuess, WORD_LENGTH, type GuessRow, type Tile, type WordleList } from './wordle'
@@ -220,9 +221,7 @@ function WordleSolver({ language }: { language: Language }) {
         </a>
         <div className="topbar-actions">
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
-          <a className="topbar-link" href={pagePath('finder', language)}>{text.finder}</a>
-          <a className="topbar-link" href={pagePath('crossword', language)}>{language === 'bg' ? 'Кръстословици' : 'Crosswords'}</a>
-          <a className="topbar-link" href={pagePath('bee', language)}>Spelling Bee</a>
+          <ToolLinks language={language} current="wordle" />
           <label className="language-picker">
             <span className="sr-only">{language === 'bg' ? 'Език' : 'Language'}</span>
             <select
@@ -372,6 +371,7 @@ function WordleSolver({ language }: { language: Language }) {
             ))}
           </p>
         </section>
+        <MoreWordTools language={language} current="wordle" />
       </main>
     </div>
   )
