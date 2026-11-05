@@ -1,4 +1,4 @@
-export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive';
+export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive' | 'wallpaper';
 
 export interface CalculatorInfo {
   slug: string;
@@ -126,12 +126,24 @@ export const CALCULATORS: CalculatorInfo[] = [
       { question: 'Why does grout depend on tile size?', answer: 'Small tiles have many more joints per square foot, so mosaics use far more grout than large-format tiles with the same joint width.' },
     ],
   },
+  {
+    slug: 'wallpaper-calculator', bg: '/bg/kalkulator-tapeti/', title: 'Wallpaper Calculator', shortTitle: 'Wallpaper', category: 'Paint & Finishes',
+    description: 'Estimate rolls of wallpaper for a room from the wall size, roll size and pattern repeat, counted strip by strip.',
+    intro: 'Enter the room size and wall height, doors and windows, and the size of one roll. The estimate counts the strips you can cut from each roll, allowing for the pattern repeat.',
+    kind: 'wallpaper', icon: 'paint', keywords: ['wall covering', 'rolls', 'pattern repeat', 'drop', 'strips', 'feature wall'],
+    example: 'A 12 ft × 10 ft room with 8 ft walls needs about 25 strips of 20.5 in wallpaper, or 9 rolls of 33 ft.',
+    formula: 'Strips = (room perimeter − opening width) ÷ roll width. Strips per roll = roll length ÷ (wall height in whole pattern repeats + trim). Rolls = strips ÷ strips per roll, rounded up.',
+    faqs: [
+      { question: 'Why not just divide the wall area by the roll area?', answer: 'Wallpaper is hung in full-height strips, and the offcut at the end of each roll is often too short for another strip. Counting strips per roll is what decides how many rolls you need.' },
+      { question: 'What is a pattern repeat?', answer: 'The distance after which the pattern repeats down the roll. Each strip has to start at the same point in the pattern, so strips are cut in whole repeats and a large repeat wastes more paper.' },
+    ],
+  },
 ];
 
 export const FEATURED_SLUGS = [
   'gravel-calculator', 'paint-calculator', 'tile-calculator',
   'concrete-calculator', 'square-footage-calculator', 'mulch-calculator',
-  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator',
+  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'wallpaper-calculator',
 ];
 
 export const CATEGORIES = [...new Set(CALCULATORS.map((calculator) => calculator.category))];

@@ -217,3 +217,45 @@ export function estimateAdhesive(input: AdhesiveInput): AdhesiveEstimate | null 
     cost: adhesiveBags * Math.max(0, input.adhesivePrice) + groutBags * Math.max(0, input.groutPrice),
   }
 }
+
+export interface WallpaperInput {
+  length: number
+  width: number
+  height: number
+  /** m² of doors and windows */
+  openings: number
+  /** cm */
+  rollWidth: number
+  /** m */
+  rollLength: number
+  /** cm, 0 for plain paper */
+  repeat: number
+  price: number
+}
+
+export interface WallpaperEstimate {
+  perimeter: number
+  drop: number
+  strips: number
+  stripsPerRoll: number
+  rolls: number
+  cost: number
+}
+
+/** Extra length per strip for trimming at the ceiling and the floor. */
+export const WALLPAPER_TRIM_M = 0.1
+
+/** Wallpaper by strips, like a decorator counts it: whole strips per roll, the drop in whole pattern repeats,
+ *  and doors and windows deducted by their width (area ÷ wall height). */
+export function estimateWallpaper(input: WallpaperInput): WallpaperEstimate | null {
+  if (!(input.length > 0 && input.width > 0 && input.height > 0 && input.rollWidth > 0 && input.rollLength > 0)) return null
+  const perimeter = 2 * (input.length + input.width)
+  const wall = Math.max(0, perimeter - Math.max(0, input.openings) / input.height)
+  const strips = wholeUp(wall / (input.rollWidth / 100))
+  const repeat = Math.max(0, input.repeat) / 100
+  const drop = (repeat > 0 ? wholeUp(input.height / repeat) * repeat : input.height) + WALLPAPER_TRIM_M
+  const stripsPerRoll = Math.floor(input.rollLength / drop + 1e-6)
+  if (stripsPerRoll < 1) return null
+  const rolls = wholeUp(strips / stripsPerRoll)
+  return { perimeter, drop, strips, stripsPerRoll, rolls, cost: rolls * Math.max(0, input.price) }
+}

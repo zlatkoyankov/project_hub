@@ -1,5 +1,5 @@
 import {
-  calculateAdhesive, calculateArea, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
+  calculateAdhesive, calculateArea, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
 
 describe('calculation utilities', () => {
@@ -230,5 +230,24 @@ describe('calculation utilities', () => {
     expect(row('Trowel notch')).toBe(10);
     expect(row('Adhesive bags')).toBe(3);
     expect(row('Grout bags')).toBe(1);
+  });
+
+  it('counts wallpaper rolls by strips', () => {
+    const result = calculateWallpaper({ length: 12, width: 10, height: 8, openings: 21, rollWidth: 20.5, rollLength: 33, patternRepeat: 0, rollUnit: 1 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value;
+    // 44 ft of wall minus 21 sq ft ÷ 8 ft of openings = 41.4 ft ÷ 20.5 in = 25 strips; 33 ft ÷ 8 ft 4 in = 3 per roll.
+    expect(row('Strips needed')).toBe(25);
+    expect(row('Strips per roll')).toBe(3);
+    expect(row('Rolls needed')).toBe(9);
+  });
+
+  it('rounds wallpaper strips up to whole pattern repeats, in metric', () => {
+    const result = calculateWallpaper({ length: 4, width: 3.5, height: 2.6, openings: 1.8, rollWidth: 53, rollLength: 10.05, patternRepeat: 64, dimensionUnit: 2, openingsUnit: 2, rollUnit: 3 });
+    const row = (label: string) => result.rows.find((item) => item.label === label)?.value ?? 0;
+    expect(row('Strips needed')).toBe(27);
+    // 2.6 m in 0.64 m repeats is 3.2 m, plus 10 cm trim.
+    expect(row('Strip length') * 0.3048).toBeCloseTo(3.2 + 0.1016, 3);
+    expect(row('Strips per roll')).toBe(3);
+    expect(row('Rolls needed')).toBe(9);
   });
 });

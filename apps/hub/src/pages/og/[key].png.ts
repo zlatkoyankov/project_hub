@@ -20,6 +20,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-razhod-na-tok': { kicker: 'Дом и енергия · калкулатор', title: 'Колко ток харчи уредът?', footer: 'zyankov.eu/bg/razhod-na-tok' },
     'bg-kalkulator-laminat': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко ламинат и первази ми трябват?', footer: 'zyankov.eu/bg/kalkulator-laminat' },
     'bg-kalkulator-gipsokarton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко плоскости гипсокартон ми трябват?', footer: 'zyankov.eu/bg/kalkulator-gipsokarton' },
+    'bg-kalkulator-tapeti': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко ролки тапет ми трябват?', footer: 'zyankov.eu/bg/kalkulator-tapeti' },
     'bg-lepilo-i-fuga': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко лепило и фуга ми трябват?', footer: 'zyankov.eu/bg/lepilo-i-fuga' },
     'letterwell-wordle-solver': { kicker: 'Letterwell · Wordle helper', title: 'Stuck on Wordle? Narrow down the answer', footer: 'zyankov.eu/letterwell/wordle-solver' },
     'letterwell-crossword-solver': { kicker: 'Letterwell · crossword helper', title: 'Missing a few letters? Fill the gaps', footer: 'zyankov.eu/letterwell/crossword-solver' },

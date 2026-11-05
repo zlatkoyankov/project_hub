@@ -14,3 +14,4 @@ Photos are from Unsplash and are free to use under the Unsplash License (https:/
 | flooring.webp | Generated illustration (zyankov.eu), no third-party source |
 | drywall.webp | Generated illustration (zyankov.eu), no third-party source |
 | adhesive.webp | https://unsplash.com/photos/1570881826833-ad7b98b7dffe (same photo as tile.webp) |
+| wallpaper.webp | https://unsplash.com/photos/1562259949-e8e7689d7828 (same photo as paint.webp) |
