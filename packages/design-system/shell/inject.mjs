@@ -9,11 +9,12 @@
 //
 // Library:  injectShell(html, { project, main, path })   path decides whether ads load
 //           (privacy and terms pages never load ad tags; <meta name="zy-ads" content="off"> also turns them off)
-// CLI:      node inject.mjs <dir> --project <slug> [--main <id>]
-//           rewrites every .html file under <dir> that contains a slot.
+// CLI:      node inject.mjs <dir> --project <slug> [--main <id>] [--base <url path>]
+//           rewrites every .html file under <dir> that contains a slot. With --base (the URL path the
+//           directory is served from), it also preloads the page language's body and heading fonts.
 import { realpathSync } from 'node:fs'
 import { readdir, readFile, writeFile } from 'node:fs/promises'
-import { join, relative, resolve } from 'node:path'
+import { basename, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { renderBar, renderFooter, renderHead, renderPrivacyAnalytics } from './render.mjs'
 
@@ -55,13 +56,29 @@ export function isEmbedPage(path = '') {
   return EMBED_PAGE.test(path.replace(/\\/g, '/'))
 }
 
-export function injectShell(html, { project = 'hub', main = 'main', path = '' } = {}) {
+// Fonts to preload for each page language: the heading face and the body face, in the subset the
+// language needs. Preloading stops text from being painted twice (fallback font, then the real one).
+const PRELOAD_FONTS = {
+  en: ['literata-latin-opsz-normal', 'onest-latin-wght-normal'],
+  bg: ['literata-cyrillic-opsz-normal', 'onest-cyrillic-wght-normal'],
+}
+
+/** <link rel="preload"> tags for the language, picked from the built font URLs. */
+export function fontPreloads(lang, fontUrls = []) {
+  return (PRELOAD_FONTS[lang] ?? PRELOAD_FONTS.en)
+    .map((name) => fontUrls.find((url) => basename(url).startsWith(name)))
+    .filter(Boolean)
+    .map((href) => `<link rel="preload" href="${href}" as="font" type="font/woff2" crossorigin>`)
+    .join('')
+}
+
+export function injectShell(html, { project = 'hub', main = 'main', path = '', fontUrls = [] } = {}) {
   const embed = isEmbedPage(path)
   const ads = !embed && !isNoAdsPage(path) && !/<meta name="zy-ads" content="off"/.test(html)
   const lang = pageLanguage(html)
   const alternates = pageAlternates(html)
   let out = html
-    .replace(slot('head'), () => renderHead({ ads }))
+    .replace(slot('head'), () => renderHead({ ads }) + fontPreloads(lang, fontUrls))
     .replace(slot('bar'), () => (embed ? '' : renderBar({ project, main, lang, alternates })))
     .replace(slot('footer'), () => (embed ? '' : renderFooter({ project, lang })))
     .replace(slot('privacy-analytics'), () => renderPrivacyAnalytics())
@@ -71,13 +88,14 @@ export function injectShell(html, { project = 'hub', main = 'main', path = '' } 
   return out
 }
 
-async function* htmlFiles(dir) {
+async function* filesWith(dir, extension) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name)
-    if (entry.isDirectory()) yield* htmlFiles(path)
-    else if (entry.name.endsWith('.html')) yield path
+    if (entry.isDirectory()) yield* filesWith(path, extension)
+    else if (entry.name.endsWith(extension)) yield path
   }
 }
+const htmlFiles = (dir) => filesWith(dir, '.html')
 
 async function main(argv) {
   const [dir, ...rest] = argv
@@ -88,11 +106,18 @@ async function main(argv) {
   if (!dir) throw new Error('Usage: inject.mjs <dir> --project <slug> [--main <id>]')
   const project = option('project', 'hub')
   const mainId = option('main', 'main')
+  const base = option('base', '')
+  const fontUrls = []
+  if (base) {
+    for await (const file of filesWith(resolve(dir), '.woff2')) {
+      fontUrls.push(base.replace(/\/?$/, '/') + relative(resolve(dir), file).split(sep).join('/'))
+    }
+  }
   let changed = 0
   for await (const file of htmlFiles(resolve(dir))) {
     const html = await readFile(file, 'utf8')
     if (!hasSlots(html)) continue
-    await writeFile(file, injectShell(html, { project, main: mainId, path: relative(resolve(dir), file) }))
+    await writeFile(file, injectShell(html, { project, main: mainId, path: relative(resolve(dir), file), fontUrls }))
     changed++
   }
   if (changed === 0) throw new Error(`No shell slots found in ${dir}.`)

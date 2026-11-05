@@ -2,6 +2,10 @@
 // Every hub page: head metadata, the shared shell (top bar + footer) and the design tokens.
 import '@zyankov/design-system/tokens.css'
 import '@zyankov/design-system/fonts.css'
+import literataCyrillic from '@zyankov/design-system/fonts/literata-cyrillic-opsz-normal.woff2?url'
+import literataLatin from '@zyankov/design-system/fonts/literata-latin-opsz-normal.woff2?url'
+import onestCyrillic from '@zyankov/design-system/fonts/onest-cyrillic-wght-normal.woff2?url'
+import onestLatin from '@zyankov/design-system/fonts/onest-latin-wght-normal.woff2?url'
 import '@zyankov/design-system/shell.css'
 import { renderBar, renderFooter, renderHead } from '@zyankov/design-system/render'
 import { absolute, ogKey, type Lang } from '../lib/site'
@@ -51,6 +55,8 @@ const structured = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map
     <link rel="canonical" href={url} />
     {Object.entries(alternateUrls).map(([key, href]) => <link rel="alternate" hreflang={key} href={href} />)}
     {alternateUrls.en && alternateUrls.bg && <link rel="alternate" hreflang="x-default" href={alternateUrls.en} />}
+    {/* Preload the fonts for the page's language, so headings do not reflow when the fonts arrive. */}
+    {(lang === 'bg' ? [literataCyrillic, onestCyrillic] : [literataLatin, onestLatin]).map((href) => <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />)}
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

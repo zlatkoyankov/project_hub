@@ -13,8 +13,8 @@
 
   /* Text */
   --text: #20352d;
-  --text-muted: #566a5d; /* secondary text, WCAG AA on --bg */
-  --text-subtle: #718077; /* placeholders, decorative labels; not for body text */
+  --text-muted: #4e6155; /* secondary text, WCAG AA on --bg and --coral-soft */
+  --text-subtle: #64736a; /* placeholders and small labels; WCAG AA on --bg */
 
   /* Brand */
   --accent: #3f6b54;
@@ -22,7 +22,8 @@
   --accent-soft: #dce8de;
   --on-accent: #ffffff;
   --coral: #e76d53;
-  --coral-strong: #b55b45; /* coral for text and icons on light backgrounds */
+  --coral-strong: #9c4936; /* coral for text and icons on light backgrounds (AA on --bg and --coral-soft) */
+  --coral-heading: #cf5a3f; /* coral for large headline text (AA large on --bg) */
   --coral-soft: #f3dcd1;
   --yellow: #efd276;
   --yellow-ink: #655322; /* text on --yellow */
@@ -123,6 +124,7 @@
   --on-accent: #12211a;
   --coral: #ef896e;
   --coral-strong: #f5a88d;
+  --coral-heading: #ef896e;
   --coral-soft: #4d3b34;
   --yellow: #d7b85f;
   --yellow-ink: #352e18;

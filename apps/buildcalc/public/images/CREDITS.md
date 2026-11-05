@@ -18,3 +18,4 @@ Photos are from Unsplash and are free to use under the Unsplash License (https:/
 | screed.webp | https://unsplash.com/photos/1531834685032-c34bf0d84c77 (same photo as concrete.webp) |
 | insulation.webp | Generated illustration (zyankov.eu), same as drywall.webp |
 | masonry.webp | https://unsplash.com/photos/1531834685032-c34bf0d84c77 (same photo as concrete.webp) |
+| hero-small.webp | 800 px version of hero.webp for phones |

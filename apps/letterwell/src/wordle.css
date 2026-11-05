@@ -27,7 +27,7 @@
 }
 
 .wordle-intro h1 em {
-  color: var(--coral);
+  color: var(--coral-heading);
   font-weight: 500;
 }
 
