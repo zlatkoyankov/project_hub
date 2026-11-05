@@ -1,12 +1,15 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { ArrowRight, Lightbulb, RotateCcw, Sparkles, X } from 'lucide-react'
 import { track } from '@zyankov/design-system/analytics'
 import './App.css'
 import './wordle.css'
 import { pagePath, wordleMetadata, type Language } from './seo'
+import { loadMeaningIndex } from './meanings'
+import { MeaningButton, MeaningPopover, type OpenMeaning } from './WordMeaning'
 import { filterWords, loadWordleList, OPENERS, suggestGuess, WORD_LENGTH, type GuessRow, type Tile, type WordleList } from './wordle'
 
 const MAX_ROWS = 6
+const MEANINGS_KEY = 'letterwell-meanings'
 const SHOWN_WORDS = 120
 
 const copy = {
@@ -48,11 +51,13 @@ const copy = {
     showRare: 'Show less common words',
     hideRare: 'Hide less common words',
     more: (count: number) => `and ${count} more`,
+    meanings: 'Show meanings',
     error: 'Something went wrong',
     guideTitle: 'How the Wordle helper works',
     guide: [
       'Every guess you add is compared with every five-letter word in the list. A word stays only if it would have given you exactly the same green, yellow and grey tiles, so repeated letters are handled the way the game handles them.',
       'The suggested next guess is the everyday word that splits the remaining answers into the smallest groups, so whatever colours you get back, fewer words are left. The list is not the official Wordle list, so treat it as help, not a guarantee.',
+      'Tap ⓘ next to a word to see a short meaning from Wiktionary. A grey ⓘ means we have no meaning for that word; you can hide the buttons with “Show meanings”.',
     ],
     readMore: 'Read more',
     articles: [
@@ -98,11 +103,13 @@ const copy = {
     showRare: 'Покажи по-редките думи',
     hideRare: 'Скрий по-редките думи',
     more: (count: number) => `и още ${count}`,
+    meanings: 'Показвай значения',
     error: 'Нещо се обърка',
     guideTitle: 'Как работи помощникът за Wordle',
     guide: [
       'Всеки опит се сравнява с всяка дума от пет букви в списъка. Остават само думите, които биха дали точно същите зелени, жълти и сиви плочки, така че повтарящите се букви се отчитат като в играта.',
       'Предложеният следващ опит е често срещаната дума, която разделя останалите възможности на най-малки групи. Каквито и цветове да получиш, ще останат по-малко думи. Списъкът не е официалният на играта, затова го приемай като помощ, а не като гаранция.',
+      'Натисни ⓘ до дума, за да видиш линкове към нейното значение в Речника на българския език на БАН и в Уикиречника. Бутоните се скриват с „Показвай значения“.',
     ],
     readMore: 'Прочети още',
     articles: [{ href: '/bg/blog/kak-da-reshavash-wordle-na-balgarski/', label: 'Как да решаваш Wordle на български' }],
@@ -119,6 +126,12 @@ function WordleSolver({ language }: { language: Language }) {
   const [draft, setDraft] = useState('')
   const [note, setNote] = useState('')
   const [showRare, setShowRare] = useState(false)
+  const [meaningIndex, setMeaningIndex] = useState<Set<string>>(() => new Set())
+  const [openMeaning, setOpenMeaning] = useState<OpenMeaning | null>(null)
+  const [showMeanings, setShowMeanings] = useState(() => {
+    try { return localStorage.getItem(MEANINGS_KEY) !== '0' } catch { return true }
+  })
+  const closeMeaning = useCallback(() => setOpenMeaning(null), [])
   const locale = language === 'bg' ? 'bg-BG' : 'en'
 
   useEffect(() => {
@@ -133,6 +146,30 @@ function WordleSolver({ language }: { language: Language }) {
       .catch((loadError: unknown) => { if (active) setError(loadError instanceof Error ? loadError.message : text.error) })
     return () => { active = false }
   }, [language, text.error])
+
+  // Which words have a meaning: a small bitmap, loaded once the word list is in.
+  useEffect(() => {
+    if (!list || language === 'bg') return
+    let active = true
+    loadMeaningIndex(language, list).then((index) => { if (active) setMeaningIndex(index) })
+    return () => { active = false }
+  }, [language, list])
+
+  function toggleMeanings(on: boolean) {
+    setShowMeanings(on)
+    if (!on) setOpenMeaning(null)
+    try { localStorage.setItem(MEANINGS_KEY, on ? '1' : '0') } catch { /* storage unavailable */ }
+  }
+
+  // Bulgarian words always open links to Bulgarian dictionaries; English ones need a built-in meaning.
+  const hasMeaning = (word: string) => language === 'bg' || meaningIndex.has(word)
+
+  const wordChip = (word: string) => (
+    <span className="answer-word" key={word}>
+      {word}
+      {showMeanings && <MeaningButton word={word} language={language} available={hasMeaning(word)} onOpen={setOpenMeaning} />}
+    </span>
+  )
 
   const common = useMemo(() => (list ? filterWords(list.common, rows) : []), [list, rows])
   const rare = useMemo(() => (list ? filterWords(list.rare, rows) : []), [list, rows])
@@ -267,6 +304,7 @@ function WordleSolver({ language }: { language: Language }) {
             <div className="control-heading">
               <span className="step-number">02</span>
               <div><h2>{text.possible}{list && rows.length > 0 ? <span className="result-count"> {total.toLocaleString(locale)}</span> : null}</h2><p>{text.possibleHint}</p></div>
+              <label className="meaning-toggle"><input type="checkbox" checked={showMeanings} onChange={(event) => toggleMeanings(event.target.checked)} /> {text.meanings}</label>
             </div>
 
             {error ? (
@@ -286,6 +324,7 @@ function WordleSolver({ language }: { language: Language }) {
                       <span className="result-meta">{text.suggestion}</span>
                       <strong className="suggestion-word" aria-label={suggestion.word.toLocaleUpperCase(locale)}>
                         {[...suggestion.word.toLocaleUpperCase(locale)].map((letter, index) => <span className="mini-tile" aria-hidden="true" key={index}>{letter}</span>)}
+                        {showMeanings && <MeaningButton word={suggestion.word} language={language} available={hasMeaning(suggestion.word)} onOpen={setOpenMeaning} />}
                       </strong>
                       <p>{total === 1 ? text.suggestionFound : `${text.suggestionText(formatLeft(suggestion.expectedLeft))}${suggestion.possibleAnswer ? ` ${text.suggestionAnswer}` : ''}`}</p>
                     </div>
@@ -296,7 +335,7 @@ function WordleSolver({ language }: { language: Language }) {
                   <>
                     <div className="result-meta"><span>{text.likely}</span><span>{common.length.toLocaleString(locale)}</span></div>
                     <div className="answer-list">
-                      {common.slice(0, SHOWN_WORDS).map((word) => <span className="answer-word" key={word}>{word}</span>)}
+                      {common.slice(0, SHOWN_WORDS).map(wordChip)}
                       {common.length > SHOWN_WORDS && <span className="answer-more">{text.more(common.length - SHOWN_WORDS)}</span>}
                     </div>
                   </>
@@ -308,7 +347,7 @@ function WordleSolver({ language }: { language: Language }) {
                     </button>
                     {showRare && (
                       <div className="answer-list rare">
-                        {rare.slice(0, SHOWN_WORDS).map((word) => <span className="answer-word" key={word}>{word}</span>)}
+                        {rare.slice(0, SHOWN_WORDS).map(wordChip)}
                         {rare.length > SHOWN_WORDS && <span className="answer-more">{text.more(rare.length - SHOWN_WORDS)}</span>}
                       </div>
                     )}
@@ -318,6 +357,8 @@ function WordleSolver({ language }: { language: Language }) {
             )}
           </section>
         </section>
+
+        {openMeaning && <MeaningPopover key={openMeaning.word} open={openMeaning} language={language} onClose={closeMeaning} />}
 
         <section className="tool-guide" aria-labelledby="tool-guide-title">
           <h2 id="tool-guide-title">{text.guideTitle}</h2>
