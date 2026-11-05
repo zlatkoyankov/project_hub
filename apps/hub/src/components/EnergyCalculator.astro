@@ -2,6 +2,7 @@
 // Appliance energy cost calculator, English (/energy-cost-calculator/) and Bulgarian (/bg/razhod-na-tok/).
 import BaseLayout from '../layouts/BaseLayout.astro'
 import RelatedTools from './RelatedTools.astro'
+import '@zyankov/design-system/boards.css'
 import { getPosts, ogKey, postPath, readingMinutes, type Lang } from '../lib/site'
 import '../styles/tool.css'
 
@@ -144,7 +145,7 @@ const jsonLd = {
 ---
 
 <BaseLayout title={t.title} description={t.description} path={path} lang={lang} alternates={alternates} project="buildcalc" jsonLd={jsonLd}>
-  <div class="tool-page">
+  <div class="tool-page zy-board" data-board={'blueprint'}>
     <main id="top">
       <nav class="tool-crumbs" aria-label="Breadcrumb"><a href={bg ? '/bg/' : '/'}>{t.crumbs[0]}</a><span aria-hidden="true">/</span><a href={bg ? '/bg/#home-diy' : '/#home-diy'}>{t.crumbs[1]}</a></nav>
       <header class="tool-head">

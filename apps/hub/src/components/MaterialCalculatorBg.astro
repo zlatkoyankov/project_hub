@@ -3,6 +3,8 @@
 // The English versions live in BuildCalc; the maths is in src/lib/materials.ts.
 import BaseLayout from '../layouts/BaseLayout.astro'
 import RelatedTools from './RelatedTools.astro'
+import '@zyankov/design-system/boards.css'
+import { boardFor } from '@zyankov/design-system/boards'
 import { getPosts, ogKey, postPath } from '../lib/site'
 import { DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
@@ -269,7 +271,7 @@ const jsonLd = {
 ---
 
 <BaseLayout title={page.title} description={page.description} path={page.path} lang="bg" alternates={{ en: page.en, bg: page.path }} project="buildcalc" jsonLd={jsonLd}>
-  <div class="tool-page">
+  <div class="tool-page zy-board" data-board={boardFor(kind)}>
     <main id="top">
       <nav class="tool-crumbs" aria-label="Breadcrumb"><a href="/bg/">Начало</a><span aria-hidden="true">/</span><a href="/bg/#home-diy">Дом и ремонт</a></nav>
       <header class="tool-head">

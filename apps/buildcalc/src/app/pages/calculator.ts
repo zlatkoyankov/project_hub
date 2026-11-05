@@ -1,3 +1,4 @@
+import { boardFor } from '@zyankov/design-system/boards';
 import { afterNextRender, Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -192,11 +193,13 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
   standalone: true,
   imports: [FormsModule, RouterLink],
   templateUrl: './calculator.html',
+  host: { '[class.zy-board]': '!embed()', '[attr.data-board]': 'board()', style: 'display: block' },
 })
 export class CalculatorPage {
   private readonly route = inject(ActivatedRoute);
   protected readonly calculator = signal<CalculatorInfo | null>(null);
   protected readonly values = signal<Values>({});
+  protected readonly board = computed(() => boardFor(this.calculator()?.kind));
   protected readonly result = signal<Estimate | null>(null);
   protected readonly error = signal('');
   protected readonly copied = signal(false);
