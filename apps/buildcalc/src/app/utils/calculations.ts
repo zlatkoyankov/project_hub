@@ -652,3 +652,58 @@ export function calculateWallpaper(values: WallpaperInput): Estimate {
     summary: `Plan for ${rolls} roll${rolls === 1 ? '' : 's'} of wallpaper (${strips} strips), plus a spare roll from the same batch.`,
   };
 }
+
+/** Dry mix per m² for each mm of thickness, from manufacturers' data sheets. */
+export const SCREED_MATERIALS = [
+  { label: 'Cement screed', kgPerM2PerMm: 2.0, source: 'ready-mixed cement screed, about 20 kg/m² per cm (Sika, Baumit)' },
+  { label: 'Self-leveling compound', kgPerM2PerMm: 1.8, source: 'about 1.8 kg/m² per mm (Knauf NE 425)' },
+  { label: 'Gypsum plaster', kgPerM2PerMm: 0.9, source: 'about 0.8 to 1.0 kg/m² per mm (Knauf MP 75)' },
+];
+
+export interface ScreedInput {
+  surfaceArea: number;
+  thickness: number;
+  material: number;
+  /** kg/m² per mm; overrides the material when above 0. */
+  consumption?: number;
+  waste: number;
+  bagSize: number;
+  price?: number;
+  openingsUnit?: number;
+  depthUnit?: number;
+  weightUnit?: number;
+}
+
+/** Bags of screed, floor leveler or plaster: area × thickness × the mix's consumption per mm. */
+export function calculateScreed(values: ScreedInput): Estimate {
+  positive(values.surfaceArea, 'Area');
+  positive(values.thickness, 'Thickness');
+  positive(values.bagSize, 'Bag size');
+  const price = values.price ?? 0;
+  nonNegative(price, 'Price');
+  const material = SCREED_MATERIALS[values.material];
+  if (!material) throw new Error('Choose a material.');
+  const custom = (values.consumption ?? 0) > 0;
+  const rate = custom ? values.consumption! : material.kgPerM2PerMm;
+
+  const squareFeet = values.surfaceArea * unitFactor(SQUARE_FEET_PER_UNIT, values.openingsUnit);
+  const squareMeters = squareFeet / 10.7639104;
+  const thicknessMm = values.thickness * unitFactor(FEET_PER_UNIT, values.depthUnit ?? 1) * 304.8;
+  const volumeCubicFeet = squareFeet * (thicknessMm / 304.8);
+  const kg = squareMeters * thicknessMm * rate * wasteMultiplier(values.waste);
+  const KG_PER_LB = 0.45359237;
+  const bagKg = values.weightUnit === 1 ? values.bagSize : values.bagSize * KG_PER_LB;
+  const bags = Math.ceil(kg / bagKg - 1e-6);
+
+  return {
+    rows: [
+      { label: 'Area', value: squareFeet, unit: 'sq ft', precision: 2 },
+      { label: 'Thickness', value: thicknessMm, unit: 'mm', precision: 1 },
+      { label: 'Volume', value: volumeCubicFeet, unit: 'cu ft', precision: 2 },
+      { label: 'Dry mix', value: kg / KG_PER_LB, unit: 'lb', precision: 1, detail: custom ? `${rate} kg/m² per mm, as entered, with waste` : `${material.label}: ${material.source}, with waste` },
+      { label: 'Bags', value: bags, unit: bags === 1 ? 'bag' : 'bags', precision: 0, detail: `${values.bagSize} ${values.weightUnit === 1 ? 'kg' : 'lb'} bags` },
+      ...(price > 0 ? [{ label: 'Estimated cost', value: bags * price, unit: '$', precision: 2 }] : []),
+    ],
+    summary: `Plan for ${bags} bag${bags === 1 ? '' : 's'} of ${(custom ? 'dry mix' : material.label.toLowerCase())}, including waste.`,
+  };
+}

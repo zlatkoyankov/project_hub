@@ -7,7 +7,7 @@ import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.servi
 import { GUIDES } from '../data/guides';
 import { CalculatorInfo, CALCULATORS, CalculatorKind } from '../data/calculators';
 import {
-  AdhesiveInput, calculateAdhesive, calculateWallpaper, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
+  AdhesiveInput, calculateAdhesive, calculateScreed, calculateWallpaper, ScreedInput, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, SCREED_MATERIALS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
 } from '../utils/calculations';
 
 interface Field {
@@ -129,6 +129,14 @@ const FORM_FIELDS: Record<Exclude<CalculatorKind, 'area'>, Field[]> = {
     { key: 'adhesiveBag', label: 'Adhesive bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Thinset is usually sold in 50 lb or 25 kg bags.' },
     { key: 'groutBag', label: 'Grout bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Often 25 lb, or 2 to 5 kg.' },
   ],
+  screed: [
+    { key: 'surfaceArea', label: 'Area', unit: 'sq ft', unitKey: 'openingsUnit', unitOptions: AREA_UNITS, min: 0.01, step: 0.5 },
+    { key: 'thickness', label: 'Average thickness', unit: 'in', unitKey: 'depthUnit', unitOptions: INCH_UNITS, min: 0.01, step: 0.01, hint: 'Measure the gaps under a straightedge in a few places and average them.' },
+    { key: 'consumption', label: 'Custom consumption', unit: 'kg/m² per mm', min: 0, step: 0.05, optional: true, hint: 'From the bag or data sheet. Leave empty to use the material’s typical value.' },
+    { key: 'waste', label: 'Waste allowance', unit: '%', min: 0, step: 1 },
+    { key: 'bagSize', label: 'Bag size', unit: 'lb', unitKey: 'weightUnit', unitOptions: WEIGHT_UNITS, min: 0.1, step: 1, hint: 'Often 50 lb, or 25 to 30 kg.' },
+    { key: 'price', label: 'Price per bag', unit: '$', min: 0, step: 0.01, optional: true },
+  ],
   wallpaper: [
     { key: 'length', label: 'Room length', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
     { key: 'width', label: 'Room width', unit: 'ft', unitKey: 'dimensionUnit', unitOptions: DISTANCE_UNITS, min: 0.01, step: 0.1 },
@@ -155,6 +163,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
   concrete: { length: 10, width: 10, depth: 4, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   area: {},
   adhesive: { surfaceArea: 120, tileLength: 12, tileWidth: 12, tileThickness: 0.375, grout: 0.125, notch: -1, waste: 10, adhesiveBag: 50, groutBag: 25, openingsUnit: 0, tileUnit: 1, groutUnit: 1, weightUnit: 0 },
+  screed: { surfaceArea: 150, thickness: 1.5, material: 0, consumption: 0, waste: 10, bagSize: 50, price: 0, openingsUnit: 0, depthUnit: 1, weightUnit: 0 },
   wallpaper: { length: 12, width: 10, height: 8, openings: 21, rollWidth: 20.5, rollLength: 33, patternRepeat: 0, price: 0, dimensionUnit: 0, openingsUnit: 0, rollUnit: 1 },
   mulch: { length: 10, width: 10, depth: 3, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 },
   flooring: { length: 14, width: 12, boxArea: 20, waste: 10, price: 0, dimensionUnit: 0, boxAreaUnit: 0, baseboards: 1, doorways: 1, doorWidth: 3, pieceLength: 8, insideCorners: 4, outsideCorners: 0, transitions: 1, trimPrice: 0 },
@@ -295,13 +304,13 @@ export class CalculatorPage {
       const valueKeys = ({
         dimensionUnit: ['length', 'width', 'height', 'doorWidth', 'pieceLength', 'studLength', 'rollLength'],
         boxAreaUnit: ['boxArea'],
-        depthUnit: ['depth'],
+        depthUnit: ['depth', 'thickness'],
         spacingUnit: ['studSpacing'],
         rollUnit: ['rollWidth', 'patternRepeat'],
         tileUnit: ['tileLength', 'tileWidth', 'tileThickness'],
         groutUnit: ['grout'],
         openingsUnit: ['openings', 'surfaceArea'],
-        weightUnit: ['adhesiveBag', 'groutBag'],
+        weightUnit: ['adhesiveBag', 'groutBag', 'bagSize'],
         densityUnit: ['density'],
         coverageUnit: ['coverage'],
       }[unitKey] ?? []).filter((candidate) => current[candidate] !== undefined);
@@ -335,6 +344,7 @@ export class CalculatorPage {
         case 'drywall': estimate = calculateDrywall(this.toDrywallInput(this.values())); break;
         case 'adhesive': estimate = calculateAdhesive(this.toAdhesiveInput(this.values())); break;
         case 'wallpaper': estimate = calculateWallpaper(this.toWallpaperInput(this.values())); break;
+        case 'screed': estimate = calculateScreed(this.toScreedInput(this.values())); break;
       }
       this.result.set(estimate);
       this.copied.set(false);
@@ -380,6 +390,9 @@ export class CalculatorPage {
       defaults['densityUnit'] = 1;
       defaults['coverageUnit'] = 1;
       if (kind === 'gravel') defaults['density'] = 1600;
+      if (kind === 'screed') {
+        Object.assign(defaults, { surfaceArea: 15, thickness: 40, depthUnit: 4, bagSize: 25, weightUnit: 1 });
+      }
       if (kind === 'wallpaper') {
         Object.assign(defaults, { length: 4, width: 3.5, height: 2.6, openings: 1.8, rollWidth: 53, rollLength: 10.05, rollUnit: 3 });
       }
@@ -442,6 +455,7 @@ export class CalculatorPage {
       area: 'This totals rectangular measurements. Break irregular shapes into separate rectangles without overlap.',
       mulch: 'Depth needs vary with material and intended use. Follow local horticultural guidance and keep mulch clear of plant stems and trunks.',
       flooring: 'This covers a rectangular room. Add closets and alcoves as extra area, check the coverage on your box and follow the manufacturer’s expansion-gap and underlayment instructions.',
+      screed: 'Consumption is a typical value from manufacturers’ data sheets; your product may differ, so enter its own figure when you have it. Uneven floors and walls vary in thickness, so measure in several places. This is not a structural or moisture assessment.',
       wallpaper: 'This assumes a rectangular room with walls of one height and whole strips from floor to ceiling. Sloped ceilings, alcoves and half-drop patterns can need more; keep a spare roll from the same batch.',
       adhesive: 'Consumption depends on the adhesive, the evenness of the surface and how well the tiles are bedded. The trowel figures are typical values for cement adhesive (Ceresit CM 11); check your product’s data sheet. Grout assumes joints filled to the full tile thickness.',
       drywall: 'This counts sheets for flat walls and ceilings. Studs and tracks are for the four walls only (not ceiling framing or extra studs around openings), and screws, tape and compound use rules of thumb, so check your manufacturer’s figures. Corner bead and building-code requirements such as fire-rated or moisture-resistant board are not included.',
@@ -506,7 +520,7 @@ export class CalculatorPage {
     if (values['sheetSize'] !== undefined) values['sheetSize'] = to === 'us' ? 0 : 4;
     // Read every unit before converting: several values share one unit (tile length, width and thickness).
     const sourceUnits = { ...this.values() };
-    for (const key of ['depth', 'tileLength', 'tileWidth', 'tileThickness', 'grout', 'studSpacing', 'rollWidth', 'patternRepeat']) {
+    for (const key of ['depth', 'thickness', 'tileLength', 'tileWidth', 'tileThickness', 'grout', 'studSpacing', 'rollWidth', 'patternRepeat']) {
       const unitKey = key === 'tileLength' || key === 'tileWidth' || key === 'tileThickness' ? 'tileUnit' : key === 'grout' ? 'groutUnit' : key === 'studSpacing' ? 'spacingUnit' : key === 'rollWidth' || key === 'patternRepeat' ? 'rollUnit' : 'depthUnit';
       if (values[key] !== undefined) {
         const currentUnit = sourceUnits[unitKey] ?? sourceSmall;
@@ -523,6 +537,7 @@ export class CalculatorPage {
     if (values['adhesiveBag'] !== undefined) {
       Object.assign(values, to === 'us' ? { adhesiveBag: 50, groutBag: 25, weightUnit: 0 } : { adhesiveBag: 25, groutBag: 5, weightUnit: 1 });
     }
+    if (values['bagSize'] !== undefined) Object.assign(values, to === 'us' ? { bagSize: 50, weightUnit: 0 } : { bagSize: 25, weightUnit: 1 });
     if (values['density'] !== undefined) {
       const current = this.number(values, 'density');
       values['density'] = tidy(from === 'us' ? current * 0.593276 : current / 0.593276);
@@ -728,6 +743,23 @@ export class CalculatorPage {
 
   /** Trowel notch choices: -1 lets the calculator pick one from the tile size. */
   protected readonly notchOptions = [{ value: -1, label: 'Suggest from tile size' }, ...TROWEL_NOTCHES.map((notch, index) => ({ value: index, label: notch.label }))];
+
+  protected readonly materialOptions = SCREED_MATERIALS.map((material, index) => ({ value: index, label: `${material.label} (about ${material.kgPerM2PerMm} kg/m² per mm)` }));
+
+  private toScreedInput(values: Values): ScreedInput {
+    return {
+      surfaceArea: this.number(values, 'surfaceArea'),
+      thickness: this.number(values, 'thickness'),
+      material: this.number(values, 'material'),
+      consumption: this.number(values, 'consumption'),
+      waste: this.number(values, 'waste'),
+      bagSize: this.number(values, 'bagSize'),
+      price: this.number(values, 'price'),
+      openingsUnit: this.number(values, 'openingsUnit'),
+      depthUnit: this.number(values, 'depthUnit'),
+      weightUnit: this.number(values, 'weightUnit'),
+    };
+  }
 
   private toWallpaperInput(values: Values): WallpaperInput {
     return {

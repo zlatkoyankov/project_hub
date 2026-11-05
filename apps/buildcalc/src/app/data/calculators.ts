@@ -1,4 +1,4 @@
-export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive' | 'wallpaper';
+export type CalculatorKind = 'gravel' | 'paint' | 'tile' | 'concrete' | 'area' | 'mulch' | 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed';
 
 export interface CalculatorInfo {
   slug: string;
@@ -138,12 +138,24 @@ export const CALCULATORS: CalculatorInfo[] = [
       { question: 'What is a pattern repeat?', answer: 'The distance after which the pattern repeats down the roll. Each strip has to start at the same point in the pattern, so strips are cut in whole repeats and a large repeat wastes more paper.' },
     ],
   },
+  {
+    slug: 'screed-plaster-calculator', bg: '/bg/zamazka-i-mazilka/', title: 'Screed & Plaster Calculator', shortTitle: 'Screed & plaster', category: 'Concrete & Masonry',
+    description: 'Estimate bags of floor screed, self-leveling compound or gypsum plaster from the area, thickness and the mix’s consumption.',
+    intro: 'Enter the area and the average thickness, and choose the material. The estimate multiplies by the consumption per millimeter from manufacturers’ data sheets, adds waste and rounds up to whole bags.',
+    kind: 'screed', icon: 'concrete', keywords: ['floor leveler', 'self-leveling', 'underlayment', 'screed', 'plaster', 'bags', 'thickness'],
+    example: 'A 15 m² floor with 40 mm of cement screed takes about 1,200 kg of dry mix before waste.',
+    formula: 'Dry mix = area (m²) × thickness (mm) × consumption (kg per m² per mm). Add waste, divide by the bag weight and round up.',
+    faqs: [
+      { question: 'How do I measure the thickness of an uneven floor?', answer: 'Use the average. Check the level at several points, for example with a long straightedge or a laser, and average the gaps. The calculator works with one average thickness.' },
+      { question: 'Where do I find the consumption?', answer: 'On the bag or the product data sheet, usually as kg per m² per mm (or per cm). Enter it as a custom consumption to match your product exactly.' },
+    ],
+  },
 ];
 
 export const FEATURED_SLUGS = [
   'gravel-calculator', 'paint-calculator', 'tile-calculator',
   'concrete-calculator', 'square-footage-calculator', 'mulch-calculator',
-  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'wallpaper-calculator',
+  'laminate-flooring-calculator', 'drywall-calculator', 'tile-adhesive-grout-calculator', 'wallpaper-calculator', 'screed-plaster-calculator',
 ];
 
 export const CATEGORIES = [...new Set(CALCULATORS.map((calculator) => calculator.category))];

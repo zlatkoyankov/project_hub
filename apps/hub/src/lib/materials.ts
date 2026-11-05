@@ -259,3 +259,41 @@ export function estimateWallpaper(input: WallpaperInput): WallpaperEstimate | nu
   const rolls = wholeUp(strips / stripsPerRoll)
   return { perimeter, drop, strips, stripsPerRoll, rolls, cost: rolls * Math.max(0, input.price) }
 }
+
+/** Dry mix per m² for each mm of thickness, from manufacturers' data sheets. */
+export const SCREED_MATERIALS = [
+  { label: 'Циментова замазка', kgPerM2PerMm: 2.0, bag: 25 },
+  { label: 'Саморазливна замазка', kgPerM2PerMm: 1.8, bag: 25 },
+  { label: 'Гипсова мазилка', kgPerM2PerMm: 0.9, bag: 30 },
+]
+
+export interface ScreedInput {
+  area: number
+  /** mm */
+  thickness: number
+  material: number
+  /** kg/m² per mm; overrides the material when above 0 */
+  consumption: number
+  waste: number
+  bag: number
+  price: number
+}
+
+export interface ScreedEstimate {
+  volume: number
+  rate: number
+  custom: boolean
+  kg: number
+  bags: number
+  cost: number
+}
+
+export function estimateScreed(input: ScreedInput): ScreedEstimate | null {
+  const material = SCREED_MATERIALS[input.material]
+  if (!material || !(input.area > 0 && input.thickness > 0 && input.bag > 0)) return null
+  const custom = input.consumption > 0
+  const rate = custom ? input.consumption : material.kgPerM2PerMm
+  const kg = withWaste(input.area * input.thickness * rate, input.waste)
+  const bags = wholeUp(kg / input.bag)
+  return { volume: (input.area * input.thickness) / 1000, rate, custom, kg, bags, cost: bags * Math.max(0, input.price) }
+}
