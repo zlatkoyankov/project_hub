@@ -6,6 +6,7 @@ import './App.css'
 import { getDictionary } from './dictionary'
 import { languagePath, pagePath, seoMetadata, socialDescriptions, type Language } from './seo'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { EmptyArt, HeroDecor } from './Playful'
 
 const examples: Record<Language, string[]> = {
   en: ['triangle', 'listen', 'stream'],
@@ -372,6 +373,7 @@ function App({ language }: { language: Language }) {
 
       <main id="top">
         <section className="intro" aria-labelledby="page-title">
+          <HeroDecor variant="finder" language={language} />
           <div className="intro-copy">
             <h1 id="page-title">{text.titleFirst}<br />{text.titleSecond}<em>{text.titleEmphasis}</em></h1>
             <p className="intro-description">{text.description}</p>
@@ -650,7 +652,7 @@ function App({ language }: { language: Language }) {
             ) : isSearching ? (
               <div className="empty-state"><span className="loading-orbit"><span /></span><h3>{language === 'bg' ? 'Разбъркваме буквите…' : 'Mixing things up…'}</h3><p>{text.loading}</p></div>
             ) : !hasSearched ? (
-              <div className="empty-state"><span className="empty-spark"><Sparkles size={22} /></span><h3>{text.ready}</h3><p>{text.enterFew}</p></div>
+              <div className="empty-state"><EmptyArt variant="finder" language={language} /><h3>{text.ready}</h3><p>{text.enterFew}</p></div>
             ) : words.length === 0 ? (
               <div className="empty-state"><span className="empty-spark">↗</span><h3>{text.noMatches}</h3><p>{text.tryDifferent}</p></div>
             ) : (

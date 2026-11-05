@@ -5,6 +5,7 @@ import './App.css'
 import './wordle.css'
 import { pagePath, wordleMetadata, type Language } from './seo'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { EmptyArt, HeroDecor } from './Playful'
 import { loadMeaningIndex } from './meanings'
 import { MeaningButton, MeaningPopover, type OpenMeaning } from './WordMeaning'
 import { filterWords, loadWordleList, OPENERS, suggestGuess, WORD_LENGTH, type GuessRow, type Tile, type WordleList } from './wordle'
@@ -238,6 +239,7 @@ function WordleSolver({ language }: { language: Language }) {
 
       <main id="top">
         <section className="wordle-intro" aria-labelledby="page-title">
+          <HeroDecor variant="wordle" language={language} />
           <p className="eyebrow"><span className="eyebrow-line" />{text.eyebrow}<span className="eyebrow-line" /></p>
           <h1 id="page-title">{text.titleFirst} <em>{text.titleEmphasis}</em></h1>
           <p className="intro-description">{text.description}</p>
@@ -313,7 +315,7 @@ function WordleSolver({ language }: { language: Language }) {
             ) : !list ? (
               <div className="empty-state"><span className="loading-orbit"><span /></span><h3>{text.loading}</h3></div>
             ) : rows.length === 0 ? (
-              <div className="empty-state"><span className="empty-spark"><Sparkles size={22} /></span><h3>{text.startTitle}</h3><p>{text.startText}</p></div>
+              <div className="empty-state"><EmptyArt variant="wordle" language={language} /><h3>{text.startTitle}</h3><p>{text.startText}</p></div>
             ) : total === 0 ? (
               <div className="empty-state"><span className="empty-spark">?</span><h3>{text.noneTitle}</h3><p>{text.noneText}</p></div>
             ) : (
