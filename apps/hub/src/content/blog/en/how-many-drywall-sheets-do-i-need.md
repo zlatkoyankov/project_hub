@@ -5,6 +5,7 @@ date: 2026-11-04
 lang: en
 tags: [home, drywall]
 tool: drywall-calculator
+translation: bg/kolko-gipsokarton-mi-tryabva
 ---
 
 Drywall (plasterboard or gypsum board) comes in large sheets, and the number you need depends on surprisingly few measurements: the size of the room, the height of the walls and the sheet size you plan to hang. Here is how to work it out and what to watch for.

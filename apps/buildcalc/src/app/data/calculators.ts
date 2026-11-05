@@ -13,6 +13,8 @@ export interface CalculatorInfo {
   example: string;
   formula: string;
   faqs: { question: string; answer: string }[];
+  /** Path of the Bulgarian version on the hub, for hreflang links. */
+  bg?: string;
 }
 
 export const CALCULATORS: CalculatorInfo[] = [
@@ -89,7 +91,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'laminate-flooring-calculator', title: 'Laminate Flooring Calculator', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
+    slug: 'laminate-flooring-calculator', bg: '/bg/kalkulator-laminat/', title: 'Laminate Flooring Calculator', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
     description: 'Work out how many boxes of laminate or vinyl plank flooring you need for a room, with waste and cost.',
     intro: 'Enter the room size and the coverage printed on the box. The estimate adds a waste allowance for cuts and rounds up to whole boxes.',
     kind: 'flooring', icon: 'flooring', keywords: ['laminate', 'vinyl plank', 'LVP', 'floor', 'boxes', 'hardwood', 'underlayment'],
@@ -101,7 +103,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'drywall-calculator', title: 'Drywall Calculator', shortTitle: 'Drywall', category: 'General Construction',
+    slug: 'drywall-calculator', bg: '/bg/kalkulator-gipsokarton/', title: 'Drywall Calculator', shortTitle: 'Drywall', category: 'General Construction',
     description: 'Estimate drywall sheets for the walls and ceiling of a room, minus doors and windows, with waste and cost.',
     intro: 'Enter the room size and wall height, subtract doors and windows, and choose a sheet size. The estimate adds waste and rounds up to whole sheets.',
     kind: 'drywall', icon: 'drywall', keywords: ['plasterboard', 'gypsum board', 'sheetrock', 'walls', 'ceiling', 'sheets'],

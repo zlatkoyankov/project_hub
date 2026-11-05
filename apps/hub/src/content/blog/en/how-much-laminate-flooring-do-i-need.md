@@ -5,6 +5,7 @@ date: 2026-11-04
 lang: en
 tags: [home, flooring]
 tool: laminate-flooring-calculator
+translation: bg/kolko-laminat-mi-tryabva
 ---
 
 Laminate and vinyl plank flooring are sold by the box, and every box covers a fixed area. Order too little and you may not find the same batch again; order too much and you are stuck with boxes you cannot always return. Getting the number right takes three steps: the floor area, a waste allowance and the coverage printed on the box.

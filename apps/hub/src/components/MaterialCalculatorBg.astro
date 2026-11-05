@@ -1,0 +1,301 @@
+---
+// Bulgarian, metric laminate and drywall calculators (/bg/kalkulator-laminat/, /bg/kalkulator-gipsokarton/).
+// The English versions live in BuildCalc; the maths is in src/lib/materials.ts.
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getPosts, ogKey, postPath } from '../lib/site'
+import { DRYWALL_SHEETS } from '../lib/materials'
+import { TOOL_ICONS } from '../lib/tools'
+import '../styles/tool.css'
+
+interface Props {
+  kind: 'flooring' | 'drywall'
+}
+
+interface Field {
+  name: string
+  label: string
+  unit: string
+  value: number
+  step?: string
+  hint?: string
+  optional?: boolean
+}
+
+const { kind } = Astro.props
+const flooring = kind === 'flooring'
+
+const page = flooring
+  ? {
+      path: '/bg/kalkulator-laminat/',
+      en: '/calculators/laminate-flooring-calculator/',
+      tool: 'laminate-flooring-calculator',
+      title: 'Калкулатор за ламинат: колко кутии и первази ми трябват | Zyankov.eu',
+      description: 'Изчисли колко кутии ламинат или винил трябват за стаята, с фира, первази, ъгли, капачки и прагове. В метри и евро, безплатно.',
+      h1: 'Колко ламинат ми трябва?',
+      intro: 'Въведи размерите на стаята и колко м² има в една кутия. Калкулаторът добавя фира, закръгля до цели кутии и брои первазите, ъглите и праговете.',
+      big: 'кутии',
+      bigOne: 'кутия',
+      formula: 'кутии = дължина × ширина × (1 + фира) ÷ м² в кутия',
+      how: 'Площта на пода се умножава по фирата и се дели на квадратурата в една кутия, след което се закръгля нагоре. Первазите са периметърът на стаята без вратите, плюс същата фира, разделен на дължината на една лайсна.',
+      tips: [
+        'Купи всички кутии наведнъж и провери, че са от една партида. Следващата може да е в малко различен тон.',
+        'При редене по диагонал или в сложна стая с ниши сложи 12–15% фира вместо 10%.',
+        'Остави ламината 48 часа в стаята, преди да го редиш, за да свикне с температурата и влажността.',
+      ],
+      jsonName: 'Калкулатор за ламинат',
+    }
+  : {
+      path: '/bg/kalkulator-gipsokarton/',
+      en: '/calculators/drywall-calculator/',
+      tool: 'drywall-calculator',
+      title: 'Калкулатор за гипсокартон: колко плоскости ми трябват | Zyankov.eu',
+      description: 'Изчисли колко плоскости гипсокартон трябват за стените и тавана на стаята, без вратите и прозорците, с фира. В метри и евро.',
+      h1: 'Колко гипсокартон ми трябва?',
+      intro: 'Въведи размерите на стаята, височината на стените и отворите. Избери размер на плоскостта и виж колко цели плоскости трябват за стените и тавана.',
+      big: 'плоскости',
+      bigOne: 'плоскост',
+      formula: 'плоскости = (стени + таван − отвори) × (1 + фира) ÷ площ на плоскост',
+      how: 'Площта на стените е периметърът на стаята по височината. Добавя се таванът, ако го покриваш, изваждат се вратите и прозорците и се добавя фира. Резултатът се дели на площта на една плоскост и се закръгля нагоре.',
+      tips: [
+        'В баня и кухня ползвай влагоустойчив (зелен) гипсокартон, а около камина или котел – огнеустойчив.',
+        'За таван често се ползват по-тънки и леки плоскости, затова ги поръчай отделно.',
+        'По-дългите плоскости дават по-малко фуги, но 3 м плоскост трудно минава по тясно стълбище.',
+      ],
+      jsonName: 'Калкулатор за гипсокартон',
+    }
+
+const mainFields: Field[] = flooring
+  ? [
+      { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
+      { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
+      { name: 'boxArea', label: 'Квадратура в една кутия', unit: 'м²', value: 2.22, step: '0.001', hint: 'Пише на кутията, често между 1,7 и 2,5 м².' },
+      { name: 'waste', label: 'Фира', unit: '%', value: 10, step: '1', hint: '10% за права наредба, 12–15% за диагонал или сложна стая.' },
+      { name: 'price', label: 'Цена за м²', unit: '€', value: 0, step: '0.01', optional: true },
+    ]
+  : [
+      { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
+      { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
+      { name: 'height', label: 'Височина на стените', unit: 'м', value: 2.6, step: '0.01' },
+      { name: 'openings', label: 'Врати и прозорци', unit: 'м²', value: 1.8, step: '0.01', hint: 'Една интериорна врата е около 0,9 × 2,0 м = 1,8 м².' },
+      { name: 'waste', label: 'Фира', unit: '%', value: 10, step: '1', hint: 'Около 10%. Повече при много ъгли, скосен таван или много отвори.' },
+      { name: 'price', label: 'Цена за плоскост', unit: '€', value: 0, step: '0.01', optional: true },
+    ]
+
+const trimFields: Field[] = [
+  { name: 'doorways', label: 'Брой врати', unit: 'бр.', value: 1, step: '1' },
+  { name: 'doorWidth', label: 'Ширина на вратата', unit: 'м', value: 0.9, step: '0.01' },
+  { name: 'pieceLength', label: 'Дължина на една лайсна', unit: 'м', value: 2.5, step: '0.01', hint: 'Обикновено 2,4 или 2,5 м.' },
+  { name: 'insideCorners', label: 'Вътрешни ъгли', unit: 'бр.', value: 4, step: '1', hint: 'Правоъгълна стая има 4. Добави по 2 за всяка ниша.' },
+  { name: 'outsideCorners', label: 'Външни ъгли', unit: 'бр.', value: 0, step: '1', hint: 'Където стената излиза навън: колона, комин, край на преграда.' },
+  { name: 'transitions', label: 'Прагове (преходни лайсни)', unit: 'бр.', value: 1, step: '1', hint: 'Където ламинатът среща друг под, обикновено на вратата.' },
+  { name: 'trimPrice', label: 'Цена за лайсна', unit: '€', value: 0, step: '0.01', optional: true },
+]
+
+const posts = (await getPosts('bg')).filter((post) => post.data.tool === page.tool)
+const jsonLd = {
+  '@type': 'WebApplication',
+  name: page.jsonName,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+}
+---
+
+<BaseLayout title={page.title} description={page.description} path={page.path} lang="bg" alternates={{ en: page.en, bg: page.path }} project="buildcalc" jsonLd={jsonLd}>
+  <div class="tool-page">
+    <main id="top">
+      <nav class="tool-crumbs" aria-label="Breadcrumb"><a href="/bg/">Начало</a><span aria-hidden="true">/</span><a href="/bg/#home-diy">Дом и ремонт</a></nav>
+      <header class="tool-head">
+        <span class="tool-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" set:html={TOOL_ICONS[kind]} /></span>
+        <div>
+          <p class="tool-kicker">ДОМ И РЕМОНТ · КАЛКУЛАТОР</p>
+          <h1>{page.h1}</h1>
+          <p class="tool-intro">{page.intro}</p>
+        </div>
+      </header>
+
+      <section class="tool-layout" aria-label={page.h1} data-material={kind}>
+        <form class="tool-form" novalidate>
+          <h2>Твоята стая</h2>
+          <p class="tool-form__hint">Всички мерки са в метри. Цените не са задължителни.</p>
+          <div class="tool-fields">
+            {mainFields.map((field) => (
+              <div class="tool-field">
+                <label for={`mat-${field.name}`}>{field.label}{field.optional && <span class="tool-optional"> (по желание)</span>}</label>
+                <div class="tool-input"><input id={`mat-${field.name}`} name={field.name} type="number" inputmode="decimal" min="0" step={field.step ?? 'any'} value={field.optional && field.value === 0 ? '' : field.value} placeholder={field.optional ? '0' : undefined} aria-describedby={field.hint ? `mat-${field.name}-hint` : undefined} /><span>{field.unit}</span></div>
+                {field.hint && <small id={`mat-${field.name}-hint`}>{field.hint}</small>}
+              </div>
+            ))}
+            {!flooring && (
+              <>
+                <div class="tool-field">
+                  <label for="mat-sheet">Размер на плоскостта</label>
+                  <select id="mat-sheet" name="sheet">
+                    {DRYWALL_SHEETS.map((sheet, index) => <option value={index} selected={index === 1}>{sheet.label} ({sheet.area.toLocaleString('bg-BG')} м²)</option>)}
+                  </select>
+                </div>
+                <div class="tool-field">
+                  <label for="mat-ceiling">Таван</label>
+                  <select id="mat-ceiling" name="ceiling">
+                    <option value="0">Само стените</option>
+                    <option value="1">Стените и тавана</option>
+                  </select>
+                </div>
+              </>
+            )}
+          </div>
+
+          {flooring && (
+            <fieldset class="tool-fieldset">
+              <legend>Первази и лайсни</legend>
+              <div class="tool-field">
+                <label for="mat-trim">Первази</label>
+                <select id="mat-trim" name="trim">
+                  <option value="1">Включи первази и лайсни</option>
+                  <option value="0">Само ламинат</option>
+                </select>
+              </div>
+              <div class="tool-fields" data-trim-fields>
+                {trimFields.map((field) => (
+                  <div class="tool-field">
+                    <label for={`mat-${field.name}`}>{field.label}{field.optional && <span class="tool-optional"> (по желание)</span>}</label>
+                    <div class="tool-input"><input id={`mat-${field.name}`} name={field.name} type="number" inputmode="decimal" min="0" step={field.step ?? 'any'} value={field.optional && field.value === 0 ? '' : field.value} placeholder={field.optional ? '0' : undefined} aria-describedby={field.hint ? `mat-${field.name}-hint` : undefined} /><span>{field.unit}</span></div>
+                    {field.hint && <small id={`mat-${field.name}-hint`}>{field.hint}</small>}
+                  </div>
+                ))}
+              </div>
+            </fieldset>
+          )}
+        </form>
+
+        <aside class="tool-result" aria-live="polite">
+          <p class="tool-result__kicker">ТРЯБВАТ ТИ</p>
+          <p class="tool-result__big"><span data-out="big">–</span> <small data-out="bigUnit" data-one={page.bigOne} data-many={page.big}>{page.big}</small></p>
+          <dl data-out="rows"></dl>
+          <p class="tool-result__caveat">Ориентировъчна сметка. Провери количествата с магазина, преди да купиш.</p>
+        </aside>
+      </section>
+
+      <section class="tool-notes">
+        <article>
+          <h2>Как се изчислява</h2>
+          <p>{page.how}</p>
+          <p class="tool-formula">{page.formula}</p>
+        </article>
+        <article>
+          <h2>Съвети</h2>
+          <ul>{page.tips.map((tip) => <li>{tip}</li>)}</ul>
+          <p class="tool-switch"><a href={page.en} hreflang="en">In English, in feet or metres →</a></p>
+        </article>
+      </section>
+
+      {posts.length > 0 && (
+        <section class="tool-articles" aria-labelledby="tool-articles-title">
+          <h2 id="tool-articles-title">Статии по темата</h2>
+          <ul>
+            {posts.map((post) => (
+              <li>
+                <a href={postPath(post)}>
+                  <img src={`/og/${ogKey(postPath(post))}.png`} alt="" width="1200" height="630" loading="lazy" decoding="async" />
+                  <span><strong>{post.data.title}</strong></span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </main>
+  </div>
+</BaseLayout>
+
+<script>
+  import { track } from '@zyankov/design-system/analytics'
+  import { estimateDrywall, estimateFlooring } from '../lib/materials'
+
+  const root = document.querySelector<HTMLElement>('[data-material]')
+  if (root) {
+    const kind = root.dataset.material
+    const form = root.querySelector('form')!
+    const field = (name: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${name}"]`)
+    const num = (name: string) => Math.max(0, Number(field(name)?.value.replace(',', '.')) || 0)
+    const out = (name: string) => root.querySelector<HTMLElement>(`[data-out="${name}"]`)!
+    const fmt = (value: number, digits = 2) => value.toLocaleString('bg-BG', { minimumFractionDigits: 0, maximumFractionDigits: digits })
+    const money = (value: number) => `${value.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
+    const unitOut = out('bigUnit')
+    let tracked = false
+
+    const render = (big: number | null, rows: [string, string, string?][]) => {
+      out('big').textContent = big === null ? '–' : String(big)
+      unitOut.textContent = big === 1 ? unitOut.dataset.one ?? '' : unitOut.dataset.many ?? ''
+      out('rows').replaceChildren(...rows.map(([label, value, detail]) => {
+        const row = document.createElement('div')
+        const dt = document.createElement('dt')
+        dt.textContent = label
+        if (detail) dt.append(Object.assign(document.createElement('small'), { textContent: detail }))
+        row.append(dt, Object.assign(document.createElement('dd'), { textContent: value }))
+        return row
+      }))
+    }
+
+    const update = () => {
+      if (kind === 'flooring') {
+        const trimOn = field('trim')?.value === '1'
+        const trimBox = root.querySelector<HTMLElement>('[data-trim-fields]')
+        if (trimBox) trimBox.hidden = !trimOn
+        const result = estimateFlooring({
+          length: num('length'), width: num('width'), waste: num('waste'), boxArea: num('boxArea'), price: num('price'),
+          trim: trimOn, doorways: num('doorways'), doorWidth: num('doorWidth'), pieceLength: num('pieceLength'),
+          insideCorners: num('insideCorners'), outsideCorners: num('outsideCorners'), transitions: num('transitions'), trimPrice: num('trimPrice'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Площ на пода', `${fmt(result.area)} м²`],
+          ['С фирата', `${fmt(result.areaWithWaste)} м²`],
+          ['Ламинат в кутиите', `${fmt(result.boughtArea)} м²`, 'закръглено до цели кутии'],
+        ]
+        if (result.trim) {
+          const trim = result.trim
+          rows.push(
+            ['Периметър на стаята', `${fmt(trim.perimeter)} м`],
+            ['Дължина на первазите', `${fmt(trim.baseboardLength)} м`, 'без вратите, с фирата'],
+            ['Первази (лайсни)', `${trim.pieces} бр.`],
+            ['Вътрешни ъгли', `${trim.insideCorners} бр.`],
+          )
+          if (trim.outsideCorners > 0) rows.push(['Външни ъгли', `${trim.outsideCorners} бр.`])
+          if (trim.endCaps > 0) rows.push(['Крайни капачки', `${trim.endCaps} бр.`, 'където первазът спира до касата'])
+          if (trim.connectors > 0) rows.push(['Съединители', `${trim.connectors} бр.`, 'приблизително, по дългите стени'])
+        }
+        if (result.transitions > 0) rows.push(['Прагове', `${result.transitions} бр.`])
+        if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
+        render(result.boxes, rows)
+      } else {
+        const result = estimateDrywall({
+          length: num('length'), width: num('width'), height: num('height'), openings: num('openings'),
+          ceiling: field('ceiling')?.value === '1', sheet: Number(field('sheet')?.value ?? 1), waste: num('waste'), price: num('price'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [['Площ на стените', `${fmt(result.walls)} м²`]]
+        if (result.ceiling > 0) rows.push(['Площ на тавана', `${fmt(result.ceiling)} м²`])
+        rows.push(
+          ['Врати и прозорци', `−${fmt(result.openings)} м²`],
+          ['За покриване', `${fmt(result.net)} м²`],
+          ['С фирата', `${fmt(result.withWaste)} м²`],
+          ['Плоскост', result.sheetLabel, 'закръглено до цели плоскости'],
+        )
+        if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
+        render(result.sheets, rows)
+      }
+    }
+
+    form.addEventListener('input', () => {
+      update()
+      if (!tracked) {
+        tracked = true
+        // Only that the tool was used, never the values.
+        track('material_calculate', { kind: kind ?? '', language: 'bg' })
+      }
+    })
+    form.addEventListener('submit', (event) => event.preventDefault())
+    update()
+  }
+</script>

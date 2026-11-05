@@ -22,6 +22,7 @@
           <p class="eyebrow">{{ calc.category }}</p>
           <h1>{{ calc.title }}</h1>
           <p>{{ calc.intro }}</p>
+          @if (calc.bg) {<p class="lang-switch"><a [href]="calc.bg" hreflang="bg" lang="bg">На български, в метри →</a></p>}
         </div>
       </section>
     </div>

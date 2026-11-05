@@ -18,6 +18,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'letterwell-bg': { kicker: 'Letterwell · търсачка за думи', title: 'Думи от букви на български', footer: 'zyankov.eu/letterwell/bg' },
     'energy-cost-calculator': { kicker: 'Home & energy · calculator', title: 'What does it cost to run?', footer: 'zyankov.eu/energy-cost-calculator' },
     'bg-razhod-na-tok': { kicker: 'Дом и енергия · калкулатор', title: 'Колко ток харчи уредът?', footer: 'zyankov.eu/bg/razhod-na-tok' },
+    'bg-kalkulator-laminat': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко ламинат и первази ми трябват?', footer: 'zyankov.eu/bg/kalkulator-laminat' },
+    'bg-kalkulator-gipsokarton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко плоскости гипсокартон ми трябват?', footer: 'zyankov.eu/bg/kalkulator-gipsokarton' },
     'letterwell-wordle-solver': { kicker: 'Letterwell · Wordle helper', title: 'Stuck on Wordle? Narrow down the answer', footer: 'zyankov.eu/letterwell/wordle-solver' },
     'letterwell-bg-wordle': { kicker: 'Letterwell · помощник за Wordle', title: 'Wordle на български: стесни възможните думи', footer: 'zyankov.eu/letterwell/bg/wordle' },
   }
