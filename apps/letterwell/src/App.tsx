@@ -353,6 +353,7 @@ function App({ language }: { language: Language }) {
           <div className="topbar-note"><span className="status-dot" />{text.tagline}</div>
           <a className="topbar-link" href={pagePath('wordle', language)}>{language === 'bg' ? 'Помощник за Wordle' : 'Wordle helper'}</a>
           <a className="topbar-link" href={pagePath('crossword', language)}>{language === 'bg' ? 'Кръстословици' : 'Crosswords'}</a>
+          <a className="topbar-link" href={pagePath('bee', language)}>Spelling Bee</a>
           <label className="language-picker">
             <span className="sr-only">{text.languageLabel}</span>
             <select
@@ -406,6 +407,9 @@ function App({ language }: { language: Language }) {
           </a>
           <a className="wordle-promo" href={pagePath('crossword', language)}>
             {language === 'bg' ? 'Решаваш кръстословица? Търси думи по шаблон' : 'Doing a crossword? Find words by pattern'} <span aria-hidden="true">→</span>
+          </a>
+          <a className="wordle-promo" href={pagePath('bee', language)}>
+            {language === 'bg' ? 'Играеш Spelling Bee? Подсказки и панграми' : 'Playing Spelling Bee? Hints and pangrams'} <span aria-hidden="true">→</span>
           </a>
         </section>
 

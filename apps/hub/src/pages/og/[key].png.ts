@@ -26,6 +26,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-kalkulator-tapeti': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко ролки тапет ми трябват?', footer: 'zyankov.eu/bg/kalkulator-tapeti' },
     'bg-lepilo-i-fuga': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко лепило и фуга ми трябват?', footer: 'zyankov.eu/bg/lepilo-i-fuga' },
     'letterwell-wordle-solver': { kicker: 'Letterwell · Wordle helper', title: 'Stuck on Wordle? Narrow down the answer', footer: 'zyankov.eu/letterwell/wordle-solver' },
+    'letterwell-spelling-bee-solver': { kicker: 'Letterwell · Spelling Bee helper', title: 'Seven letters. How many words?', footer: 'zyankov.eu/letterwell/spelling-bee-solver' },
+    'letterwell-bg-spelling-bee': { kicker: 'Letterwell · Spelling Bee', title: 'Седем букви. Колко думи?', footer: 'zyankov.eu/letterwell/bg/spelling-bee' },
     'letterwell-crossword-solver': { kicker: 'Letterwell · crossword helper', title: 'Missing a few letters? Fill the gaps', footer: 'zyankov.eu/letterwell/crossword-solver' },
     'letterwell-bg-krastoslovitsi': { kicker: 'Letterwell · кръстословици', title: 'Думи по шаблон за кръстословици', footer: 'zyankov.eu/letterwell/bg/krastoslovitsi' },
     'letterwell-bg-wordle': { kicker: 'Letterwell · помощник за Wordle', title: 'Wordle на български: стесни възможните думи', footer: 'zyankov.eu/letterwell/bg/wordle' },
