@@ -10,11 +10,12 @@ AddCharset UTF-8 .txt .xml .json .svg
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # Optional: force HTTPS and the bare domain. Turn on only if the hosting panel does not
-  # already do it, and test right after uploading (behind some proxies this can loop).
-  # RewriteCond %{HTTPS} off [OR]
-  # RewriteCond %{HTTP_HOST} ^www\. [NC]
-  # RewriteRule ^ https://zyankov.eu%{REQUEST_URI} [R=301,L]
+  # Force HTTPS and the bare domain: http:// and www. answer with one 301 to https://zyankov.eu.
+  # The hosting panel does not do this (checked November 2026). If it ever loops behind a proxy,
+  # comment these three lines out again.
+  RewriteCond %{HTTPS} off [OR]
+  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteRule ^ https://zyankov.eu%{REQUEST_URI} [R=301,L]
 
   # BuildCalc's old information pages moved to site-wide pages (November 2026).
   RewriteRule ^calculators/privacy/?$ /privacy/ [R=301,L]
