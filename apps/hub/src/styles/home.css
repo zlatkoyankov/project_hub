@@ -101,7 +101,7 @@ input {
 }
 
 .home-hero h1 em {
-  color: var(--coral);
+  color: var(--coral-heading);
   font-style: normal;
 }
 

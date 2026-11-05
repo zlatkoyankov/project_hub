@@ -39,7 +39,11 @@
             "server": "src/main.server.ts",
             "outputMode": "server",
             "security": {
-              "allowedHosts": ["zyankov.eu", "www.zyankov.eu", "localhost"]
+              "allowedHosts": [
+                "zyankov.eu",
+                "www.zyankov.eu",
+                "localhost"
+              ]
             },
             "ssr": {
               "entry": "src/server.ts"
@@ -59,7 +63,15 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              }
             },
             "development": {
               "optimization": false,

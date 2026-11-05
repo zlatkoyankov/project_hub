@@ -3,7 +3,7 @@ import { Component, computed, input } from '@angular/core';
 @Component({
   selector: 'app-material-art',
   standalone: true,
-  template: `<img [src]="src()" alt="" width="900" height="600" [attr.loading]="eager() ? 'eager' : 'lazy'" decoding="async" />`,
+  template: `<img alt="" width="900" height="600" decoding="async" [attr.loading]="eager() ? 'eager' : 'lazy'" [attr.fetchpriority]="eager() ? null : 'low'" [attr.sizes]="sizes()" [attr.srcset]="srcset()" [src]="src()" />`,
   styles: `
     :host {
       display: block;
@@ -25,5 +25,7 @@ import { Component, computed, input } from '@angular/core';
 export class MaterialArtComponent {
   readonly kind = input.required<string>();
   readonly eager = input(false);
+  readonly sizes = input('(max-width: 640px) 92vw, 380px');
   protected readonly src = computed(() => `images/${this.kind()}.webp`);
+  protected readonly srcset = computed(() => `images/${this.kind()}-480.webp 480w, images/${this.kind()}.webp 900w`);
 }

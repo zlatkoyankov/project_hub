@@ -7,6 +7,7 @@
   "exports": {
     "./tokens.css": "./tokens.css",
     "./fonts.css": "./fonts.css",
+    "./fonts/*": "./fonts/*",
     "./shell.css": "./shell.css",
     "./base.css": "./base.css",
     "./projects.json": "./projects.json",

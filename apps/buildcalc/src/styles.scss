@@ -267,6 +267,16 @@ p {
     var(--hero-img) center / cover no-repeat;
 }
 
+/* Phones get an 800 px hero image instead of the 1600 px one. */
+@media (max-width: 640px) {
+  .hero-bg {
+    background:
+      linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 88%, transparent) 45%, color-mix(in srgb, var(--bg) 55%, transparent) 100%),
+      linear-gradient(0deg, var(--bg) 0%, transparent 35%),
+      var(--hero-img-small, var(--hero-img)) center / cover no-repeat;
+  }
+}
+
 .accent-text {
   color: var(--accent);
 }
