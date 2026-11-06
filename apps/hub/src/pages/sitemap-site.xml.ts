@@ -17,6 +17,8 @@ export async function GET() {
     { path: '/bg/razhod-na-tok/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },
     { path: '/bg/kalkulator-laminat/', alternates: pair('/calculators/laminate-flooring-calculator/', '/bg/kalkulator-laminat/') },
     { path: '/bg/kalkulator-gipsokarton/', alternates: pair('/calculators/drywall-calculator/', '/bg/kalkulator-gipsokarton/') },
+    { path: '/bg/kalkulator-boya/', alternates: pair('/calculators/paint-calculator/', '/bg/kalkulator-boya/') },
+    { path: '/bg/kalkulator-plochki/', alternates: pair('/calculators/tile-calculator/', '/bg/kalkulator-plochki/') },
     { path: '/bg/kalkulator-beton/', alternates: pair('/calculators/concrete-calculator/', '/bg/kalkulator-beton/') },
     { path: '/bg/kalkulator-chakal/', alternates: pair('/calculators/gravel-calculator/', '/bg/kalkulator-chakal/') },
     { path: '/bg/kalkulator-tuhli/', alternates: pair('/calculators/brick-block-calculator/', '/bg/kalkulator-tuhli/') },

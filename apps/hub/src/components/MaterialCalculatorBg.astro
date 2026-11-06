@@ -10,7 +10,7 @@ import { BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, MASO
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile'
 
 interface Props {
   kind: Kind
@@ -60,6 +60,82 @@ interface Config {
 }
 
 const CONFIGS: Partial<Record<Kind, Config>> = {
+  paint: {
+    page: {
+      path: '/bg/kalkulator-boya/',
+      en: '/calculators/paint-calculator/',
+      tool: 'paint-calculator',
+      title: 'Калкулатор за боя: колко литра и кофи за стаята | Zyankov.eu',
+      description: 'Изчисли колко литра латекс или боя трябват за стените и тавана, по слоеве и разход, и кои кофи да купиш с най-малко остатък. С грунда.',
+      h1: 'Колко боя ми трябва?',
+      intro: 'Въведи размерите на стаята, вратите и прозорците и избери дали боядисваш и тавана. Калкулаторът смята литрите по слоевете и разхода и подбира кофите с най-малко остатък.',
+      big: 'литра боя',
+      bigOne: 'литър боя',
+      formula: 'литри = (стени + таван − отвори) × слоеве ÷ разход (м² на литър)',
+      how: 'Площта на стените е периметърът на стаята по височината. Добавя се таванът, ако го боядисваш, и се изваждат вратите и прозорците. Площта се умножава по броя слоеве и се дели на разхода от опаковката, обикновено 8–12 м² на литър за един слой. Кофите се подбират от 15, 10, 5 и 2,5 л така, че да остане най-малко боя.',
+      tips: [
+        'Върху нова шпакловка или силно попиваща стена първо грунд. Тогава и боята стига за повече.',
+        'При смяна на тъмен с много светъл цвят често трябва и трети слой.',
+        'Разходът на кутията е за гладка стена. Върху грапава мазилка сложи по-малко м² на литър.',
+      ],
+      jsonName: 'Калкулатор за боя',
+    },
+    formTitle: 'Твоята стая',
+    formHint: 'Мерките са в метри, отворите в м². Цената не е задължителна.',
+    selects: [
+      { name: 'ceiling', label: 'Таван', options: [{ value: 0, label: 'Само стените' }, { value: 1, label: 'Стените и тавана' }] },
+      { name: 'primer', label: 'Грунд', options: [{ value: 1, label: 'С грунд (един слой)' }, { value: 0, label: 'Без грунд' }] },
+    ],
+    fields: [
+      { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
+      { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
+      { name: 'height', label: 'Височина на стените', unit: 'м', value: 2.6, step: '0.01' },
+      { name: 'openings', label: 'Врати и прозорци', unit: 'м²', value: 3.6, step: '0.01', hint: 'Врата около 1,8 м², прозорец 1,5–2 м².' },
+      { name: 'coats', label: 'Слоеве боя', unit: 'бр.', value: 2, step: '1' },
+      { name: 'coverage', label: 'Разход на боята', unit: 'м²/л', value: 10, step: '0.5', hint: 'За един слой. Пише на кофата, обикновено 8–12 м²/л.' },
+      { name: 'primerCoverage', label: 'Разход на грунда', unit: 'м²/л', value: 10, step: '0.5', show: 'primer:1', hint: 'Разреден грунд стига за повече. Виж етикета.' },
+      { name: 'price', label: 'Цена на литър боя', unit: '€', value: 0, step: '0.01', optional: true },
+    ],
+  },
+  tile: {
+    page: {
+      path: '/bg/kalkulator-plochki/',
+      en: '/calculators/tile-calculator/',
+      tool: 'tile-calculator',
+      title: 'Калкулатор за плочки: брой, кашони и м² за под и баня | Zyankov.eu',
+      description: 'Изчисли колко плочки, теракот или фаянс трябват за пода или стените на банята, с фугата и фирата, и колко цели кашона да купиш.',
+      h1: 'Колко плочки ми трябват?',
+      intro: 'Избери под или стени, въведи размерите и плочката. Калкулаторът добавя фира, брои плочките с фугата и закръгля до цели кашони, както се продават в магазина.',
+      big: 'кашона',
+      bigOne: 'кашон',
+      formula: 'кашони = площ × (1 + фира) ÷ м² в кашон',
+      how: 'Площта на пода е дължината по ширината, а на стените дължината на облицованите стени по височината на облицовката, без вратата и прозореца. Добавя се фира и се дели на квадратурата в един кашон, закръглено нагоре. Броят плочки се смята с лицето на плочката плюс фугата.',
+      tips: [
+        'Фира 10% при права наредба, 15% при диагонал, рибена кост или много изрязване около тръби и ниши.',
+        'Купи всички кашони от една партида (пише на кашона). Следващата може да е в малко различен тон.',
+        'Остави 1–2 плочки за резерв след ремонта. При счупена плочка след години същата трудно се намира.',
+      ],
+      jsonName: 'Калкулатор за плочки',
+    },
+    formTitle: 'Площ и плочки',
+    formHint: 'Помещението е в метри, плочката в сантиметри, фугата в милиметри. Цената не е задължителна.',
+    selects: [
+      { name: 'surface', label: 'Какво облицоваш', options: [{ value: 'floor', label: 'Под' }, { value: 'walls', label: 'Стени (баня, кухня)' }] },
+    ],
+    fields: [
+      { name: 'length', label: 'Дължина на пода', unit: 'м', value: 3, step: '0.01', show: 'surface:floor' },
+      { name: 'width', label: 'Ширина на пода', unit: 'м', value: 2, step: '0.01', show: 'surface:floor' },
+      { name: 'wallLength', label: 'Дължина на стените', unit: 'м', value: 7, step: '0.01', show: 'surface:walls', hint: 'Събери дължините на облицованите стени. За цяла баня – периметърът.' },
+      { name: 'wallHeight', label: 'Височина на облицовката', unit: 'м', value: 2.4, step: '0.01', show: 'surface:walls' },
+      { name: 'openings', label: 'Врата и прозорец', unit: 'м²', value: 1.6, step: '0.01', show: 'surface:walls' },
+      { name: 'tileLength', label: 'Дължина на плочката', unit: 'см', value: 60, step: '0.1' },
+      { name: 'tileWidth', label: 'Ширина на плочката', unit: 'см', value: 60, step: '0.1' },
+      { name: 'joint', label: 'Фуга', unit: 'мм', value: 3, step: '0.5' },
+      { name: 'waste', label: 'Фира', unit: '%', value: 10, step: '1', hint: '10% права наредба, 15% диагонал.' },
+      { name: 'boxArea', label: 'Квадратура в един кашон', unit: 'м²', value: 1.44, step: '0.01', hint: 'Пише на кашона. 60 × 60 см често е по 1,44 м².' },
+      { name: 'price', label: 'Цена за м²', unit: '€', value: 0, step: '0.01', optional: true },
+    ],
+  },
   concrete: {
     page: {
       path: '/bg/kalkulator-beton/',
@@ -533,7 +609,7 @@ const jsonLd = {
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { estimateAdhesive, estimateBulk, estimateConcrete, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
+  import { estimateAdhesive, estimateBulk, estimateConcrete, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -568,7 +644,38 @@ const jsonLd = {
         const [name, value] = (element.dataset.show ?? '').split(':')
         element.hidden = field(name)?.value !== value
       })
-      if (kind === 'concrete') {
+      if (kind === 'paint') {
+        const result = estimatePaint({
+          length: num('length'), width: num('width'), height: num('height'), openings: num('openings'), ceiling: field('ceiling')?.value === '1',
+          coats: num('coats'), coverage: num('coverage'), primer: field('primer')?.value === '1', primerCoverage: num('primerCoverage'), price: num('price'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [['Площ на стените', `${fmt(result.walls)} м²`]]
+        if (result.ceiling > 0) rows.push(['Площ на тавана', `${fmt(result.ceiling)} м²`])
+        rows.push(
+          ['За боядисване', `${fmt(result.net)} м²`, 'без вратите и прозорците'],
+          ['Кофи', result.cans.map((can) => `${can.count} × ${fmt(can.size, 1)} л`).join(' + '), `общо ${fmt(result.bought, 1)} л, с най-малко остатък`],
+        )
+        if (result.primerLitres > 0) rows.push(['Грунд', `${fmt(result.primerLitres, 1)} л`, 'един слой'])
+        if (result.cost > 0) rows.push(['Приблизителна цена на боята', money(result.cost)])
+        render(Math.round(result.litres * 10) / 10, rows)
+      } else if (kind === 'tile') {
+        const result = estimateTiles({
+          surface: field('surface')?.value === 'walls' ? 'walls' : 'floor', length: num('length'), width: num('width'),
+          wallLength: num('wallLength'), wallHeight: num('wallHeight'), openings: num('openings'), tileLength: num('tileLength'),
+          tileWidth: num('tileWidth'), joint: num('joint'), waste: num('waste'), boxArea: num('boxArea'), price: num('price'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Площ', `${fmt(result.area)} м²`],
+          ['С фирата', `${fmt(result.withWaste)} м²`],
+          ['Плочки', `${result.tiles} бр.`, 'с фугата и фирата'],
+          ['Купуваш', `${fmt(result.bought)} м²`, 'закръглено до цели кашони'],
+        ]
+        if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
+        if (result.boxes > 0) render(result.boxes, rows)
+        else render(null, rows)
+      } else if (kind === 'concrete') {
         const result = estimateConcrete({
           shape: field('shape')?.value === 'round' ? 'round' : 'slab', length: num('length'), width: num('width'), thickness: num('thickness'),
           diameter: num('diameter'), depth: num('depth'), count: num('count'), waste: num('waste'), mix: Number(field('mix')?.value ?? 1),
