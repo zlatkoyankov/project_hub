@@ -1,4 +1,5 @@
-/* "Дума на деня" game. Colours come from the shared Wordle tokens. */
+/* Letterwell's daily word game. Its own look: letter tiles like the rest of Letterwell, and
+   coral / blue / grey (--daily-* tokens) rather than another game's colours. */
 
 .daily-intro {
   padding-bottom: 8px;
@@ -60,7 +61,7 @@
 
 .daily-board {
   display: grid;
-  gap: 6px;
+  gap: 9px;
 }
 
 .daily-row {
@@ -81,8 +82,8 @@
   box-sizing: border-box;
   color: var(--text);
   background: var(--surface);
-  border: 2px solid var(--border-strong);
-  border-radius: 6px;
+  border: 2px dashed var(--border-strong);
+  border-radius: 10px;
   font-family: var(--font-body);
   font-size: 28px;
   font-weight: 800;
@@ -90,19 +91,20 @@
 }
 
 .daily-tile.is-filled {
-  border-color: var(--text-subtle);
+  color: var(--tile-ink);
+  background: var(--tile-white);
+  border: 0;
+  box-shadow: 0 4px 0 var(--border-strong);
 }
 
 .daily-tile.is-correct,
-.daily-tile.is-present,
-.daily-tile.is-absent {
+.daily-tile.is-present {
   color: var(--game-ink);
-  border-color: transparent;
 }
 
-.daily-tile.is-correct { background: var(--game-correct); }
-.daily-tile.is-present { background: var(--game-present); }
-.daily-tile.is-absent { background: var(--game-absent); }
+.daily-tile.is-correct { background: var(--daily-hit); box-shadow: 0 4px 0 var(--daily-hit-edge); }
+.daily-tile.is-present { background: var(--daily-near); box-shadow: 0 4px 0 var(--daily-near-edge); border-radius: 50%; }
+.daily-tile.is-absent { color: var(--daily-miss-ink); background: var(--daily-miss); box-shadow: 0 4px 0 var(--daily-miss-edge); }
 
 .daily-tile.is-revealing {
   animation: daily-flip 0.5s ease both;
@@ -195,15 +197,14 @@
 }
 
 .daily-key.is-correct,
-.daily-key.is-present,
-.daily-key.is-absent {
+.daily-key.is-present {
   color: var(--game-ink);
   border-color: transparent;
 }
 
-.daily-key.is-correct { background: var(--game-correct); }
-.daily-key.is-present { background: var(--game-present); }
-.daily-key.is-absent { background: var(--game-absent); }
+.daily-key.is-correct { background: var(--daily-hit); }
+.daily-key.is-present { background: var(--daily-near); }
+.daily-key.is-absent { color: var(--daily-miss-ink); background: var(--daily-miss); border-color: transparent; opacity: 0.7; }
 
 .daily-notes {
   display: grid;
@@ -378,14 +379,15 @@
   min-width: 26px;
   box-sizing: border-box;
   padding: 3px 8px;
-  color: var(--game-ink);
-  background: var(--game-absent);
+  color: var(--daily-miss-ink);
+  background: var(--daily-miss);
   border-radius: 4px;
   text-align: right;
 }
 
 .daily-bar.is-today {
-  background: var(--game-correct);
+  color: var(--game-ink);
+  background: var(--daily-hit);
 }
 
 .daily-next {

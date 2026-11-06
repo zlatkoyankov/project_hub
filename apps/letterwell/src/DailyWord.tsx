@@ -208,7 +208,7 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
 
       <main id="top">
         <section className="wordle-intro daily-intro" aria-labelledby="page-title">
-          <HeroDecor variant="wordle" language="bg" />
+          <HeroDecor variant="daily" language="bg" />
           <p className="eyebrow"><span className="eyebrow-line" />{puzzle ? `№ ${puzzle}` : 'Игра на думи'}<span className="eyebrow-line" /></p>
           <h1 id="page-title">Дума на <em>деня</em></h1>
           <p className="intro-description">Познай думата от 5 букви с 6 опита. Една и съща дума за всички, нова всеки ден в полунощ.</p>
@@ -270,9 +270,9 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
             <h2>Как се играе</h2>
             <p>Напиши дума от 5 букви и натисни „Готово“. Плочките сменят цвета си:</p>
             <ul className="daily-legend">
-              <li><span className="daily-tile is-filled is-correct">К</span> буквата е в думата и на точното място;</li>
-              <li><span className="daily-tile is-filled is-present">Н</span> буквата е в думата, но на друго място;</li>
-              <li><span className="daily-tile is-filled is-absent">П</span> буквата я няма в думата.</li>
+              <li><span className="daily-tile is-filled is-correct">К</span> коралова плочка: буквата е в думата и на точното място;</li>
+              <li><span className="daily-tile is-filled is-present">Н</span> синьо кръгче: буквата е в думата, но на друго място;</li>
+              <li><span className="daily-tile is-filled is-absent">П</span> сива плочка: буквата я няма в думата.</li>
             </ul>
             <p>Имаш 6 опита. Думата е една и съща за всички и се сменя всеки ден в полунощ българско време. Може да пишеш и от клавиатурата, на кирилица или с латинските клавиши по фонетичната подредба.</p>
           </article>
@@ -301,7 +301,7 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
                 <div className="daily-example" aria-hidden="true">
                   {['к', 'н', 'и', 'г', 'а'].map((letter, i) => <span key={i} className={`daily-tile is-filled${i === 0 ? ' is-correct' : i === 1 ? ' is-present' : ''}`}>{upper(letter)}</span>)}
                 </div>
-                <p><strong>К</strong> е на точното място, <strong>Н</strong> е в думата, но на друго място, а сивите букви ги няма.</p>
+                <p>Кораловото <strong>К</strong> е на точното място, синьото кръгче <strong>Н</strong> е в думата, но на друго място, а сивите букви ги няма.</p>
                 <p>Нова дума всеки ден в полунощ. Сподели резултата с приятели, без да издаваш думата.</p>
                 <button type="button" className="daily-share" onClick={() => setModal('none')}>Да играем</button>
               </>

@@ -169,7 +169,8 @@ export function currentStreak(stats: Stats, puzzle: number): number {
   return stats.lastWon >= puzzle - 1 ? stats.streak : 0
 }
 
-const SQUARES: Record<Mark, string> = { correct: '🟩', present: '🟨', absent: '⬜' }
+// Our own colours: orange for the right place, blue for elsewhere in the word.
+const SQUARES: Record<Mark, string> = { correct: '🟧', present: '🔵', absent: '⬜' }
 
 /** Text to share: the squares without the letters, so it does not give the word away. */
 export function shareText(puzzle: number, guesses: string[], answer: string, won: boolean, url: string): string {
