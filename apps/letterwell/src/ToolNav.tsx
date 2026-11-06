@@ -2,7 +2,14 @@
 // and a "More word tools" block at the end of the page.
 import { pagePath, type Language, type Page } from './seo'
 
-const TOOLS: { page: Page; name: Record<Language, string>; short: Record<Language, string>; description: Record<Language, string> }[] = [
+const TOOLS: { page: Page; name: Record<Language, string>; short: Record<Language, string>; description: Record<Language, string>; only?: Language }[] = [
+  {
+    page: 'daily',
+    name: { en: 'Word of the day', bg: 'Дума на деня' },
+    short: { en: 'Daily word', bg: 'Дума на деня' },
+    description: { en: 'A new Bulgarian five-letter word every day.', bg: 'Познай думата от 5 букви. Нова всеки ден.' },
+    only: 'bg',
+  },
   {
     page: 'finder',
     name: { en: 'Word finder', bg: 'Търсачка за думи' },
@@ -33,7 +40,7 @@ const TOOLS: { page: Page; name: Record<Language, string>; short: Record<Languag
 export function ToolLinks({ language, current }: { language: Language; current: Page }) {
   return (
     <nav className="tool-links" aria-label={language === 'bg' ? 'Инструменти за думи' : 'Word tools'}>
-      {TOOLS.filter((tool) => tool.page !== current).map((tool) => (
+      {TOOLS.filter((tool) => tool.page !== current && (!tool.only || tool.only === language)).map((tool) => (
         <a className="topbar-link" key={tool.page} href={pagePath(tool.page, language)}>{tool.short[language]}</a>
       ))}
     </nav>
@@ -46,7 +53,7 @@ export function MoreWordTools({ language, current }: { language: Language; curre
     <section className="more-tools" aria-labelledby="more-tools-title">
       <h2 id="more-tools-title">{language === 'bg' ? 'Още инструменти за думи' : 'More word tools'}</h2>
       <ul>
-        {TOOLS.filter((tool) => tool.page !== current).map((tool) => (
+        {TOOLS.filter((tool) => tool.page !== current && (!tool.only || tool.only === language)).map((tool) => (
           <li key={tool.page}>
             <a href={pagePath(tool.page, language)}>
               <strong>{tool.name[language]}</strong>

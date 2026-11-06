@@ -22,6 +22,9 @@ AddCharset UTF-8 .txt .xml .json .svg
   RewriteRule ^calculators/terms/?$ /terms/ [R=301,L]
   RewriteRule ^calculators/disclaimer/?$ /disclaimer/ [R=301,L]
   RewriteRule ^calculators/contact/?$ /about/#contact [R=301,NE,L]
+
+  # Short link for sharing the daily word game.
+  RewriteRule ^duma/?$ /letterwell/bg/duma-na-denya/ [R=302,L]
 </IfModule>
 
 <IfModule mod_headers.c>

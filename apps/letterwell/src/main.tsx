@@ -8,6 +8,7 @@ import App from './App.tsx'
 import WordleSolver from './WordleSolver.tsx'
 import CrosswordSolver from './CrosswordSolver.tsx'
 import BeeSolver from './BeeSolver.tsx'
+import DailyWord from './DailyWord.tsx'
 import { languageFromPath, pageFromPath } from './seo'
 
 hydrateRoot(
@@ -16,6 +17,7 @@ hydrateRoot(
     {{
       wordle: <WordleSolver language={languageFromPath(window.location.pathname)} />,
       crossword: <CrosswordSolver language={languageFromPath(window.location.pathname)} />,
+      daily: <DailyWord language="bg" />,
       bee: <BeeSolver language={languageFromPath(window.location.pathname)} />,
       finder: <App language={languageFromPath(window.location.pathname)} />,
     }[pageFromPath(window.location.pathname)]}

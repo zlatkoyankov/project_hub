@@ -15,11 +15,27 @@ export interface Tool {
   keywords: string
   isNew?: boolean
   comingSoon?: boolean
+  /** Shown only on the homepage in this language. */
+  only?: Lang
 }
 
 const calculator = (slug: string) => ({ en: `/calculators/${slug}/`, bg: `/calculators/${slug}/` })
 
 export const TOOL_CATALOG: Tool[] = [
+  {
+    id: 'daily-word',
+    category: 'words',
+    icon: 'wordle',
+    href: { en: '/letterwell/bg/duma-na-denya/', bg: '/letterwell/bg/duma-na-denya/' },
+    name: { en: 'Word of the day (Bulgarian)', bg: 'Дума на деня' },
+    description: {
+      en: 'A daily Bulgarian five-letter word game.',
+      bg: 'Познай думата от 5 букви с 6 опита. Нова всеки ден, за цяла България.',
+    },
+    keywords: 'daily word game дума на деня игра думи пет букви всеки ден',
+    isNew: true,
+    only: 'bg',
+  },
   {
     id: 'wordle-solver',
     category: 'words',
