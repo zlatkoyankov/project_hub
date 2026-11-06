@@ -512,3 +512,110 @@ export function estimateBulk(input: BulkInput): BulkEstimate | null {
   const tonnes = withExtra * material.tPerM3
   return { area, volume, withExtra, tonnes, density: material.tPerM3, cost: input.price > 0 ? tonnes * input.price : 0 }
 }
+
+// ---------- Paint ----------
+
+/** Common bucket sizes in Bulgarian shops, in litres. */
+export const PAINT_CANS = [15, 10, 5, 2.5] as const
+
+/** Cheapest-looking mix of cans: least paint left over, then fewest cans. */
+export function paintCans(litres: number, sizes: readonly number[] = PAINT_CANS): { size: number; count: number }[] {
+  if (!(litres > 0)) return []
+  const [first, ...rest] = sizes
+  let best: { cans: { size: number; count: number }[]; bought: number; count: number } | null = null
+  for (let count = 0; count <= Math.ceil(litres / first); count += 1) {
+    const left = litres - count * first
+    const tail = rest.length && left > 1e-6 ? paintCans(left, rest) : left > 1e-6 ? null : []
+    if (tail === null) continue
+    const cans = count > 0 ? [{ size: first, count }, ...tail] : tail
+    const bought = cans.reduce((sum, can) => sum + can.size * can.count, 0)
+    const total = cans.reduce((sum, can) => sum + can.count, 0)
+    if (!best || bought < best.bought - 1e-6 || (Math.abs(bought - best.bought) < 1e-6 && total < best.count)) best = { cans, bought, count: total }
+  }
+  // The smallest size always covers what is left, so best is set.
+  return best?.cans ?? [{ size: first, count: Math.ceil(litres / first) }]
+}
+
+export interface PaintInput {
+  length: number
+  width: number
+  height: number
+  openings: number
+  ceiling: boolean
+  coats: number
+  /** m² per litre per coat */
+  coverage: number
+  primer: boolean
+  /** m² per litre of primer */
+  primerCoverage: number
+  /** price per litre */
+  price: number
+}
+
+export interface PaintEstimate {
+  walls: number
+  ceiling: number
+  net: number
+  litres: number
+  cans: { size: number; count: number }[]
+  bought: number
+  primerLitres: number
+  cost: number
+}
+
+export function estimatePaint(input: PaintInput): PaintEstimate | null {
+  if (!(input.length > 0 && input.width > 0 && input.height > 0 && input.coverage > 0)) return null
+  const walls = 2 * (input.length + input.width) * input.height
+  const ceiling = input.ceiling ? input.length * input.width : 0
+  const net = Math.max(0, walls + ceiling - input.openings)
+  const coats = Math.max(1, Math.round(input.coats) || 1)
+  const litres = (net * coats) / input.coverage
+  const cans = paintCans(litres)
+  const bought = cans.reduce((sum, can) => sum + can.size * can.count, 0)
+  const primerLitres = input.primer && input.primerCoverage > 0 ? net / input.primerCoverage : 0
+  return { walls, ceiling, net, litres, cans, bought, primerLitres, cost: input.price > 0 ? bought * input.price : 0 }
+}
+
+// ---------- Tiles ----------
+
+export interface TileInput {
+  surface: 'floor' | 'walls'
+  /** floor, m */
+  length: number
+  width: number
+  /** walls: total length of the tiled walls and tiling height, m */
+  wallLength: number
+  wallHeight: number
+  openings: number
+  /** cm */
+  tileLength: number
+  tileWidth: number
+  /** mm */
+  joint: number
+  waste: number
+  /** m² per box */
+  boxArea: number
+  /** price per m² */
+  price: number
+}
+
+export interface TileEstimate {
+  area: number
+  withWaste: number
+  tiles: number
+  boxes: number
+  bought: number
+  cost: number
+}
+
+export function estimateTiles(input: TileInput): TileEstimate | null {
+  const area = input.surface === 'walls'
+    ? Math.max(0, input.wallLength * input.wallHeight - input.openings)
+    : input.length * input.width
+  if (!(area > 0 && input.tileLength > 0 && input.tileWidth > 0)) return null
+  const withWasteArea = withWaste(area, input.waste)
+  const face = ((input.tileLength + input.joint / 10) / 100) * ((input.tileWidth + input.joint / 10) / 100)
+  const boxes = input.boxArea > 0 ? wholeUp(withWasteArea / input.boxArea) : 0
+  const bought = boxes > 0 ? boxes * input.boxArea : withWasteArea
+  return { area, withWaste: withWasteArea, tiles: wholeUp(withWasteArea / face), boxes, bought, cost: input.price > 0 ? bought * input.price : 0 }
+}

@@ -31,7 +31,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'paint-calculator', title: 'Paint Calculator', shortTitle: 'Paint', category: 'Painting',
+    slug: 'paint-calculator', bg: '/bg/kalkulator-boya/', title: 'Paint Calculator', shortTitle: 'Paint', category: 'Painting',
     description: 'Estimate paint coverage and the number of gallons needed for your walls.',
     intro: 'Estimate paint for rectangular walls, subtract doors and windows, and plan for multiple coats. Check the label for the coverage of your exact paint.',
     kind: 'paint', icon: 'paint', keywords: ['walls', 'gallons', 'coverage', 'painting', 'coats'],
@@ -43,7 +43,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'tile-calculator', title: 'Tile Calculator', shortTitle: 'Tile', category: 'Flooring & Tile',
+    slug: 'tile-calculator', bg: '/bg/kalkulator-plochki/', title: 'Tile Calculator', shortTitle: 'Tile', category: 'Flooring & Tile',
     description: 'Calculate approximate tile quantity and boxes for a rectangular floor or wall.',
     intro: 'Estimate tiles for a simple rectangular layout, including a configurable waste allowance. Complex patterns and irregular spaces require additional planning.',
     kind: 'tile', icon: 'tile', keywords: ['floor', 'bathroom', 'boxes', 'ceramic', 'backsplash'],
