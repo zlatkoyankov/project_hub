@@ -19,15 +19,16 @@ export type Page = 'finder' | 'wordle' | 'crossword' | 'bee' | 'daily'
 
 export const pages: Page[] = ['finder', 'wordle', 'crossword', 'bee', 'daily']
 
-/** Languages a page exists in: the daily word game is Bulgarian only. */
+/** Languages a page exists in (all of them, for now). */
 export function pageLanguages(page: Page): Language[] {
-  return page === 'daily' ? ['bg'] : languages
+  void page
+  return languages
 }
 
 /** Path of a Letterwell page in a language, e.g. /letterwell/wordle-solver/ and /letterwell/bg/wordle/. */
 export function pagePath(page: Page, language: Language): string {
   if (page === 'finder') return languagePath(language)
-  if (page === 'daily') return '/letterwell/bg/duma-na-denya/'
+  if (page === 'daily') return language === 'bg' ? '/letterwell/bg/duma-na-denya/' : '/letterwell/daily/'
   if (page === 'bee') return language === 'bg' ? '/letterwell/bg/spelling-bee/' : '/letterwell/spelling-bee-solver/'
   if (page === 'crossword') return language === 'bg' ? '/letterwell/bg/krastoslovitsi/' : '/letterwell/crossword-solver/'
   return language === 'bg' ? '/letterwell/bg/wordle/' : '/letterwell/wordle-solver/'
@@ -35,7 +36,7 @@ export function pagePath(page: Page, language: Language): string {
 
 /** Page from a URL path. */
 export function pageFromPath(path: string): Page {
-  if (/\/duma-na-denya\/?$/.test(path)) return 'daily'
+  if (/\/(duma-na-denya|daily)\/?$/.test(path)) return 'daily'
   if (/\/(spelling-bee-solver|spelling-bee)\/?$/.test(path)) return 'bee'
   if (/\/(crossword-solver|krastoslovitsi)\/?$/.test(path)) return 'crossword'
   return /\/wordle(-solver)?\/?$/.test(path) ? 'wordle' : 'finder'
@@ -142,7 +143,7 @@ export const beeMetadata: Record<Language, { title: string; description: string;
 
 /** Head metadata of any Letterwell page. */
 export function pageMeta(page: Page, language: Language) {
-  if (page === 'daily') return { meta: dailyMetadata, social: dailySocialDescription }
+  if (page === 'daily') return { meta: dailyMetadata[language], social: dailySocialDescriptions[language] }
   if (page === 'bee') return { meta: beeMetadata[language], social: beeSocialDescriptions[language] }
   if (page === 'crossword') return { meta: crosswordMetadata[language], social: crosswordSocialDescriptions[language] }
   return page === 'wordle'
@@ -150,11 +151,22 @@ export function pageMeta(page: Page, language: Language) {
     : { meta: seoMetadata[language], social: socialDescriptions[language] }
 }
 
-export const dailySocialDescription = 'Познай думата от 5 букви с 6 опита. Една дума за цяла България, нова всеки ден. Сподели резултата, без да издаваш думата.'
+export const dailySocialDescriptions: Record<Language, string> = {
+  bg: 'Познай думата от 5 букви с 6 опита. Една дума за цяла България, нова всеки ден. Сподели резултата, без да издаваш думата.',
+  en: 'Find the five-letter word in six tries. A new word every day, an unlimited mode, and a spoiler-free result to share.',
+}
 
-export const dailyMetadata = {
-  title: 'Дума на деня: българска игра на думи от 5 букви | Letterwell',
-  description: 'Познай думата на деня от 5 букви с 6 опита, като в Wordle, но на български. Нова дума всеки ден в полунощ, статистика, серия и споделяне на резултата.',
-  structuredDescription: 'Ежедневна игра на думи на български: познай думата от пет букви с шест опита.',
-  features: ['Нова дума всеки ден', 'Български фонетичен клавиатурен ред', 'Статистика и серия', 'Споделяне без спойлери'],
+export const dailyMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
+  bg: {
+    title: 'Дума на деня: българска игра на думи от 5 букви | Letterwell',
+    description: 'Познай думата на деня от 5 букви с 6 опита. Нова дума всеки ден в полунощ, режим „Неограничено“, статистика, серия и споделяне на резултата.',
+    structuredDescription: 'Ежедневна игра на думи на български: познай думата от пет букви с шест опита.',
+    features: ['Нова дума всеки ден', 'Режим „Неограничено“', 'Български фонетичен клавиатурен ред', 'Статистика и серия', 'Споделяне без спойлери'],
+  },
+  en: {
+    title: 'Letterwell Daily: a free five-letter word game | Letterwell',
+    description: 'Find the five-letter word in six tries. A new word every day, an unlimited mode for more games, streaks and statistics, and a spoiler-free result to share.',
+    structuredDescription: 'A daily five-letter word game with an unlimited mode, streaks and shareable results.',
+    features: ['A new word every day', 'Unlimited mode', 'Streaks and statistics', 'Spoiler-free sharing'],
+  },
 }

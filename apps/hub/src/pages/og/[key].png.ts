@@ -34,6 +34,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'letterwell-bg-spelling-bee': { kicker: 'Letterwell · Spelling Bee', title: 'Седем букви. Колко думи?', footer: 'zyankov.eu/letterwell/bg/spelling-bee' },
     'letterwell-crossword-solver': { kicker: 'Letterwell · crossword helper', title: 'Missing a few letters? Fill the gaps', footer: 'zyankov.eu/letterwell/crossword-solver' },
     'letterwell-bg-krastoslovitsi': { kicker: 'Letterwell · кръстословици', title: 'Думи по шаблон за кръстословици', footer: 'zyankov.eu/letterwell/bg/krastoslovitsi' },
+    'letterwell-daily': { kicker: 'Letterwell · word game', title: 'Letterwell Daily: find the five-letter word', footer: 'zyankov.eu/daily' },
     'letterwell-bg-duma-na-denya': { kicker: 'Letterwell · игра', title: 'Дума на деня: познай думата от 5 букви', footer: 'zyankov.eu/duma' },
     'letterwell-bg-wordle': { kicker: 'Letterwell · помощник за Wordle', title: 'Wordle на български: стесни възможните думи', footer: 'zyankov.eu/letterwell/bg/wordle' },
   }

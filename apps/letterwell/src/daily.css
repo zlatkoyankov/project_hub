@@ -42,7 +42,33 @@
   background: var(--surface-hover);
 }
 
+.daily-modes {
+  display: flex;
+  padding: 3px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.daily-modes button {
+  min-height: 38px;
+  padding: 0 14px;
+  color: var(--text-muted);
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  font: 700 14px var(--font-body);
+  cursor: pointer;
+}
+
+.daily-modes button[aria-pressed='true'] {
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--shadow-color) 18%, transparent);
+}
+
 .daily-streak {
+  margin: 0;
   padding: 6px 12px;
   color: var(--coral-strong);
   background: var(--coral-soft);
@@ -146,7 +172,20 @@
   cursor: pointer;
 }
 
+.daily-after__meaning {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: var(--text-muted);
+}
+
+.daily-after a {
+  color: var(--coral-strong);
+}
+
 .daily-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   min-height: 44px;
   padding: 0 12px;
   color: var(--coral-strong);
