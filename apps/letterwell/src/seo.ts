@@ -15,13 +15,19 @@ export function languageFromPath(path: string): Language {
 }
 
 // Letterwell pages: the word finder and the Wordle, crossword and Spelling Bee helpers, each in both languages.
-export type Page = 'finder' | 'wordle' | 'crossword' | 'bee'
+export type Page = 'finder' | 'wordle' | 'crossword' | 'bee' | 'daily'
 
-export const pages: Page[] = ['finder', 'wordle', 'crossword', 'bee']
+export const pages: Page[] = ['finder', 'wordle', 'crossword', 'bee', 'daily']
+
+/** Languages a page exists in: the daily word game is Bulgarian only. */
+export function pageLanguages(page: Page): Language[] {
+  return page === 'daily' ? ['bg'] : languages
+}
 
 /** Path of a Letterwell page in a language, e.g. /letterwell/wordle-solver/ and /letterwell/bg/wordle/. */
 export function pagePath(page: Page, language: Language): string {
   if (page === 'finder') return languagePath(language)
+  if (page === 'daily') return '/letterwell/bg/duma-na-denya/'
   if (page === 'bee') return language === 'bg' ? '/letterwell/bg/spelling-bee/' : '/letterwell/spelling-bee-solver/'
   if (page === 'crossword') return language === 'bg' ? '/letterwell/bg/krastoslovitsi/' : '/letterwell/crossword-solver/'
   return language === 'bg' ? '/letterwell/bg/wordle/' : '/letterwell/wordle-solver/'
@@ -29,6 +35,7 @@ export function pagePath(page: Page, language: Language): string {
 
 /** Page from a URL path. */
 export function pageFromPath(path: string): Page {
+  if (/\/duma-na-denya\/?$/.test(path)) return 'daily'
   if (/\/(spelling-bee-solver|spelling-bee)\/?$/.test(path)) return 'bee'
   if (/\/(crossword-solver|krastoslovitsi)\/?$/.test(path)) return 'crossword'
   return /\/wordle(-solver)?\/?$/.test(path) ? 'wordle' : 'finder'
@@ -135,9 +142,19 @@ export const beeMetadata: Record<Language, { title: string; description: string;
 
 /** Head metadata of any Letterwell page. */
 export function pageMeta(page: Page, language: Language) {
+  if (page === 'daily') return { meta: dailyMetadata, social: dailySocialDescription }
   if (page === 'bee') return { meta: beeMetadata[language], social: beeSocialDescriptions[language] }
   if (page === 'crossword') return { meta: crosswordMetadata[language], social: crosswordSocialDescriptions[language] }
   return page === 'wordle'
     ? { meta: wordleMetadata[language], social: wordleSocialDescriptions[language] }
     : { meta: seoMetadata[language], social: socialDescriptions[language] }
+}
+
+export const dailySocialDescription = 'Познай думата от 5 букви с 6 опита. Една дума за цяла България, нова всеки ден. Сподели резултата, без да издаваш думата.'
+
+export const dailyMetadata = {
+  title: 'Дума на деня: българска игра на думи от 5 букви | Letterwell',
+  description: 'Познай думата на деня от 5 букви с 6 опита, като в Wordle, но на български. Нова дума всеки ден в полунощ, статистика, серия и споделяне на резултата.',
+  structuredDescription: 'Ежедневна игра на думи на български: познай думата от пет букви с шест опита.',
+  features: ['Нова дума всеки ден', 'Български фонетичен клавиатурен ред', 'Статистика и серия', 'Споделяне без спойлери'],
 }

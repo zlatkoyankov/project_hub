@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import './playful.css'
 import type { Language } from './seo'
 
-export type PlayVariant = 'finder' | 'wordle' | 'crossword' | 'bee'
+export type PlayVariant = 'finder' | 'wordle' | 'crossword' | 'bee' | 'daily'
 
 type Tile = { ch: string; tone: string; pts?: number }
 

@@ -48,4 +48,8 @@
     <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/spelling-bee/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/spelling-bee-solver/" />
   </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/bg/duma-na-denya/</loc>
+    <changefreq>daily</changefreq>
+  </url>
 </urlset>

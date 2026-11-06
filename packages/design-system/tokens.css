@@ -41,6 +41,14 @@
   --game-present: #c9b458;
   --game-correct: #6aaa64;
   --game-ink: #ffffff;
+  /* Letterwell's own daily game: coral = right place, blue = elsewhere in the word, grey = not in it. */
+  --daily-hit: #b4472e;
+  --daily-hit-edge: #82301d;
+  --daily-near: #2f6690;
+  --daily-near-edge: #1f4766;
+  --daily-miss: #d3dbd3;
+  --daily-miss-edge: #b3bfb4;
+  --daily-miss-ink: #4e6155;
   /* Raised call-to-action button (Wordle helper): gradient, bottom edge, text. */
   --cta-top: #d4623f;
   --cta-bottom: #b04429;
@@ -152,6 +160,13 @@
   --game-absent: #565a5c;
   --game-present: #b59f3b;
   --game-correct: #538d4e;
+  --daily-hit: #c65a3e;
+  --daily-hit-edge: #8e3a26;
+  --daily-near: #3a7cb0;
+  --daily-near-edge: #27577d;
+  --daily-miss: #36423c;
+  --daily-miss-edge: #27302b;
+  --daily-miss-ink: #a9b6ad;
   --cta-top: #ffbfa6;
   --cta-bottom: #f08a6e;
   --cta-edge: #b8583f;

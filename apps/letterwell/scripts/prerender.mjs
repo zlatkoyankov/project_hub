@@ -26,6 +26,10 @@ function localizeHead(html, { language, url, meta, social, alternates, ogKey, na
   out = out.replace(/<title>[^<]*<\/title>/, `<title>${escape(meta.title)}</title>`)
   out = out.replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`)
   for (const [lang, href] of Object.entries(alternates)) {
+    if (href === null) {
+      out = out.replace(new RegExp(`\\s*<link rel="alternate" hreflang="${lang}" href="[^"]*"\\s*/?>`), '')
+      continue
+    }
     out = out.replace(new RegExp(`(<link rel="alternate" hreflang="${lang}" href=")[^"]*(")`), `$1${href}$2`)
   }
   out = setMeta(out, 'name', 'description', meta.description)
@@ -63,24 +67,24 @@ try {
   const { default: WordleSolver } = await vite.ssrLoadModule('/src/WordleSolver.tsx')
   const { default: CrosswordSolver } = await vite.ssrLoadModule('/src/CrosswordSolver.tsx')
   const { default: BeeSolver } = await vite.ssrLoadModule('/src/BeeSolver.tsx')
-  const { languages, pages, pagePath, pageMeta, pageOgKey } = await vite.ssrLoadModule('/src/seo.ts')
-  const components = { finder: App, wordle: WordleSolver, crossword: CrosswordSolver, bee: BeeSolver }
-  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper', crossword: 'Letterwell crossword helper', bee: 'Letterwell Spelling Bee helper' }
+  const { default: DailyWord } = await vite.ssrLoadModule('/src/DailyWord.tsx')
+  const { pageLanguages, pages, pagePath, pageMeta, pageOgKey } = await vite.ssrLoadModule('/src/seo.ts')
+  const components = { finder: App, wordle: WordleSolver, crossword: CrosswordSolver, bee: BeeSolver, daily: DailyWord }
+  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper', crossword: 'Letterwell crossword helper', bee: 'Letterwell Spelling Bee helper', daily: 'Дума на деня' }
   const template = await readFile(resolve('dist/index.html'), 'utf8')
   if (!template.includes(placeholder)) throw new Error('Could not find the Letterwell root element to prerender.')
 
-  for (const page of pages) for (const language of languages) {
+  for (const page of pages) for (const language of pageLanguages(page)) {
     const path = pagePath(page, language)
     const markup = renderToString(createElement(components[page], { language }))
     const html = localizeHead(template.replace(placeholder, `<div id="root">${markup}</div>`), {
       language,
       url: `${site}${path}`,
       ...pageMeta(page, language),
-      alternates: {
-        en: `${site}${pagePath(page, 'en')}`,
-        bg: `${site}${pagePath(page, 'bg')}`,
-        'x-default': `${site}${pagePath(page, 'en')}`,
-      },
+      // A page in one language has no alternates: their links are removed from the head.
+      alternates: pageLanguages(page).length > 1
+        ? { en: `${site}${pagePath(page, 'en')}`, bg: `${site}${pagePath(page, 'bg')}`, 'x-default': `${site}${pagePath(page, 'en')}` }
+        : { en: null, bg: null, 'x-default': null },
       ogKey: pageOgKey(page, language),
       name: names[page],
     })
