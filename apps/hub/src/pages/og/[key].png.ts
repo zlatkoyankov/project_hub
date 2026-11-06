@@ -20,6 +20,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-razhod-na-tok': { kicker: 'Дом и енергия · калкулатор', title: 'Колко ток харчи уредът?', footer: 'zyankov.eu/bg/razhod-na-tok' },
     'bg-kalkulator-laminat': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко ламинат и первази ми трябват?', footer: 'zyankov.eu/bg/kalkulator-laminat' },
     'bg-kalkulator-gipsokarton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко плоскости гипсокартон ми трябват?', footer: 'zyankov.eu/bg/kalkulator-gipsokarton' },
+    'bg-kalkulator-beton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко бетон, цимент и пясък ми трябват?', footer: 'zyankov.eu/bg/kalkulator-beton' },
+    'bg-kalkulator-chakal': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко чакъл или пясък ми трябва?', footer: 'zyankov.eu/bg/kalkulator-chakal' },
     'bg-kalkulator-tuhli': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко тухли и разтвор ми трябват?', footer: 'zyankov.eu/bg/kalkulator-tuhli' },
     'bg-kalkulator-izolatsiya': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко стиропор и лепило ми трябват?', footer: 'zyankov.eu/bg/kalkulator-izolatsiya' },
     'bg-zamazka-i-mazilka': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко замазка или мазилка ми трябва?', footer: 'zyankov.eu/bg/zamazka-i-mazilka' },

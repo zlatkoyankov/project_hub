@@ -1,17 +1,19 @@
 ---
-// Bulgarian, metric laminate and drywall calculators (/bg/kalkulator-laminat/, /bg/kalkulator-gipsokarton/).
+// Bulgarian, metric material calculators (/bg/kalkulator-laminat/, /bg/kalkulator-beton/, …).
 // The English versions live in BuildCalc; the maths is in src/lib/materials.ts.
 import BaseLayout from '../layouts/BaseLayout.astro'
 import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { getPosts, ogKey, postPath } from '../lib/site'
-import { DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
+import { BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel'
+
 interface Props {
-  kind: 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry'
+  kind: Kind
 }
 
 interface Field {
@@ -22,9 +24,118 @@ interface Field {
   step?: string
   hint?: string
   optional?: boolean
+  /** Only shown while a select has this value, as "select:value". */
+  show?: string
+}
+
+interface Select {
+  name: string
+  label: string
+  options: { value: string | number; label: string; selected?: boolean }[]
+}
+
+interface Page {
+  path: string
+  en: string
+  tool: string
+  title: string
+  description: string
+  h1: string
+  intro: string
+  big: string
+  bigOne: string
+  formula: string
+  how: string
+  tips: string[]
+  jsonName: string
+}
+
+/** Newer calculators are described here in one place: page text, form, selects and fields. */
+interface Config {
+  page: Page
+  formTitle: string
+  formHint: string
+  selects: Select[]
+  fields: Field[]
+}
+
+const CONFIGS: Partial<Record<Kind, Config>> = {
+  concrete: {
+    page: {
+      path: '/bg/kalkulator-beton/',
+      en: '/calculators/concrete-calculator/',
+      tool: 'concrete-calculator',
+      title: 'Калкулатор за бетон: кубици, цимент, пясък и чакъл | Zyankov.eu',
+      description: 'Изчисли колко кубика бетон трябват за плоча, основа или колона и колко цимент, пясък, чакъл и вода, ако бъркаш сам. Или колко торби сух бетон.',
+      h1: 'Колко бетон ми трябва?',
+      intro: 'Въведи размерите на плочата, основата или дупките за колони. Виж колко кубика да поръчаш от бетоновоз, колко торби сух бетон трябват или колко цимент, пясък и чакъл, ако бъркаш сам.',
+      big: 'м³ бетон',
+      bigOne: 'м³ бетон',
+      formula: 'обем (м³) = дължина × ширина × дебелина, а за колона π × (диаметър ÷ 2)² × дълбочина',
+      how: 'Обемът на плоча или ивичен фундамент е дължината по ширината по дебелината, всичко в метри. За кръгла колона или дупка за стълб се смята площта на кръга по дълбочината. Умножава се по броя и се добавя фира. Бетоновозите продават през 0,5 м³, затова поръчката се закръгля нагоре. За сам забъркан бетон количествата цимент, пясък и чакъл са по типична рецепта за 1 м³.',
+      tips: [
+        'Добави 5–10% фира: кофражът се огъва, основата не е идеално равна и винаги нещо остава в бъркалката.',
+        'Повечето бетонови центрове имат минимално количество за доставка, често 1–3 м³, и такса за помпа. Питай предварително.',
+        'Вместо пясък и чакъл може да ползваш баластра – около 1,2–1,3 м³ на кубик бетон. Рецептата е ориентировъчна, а за носещи елементи следвай проекта.',
+      ],
+      jsonName: 'Калкулатор за бетон',
+    },
+    formTitle: 'Размери',
+    formHint: 'Плочата е в метри, дебелината и диаметърът в сантиметри. Цената не е задължителна.',
+    selects: [
+      { name: 'shape', label: 'Какво бетонираш', options: [{ value: 'slab', label: 'Плоча или ивичен фундамент' }, { value: 'round', label: 'Кръгли колони или стълбове' }] },
+      { name: 'mix', label: 'Клас бетон', options: CONCRETE_MIXES.map((mix, index) => ({ value: index, label: mix.label, selected: index === 1 })) },
+    ],
+    fields: [
+      { name: 'length', label: 'Дължина', unit: 'м', value: 5, step: '0.01', show: 'shape:slab', hint: 'За ивичен фундамент: общата дължина на всички ивици.' },
+      { name: 'width', label: 'Ширина', unit: 'м', value: 4, step: '0.01', show: 'shape:slab' },
+      { name: 'thickness', label: 'Дебелина', unit: 'см', value: 10, step: '0.5', show: 'shape:slab', hint: 'Подложка 8–10 см, плоча 12–20 см.' },
+      { name: 'diameter', label: 'Диаметър', unit: 'см', value: 25, step: '0.5', show: 'shape:round' },
+      { name: 'depth', label: 'Дълбочина или височина', unit: 'м', value: 0.8, step: '0.01', show: 'shape:round', hint: 'За стълб на ограда обикновено 0,6–0,9 м.' },
+      { name: 'count', label: 'Брой', unit: 'бр.', value: 1, step: '1', hint: 'Колко еднакви плочи, ивици или колони.' },
+      { name: 'waste', label: 'Фира', unit: '%', value: 5, step: '1' },
+      { name: 'bagYield', label: 'Бетон от торба сух бетон', unit: 'л', value: 12, step: '0.5', hint: 'Пише на торбата. Около 12 л от 25 кг.' },
+      { name: 'cementBag', label: 'Торба цимент', unit: 'кг', value: 25, step: '1' },
+      { name: 'price', label: 'Цена на м³ готов бетон', unit: '€', value: 0, step: '0.01', optional: true },
+    ],
+  },
+  gravel: {
+    page: {
+      path: '/bg/kalkulator-chakal/',
+      en: '/calculators/gravel-calculator/',
+      tool: 'gravel-calculator',
+      title: 'Калкулатор за чакъл, пясък и баластра: кубици и тонове | Zyankov.eu',
+      description: 'Изчисли колко кубика и тона чакъл, пясък, баластра, тампон или пръст трябват за алея, площадка или основа. По размерите и дебелината на слоя.',
+      h1: 'Колко чакъл ми трябва?',
+      intro: 'Въведи размерите на алеята или площадката, дебелината на слоя и материала. Калкулаторът смята кубиците и тоновете, а доставчиците обикновено продават на тон.',
+      big: 'тона',
+      bigOne: 'тон',
+      formula: 'тонове = дължина × ширина × дебелина × (1 + добавка) × обемно тегло',
+      how: 'Обемът е площта по дебелината на слоя в метри. Добавя се процент за уплътняване и разсипване и се умножава по обемното тегло на материала в насипно състояние, около 1,5–1,8 тона на кубик. Влажният материал тежи повече, затова тоновете са ориентировъчни.',
+      tips: [
+        'За тампон, който се валира, добави 20–25%. Слоят сяда при уплътняването. За декоративен чакъл 5–10% стигат.',
+        'Алея за пешеходци: 5–8 см чакъл върху геотекстил. Алея за кола: 15–25 см тампон и отгоре 5 см фракция.',
+        'Попитай доставчика колко тона събира камионът и дали цената е с транспорта. Понякога два по-малки курса излизат по-скъпо от един голям.',
+      ],
+      jsonName: 'Калкулатор за чакъл и пясък',
+    },
+    formTitle: 'Площ и слой',
+    formHint: 'Размерите са в метри, дебелината в сантиметри. Цената не е задължителна.',
+    selects: [
+      { name: 'material', label: 'Материал', options: BULK_MATERIALS.map((material, index) => ({ value: index, label: `${material.label} (около ${material.tPerM3.toLocaleString('bg-BG')} т/м³)` })) },
+    ],
+    fields: [
+      { name: 'length', label: 'Дължина', unit: 'м', value: 10, step: '0.01' },
+      { name: 'width', label: 'Ширина', unit: 'м', value: 1.2, step: '0.01' },
+      { name: 'depth', label: 'Дебелина на слоя', unit: 'см', value: 8, step: '0.5' },
+      { name: 'extra', label: 'Уплътняване и фира', unit: '%', value: 10, step: '1', hint: 'Около 10%. За валиран тампон 20–25%.' },
+      { name: 'price', label: 'Цена на тон', unit: '€', value: 0, step: '0.01', optional: true },
+    ],
+  },
 }
 
 const { kind } = Astro.props
+const config = CONFIGS[kind]
 const flooring = kind === 'flooring'
 const adhesive = kind === 'adhesive'
 const wallpaper = kind === 'wallpaper'
@@ -132,7 +243,7 @@ const adhesivePage = {
       jsonName: 'Калкулатор за лепило и фуга',
     }
 
-const page = masonry ? masonryPage : insulation ? insulationPage : screed ? screedPage : wallpaper ? wallpaperPage : adhesive ? adhesivePage : flooring
+const page: Page = config ? config.page : masonry ? masonryPage : insulation ? insulationPage : screed ? screedPage : wallpaper ? wallpaperPage : adhesive ? adhesivePage : flooring
   ? {
       path: '/bg/kalkulator-laminat/',
       en: '/calculators/laminate-flooring-calculator/',
@@ -222,7 +333,7 @@ const masonryFields: Field[] = [
   { name: 'price', label: 'Цена за брой', unit: '€', value: 0, step: '0.01', optional: true },
 ]
 
-const mainFields: Field[] = masonry ? masonryFields : insulation ? insulationFields : screed ? screedFields : wallpaper ? wallpaperFields : adhesive ? adhesiveFields : flooring
+const mainFields: Field[] = config ? config.fields : masonry ? masonryFields : insulation ? insulationFields : screed ? screedFields : wallpaper ? wallpaperFields : adhesive ? adhesiveFields : flooring
   ? [
       { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
       { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
@@ -254,7 +365,7 @@ const supplyFields: Field[] = [
   { name: 'profileLength', label: 'Дължина на профила', unit: 'м', value: 3, step: '0.01', hint: 'CW и UW профилите са обикновено 2,6, 3 или 4 м.' },
 ]
 const extraFields = flooring ? trimFields : insulation ? [] : supplyFields
-const extra = adhesive || wallpaper || screed || masonry ? null : insulation
+const extra = config || adhesive || wallpaper || screed || masonry ? null : insulation
   ? { name: 'supplies', legend: 'Лепило, мрежа и дюбели', label: 'Консумативи', on: 'Включи лепило, шпакловка, мрежа и дюбели', off: 'Само плочи' }
   : flooring
   ? { name: 'trim', legend: 'Первази и лайсни', label: 'Первази', on: 'Включи первази и лайсни', off: 'Само ламинат' }
@@ -285,11 +396,19 @@ const jsonLd = {
 
       <section class="tool-layout" aria-label={page.h1} data-material={kind}>
         <form class="tool-form" novalidate>
-          <h2>{adhesive ? 'Площ и плочки' : screed ? 'Площ и дебелина' : insulation ? 'Фасада' : masonry ? 'Стената' : 'Твоята стая'}</h2>
-          <p class="tool-form__hint">{adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : wallpaper ? 'Стаята е в метри, ролката и раппортът в сантиметри. Цената не е задължителна.' : screed ? 'Площта е в м², дебелината в милиметри. Цената не е задължителна.' : insulation ? 'Площите са в м², дебелината в сантиметри. Цената не е задължителна.' : masonry ? 'Стената е в метри, отворите в м². Цената не е задължителна.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
+          <h2>{config ? config.formTitle : adhesive ? 'Площ и плочки' : screed ? 'Площ и дебелина' : insulation ? 'Фасада' : masonry ? 'Стената' : 'Твоята стая'}</h2>
+          <p class="tool-form__hint">{config ? config.formHint : adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : wallpaper ? 'Стаята е в метри, ролката и раппортът в сантиметри. Цената не е задължителна.' : screed ? 'Площта е в м², дебелината в милиметри. Цената не е задължителна.' : insulation ? 'Площите са в м², дебелината в сантиметри. Цената не е задължителна.' : masonry ? 'Стената е в метри, отворите в м². Цената не е задължителна.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
           <div class="tool-fields">
-            {mainFields.map((field) => (
+            {config?.selects.map((select) => (
               <div class="tool-field">
+                <label for={`mat-${select.name}`}>{select.label}</label>
+                <select id={`mat-${select.name}`} name={select.name}>
+                  {select.options.map((option) => <option value={option.value} selected={option.selected}>{option.label}</option>)}
+                </select>
+              </div>
+            ))}
+            {mainFields.map((field) => (
+              <div class="tool-field" data-show={field.show}>
                 <label for={`mat-${field.name}`}>{field.label}{field.optional && <span class="tool-optional"> (по желание)</span>}</label>
                 <div class="tool-input"><input id={`mat-${field.name}`} name={field.name} type="number" inputmode="decimal" min="0" step={field.step ?? 'any'} value={field.optional && field.value === 0 ? '' : field.value} placeholder={field.optional ? '0' : undefined} aria-describedby={field.hint ? `mat-${field.name}-hint` : undefined} /><span>{field.unit}</span></div>
                 {field.hint && <small id={`mat-${field.name}-hint`}>{field.hint}</small>}
@@ -414,7 +533,7 @@ const jsonLd = {
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { estimateAdhesive, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
+  import { estimateAdhesive, estimateBulk, estimateConcrete, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -429,7 +548,7 @@ const jsonLd = {
     let tracked = false
 
     const render = (big: number | null, rows: [string, string, string?][]) => {
-      out('big').textContent = big === null ? '–' : String(big)
+      out('big').textContent = big === null ? '–' : Number.isInteger(big) ? String(big) : fmt(big, 2)
       unitOut.textContent = big === 1 ? unitOut.dataset.one ?? '' : unitOut.dataset.many ?? ''
       out('rows').replaceChildren(...rows.map(([label, value, detail]) => {
         const row = document.createElement('div')
@@ -445,7 +564,44 @@ const jsonLd = {
       const extraOn = root.querySelector<HTMLSelectElement>('[data-extra-toggle]')?.value === '1'
       const extraBox = root.querySelector<HTMLElement>('[data-extra-fields]')
       if (extraBox) extraBox.hidden = !extraOn
-      if (kind === 'flooring') {
+      root.querySelectorAll<HTMLElement>('[data-show]').forEach((element) => {
+        const [name, value] = (element.dataset.show ?? '').split(':')
+        element.hidden = field(name)?.value !== value
+      })
+      if (kind === 'concrete') {
+        const result = estimateConcrete({
+          shape: field('shape')?.value === 'round' ? 'round' : 'slab', length: num('length'), width: num('width'), thickness: num('thickness'),
+          diameter: num('diameter'), depth: num('depth'), count: num('count'), waste: num('waste'), mix: Number(field('mix')?.value ?? 1),
+          bagYield: num('bagYield'), cementBag: num('cementBag'), price: num('price'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Обем', `${fmt(result.volume, 3)} м³`, 'без фирата'],
+          ['Поръчка от бетоновоз', `${fmt(result.truck, 1)} м³`, 'закръглено до 0,5 м³'],
+          ['Торби сух бетон', `${result.dryBags} бр.`, `по ${fmt(num('bagYield'), 1)} л от торба, за малки обеми`],
+          ['Ако бъркаш сам:', ''],
+          ['Цимент', `${fmt(result.cementKg, 0)} кг`, `${result.cementBags} торби по ${fmt(num('cementBag'), 0)} кг`],
+          ['Пясък', `${fmt(result.sandM3, 2)} м³`, `около ${fmt(result.sandM3 * 1.5, 1)} т`],
+          ['Чакъл', `${fmt(result.gravelM3, 2)} м³`, `около ${fmt(result.gravelM3 * 1.6, 1)} т`],
+          ['Вода', `${fmt(result.waterL, 0)} л`],
+        ]
+        if (result.cost > 0) rows.push(['Приблизителна цена на готов бетон', money(result.cost)])
+        render(result.withWaste, rows)
+      } else if (kind === 'gravel') {
+        const result = estimateBulk({
+          length: num('length'), width: num('width'), depth: num('depth'), material: Number(field('material')?.value ?? 0),
+          extra: num('extra'), price: num('price'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Площ', `${fmt(result.area)} м²`],
+          ['Обем', `${fmt(result.volume, 2)} м³`, 'без добавката'],
+          ['Обем за поръчка', `${fmt(result.withExtra, 2)} м³`, 'с уплътняването и фирата'],
+          ['Обемно тегло', `${fmt(result.density, 2)} т/м³`, 'в насипно състояние'],
+        ]
+        if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
+        render(result.tonnes, rows)
+      } else if (kind === 'flooring') {
         const trimOn = extraOn
         const result = estimateFlooring({
           length: num('length'), width: num('width'), waste: num('waste'), boxArea: num('boxArea'), price: num('price'),

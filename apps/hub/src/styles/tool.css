@@ -141,6 +141,10 @@ select {
   gap: 7px;
 }
 
+.tool-field[hidden] {
+  display: none;
+}
+
 .tool-field label {
   font-size: 15px;
   font-weight: 700;
