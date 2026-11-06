@@ -1,6 +1,7 @@
-// "Дума на деня": the daily Bulgarian five-letter word game at /letterwell/bg/duma-na-denya/.
+// Letterwell's daily word game: "Дума на деня" (/letterwell/bg/duma-na-denya/) and
+// "Letterwell Daily" (/letterwell/daily/), each with a daily word and an unlimited mode.
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { BarChart3, CircleHelp, Delete, Share2, Sparkles, X } from 'lucide-react'
+import { BarChart3, CircleHelp, Delete, RefreshCw, Share2, Sparkles, X } from 'lucide-react'
 import { track } from '@zyankov/design-system/analytics'
 import { HeroDecor } from './Playful'
 import { MoreWordTools, ToolLinks } from './ToolNav'
@@ -8,16 +9,111 @@ import { pagePath, type Language } from './seo'
 import { loadWordleList, WORD_LENGTH } from './wordle'
 import { dictionaryLinks } from './meanings'
 import {
-  answerFor, currentStreak, DAILY_WORDS, emptyStats, KEYBOARD_ROWS, keyMarks, LATIN_TO_CYRILLIC, markGuess, MAX_GUESSES,
-  msUntilNext, puzzleNumber, recordResult, shareText, type Mark, type Stats,
+  answerFor, currentStreak, DAILY_WORDS, emptyStats, KEYBOARD_ROWS, keyMarks, LATIN_TO_CYRILLIC, LETTERS, markGuess, MAX_GUESSES,
+  msUntilNext, puzzleNumber, randomAnswer, recordResult, shareText, type Mark, type Stats,
 } from './daily'
 import './wordle.css'
 import './daily.css'
 
-const GAME_KEY = 'zy-daily-game-v1'
-const STATS_KEY = 'zy-daily-stats-v1'
-const SHARE_URL = 'zyankov.eu/duma'
-const BG_LETTERS = /^[а-ъьюя]$/
+type Mode = 'daily' | 'unlimited'
+
+const TEXT = {
+  bg: {
+    titleFirst: 'Дума на', titleEmphasis: 'деня', game: 'Дума на деня', note: 'Нова дума всеки ден', eyebrow: 'Игра на думи',
+    intro: 'Познай думата от 5 букви с 6 опита. Една и съща дума за всички, нова всеки ден в полунощ.',
+    shareUrl: 'zyankov.eu/duma', storage: 'zy-daily', locale: 'bg-BG',
+    daily: 'Днешната', unlimited: 'Неограничено', modes: 'Режим на игра',
+    help: 'Как се играе', stats: 'Статистика', close: 'Затвори', board: 'Опити', keyboard: 'Клавиатура', guess: 'Опит', empty: 'празно',
+    hit: 'на място', near: 'на друго място', miss: 'няма я',
+    enter: 'Готово', del: 'Изтрий', tooShort: 'Трябват 5 букви', notWord: 'Няма такава дума в речника',
+    praise: ['Гениално!', 'Великолепно!', 'Браво!', 'Много добре!', 'Добре!', 'На косъм!'],
+    copied: 'Резултатът е копиран. Постави го в чата.',
+    streak: (n: number) => (n > 0 ? `Серия: ${n} ${n === 1 ? 'ден' : 'дни'}` : 'Започни серия днес'),
+    unlimitedNote: 'Случайна дума, колкото пъти искаш',
+    wonIn: (n: number) => `Позна от ${n} ${n === 1 ? 'опит' : 'опита'}!`, wasWord: 'Думата беше',
+    share: 'Сподели', newWord: 'Нова дума', shareHeading: (n: number) => `Дума на деня № ${n}`, shareUnlimited: 'Дума на деня · неограничено',
+    won: 'Браво!', lost: 'Този път не', meaning: 'Какво значи:',
+    played: 'изиграни', winRate: 'победи', current: 'серия', best: 'най-дълга серия', distribution: 'Разпределение на опитите',
+    next: 'Следваща дума след', finishFirst: 'Довърши днешната дума, за да я добавиш към статистиката.', play: 'Да играем',
+    unlimitedStats: 'Неограничено: статистиката тук е само за днешните думи.',
+    helpText: 'Познай думата от 5 букви с 6 опита. След всеки опит плочките показват колко си близо.',
+    helpLegend: <>Кораловото <strong>К</strong> е на точното място, синьото кръгче <strong>Н</strong> е в думата, но на друго място, а сивите букви ги няма.</>,
+    helpModes: 'Днешната дума е една за всички и се сменя в полунощ. В „Неограничено“ играеш със случайни думи колкото искаш.',
+    example: 'книга', exampleNear: 1,
+  },
+  en: {
+    titleFirst: 'Letterwell', titleEmphasis: 'Daily', game: 'Letterwell Daily', note: 'A new word every day', eyebrow: 'Word game',
+    intro: 'Find the five-letter word in six tries. Everyone gets the same word, and a new one arrives every day.',
+    shareUrl: 'zyankov.eu/daily', storage: 'zy-daily-en', locale: 'en-GB',
+    daily: 'Today', unlimited: 'Unlimited', modes: 'Game mode',
+    help: 'How to play', stats: 'Statistics', close: 'Close', board: 'Guesses', keyboard: 'Keyboard', guess: 'Guess', empty: 'empty',
+    hit: 'right place', near: 'elsewhere in the word', miss: 'not in the word',
+    enter: 'Enter', del: 'Delete', tooShort: 'Five letters, please', notWord: 'Not in our word list',
+    praise: ['Genius!', 'Brilliant!', 'Splendid!', 'Nice one!', 'Good!', 'Phew!'],
+    copied: 'Result copied. Paste it into your chat.',
+    streak: (n: number) => (n > 0 ? `Streak: ${n} ${n === 1 ? 'day' : 'days'}` : 'Start a streak today'),
+    unlimitedNote: 'Random words, as many as you like',
+    wonIn: (n: number) => `Solved in ${n} ${n === 1 ? 'guess' : 'guesses'}!`, wasWord: 'The word was',
+    share: 'Share', newWord: 'New word', shareHeading: (n: number) => `Letterwell Daily #${n}`, shareUnlimited: 'Letterwell Daily · unlimited',
+    won: 'Well done!', lost: 'Not this time', meaning: 'What it means:',
+    played: 'played', winRate: 'won', current: 'streak', best: 'best streak', distribution: 'Guess distribution',
+    next: 'Next word in', finishFirst: 'Finish today’s word to add it to your statistics.', play: 'Let’s play',
+    unlimitedStats: 'Unlimited mode: these statistics count the daily words only.',
+    helpText: 'Find the five-letter word in six tries. After each guess the tiles show how close you are.',
+    helpLegend: <>The coral <strong>B</strong> is in the right place, the blue circle <strong>R</strong> is in the word but elsewhere, and grey letters are not in it.</>,
+    helpModes: 'Today’s word is the same for everyone and changes at midnight (Sofia time). In Unlimited you play random words as often as you like.',
+    example: 'bread', exampleNear: 1,
+  },
+} as const
+
+const NOTES = {
+  bg: (
+    <>
+      <article>
+        <h2>Как се играе</h2>
+        <p>Напиши дума от 5 букви и натисни „Готово“. Плочките показват:</p>
+        <ul className="daily-legend">
+          <li><span className="daily-tile is-filled is-correct">К</span> коралова плочка: буквата е в думата и на точното място;</li>
+          <li><span className="daily-tile is-filled is-present">Н</span> синьо кръгче: буквата е в думата, но на друго място;</li>
+          <li><span className="daily-tile is-filled is-absent">П</span> сива плочка: буквата я няма в думата.</li>
+        </ul>
+        <p>Имаш 6 опита. Днешната дума е една и съща за всички и се сменя в полунощ българско време. В „Неограничено“ играеш със случайни думи. Може да пишеш и от клавиатурата, на кирилица или с латинските клавиши по фонетичната подредба.</p>
+      </article>
+      <article>
+        <h2>Въпроси</h2>
+        <h3>Какви думи има?</h3>
+        <p>Познати съществителни и прилагателни в основна форма, без имена, съкращения и ругатни. Опитите може да са всяка дума от 5 букви от речника ни.</p>
+        <h3>Как се пази серията?</h3>
+        <p>Серията са дните подред, в които си познал днешната дума. Пази се в този браузър, без регистрация. Ако пропуснеш ден, започва отначало.</p>
+        <h3>Заседнал съм.</h3>
+        <p><a href={pagePath('wordle', 'bg')}>Помощникът за Wordle</a> показва кои думи още пасват на буквите ти. Ползвай го, ако искаш, но серията е по-сладка без него.</p>
+      </article>
+    </>
+  ),
+  en: (
+    <>
+      <article>
+        <h2>How to play</h2>
+        <p>Type a five-letter word and press Enter. The tiles tell you:</p>
+        <ul className="daily-legend">
+          <li><span className="daily-tile is-filled is-correct">B</span> coral tile: the letter is in the word, in the right place;</li>
+          <li><span className="daily-tile is-filled is-present">R</span> blue circle: the letter is in the word, somewhere else;</li>
+          <li><span className="daily-tile is-filled is-absent">E</span> grey tile: the letter is not in the word.</li>
+        </ul>
+        <p>You have six tries. Today’s word is the same for everyone and changes at midnight Sofia time (late evening in the UK and Americas). In Unlimited you get a random word every time.</p>
+      </article>
+      <article>
+        <h2>Questions</h2>
+        <h3>What words are used?</h3>
+        <p>Everyday nouns and adjectives, with no names, abbreviations or rude words. Your guesses can be any five-letter word from our dictionary.</p>
+        <h3>How does the streak work?</h3>
+        <p>Your streak counts the days in a row you solved today’s word. It is kept in this browser, with no sign-up. Miss a day and it starts again.</p>
+        <h3>I’m stuck.</h3>
+        <p>The <a href={pagePath('finder', 'en')}>word finder</a> lists every word you can make from a set of letters. Use it if you must, but a streak tastes better without it.</p>
+      </article>
+    </>
+  ),
+}
 
 function readJson<T>(key: string): T | null {
   try {
@@ -36,8 +132,6 @@ function writeJson(key: string, value: unknown) {
   }
 }
 
-const upper = (text: string) => text.toLocaleUpperCase('bg-BG')
-
 function formatCountdown(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000))
   const pad = (value: number) => String(value).padStart(2, '0')
@@ -45,8 +139,16 @@ function formatCountdown(ms: number) {
 }
 
 export default function DailyWord({ language = 'bg' }: { language?: Language }) {
-  void language
+  const t = TEXT[language]
+  const gameKey = `${t.storage}-game-v1`
+  const statsKey = `${t.storage}-stats-v1`
+  const unlimitedKey = `${t.storage}-unlimited-v1`
+  const letters = LETTERS[language]
+  const upper = useCallback((text: string) => text.toLocaleUpperCase(t.locale), [t.locale])
+
+  const [mode, setMode] = useState<Mode>('daily')
   const [puzzle, setPuzzle] = useState<number | null>(null)
+  const [answer, setAnswer] = useState('')
   const [guesses, setGuesses] = useState<string[]>([])
   const [current, setCurrent] = useState('')
   const [valid, setValid] = useState<Set<string> | null>(null)
@@ -57,35 +159,49 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
   const [modal, setModal] = useState<'none' | 'help' | 'stats'>('none')
   const [countdown, setCountdown] = useState('')
   const messageTimer = useRef<number | undefined>(undefined)
+  const closeButton = useRef<HTMLButtonElement>(null)
   // Latest typed word and guesses, so fast typing never submits a stale word.
   const currentRef = useRef('')
   const guessesRef = useRef<string[]>([])
   const setTyped = (value: string) => { currentRef.current = value; setCurrent(value) }
-  const closeButton = useRef<HTMLButtonElement>(null)
+  const setPlayed = (value: string[]) => { guessesRef.current = value; setGuesses(value) }
 
-  const answer = puzzle ? answerFor(puzzle) : ''
   const won = guesses.length > 0 && guesses[guesses.length - 1] === answer
   const finished = won || guesses.length >= MAX_GUESSES
   const keys = useMemo(() => keyMarks(guesses, answer), [guesses, answer])
 
-  // Today's puzzle, the saved game and stats (client only: the page is prerendered without a date).
-  useEffect(() => {
-    const today = puzzleNumber()
-    setPuzzle(today)
-    const saved = readJson<{ puzzle: number; guesses: string[] }>(GAME_KEY)
-    if (saved?.puzzle === today && Array.isArray(saved.guesses)) {
-      guessesRef.current = saved.guesses.slice(0, MAX_GUESSES)
-      setGuesses(guessesRef.current)
+  /** Switch to a mode and restore its saved game (client only: the page is prerendered without a date). */
+  const startMode = useCallback((next: Mode, fresh = false) => {
+    setMode(next)
+    setTyped('')
+    setRevealRow(-1)
+    if (next === 'daily') {
+      const today = puzzleNumber()
+      setPuzzle(today)
+      setAnswer(answerFor(today, language))
+      const saved = readJson<{ puzzle: number; guesses: string[] }>(gameKey)
+      setPlayed(saved?.puzzle === today && Array.isArray(saved.guesses) ? saved.guesses.slice(0, MAX_GUESSES) : [])
+    } else {
+      const saved = fresh ? null : readJson<{ answer: string; guesses: string[] }>(unlimitedKey)
+      const word = saved && DAILY_WORDS[language].includes(saved.answer) ? saved.answer : randomAnswer(language, readJson<{ answer: string }>(unlimitedKey)?.answer)
+      const played = saved && Array.isArray(saved.guesses) ? saved.guesses.slice(0, MAX_GUESSES) : []
+      setAnswer(word)
+      setPlayed(played)
+      writeJson(unlimitedKey, { answer: word, guesses: played })
     }
-    const savedStats = readJson<Stats>(STATS_KEY)
+  }, [gameKey, language, unlimitedKey])
+
+  useEffect(() => {
+    startMode('daily')
+    const savedStats = readJson<Stats>(statsKey)
     if (savedStats) setStats({ ...emptyStats(), ...savedStats })
-    if (!saved && !savedStats) setModal('help')
+    if (!readJson(gameKey) && !savedStats) setModal('help')
     let active = true
-    loadWordleList('bg')
-      .then((list) => { if (active) setValid(new Set([...list.common, ...list.rare, ...DAILY_WORDS])) })
-      .catch(() => { if (active) setValid(new Set(DAILY_WORDS)) })
+    loadWordleList(language)
+      .then((list) => { if (active) setValid(new Set([...list.common, ...list.rare, ...DAILY_WORDS[language]])) })
+      .catch(() => { if (active) setValid(new Set(DAILY_WORDS[language])) })
     return () => { active = false }
-  }, [])
+  }, [gameKey, language, startMode, statsKey])
 
   const flash = useCallback((text: string, wrong = false) => {
     setMessage(text)
@@ -98,40 +214,42 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
   }, [])
 
   const submit = useCallback(() => {
-    const current = currentRef.current
-    const guesses = guessesRef.current
-    if (!puzzle || guesses.includes(answer) || guesses.length >= MAX_GUESSES) return
-    if (current.length < WORD_LENGTH) return flash('Трябват 5 букви', true)
-    if (valid && !valid.has(current)) return flash('Няма такава дума в речника', true)
-    const next = [...guesses, current]
-    guessesRef.current = next
-    setGuesses(next)
+    const word = currentRef.current
+    const played = guessesRef.current
+    if (!answer || played.includes(answer) || played.length >= MAX_GUESSES) return
+    if (word.length < WORD_LENGTH) return flash(t.tooShort, true)
+    if (valid && !valid.has(word)) return flash(t.notWord, true)
+    const next = [...played, word]
+    setPlayed(next)
     setTyped('')
     setRevealRow(next.length - 1)
-    writeJson(GAME_KEY, { puzzle, guesses: next })
-    const isWin = current === answer
+    if (mode === 'daily') writeJson(gameKey, { puzzle, guesses: next })
+    else writeJson(unlimitedKey, { answer, guesses: next })
+    const isWin = word === answer
     if (isWin || next.length >= MAX_GUESSES) {
-      const updated = recordResult(stats, puzzle, isWin, next.length)
-      setStats(updated)
-      writeJson(STATS_KEY, updated)
-      track('daily_finish', { result: isWin ? 'win' : 'loss', guesses: next.length })
+      if (mode === 'daily' && puzzle) {
+        const updated = recordResult(stats, puzzle, isWin, next.length)
+        setStats(updated)
+        writeJson(statsKey, updated)
+      }
+      track('daily_finish', { result: isWin ? 'win' : 'loss', guesses: next.length, mode, language })
       window.setTimeout(() => {
-        flash(isWin ? ['Гениално!', 'Великолепно!', 'Браво!', 'Много добре!', 'Добре!', 'На косъм!'][next.length - 1] : upper(answer))
-        setModal('stats')
+        flash(isWin ? t.praise[next.length - 1] : upper(answer))
+        if (mode === 'daily') setModal('stats')
       }, 1700)
     } else if (next.length === 1) {
-      track('daily_start', {})
+      track('daily_start', { mode, language })
     }
-  }, [answer, flash, puzzle, stats, valid])
+  }, [answer, flash, gameKey, language, mode, puzzle, stats, statsKey, t, unlimitedKey, upper, valid])
 
   const press = useCallback((key: string) => {
-    if (finished || !puzzle) return
+    if (finished || !answer) return
     if (key === 'enter') return submit()
     if (key === 'back') return setTyped(currentRef.current.slice(0, -1))
-    if (BG_LETTERS.test(key) && currentRef.current.length < WORD_LENGTH) setTyped(currentRef.current + key)
-  }, [finished, puzzle, submit])
+    if (letters.test(key) && currentRef.current.length < WORD_LENGTH) setTyped(currentRef.current + key)
+  }, [answer, finished, letters, submit])
 
-  // Physical keyboard: Cyrillic, or Latin keys mapped to the phonetic layout.
+  // Physical keyboard; in Bulgarian, Latin keys are mapped to the phonetic layout.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.ctrlKey || event.metaKey || event.altKey || modal !== 'none') return
@@ -139,13 +257,13 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
       if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return
       if (event.key === 'Enter') { event.preventDefault(); press('enter'); return }
       if (event.key === 'Backspace') { press('back'); return }
-      const key = event.key.toLocaleLowerCase('bg-BG')
-      const letter = BG_LETTERS.test(key) ? key : LATIN_TO_CYRILLIC[key]
+      const key = event.key.toLocaleLowerCase(t.locale)
+      const letter = letters.test(key) ? key : language === 'bg' ? LATIN_TO_CYRILLIC[key] : undefined
       if (letter) press(letter)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [modal, press])
+  }, [language, letters, modal, press, t.locale])
 
   // Countdown to the next word while the stats are open.
   useEffect(() => {
@@ -165,72 +283,84 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
   }, [modal])
 
   const share = async () => {
-    if (!puzzle) return
-    const text = shareText(puzzle, guesses, answer, won, SHARE_URL)
-    track('daily_share', {})
+    if (!answer) return
+    const heading = mode === 'daily' && puzzle ? t.shareHeading(puzzle) : t.shareUnlimited
+    const text = shareText(heading, guesses, answer, won, t.shareUrl)
+    track('daily_share', { mode, language })
     try {
       if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
         await navigator.share({ text })
         return
       }
       await navigator.clipboard.writeText(text)
-      flash('Резултатът е копиран. Постави го в чата.')
+      flash(t.copied)
     } catch {
       // The user closed the share sheet.
     }
   }
 
+  const markLabel = (mark: Mark | null | undefined) => (mark ? `, ${mark === 'correct' ? t.hit : mark === 'present' ? t.near : t.miss}` : '')
+
   const rows = Array.from({ length: MAX_GUESSES }, (_, row) => {
-    if (row < guesses.length) {
-      const marks = markGuess(guesses[row], answer)
-      return { letters: [...guesses[row]], marks: marks as (Mark | null)[], state: 'done' as const }
-    }
-    if (row === guesses.length && !finished) return { letters: [...current.padEnd(WORD_LENGTH, ' ')], marks: Array(WORD_LENGTH).fill(null), state: 'current' as const }
-    return { letters: Array(WORD_LENGTH).fill(' '), marks: Array(WORD_LENGTH).fill(null), state: 'empty' as const }
+    if (row < guesses.length) return { letters: [...guesses[row]], marks: markGuess(guesses[row], answer) as (Mark | null)[], current: false }
+    if (row === guesses.length && !finished) return { letters: [...current.padEnd(WORD_LENGTH, ' ')], marks: Array(WORD_LENGTH).fill(null), current: true }
+    return { letters: Array(WORD_LENGTH).fill(' '), marks: Array(WORD_LENGTH).fill(null), current: false }
   })
 
   const streak = puzzle ? currentStreak(stats, puzzle) : 0
   const maxDist = Math.max(1, ...stats.distribution)
   const winRate = stats.played ? Math.round((stats.wins / stats.played) * 100) : 0
+  const dailyDone = mode === 'daily' && finished
 
   return (
     <div className="app-shell wordle-page daily-page">
       <header className="topbar">
-        <a className="brand" href={pagePath('finder', 'bg')} aria-label="Letterwell">
+        <a className="brand" href={pagePath('finder', language)} aria-label="Letterwell">
           <span className="brand-mark"><Sparkles size={18} strokeWidth={2.2} /></span>
           <span>letterwell</span>
         </a>
         <div className="topbar-actions">
-          <div className="topbar-note"><span className="status-dot" />Нова дума всеки ден</div>
-          <ToolLinks language="bg" current="daily" />
+          <div className="topbar-note"><span className="status-dot" />{t.note}</div>
+          <ToolLinks language={language} current="daily" />
+          <label className="language-picker">
+            <span className="sr-only">{language === 'bg' ? 'Език' : 'Language'}</span>
+            <select value={language} onChange={(event) => window.location.assign(pagePath('daily', event.target.value as Language))} aria-label={language === 'bg' ? 'Език' : 'Language'}>
+              <option value="en">EN</option>
+              <option value="bg">БГ</option>
+            </select>
+          </label>
         </div>
       </header>
 
       <main id="top">
         <section className="wordle-intro daily-intro" aria-labelledby="page-title">
-          <HeroDecor variant="daily" language="bg" />
-          <p className="eyebrow"><span className="eyebrow-line" />{puzzle ? `№ ${puzzle}` : 'Игра на думи'}<span className="eyebrow-line" /></p>
-          <h1 id="page-title">Дума на <em>деня</em></h1>
-          <p className="intro-description">Познай думата от 5 букви с 6 опита. Една и съща дума за всички, нова всеки ден в полунощ.</p>
+          <HeroDecor variant="daily" language={language} />
+          <p className="eyebrow"><span className="eyebrow-line" />{mode === 'daily' && puzzle ? `№ ${puzzle}` : t.eyebrow}<span className="eyebrow-line" /></p>
+          <h1 id="page-title">{t.titleFirst} <em>{t.titleEmphasis}</em></h1>
+          <p className="intro-description">{t.intro}</p>
         </section>
 
-        <section className="daily-game" aria-label="Игра">
+        <section className="daily-game" aria-label={t.game}>
           <div className="daily-toolbar">
-            <button type="button" className="daily-icon" onClick={() => setModal('help')} aria-label="Как се играе"><CircleHelp size={20} /></button>
-            <span className="daily-streak">{streak > 0 ? `Серия: ${streak} ${streak === 1 ? 'ден' : 'дни'}` : 'Започни серия днес'}</span>
-            <button type="button" className="daily-icon" onClick={() => setModal('stats')} aria-label="Статистика"><BarChart3 size={20} /></button>
+            <button type="button" className="daily-icon" onClick={() => setModal('help')} aria-label={t.help}><CircleHelp size={20} /></button>
+            <div className="daily-modes" role="group" aria-label={t.modes}>
+              <button type="button" aria-pressed={mode === 'daily'} onClick={() => startMode('daily')}>{t.daily}</button>
+              <button type="button" aria-pressed={mode === 'unlimited'} onClick={() => startMode('unlimited')}>{t.unlimited}</button>
+            </div>
+            <button type="button" className="daily-icon" onClick={() => setModal('stats')} aria-label={t.stats}><BarChart3 size={20} /></button>
           </div>
+
+          <p className="daily-streak">{mode === 'daily' ? t.streak(streak) : t.unlimitedNote}</p>
 
           <div className="daily-message" role="status" aria-live="polite">{message}</div>
 
-          <div className="daily-board" aria-label="Опити">
+          <div className="daily-board" aria-label={t.board}>
             {rows.map((row, r) => (
-              <div key={r} className={`daily-row${row.state === 'current' && shake ? ' is-shaking' : ''}`} role="group" aria-label={`Опит ${r + 1}`}>
+              <div key={r} className={`daily-row${row.current && shake ? ' is-shaking' : ''}`} role="group" aria-label={`${t.guess} ${r + 1}`}>
                 {row.letters.map((letter, i) => {
                   const mark = row.marks[i]
-                  const label = letter.trim() ? `${upper(letter)}${mark ? `, ${mark === 'correct' ? 'на място' : mark === 'present' ? 'на друго място' : 'няма я'}` : ''}` : 'празно'
                   return (
-                    <span key={i} aria-label={label}
+                    <span key={i} aria-label={letter.trim() ? `${upper(letter)}${markLabel(mark)}` : t.empty}
                       className={`daily-tile${letter.trim() ? ' is-filled' : ''}${mark ? ` is-${mark}` : ''}${r === revealRow ? ' is-revealing' : ''}`}
                       style={{ '--i': i } as CSSProperties}>{upper(letter.trim())}</span>
                   )
@@ -241,104 +371,88 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
 
           {finished && (
             <div className="daily-after">
-              <p>{won ? `Позна от ${guesses.length} ${guesses.length === 1 ? 'опит' : 'опита'}!` : <>Думата беше <strong>{upper(answer)}</strong>.</>}</p>
+              <p>{won ? t.wonIn(guesses.length) : <>{t.wasWord} <strong>{upper(answer)}</strong>.</>}</p>
+              {!won || mode === 'unlimited' ? (
+                <p className="daily-after__meaning">{t.meaning} {dictionaryLinks(answer, language).map((link, i) => <span key={link.href}>{i > 0 && ' · '}<a href={link.href} target="_blank" rel="noopener">{link.label}</a></span>)}</p>
+              ) : null}
               <div className="daily-after__actions">
-                <button type="button" className="daily-share" onClick={share}><Share2 size={18} /> Сподели</button>
-                <button type="button" className="daily-link-button" onClick={() => setModal('stats')}>Статистика</button>
+                <button type="button" className="daily-share" onClick={share}><Share2 size={18} /> {t.share}</button>
+                {mode === 'unlimited'
+                  ? <button type="button" className="daily-link-button" onClick={() => startMode('unlimited', true)}><RefreshCw size={16} /> {t.newWord}</button>
+                  : <button type="button" className="daily-link-button" onClick={() => setModal('stats')}>{t.stats}</button>}
               </div>
             </div>
           )}
 
-          <div className="daily-keyboard" aria-label="Клавиатура">
-            {KEYBOARD_ROWS.map((row, r) => (
+          <div className="daily-keyboard" aria-label={t.keyboard}>
+            {KEYBOARD_ROWS[language].map((row, r) => (
               <div key={r} className="daily-keys">
-                {r === 2 && <button type="button" className="daily-key is-wide" onClick={() => press('enter')}>Готово</button>}
+                {r === 2 && <button type="button" className="daily-key is-wide" onClick={() => press('enter')}>{t.enter}</button>}
                 {[...row].map((key) => {
                   const mark = keys.get(key)
-                  return (
-                    <button type="button" key={key} className={`daily-key${mark ? ` is-${mark}` : ''}`} onClick={() => press(key)} aria-label={`${upper(key)}${mark ? `, ${mark === 'correct' ? 'на място' : mark === 'present' ? 'на друго място' : 'няма я'}` : ''}`}>{upper(key)}</button>
-                  )
+                  return <button type="button" key={key} className={`daily-key${mark ? ` is-${mark}` : ''}`} onClick={() => press(key)} aria-label={`${upper(key)}${markLabel(mark)}`}>{upper(key)}</button>
                 })}
-                {r === 2 && <button type="button" className="daily-key is-wide" onClick={() => press('back')} aria-label="Изтрий"><Delete size={20} /></button>}
+                {r === 2 && <button type="button" className="daily-key is-wide" onClick={() => press('back')} aria-label={t.del}><Delete size={20} /></button>}
               </div>
             ))}
           </div>
         </section>
 
-        <section className="daily-notes">
-          <article>
-            <h2>Как се играе</h2>
-            <p>Напиши дума от 5 букви и натисни „Готово“. Плочките сменят цвета си:</p>
-            <ul className="daily-legend">
-              <li><span className="daily-tile is-filled is-correct">К</span> коралова плочка: буквата е в думата и на точното място;</li>
-              <li><span className="daily-tile is-filled is-present">Н</span> синьо кръгче: буквата е в думата, но на друго място;</li>
-              <li><span className="daily-tile is-filled is-absent">П</span> сива плочка: буквата я няма в думата.</li>
-            </ul>
-            <p>Имаш 6 опита. Думата е една и съща за всички и се сменя всеки ден в полунощ българско време. Може да пишеш и от клавиатурата, на кирилица или с латинските клавиши по фонетичната подредба.</p>
-          </article>
-          <article>
-            <h2>Въпроси</h2>
-            <h3>Какви думи има?</h3>
-            <p>Познати съществителни и прилагателни в основна форма, без имена, съкращения и ругатни. Опитите може да са всяка дума от 5 букви от речника ни.</p>
-            <h3>Как се пази серията?</h3>
-            <p>Серията са дните подред, в които си познал думата. Пази се в този браузър, без регистрация. Ако пропуснеш ден, започва отначало.</p>
-            <h3>Заседнал съм.</h3>
-            <p><a href={pagePath('wordle', 'bg')}>Помощникът за Wordle</a> показва кои думи още пасват на цветовете ти. Ползвай го, ако искаш, но серията е по-сладка без него.</p>
-          </article>
-        </section>
+        <section className="daily-notes">{NOTES[language]}</section>
 
-        <MoreWordTools language="bg" current="daily" />
+        <MoreWordTools language={language} current="daily" />
       </main>
 
       {modal !== 'none' && (
         <div className="daily-overlay" onClick={(event) => { if (event.target === event.currentTarget) setModal('none') }}>
           <div className="daily-modal" role="dialog" aria-modal="true" aria-labelledby="daily-modal-title">
-            <button ref={closeButton} type="button" className="daily-close" onClick={() => setModal('none')} aria-label="Затвори"><X size={20} /></button>
+            <button ref={closeButton} type="button" className="daily-close" onClick={() => setModal('none')} aria-label={t.close}><X size={20} /></button>
             {modal === 'help' ? (
               <>
-                <h2 id="daily-modal-title">Как се играе</h2>
-                <p>Познай думата от 5 букви с 6 опита. След всеки опит плочките показват колко си близо.</p>
+                <h2 id="daily-modal-title">{t.help}</h2>
+                <p>{t.helpText}</p>
                 <div className="daily-example" aria-hidden="true">
-                  {['к', 'н', 'и', 'г', 'а'].map((letter, i) => <span key={i} className={`daily-tile is-filled${i === 0 ? ' is-correct' : i === 1 ? ' is-present' : ''}`}>{upper(letter)}</span>)}
+                  {[...t.example].map((letter, i) => <span key={i} className={`daily-tile is-filled${i === 0 ? ' is-correct' : i === t.exampleNear ? ' is-present' : ''}`}>{upper(letter)}</span>)}
                 </div>
-                <p>Кораловото <strong>К</strong> е на точното място, синьото кръгче <strong>Н</strong> е в думата, но на друго място, а сивите букви ги няма.</p>
-                <p>Нова дума всеки ден в полунощ. Сподели резултата с приятели, без да издаваш думата.</p>
-                <button type="button" className="daily-share" onClick={() => setModal('none')}>Да играем</button>
+                <p>{t.helpLegend}</p>
+                <p>{t.helpModes}</p>
+                <button type="button" className="daily-share" onClick={() => setModal('none')}>{t.play}</button>
               </>
             ) : (
               <>
-                <h2 id="daily-modal-title">{finished ? (won ? 'Браво!' : 'Този път не') : 'Статистика'}</h2>
-                {finished && (
+                <h2 id="daily-modal-title">{dailyDone ? (won ? t.won : t.lost) : t.stats}</h2>
+                {dailyDone && (
                   <div className="daily-answer">
-                    <div className="daily-example" aria-label={`Думата: ${upper(answer)}`}>
+                    <div className="daily-example" aria-label={upper(answer)}>
                       {[...answer].map((letter, i) => <span key={i} className="daily-tile is-filled is-correct">{upper(letter)}</span>)}
                     </div>
-                    <p>Какво значи: {dictionaryLinks(answer, 'bg').map((link, i) => <span key={link.href}>{i > 0 && ' · '}<a href={link.href} target="_blank" rel="noopener">{link.label}</a></span>)}</p>
+                    <p>{t.meaning} {dictionaryLinks(answer, language).map((link, i) => <span key={link.href}>{i > 0 && ' · '}<a href={link.href} target="_blank" rel="noopener">{link.label}</a></span>)}</p>
                   </div>
                 )}
+                {mode === 'unlimited' && <p className="daily-hint">{t.unlimitedStats}</p>}
                 <dl className="daily-stats">
-                  <div><dt>изиграни</dt><dd>{stats.played}</dd></div>
-                  <div><dt>победи</dt><dd>{winRate}%</dd></div>
-                  <div><dt>серия</dt><dd>{streak}</dd></div>
-                  <div><dt>най-дълга серия</dt><dd>{stats.maxStreak}</dd></div>
+                  <div><dt>{t.played}</dt><dd>{stats.played}</dd></div>
+                  <div><dt>{t.winRate}</dt><dd>{winRate}%</dd></div>
+                  <div><dt>{t.current}</dt><dd>{streak}</dd></div>
+                  <div><dt>{t.best}</dt><dd>{stats.maxStreak}</dd></div>
                 </dl>
-                <h3>Разпределение на опитите</h3>
+                <h3>{t.distribution}</h3>
                 <ol className="daily-dist">
                   {stats.distribution.map((count, i) => (
                     <li key={i}>
                       <span>{i + 1}</span>
-                      <span className={`daily-bar${finished && won && guesses.length === i + 1 ? ' is-today' : ''}`} style={{ width: `${Math.max(8, (count / maxDist) * 100)}%` }}>{count}</span>
+                      <span className={`daily-bar${dailyDone && won && guesses.length === i + 1 ? ' is-today' : ''}`} style={{ width: `${Math.max(8, (count / maxDist) * 100)}%` }}>{count}</span>
                     </li>
                   ))}
                 </ol>
-                {finished ? (
+                {dailyDone ? (
                   <div className="daily-next">
-                    <div><span>Следваща дума след</span><strong>{countdown}</strong></div>
-                    <button type="button" className="daily-share" onClick={share}><Share2 size={18} /> Сподели</button>
+                    <div><span>{t.next}</span><strong>{countdown}</strong></div>
+                    <button type="button" className="daily-share" onClick={share}><Share2 size={18} /> {t.share}</button>
                   </div>
-                ) : (
-                  <p className="daily-hint">Довърши днешната дума, за да я добавиш към статистиката.</p>
-                )}
+                ) : mode === 'daily' ? (
+                  <p className="daily-hint">{t.finishFirst}</p>
+                ) : null}
               </>
             )}
           </div>

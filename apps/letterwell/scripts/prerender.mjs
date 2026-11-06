@@ -70,7 +70,7 @@ try {
   const { default: DailyWord } = await vite.ssrLoadModule('/src/DailyWord.tsx')
   const { pageLanguages, pages, pagePath, pageMeta, pageOgKey } = await vite.ssrLoadModule('/src/seo.ts')
   const components = { finder: App, wordle: WordleSolver, crossword: CrosswordSolver, bee: BeeSolver, daily: DailyWord }
-  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper', crossword: 'Letterwell crossword helper', bee: 'Letterwell Spelling Bee helper', daily: 'Дума на деня' }
+  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper', crossword: 'Letterwell crossword helper', bee: 'Letterwell Spelling Bee helper', daily: 'Letterwell Daily' }
   const template = await readFile(resolve('dist/index.html'), 'utf8')
   if (!template.includes(placeholder)) throw new Error('Could not find the Letterwell root element to prerender.')
 
@@ -86,7 +86,7 @@ try {
         ? { en: `${site}${pagePath(page, 'en')}`, bg: `${site}${pagePath(page, 'bg')}`, 'x-default': `${site}${pagePath(page, 'en')}` }
         : { en: null, bg: null, 'x-default': null },
       ogKey: pageOgKey(page, language),
-      name: names[page],
+      name: page === 'daily' && language === 'bg' ? 'Дума на деня' : names[page],
     })
     const file = resolve('dist', path.replace(/^\/letterwell\//, ''), 'index.html')
     await mkdir(dirname(file), { recursive: true })

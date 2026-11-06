@@ -17,7 +17,7 @@ hydrateRoot(
     {{
       wordle: <WordleSolver language={languageFromPath(window.location.pathname)} />,
       crossword: <CrosswordSolver language={languageFromPath(window.location.pathname)} />,
-      daily: <DailyWord language="bg" />,
+      daily: <DailyWord language={languageFromPath(window.location.pathname)} />,
       bee: <BeeSolver language={languageFromPath(window.location.pathname)} />,
       finder: <App language={languageFromPath(window.location.pathname)} />,
     }[pageFromPath(window.location.pathname)]}

@@ -5,10 +5,9 @@ import { pagePath, type Language, type Page } from './seo'
 const TOOLS: { page: Page; name: Record<Language, string>; short: Record<Language, string>; description: Record<Language, string>; only?: Language }[] = [
   {
     page: 'daily',
-    name: { en: 'Word of the day', bg: 'Дума на деня' },
-    short: { en: 'Daily word', bg: 'Дума на деня' },
-    description: { en: 'A new Bulgarian five-letter word every day.', bg: 'Познай думата от 5 букви. Нова всеки ден.' },
-    only: 'bg',
+    name: { en: 'Letterwell Daily', bg: 'Дума на деня' },
+    short: { en: 'Daily', bg: 'Дума на деня' },
+    description: { en: 'Find the five-letter word. A new one every day, or unlimited.', bg: 'Познай думата от 5 букви. Нова всеки ден или неограничено.' },
   },
   {
     page: 'finder',

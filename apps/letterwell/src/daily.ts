@@ -1,6 +1,8 @@
-// "Дума на деня": a daily five-letter Bulgarian word game. Everyone in Bulgaria gets the same word
-// each day (by the date in Europe/Sofia); the answers below are everyday nouns and adjectives from
-// the Wordle list, shuffled once. Guesses are checked against the full five-letter list.
+// Letterwell's daily five-letter word game: "Дума на деня" in Bulgarian, "Letterwell Daily" in
+// English. Everyone gets the same word each day (by the date in Europe/Sofia); the answers are
+// everyday nouns and adjectives from the five-letter lists, shuffled once. Guesses are checked
+// against the full five-letter list. There is also an unlimited mode with random words.
+import type { Language } from './seo'
 import { WORD_LENGTH } from './wordle'
 
 export const MAX_GUESSES = 6
@@ -8,7 +10,7 @@ export const MAX_GUESSES = 6
 /** Day number 1 is this date (in Sofia). */
 export const EPOCH = Date.UTC(2026, 10, 9)
 
-export const DAILY_WORDS: readonly string[] = [
+export const DAILY_WORDS_BG: readonly string[] = [
   'ръжда', 'мокър', 'топка', 'помощ', 'чакъл', 'захар', 'лебед', 'дънер', 'солен', 'котва', 'колеж', 'патка',
   'приют', 'сълза', 'банка', 'печка', 'тиган', 'музей', 'чирак', 'шепот', 'крило', 'храст', 'запас', 'шаран',
   'пепел', 'склад', 'място', 'шунка', 'стена', 'ездач', 'копие', 'обмен', 'букет', 'рамка', 'смяна', 'болка',
@@ -58,6 +60,41 @@ export const DAILY_WORDS: readonly string[] = [
   'школа', 'поход', 'фенер', 'кухня', 'съвет', 'фасул', 'фурна',
 ]
 
+export const DAILY_WORDS_EN: readonly string[] = [
+  'eager', 'wheel', 'shine', 'straw', 'boots', 'wrist', 'cream', 'ocean', 'brush', 'mercy', 'nerve', 'comet',
+  'dress', 'heavy', 'spoon', 'grill', 'candy', 'quick', 'voice', 'purse', 'click', 'float', 'model', 'bloom',
+  'daily', 'opera', 'flute', 'ankle', 'sharp', 'chess', 'stamp', 'field', 'album', 'scarf', 'swing', 'pasta',
+  'bliss', 'bunny', 'focus', 'logic', 'stage', 'brown', 'jelly', 'radio', 'style', 'novel', 'fluid', 'scene',
+  'stone', 'salad', 'giant', 'sugar', 'comic', 'charm', 'crowd', 'badge', 'fairy', 'image', 'alarm', 'sheet',
+  'bonus', 'thumb', 'tower', 'handy', 'motel', 'frame', 'beach', 'shirt', 'flash', 'queen', 'spice', 'layer',
+  'waltz', 'angel', 'paint', 'slide', 'panda', 'tribe', 'ranch', 'clerk', 'flour', 'delta', 'crane', 'fever',
+  'cloth', 'music', 'diary', 'guide', 'bride', 'couch', 'organ', 'bench', 'porch', 'steam', 'plane', 'baker',
+  'topic', 'towel', 'sight', 'lodge', 'clown', 'owner', 'angle', 'marsh', 'moose', 'cheap', 'raven', 'thick',
+  'glove', 'beard', 'sword', 'shade', 'tasty', 'eagle', 'solid', 'pitch', 'sound', 'cards', 'brand', 'globe',
+  'cheer', 'attic', 'sushi', 'video', 'cabin', 'photo', 'grain', 'juice', 'meter', 'dusty', 'beans', 'royal',
+  'choir', 'solar', 'wagon', 'green', 'gravy', 'skill', 'radar', 'robin', 'hobby', 'elbow', 'fence', 'peace',
+  'smell', 'grade', 'lobby', 'lunch', 'tight', 'award', 'space', 'shaft', 'guard', 'alpha', 'cloud', 'roots',
+  'visit', 'frost', 'ferry', 'adult', 'shape', 'score', 'shelf', 'diner', 'empty', 'bread', 'daisy', 'audio',
+  'mouse', 'metal', 'stove', 'urban', 'orbit', 'twins', 'jeans', 'craft', 'speed', 'yacht', 'price', 'chair',
+  'coast', 'goose', 'title', 'blade', 'trees', 'feast', 'label', 'skirt', 'quiet', 'birth', 'habit', 'climb',
+  'proud', 'arena', 'ridge', 'chaos', 'theme', 'shell', 'trail', 'woods', 'twist', 'curve', 'prize', 'piece',
+  'paper', 'wheat', 'pilot', 'color', 'glory', 'light', 'brick', 'guest', 'crown', 'chart', 'youth', 'trade',
+  'plant', 'apple', 'floor', 'spicy', 'laugh', 'camel', 'staff', 'chest', 'medal', 'inner', 'swamp', 'sauce',
+  'table', 'slice', 'coach', 'aisle', 'scout', 'shiny', 'smart', 'robot', 'cliff', 'lucky', 'fresh', 'plate',
+  'faith', 'dizzy', 'token', 'drill', 'cargo', 'steps', 'whale', 'canal', 'quote', 'brave', 'storm', 'ghost',
+  'jewel', 'grass', 'bacon', 'sweet', 'upper', 'glass', 'entry', 'dream', 'amber', 'shift', 'beast', 'board',
+  'essay', 'pizza', 'clean', 'drama', 'puppy', 'sport', 'broad', 'tiger', 'smile', 'crash', 'store', 'shark',
+  'torch', 'equal', 'vault', 'range', 'value', 'creek', 'fruit', 'world', 'brief', 'ideal', 'large', 'olive',
+  'arrow', 'email', 'super', 'trunk', 'cycle', 'sheep', 'birds', 'rapid', 'alley', 'armor', 'coins', 'water',
+  'horse', 'piano', 'cable', 'actor', 'study', 'lemon', 'champ', 'chain', 'heart', 'noise', 'finch', 'dozen',
+  'brain', 'scale', 'grand', 'match', 'laser', 'polar', 'depth', 'truck', 'sweep', 'pearl', 'vocal', 'taste',
+  'blank', 'tooth', 'power', 'clock', 'villa', 'shore', 'fleet', 'chase', 'loyal', 'panel', 'onion', 'metro',
+  'verse', 'poppy', 'stock', 'river', 'error', 'socks', 'scoop', 'syrup', 'moral', 'house', 'level', 'tutor',
+  'magic', 'patch', 'timer', 'seeds', 'earth', 'draft', 'elder', 'civil', 'toast', 'sunny', 'basic',
+]
+
+export const DAILY_WORDS: Record<Language, readonly string[]> = { bg: DAILY_WORDS_BG, en: DAILY_WORDS_EN }
+
 export type Mark = 'correct' | 'present' | 'absent'
 
 /** Today's date in Sofia as a UTC midnight timestamp, so days change at midnight Bulgarian time. */
@@ -72,9 +109,18 @@ export function puzzleNumber(now: Date = new Date()): number {
   return Math.max(1, Math.round((sofiaToday(now) - EPOCH) / 86_400_000) + 1)
 }
 
-export function answerFor(puzzle: number): string {
-  const count = DAILY_WORDS.length
-  return DAILY_WORDS[(((puzzle - 1) % count) + count) % count]
+export function answerFor(puzzle: number, language: Language = 'bg'): string {
+  const words = DAILY_WORDS[language]
+  const count = words.length
+  return words[(((puzzle - 1) % count) + count) % count]
+}
+
+/** A random answer for the unlimited mode, never the same as the one before. */
+export function randomAnswer(language: Language, avoid = ''): string {
+  const words = DAILY_WORDS[language]
+  let word = avoid
+  while (word === avoid) word = words[Math.floor(Math.random() * words.length)]
+  return word
 }
 
 /** Milliseconds until the next word (midnight in Sofia). */
@@ -123,8 +169,14 @@ export function keyMarks(guesses: string[], answer: string): Map<string, Mark> {
   return keys
 }
 
-/** Phonetic Bulgarian layout (БДС phonetic), as on most phones and computers here. */
-export const KEYBOARD_ROWS = ['явертъуиопч', 'асдфгхйклшщ', 'зьцжбнмю']
+/** On-screen keyboards: phonetic Bulgarian (as on most phones here) and QWERTY. */
+export const KEYBOARD_ROWS: Record<Language, string[]> = {
+  bg: ['явертъуиопч', 'асдфгхйклшщ', 'зьцжбнмю'],
+  en: ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'],
+}
+
+/** Letters a word can contain in each language. */
+export const LETTERS: Record<Language, RegExp> = { bg: /^[а-ъьюя]$/, en: /^[a-z]$/ }
 
 /** Latin keys to Cyrillic, for people typing on a Latin keyboard (phonetic layout). */
 export const LATIN_TO_CYRILLIC: Record<string, string> = {
@@ -172,8 +224,9 @@ export function currentStreak(stats: Stats, puzzle: number): number {
 // Our own colours: orange for the right place, blue for elsewhere in the word.
 const SQUARES: Record<Mark, string> = { correct: '🟧', present: '🔵', absent: '⬜' }
 
-/** Text to share: the squares without the letters, so it does not give the word away. */
-export function shareText(puzzle: number, guesses: string[], answer: string, won: boolean, url: string): string {
+/** Text to share: the squares without the letters, so it does not give the word away.
+ *  `heading` is e.g. "Дума на деня № 12" or "Letterwell Daily #12". */
+export function shareText(heading: string, guesses: string[], answer: string, won: boolean, url: string): string {
   const rows = guesses.map((guess) => markGuess(guess, answer).map((mark) => SQUARES[mark]).join(''))
-  return `Дума на деня № ${puzzle} · ${won ? guesses.length : 'X'}/${MAX_GUESSES}\n${rows.join('\n')}\n${url}`
+  return `${heading} · ${won ? guesses.length : 'X'}/${MAX_GUESSES}\n${rows.join('\n')}\n${url}`
 }
