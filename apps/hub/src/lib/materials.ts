@@ -394,3 +394,121 @@ export function estimateMasonry(input: MasonryInput): MasonryEstimate | null {
     headJoints: unit.headJoints, cost: units * Math.max(0, input.price),
   }
 }
+
+// ---------- Concrete (Bulgarian calculator) ----------
+
+/** Typical site-mixed recipes per 1 m³ of concrete. Approximate: they depend on the cement, sand and aggregate size. */
+export const CONCRETE_MIXES = [
+  { label: 'C12/15 (B15) – подложка, тротоар', cementKg: 270, sandM3: 0.48, gravelM3: 0.86, waterL: 180 },
+  { label: 'C16/20 (B20) – плоча, основи', cementKg: 320, sandM3: 0.45, gravelM3: 0.85, waterL: 180 },
+  { label: 'C20/25 (B25) – натоварена плоча, колони', cementKg: 370, sandM3: 0.43, gravelM3: 0.82, waterL: 185 },
+] as const
+
+/** Loose bulk density in tonnes per m³, to turn sand and gravel volumes into weight. */
+export const SAND_T_PER_M3 = 1.5
+export const GRAVEL_T_PER_M3 = 1.6
+
+export interface ConcreteInput {
+  shape: 'slab' | 'round'
+  /** m */
+  length: number
+  /** m */
+  width: number
+  /** cm (slab thickness) */
+  thickness: number
+  /** cm (round column or post hole) */
+  diameter: number
+  /** m (round column or post hole) */
+  depth: number
+  count: number
+  waste: number
+  mix: number
+  /** litres of concrete from one bag of dry pre-mix */
+  bagYield: number
+  /** kg per bag of cement */
+  cementBag: number
+  /** price per m³ of ready-mix */
+  price: number
+}
+
+export interface ConcreteEstimate {
+  volume: number
+  withWaste: number
+  truck: number
+  dryBags: number
+  cementKg: number
+  cementBags: number
+  sandM3: number
+  gravelM3: number
+  waterL: number
+  cost: number
+}
+
+export function estimateConcrete(input: ConcreteInput): ConcreteEstimate | null {
+  const count = Math.max(1, Math.round(input.count) || 1)
+  const one = input.shape === 'round'
+    ? Math.PI * (input.diameter / 200) ** 2 * input.depth
+    : input.length * input.width * (input.thickness / 100)
+  if (!(one > 0)) return null
+  const volume = one * count
+  const total = withWaste(volume, input.waste)
+  const mix = CONCRETE_MIXES[input.mix] ?? CONCRETE_MIXES[1]
+  const cementKg = total * mix.cementKg
+  return {
+    volume,
+    withWaste: total,
+    // Ready-mix plants sell in steps of 0.5 m³.
+    truck: wholeUp(total * 2) / 2,
+    dryBags: input.bagYield > 0 ? wholeUp((total * 1000) / input.bagYield) : 0,
+    cementKg,
+    cementBags: input.cementBag > 0 ? wholeUp(cementKg / input.cementBag) : 0,
+    sandM3: total * mix.sandM3,
+    gravelM3: total * mix.gravelM3,
+    waterL: total * mix.waterL,
+    cost: input.price > 0 ? (wholeUp(total * 2) / 2) * input.price : 0,
+  }
+}
+
+// ---------- Gravel, sand and other bulk materials ----------
+
+/** Loose bulk density in tonnes per m³. Suppliers' figures vary with moisture and grading. */
+export const BULK_MATERIALS = [
+  { label: 'Чакъл (речен или трошен)', tPerM3: 1.6 },
+  { label: 'Трошен камък (фракция)', tPerM3: 1.5 },
+  { label: 'Тампон (трошен камък 0–63 мм)', tPerM3: 1.8 },
+  { label: 'Баластра', tPerM3: 1.8 },
+  { label: 'Пясък', tPerM3: 1.5 },
+  { label: 'Декоративни камъчета', tPerM3: 1.5 },
+  { label: 'Пръст / хумус', tPerM3: 1.3 },
+] as const
+
+export interface BulkInput {
+  length: number
+  width: number
+  /** cm */
+  depth: number
+  material: number
+  /** extra % for compaction and spillage */
+  extra: number
+  /** price per tonne */
+  price: number
+}
+
+export interface BulkEstimate {
+  area: number
+  volume: number
+  withExtra: number
+  tonnes: number
+  density: number
+  cost: number
+}
+
+export function estimateBulk(input: BulkInput): BulkEstimate | null {
+  if (!(input.length > 0 && input.width > 0 && input.depth > 0)) return null
+  const material = BULK_MATERIALS[input.material] ?? BULK_MATERIALS[0]
+  const area = input.length * input.width
+  const volume = area * (input.depth / 100)
+  const withExtra = withWaste(volume, input.extra)
+  const tonnes = withExtra * material.tPerM3
+  return { area, volume, withExtra, tonnes, density: material.tPerM3, cost: input.price > 0 ? tonnes * input.price : 0 }
+}

@@ -48,7 +48,7 @@ export const TOOLS = {
   'spelling-bee': { en: { href: '/letterwell/spelling-bee-solver/', name: 'Spelling Bee helper', cta: 'Open the Spelling Bee helper' }, bg: { href: '/letterwell/bg/spelling-bee/', name: 'Помощник за Spelling Bee', cta: 'Към помощника за Spelling Bee' } },
   'crossword-solver': { en: { href: '/letterwell/crossword-solver/', name: 'Crossword helper', cta: 'Open the crossword helper' }, bg: { href: '/letterwell/bg/krastoslovitsi/', name: 'Помощник за кръстословици', cta: 'Към помощника за кръстословици' } },
   'energy-cost-calculator': { en: { href: '/energy-cost-calculator/', name: 'Energy cost calculator', cta: 'Open the energy cost calculator' }, bg: { href: '/bg/razhod-na-tok/', name: 'Калкулатор за разход на ток', cta: 'Към калкулатора за ток' } },
-  'concrete-calculator': { en: { href: '/calculators/concrete-calculator/', name: 'Concrete calculator', cta: 'Open the concrete calculator' }, bg: { href: '/calculators/concrete-calculator/', name: 'Калкулатор за бетон', cta: 'Към калкулатора за бетон' } },
+  'concrete-calculator': { en: { href: '/calculators/concrete-calculator/', name: 'Concrete calculator', cta: 'Open the concrete calculator' }, bg: { href: '/bg/kalkulator-beton/', name: 'Калкулатор за бетон', cta: 'Към калкулатора за бетон' } },
   'tile-calculator': { en: { href: '/calculators/tile-calculator/', name: 'Tile calculator', cta: 'Open the tile calculator' }, bg: { href: '/calculators/tile-calculator/', name: 'Калкулатор за плочки', cta: 'Към калкулатора за плочки' } },
   'paint-calculator': { en: { href: '/calculators/paint-calculator/', name: 'Paint calculator', cta: 'Open the paint calculator' }, bg: { href: '/calculators/paint-calculator/', name: 'Калкулатор за боя', cta: 'Към калкулатора за боя' } },
   'mulch-calculator': { en: { href: '/calculators/mulch-calculator/', name: 'Mulch calculator', cta: 'Open the mulch calculator' }, bg: { href: '/calculators/mulch-calculator/', name: 'Калкулатор за мулч', cta: 'Към калкулатора за мулч' } },
@@ -60,7 +60,7 @@ export const TOOLS = {
   'screed-plaster-calculator': { en: { href: '/calculators/screed-plaster-calculator/', name: 'Screed & plaster calculator', cta: 'Open the screed and plaster calculator' }, bg: { href: '/bg/zamazka-i-mazilka/', name: 'Калкулатор за замазка и мазилка', cta: 'Към калкулатора за замазка и мазилка' } },
   'wallpaper-calculator': { en: { href: '/calculators/wallpaper-calculator/', name: 'Wallpaper calculator', cta: 'Open the wallpaper calculator' }, bg: { href: '/bg/kalkulator-tapeti/', name: 'Калкулатор за тапети', cta: 'Към калкулатора за тапети' } },
   'tile-adhesive-grout-calculator': { en: { href: '/calculators/tile-adhesive-grout-calculator/', name: 'Tile adhesive & grout calculator', cta: 'Open the adhesive and grout calculator' }, bg: { href: '/bg/lepilo-i-fuga/', name: 'Калкулатор за лепило и фуга', cta: 'Към калкулатора за лепило и фуга' } },
-  'gravel-calculator': { en: { href: '/calculators/gravel-calculator/', name: 'Gravel calculator', cta: 'Open the gravel calculator' }, bg: { href: '/calculators/gravel-calculator/', name: 'Калкулатор за чакъл', cta: 'Към калкулатора за чакъл' } },
+  'gravel-calculator': { en: { href: '/calculators/gravel-calculator/', name: 'Gravel calculator', cta: 'Open the gravel calculator' }, bg: { href: '/bg/kalkulator-chakal/', name: 'Калкулатор за чакъл', cta: 'Към калкулатора за чакъл' } },
 } as const
 
 export type ToolKey = keyof typeof TOOLS

@@ -5,6 +5,7 @@ date: 2026-11-04
 lang: en
 tags: [gravel, landscaping]
 tool: gravel-calculator
+translation: bg/kolko-chakal-mi-tryabva
 ---
 
 Gravel is sold two ways: by volume (cubic yards or cubic metres) and by weight (tons or tonnes). Suppliers switch between the two freely, and the conversion depends on the stone. That is where most ordering mistakes come from. This guide covers both, with examples you can repeat in the [gravel calculator](/calculators/gravel-calculator/).

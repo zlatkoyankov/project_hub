@@ -19,7 +19,7 @@ export interface CalculatorInfo {
 
 export const CALCULATORS: CalculatorInfo[] = [
   {
-    slug: 'gravel-calculator', title: 'Gravel Calculator', shortTitle: 'Gravel', category: 'Landscaping',
+    slug: 'gravel-calculator', bg: '/bg/kalkulator-chakal/', title: 'Gravel Calculator', shortTitle: 'Gravel', category: 'Landscaping',
     description: 'Estimate gravel volume, weight, and material cost for a driveway, path, or garden bed.',
     intro: 'Plan a gravel delivery with a practical estimate of volume and weight. Enter your project dimensions and adjust the example density to match your supplier’s material.',
     kind: 'gravel', icon: 'gravel', keywords: ['stone', 'driveway', 'aggregate', 'rock', 'tons'],
@@ -55,7 +55,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'concrete-calculator', title: 'Concrete Calculator', shortTitle: 'Concrete', category: 'Concrete & Masonry',
+    slug: 'concrete-calculator', bg: '/bg/kalkulator-beton/', title: 'Concrete Calculator', shortTitle: 'Concrete', category: 'Concrete & Masonry',
     description: 'Estimate concrete volume for a slab and optionally calculate material cost.',
     intro: 'Estimate the volume of concrete for a rectangular slab. The result is a planning estimate, not a structural design or placement specification.',
     kind: 'concrete', icon: 'concrete', keywords: ['slab', 'cement', 'patio', 'cubic yards', 'foundation'],

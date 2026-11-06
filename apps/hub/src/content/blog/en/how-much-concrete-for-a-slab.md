@@ -5,6 +5,7 @@ date: 2026-11-04
 lang: en
 tags: [concrete, home-improvement]
 tool: concrete-calculator
+translation: bg/kolko-beton-mi-tryabva
 ---
 
 Ordering concrete is one of those jobs where a small mistake costs real money. Order too little and you end up with a cold joint in the middle of a slab; order too much and you are paying for material you have to get rid of. The good news is that the arithmetic is simple. This article walks through it step by step, with examples you can check in the [concrete calculator](/calculators/concrete-calculator/).
