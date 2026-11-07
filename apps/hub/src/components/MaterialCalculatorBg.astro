@@ -12,7 +12,7 @@ import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan'
 
 interface Props {
   kind: Kind
@@ -24,7 +24,11 @@ interface Field {
   name: string
   label: string
   unit: string
-  value: number
+  value: number | string
+  /** Date fields hold yyyy-mm-dd; an empty value is filled with today in the browser. */
+  type?: 'number' | 'date'
+  /** Percentages and changes can be negative. */
+  signed?: boolean
   step?: string
   hint?: string
   optional?: boolean
@@ -63,6 +67,9 @@ interface Page {
   /** Date the prices and figures were last checked, e.g. "7 ноември 2026". */
   checked?: string
   jsonName: string
+  /** Heading kicker and breadcrumb; default "ДОМ И РЕМОНТ" and Дом и ремонт. */
+  kicker?: string
+  crumb?: { label: string; href: string }
 }
 
 /** Newer calculators are described here in one place: page text, form, selects and fields. */
@@ -75,6 +82,192 @@ interface Config {
 }
 
 const CONFIGS: Partial<Record<Kind, Config>> = {
+  percent: {
+    page: {
+      path: '/bg/kalkulator-protsenti/',
+      tool: 'percent-calculator',
+      title: 'Калкулатор за проценти: процент от число, отстъпка, промяна | Zyankov.eu',
+      description: 'Изчисли колко е X% от число, какъв процент е едно число от друго, с колко процента се е променила цена и цена след отстъпка или надценка.',
+      h1: 'Калкулатор за проценти',
+      intro: 'Избери какво искаш да сметнеш и въведи двете числа. Резултатът се обновява веднага, без бутони.',
+      big: '',
+      bigOne: '',
+      resultTitle: 'РЕЗУЛТАТ',
+      caveat: 'Закръглено до два знака след десетичната запетая.',
+      formula: 'X% от Y = X ÷ 100 × Y · промяна % = (ново − старо) ÷ старо × 100',
+      how: 'Процентът е стотна част: 15% от 200 е 15 ÷ 100 × 200 = 30. Какъв процент е A от B се смята като A ÷ B × 100. Промяната е разликата между новата и старата стойност, разделена на старата. Отстъпка или надценка е цената по (1 ± процента ÷ 100).',
+      tips: [
+        'Отстъпка 20% и после още 10% не прави 30%, а 28%: втората отстъпка е от вече намалената цена.',
+        'Ако цената е паднала с 50%, трябва да скочи със 100%, за да се върне на старото ниво.',
+        'За отстъпка въведи процента с минус, например −15.',
+      ],
+      jsonName: 'Калкулатор за проценти',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+    },
+    formTitle: 'Какво смяташ',
+    formHint: 'Може и с десетична запетая.',
+    selects: [
+      { name: 'mode', label: 'Сметка', options: [{ value: 'of', label: 'Колко е X% от числото' }, { value: 'share', label: 'Какъв процент е A от B' }, { value: 'change', label: 'С колко % се е променило' }, { value: 'add', label: 'Цена след отстъпка или надценка' }] },
+    ],
+    fields: [
+      { name: 'pct', label: 'Процент', unit: '%', value: 15, step: 'any', signed: true, show: 'mode:of' },
+      { name: 'base', label: 'От числото', unit: '', value: 200, step: 'any', signed: true, show: 'mode:of' },
+      { name: 'part', label: 'Числото A', unit: '', value: 30, step: 'any', signed: true, show: 'mode:share' },
+      { name: 'whole', label: 'От числото B', unit: '', value: 200, step: 'any', signed: true, show: 'mode:share' },
+      { name: 'old', label: 'Старата стойност', unit: '', value: 80, step: 'any', signed: true, show: 'mode:change' },
+      { name: 'new', label: 'Новата стойност', unit: '', value: 100, step: 'any', signed: true, show: 'mode:change' },
+      { name: 'price', label: 'Цена', unit: '€', value: 50, step: 'any', show: 'mode:add' },
+      { name: 'adjust', label: 'Отстъпка (−) или надценка (+)', unit: '%', value: -20, step: 'any', signed: true, show: 'mode:add' },
+    ],
+  },
+  vat: {
+    page: {
+      path: '/bg/kalkulator-dds/',
+      tool: 'vat-calculator',
+      title: 'Калкулатор за ДДС: начисли или извади 20% ДДС | Zyankov.eu',
+      description: 'Начисли ДДС върху сума без ДДС или извади ДДС от крайна цена, със ставка 20% или 9% по ЗДДС. Цена без ДДС, ДДС и общо.',
+      h1: 'Калкулатор за ДДС',
+      intro: 'Въведи сумата и избери дали е без ДДС или вече с ДДС. Калкулаторът показва цената без ДДС, самия данък и крайната цена.',
+      big: '€ с ДДС',
+      bigOne: '€ с ДДС',
+      resultTitle: 'РЕЗУЛТАТ',
+      caveat: 'Ориентировъчна сметка. Коя ставка се прилага за конкретна доставка решава ЗДДС; при съмнение питай счетоводител.',
+      formula: 'с ДДС = без ДДС × (1 + ставка) · без ДДС = с ДДС ÷ (1 + ставка)',
+      how: 'Основната ставка на ДДС в България е 20%, а намалената 9% се прилага например за настаняване в хотели. Сума без ДДС се умножава по 1,20, за да стане с ДДС. Обратно, ДДС не е 20% от крайната цена: сумата с ДДС се дели на 1,20, а данъкът е разликата, тоест 1/6 от крайната цена.',
+      tips: [
+        'ДДС в крайна цена от 120 € е 20 €, а не 24 €: 20% се смятат от цената без ДДС.',
+        'На фактурата цената без ДДС, данъкът и общата сума се закръглят до стотинки (евроценти).',
+        'Ставката 9% е само за изброените в чл. 66 от ЗДДС доставки, не за всички храни или услуги.',
+      ],
+      jsonName: 'Калкулатор за ДДС',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: '7 ноември 2026',
+      sources: [
+        { label: 'VATupdate: ставки на ДДС в България, 20%, 9% и 0%', href: 'https://www.vatupdate.com/2021/04/17/vat-rates-in-bulgaria-2' },
+        { label: 'KPMG: промени в ЗДДС и намалената ставка 9%', href: 'https://assets.kpmg.com/content/dam/kpmg/bg/pdf/bg-Changes-in-the-VAT-2020-06-22-en.pdf' },
+      ],
+    },
+    formTitle: 'Сумата',
+    formHint: 'Сумата е в евро. Може и с десетична запетая.',
+    selects: [
+      { name: 'mode', label: 'Сумата е', options: [{ value: 'add', label: 'Без ДДС (начисли ДДС)' }, { value: 'remove', label: 'С ДДС (извади ДДС)' }] },
+      { name: 'rate', label: 'Ставка', options: [{ value: 20, label: '20% (основна)' }, { value: 9, label: '9% (настаняване в хотел и др.)' }, { value: 0, label: '0%' }] },
+    ],
+    fields: [
+      { name: 'amount', label: 'Сума', unit: '€', value: 100, step: 'any' },
+    ],
+  },
+  euro: {
+    page: {
+      path: '/bg/leva-v-evro/',
+      tool: 'euro-converter',
+      title: 'Лева в евро и евро в лева по фиксирания курс 1,95583 | Zyankov.eu',
+      description: 'Превърни лева в евро или евро в лева по официалния фиксиран курс 1,95583 лв. за 1 евро. Точно до стотинката, за стари цени, заплати и договори.',
+      h1: 'Лева в евро и обратно',
+      intro: 'От 1 януари 2026 г. официалната валута е еврото, а старите суми в лева се превалутират по фиксиран курс. Въведи сумата и избери посоката.',
+      big: '€',
+      bigOne: '€',
+      resultTitle: 'РАВНО НА',
+      caveat: 'Превалутиране по официалния фиксиран курс, закръглено до цент или стотинка.',
+      formula: 'евро = лева ÷ 1,95583 · лева = евро × 1,95583',
+      how: 'Курсът 1,95583 лева за 1 евро е неотменимо фиксиран от Съвета на ЕС на 8 юли 2025 г. и е същият като досегашния централен курс на лева. Сумата в лева се дели на курса и се закръглява до цент, а сумата в евро се умножава по курса.',
+      tips: [
+        'Бързо наум: делиш на 2 и добавяш около 2,3%. Точната сметка е делене на 1,95583.',
+        'Закръгляй накрая, не на всяка стъпка. Иначе при много суми се натрупва разлика от стотинки.',
+        'Курсът е един и същ навсякъде. Обменно бюро или банка с по-лош курс не превалутират, а печелят от обмяната.',
+      ],
+      jsonName: 'Калкулатор лева в евро',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: '7 ноември 2026',
+      sources: [
+        { label: 'ЕЦБ, 8 юли 2025 г.: курсът е фиксиран на 1,95583 лева за 1 евро', href: 'https://www.ecb.europa.eu/press/pr/date/2025/html/ecb.pr250708~b9676a9fa8.bg.html' },
+        { label: 'Регламент на Съвета за валутния курс към еврото за България (проект)', href: 'https://data.consilium.europa.eu/doc/document/ST-10353-2025-INIT/bg/pdf' },
+      ],
+    },
+    formTitle: 'Сумата',
+    formHint: 'Може и с десетична запетая.',
+    selects: [
+      { name: 'direction', label: 'Посока', options: [{ value: 'toEur', label: 'Лева → евро' }, { value: 'toBgn', label: 'Евро → лева' }] },
+    ],
+    fields: [
+      { name: 'amount', label: 'Сума', unit: '', value: 100, step: 'any' },
+    ],
+  },
+  dates: {
+    page: {
+      path: '/bg/kalkulator-dati/',
+      tool: 'date-calculator',
+      title: 'Калкулатор за дати: дни между две дати и дата след N дни | Zyankov.eu',
+      description: 'Изчисли колко дни има между две дати, колко от тях са делнични, и коя дата е след или преди определен брой дни. За срокове, отпуски и договори.',
+      h1: 'Калкулатор за дати',
+      intro: 'Сметни колко дни остават до дата или колко са минали, или коя дата е след 30, 60 или 90 дни. Полезно за срокове по договори, отпуски и плащания.',
+      big: 'дни',
+      bigOne: 'ден',
+      resultTitle: 'РЕЗУЛТАТ',
+      caveat: 'Делничните дни са от понеделник до петък. Официалните празници не са извадени.',
+      formula: 'дни = крайна дата − начална дата (крайният ден не се брои)',
+      how: 'Разликата между две дати се брои в цели дни, като началният ден се брои, а крайният не: от понеделник до следващия понеделник са 7 дни. Делничните дни са тези от понеделник до петък в този период. За дата след N дни към началната дата се добавят N дни, като се отчитат различните дължини на месеците и високосните години.',
+      tips: [
+        'Ако срокът е „в 14-дневен срок от получаването“, денят на получаване обикновено не се брои. За точния срок виж договора или закона.',
+        'Ако трябва да броиш и двата крайни дни (например дни отпуск), добави 1.',
+        'Официалните празници в България не са извадени от делничните дни. Провери ги в календара за годината.',
+      ],
+      jsonName: 'Калкулатор за дати',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+    },
+    formTitle: 'Датите',
+    formHint: 'Празното поле за дата се попълва с днешната.',
+    selects: [
+      { name: 'mode', label: 'Сметка', options: [{ value: 'between', label: 'Дни между две дати' }, { value: 'add', label: 'Дата след (или преди) N дни' }] },
+    ],
+    fields: [
+      { name: 'from', label: 'Начална дата', unit: '', value: '', type: 'date' },
+      { name: 'to', label: 'Крайна дата', unit: '', value: '', type: 'date', show: 'mode:between' },
+      { name: 'days', label: 'Брой дни', unit: 'дни', value: 30, step: '1', signed: true, show: 'mode:add', hint: 'С минус за дата назад, например −14.' },
+    ],
+  },
+  loan: {
+    page: {
+      path: '/bg/kalkulator-kredit/',
+      tool: 'loan-calculator',
+      title: 'Кредитен калкулатор: месечна вноска и лихва | Zyankov.eu',
+      description: 'Изчисли месечната вноска по кредит с равни вноски, общо колко ще върнеш и колко е лихвата, по сумата, годишния лихвен процент и срока.',
+      h1: 'Кредитен калкулатор',
+      intro: 'Въведи сумата, годишния лихвен процент и срока. Калкулаторът смята равната месечна вноска (анюитет), общата сума и лихвата.',
+      big: '€ на месец',
+      bigOne: '€ на месец',
+      resultTitle: 'МЕСЕЧНА ВНОСКА',
+      caveat: 'Без такси и застраховки. Реалната цена на кредита показва ГПР в договора.',
+      formula: 'вноска = сума × r ÷ (1 − (1 + r)^−n), където r = годишна лихва ÷ 12, n = брой месеци',
+      how: 'При кредит с равни вноски всеки месец плащаш една и съща сума. В началото по-голямата част е лихва, а към края главница. Вноската се смята по анюитетната формула с месечна лихва, равна на годишната, разделена на 12. Общата сума е вноската по броя месеци, а лихвата е разликата със сумата на кредита.',
+      tips: [
+        'Сравнявай кредитите по ГПР (годишен процент на разходите), не само по лихвата. ГПР включва и таксите.',
+        'По-дълъг срок намалява вноската, но увеличава общата лихва.',
+        'Тази сметка е за фиксирана лихва. При плаваща лихва вноската се променя заедно с индекса.',
+      ],
+      jsonName: 'Кредитен калкулатор',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: '7 ноември 2026',
+      sources: [
+        { label: 'Труд и право: изчисляване на анюитетни вноски, пример 5000 лв. при 5,5% за 10 месеца = 512,69 лв.', href: 'https://trudipravo.bg/izchislitelni-moduli/izchislyavane-na-mesechni-pogasitelni-anyuitetni-vnoski-po-zaemi-s-fiksirana-lihva' },
+      ],
+    },
+    formTitle: 'Кредитът',
+    formHint: 'Сумата е в евро, лихвата годишна. Срокът е в години или месеци.',
+    selects: [
+      { name: 'termUnit', label: 'Срокът е в', options: [{ value: 'years', label: 'години' }, { value: 'months', label: 'месеци' }] },
+    ],
+    fields: [
+      { name: 'principal', label: 'Сума на кредита', unit: '€', value: 10000, step: 'any' },
+      { name: 'rate', label: 'Годишна лихва', unit: '%', value: 7.5, step: 'any' },
+      { name: 'term', label: 'Срок', unit: '', value: 5, step: '1' },
+    ],
+  },
   aircon: {
     page: {
       path: '/bg/kalkulator-klimatik/',
@@ -697,11 +890,11 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 <Layout {...layoutProps}>
   <div class:list={['tool-page', { 'zy-board': !embed, 'is-embed': embed }]} data-board={boardFor(kind)}>
     <main id="top">
-      {!embed && <nav class="tool-crumbs" aria-label="Breadcrumb"><a href="/bg/">Начало</a><span aria-hidden="true">/</span><a href="/bg/#home-diy">Дом и ремонт</a></nav>}
+      {!embed && <nav class="tool-crumbs" aria-label="Breadcrumb"><a href="/bg/">Начало</a><span aria-hidden="true">/</span><a href={page.crumb?.href ?? '/bg/#home-diy'}>{page.crumb?.label ?? 'Дом и ремонт'}</a></nav>}
       <header class="tool-head">
         <span class="tool-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" set:html={TOOL_ICONS[kind]} /></span>
         <div>
-          <p class="tool-kicker">ДОМ И РЕМОНТ · КАЛКУЛАТОР</p>
+          <p class="tool-kicker">{page.kicker ?? 'ДОМ И РЕМОНТ'} · КАЛКУЛАТОР</p>
           <h1>{page.h1}</h1>
           {!embed && <p class="tool-intro">{page.intro}</p>}
         </div>
@@ -723,7 +916,9 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
             {mainFields.map((field) => (
               <div class="tool-field" data-show={field.show}>
                 <label for={`mat-${field.name}`}>{field.label}{field.optional && <span class="tool-optional"> (по желание)</span>}</label>
-                <div class="tool-input"><input id={`mat-${field.name}`} name={field.name} type="number" inputmode="decimal" min="0" step={field.step ?? 'any'} value={field.optional && field.value === 0 ? '' : field.value} placeholder={field.optional ? '0' : undefined} aria-describedby={field.hint ? `mat-${field.name}-hint` : undefined} /><span>{field.unit}</span></div>
+                <div class="tool-input">{field.type === 'date'
+                  ? <input id={`mat-${field.name}`} name={field.name} type="date" value={field.value} data-today aria-describedby={field.hint ? `mat-${field.name}-hint` : undefined} />
+                  : <input id={`mat-${field.name}`} name={field.name} type="number" inputmode="decimal" min={field.signed ? undefined : '0'} step={field.step ?? 'any'} value={field.optional && field.value === 0 ? '' : field.value} placeholder={field.optional ? '0' : undefined} aria-describedby={field.hint ? `mat-${field.name}-hint` : undefined} />}{field.unit && <span>{field.unit}</span>}</div>
                 {field.hint && <small id={`mat-${field.name}-hint`}>{field.hint}</small>}
               </div>
             ))}
@@ -877,6 +1072,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
+  import { addDays, convertEuro, daysBetween, loanPayment, percent, vat, type PercentMode } from '../lib/everyday'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
@@ -885,6 +1081,10 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
     const form = root.querySelector('form')!
     const field = (name: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${name}"]`)
     const num = (name: string) => Math.max(0, Number(field(name)?.value.replace(',', '.')) || 0)
+    const signed = (name: string) => Number(field(name)?.value.replace(',', '.')) || 0
+    // Empty date fields start at today (the page is built ahead of time, so not in the HTML).
+    const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 10)
+    form.querySelectorAll<HTMLInputElement>('input[data-today]').forEach((input) => { if (!input.value) input.value = today })
     const out = (name: string) => root.querySelector<HTMLElement>(`[data-out="${name}"]`)!
     const fmt = (value: number, digits = 2) => value.toLocaleString('bg-BG', { minimumFractionDigits: 0, maximumFractionDigits: digits })
     const money = (value: number) => `${value.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
@@ -912,7 +1112,72 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         const [name, value] = (element.dataset.show ?? '').split(':')
         element.hidden = field(name)?.value !== value
       })
-      if (kind === 'aircon') {
+      if (kind === 'percent') {
+        const mode = (field('mode')?.value ?? 'of') as PercentMode
+        const a = mode === 'of' ? signed('pct') : mode === 'share' ? signed('part') : mode === 'change' ? signed('old') : signed('adjust')
+        const b = mode === 'of' ? signed('base') : mode === 'share' ? signed('whole') : mode === 'change' ? signed('new') : num('price')
+        const result = percent(mode, a, b)
+        unitOut.dataset.one = mode === 'share' || mode === 'change' ? '%' : mode === 'add' ? '€' : ''
+        unitOut.dataset.many = unitOut.dataset.one
+        if (!result) return render(null, [['Резултат', 'няма', 'не може да се дели на 0']])
+        const rows: [string, string, string?][] =
+          mode === 'of' ? [['Сметка', `${fmt(a)}% от ${fmt(b)}`], ['Резултат', fmt(result.value)]]
+          : mode === 'share' ? [['Сметка', `${fmt(a)} от ${fmt(b)}`], ['Дял', `${fmt(result.value)}%`]]
+          : mode === 'change' ? [['Промяна', `${result.value > 0 ? '+' : ''}${fmt(result.value)}%`, result.value >= 0 ? 'увеличение' : 'намаление'], ['Разлика', `${result.extra! > 0 ? '+' : ''}${fmt(result.extra!)}`]]
+          : [['Нова цена', money(result.value)], [a < 0 ? 'Спестяваш' : 'Надценка', money(Math.abs(result.extra!))]]
+        render(Math.round(result.value * 100) / 100, rows)
+      } else if (kind === 'vat') {
+        const removing = field('mode')?.value === 'remove'
+        const result = vat(num('amount'), Number(field('rate')?.value ?? 20), removing ? 'remove' : 'add')
+        unitOut.dataset.one = removing ? '€ без ДДС' : '€ с ДДС'
+        unitOut.dataset.many = unitOut.dataset.one
+        if (!result) return render(null, [])
+        render(Math.round((removing ? result.net : result.gross) * 100) / 100, [
+          ['Без ДДС', money(result.net)],
+          [`ДДС ${field('rate')?.value ?? 20}%`, money(result.vat)],
+          ['С ДДС', money(result.gross)],
+        ])
+      } else if (kind === 'euro') {
+        const toEur = field('direction')?.value !== 'toBgn'
+        const result = convertEuro(num('amount'), toEur ? 'toEur' : 'toBgn')
+        unitOut.dataset.one = toEur ? '€' : 'лв.'
+        unitOut.dataset.many = unitOut.dataset.one
+        if (result === null) return render(null, [])
+        render(Math.round(result * 100) / 100, [
+          ['Курс', '1 € = 1,95583 лв.', 'фиксиран'],
+          ['Без закръгляне', `${fmt(result, 5)} ${toEur ? '€' : 'лв.'}`],
+        ])
+      } else if (kind === 'dates') {
+        const from = field('from')?.value ?? ''
+        if (field('mode')?.value === 'add') {
+          const date = addDays(from, Math.round(signed('days')))
+          if (!date) return render(null, [])
+          const shown = new Date(`${date}T12:00:00`)
+          render(null, [
+            ['Ден от седмицата', shown.toLocaleDateString('bg-BG', { weekday: 'long' })],
+            ['Дата', date.split('-').reverse().join('.')],
+          ])
+          out('big').textContent = shown.toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })
+          unitOut.textContent = ''
+          return
+        }
+        const span = daysBetween(from, field('to')?.value ?? '')
+        if (!span) return render(null, [])
+        render(span.days, [
+          ['Делнични дни', `${span.weekdays}`, 'понеделник – петък, без празниците'],
+          ['Седмици', `${span.weeks} седм. и ${Math.abs(span.restDays)} дни`],
+          ['С двата крайни дни', `${span.days + Math.sign(span.days || 1)}`, 'ако броиш и последния ден'],
+        ])
+      } else if (kind === 'loan') {
+        const months = field('termUnit')?.value === 'months' ? num('term') : num('term') * 12
+        const result = loanPayment(num('principal'), num('rate'), months)
+        if (!result) return render(null, [])
+        render(Math.round(result.payment * 100) / 100, [
+          ['Брой вноски', `${result.months}`],
+          ['Общо връщаш', money(result.total)],
+          ['Лихва', money(result.interest), `${fmt((result.interest / num('principal')) * 100, 1)}% от сумата`],
+        ])
+      } else if (kind === 'aircon') {
         const result = estimateAircon({
           area: num('area'), height: num('height'), insulation: Number(field('insulation')?.value ?? 1), climate: Number(field('climate')?.value ?? 1),
           use: field('use')?.value === 'cooling' ? 'cooling' : 'both', sunny: field('sunny')?.value === '1', topFloor: field('topFloor')?.value === '1',
@@ -1228,7 +1493,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
       if (value === null) continue
       if (control instanceof HTMLSelectElement) {
         if (![...control.options].some((option) => option.value === value)) continue
-      } else if (!Number.isFinite(Number(value.replace(',', '.')))) continue
+      } else if (control.type === 'date' ? !/^\d{4}-\d{2}-\d{2}$/.test(value) : !Number.isFinite(Number(value.replace(',', '.')))) continue
       control.value = value
       restored = true
     }
