@@ -793,3 +793,53 @@ export function estimateFuelAmount(input: FuelAmountInput): FuelAmountEstimate |
     bags: 0, cost: input.price > 0 ? stacked * input.price : 0,
   }
 }
+
+// ---------- Air conditioner size (BTU) ----------
+
+/** Peak heat loss in winter, W per m² of a room with 2.6 m ceilings, by insulation (same order as HOME_INSULATION). */
+export const AIRCON_HEATING_W_PER_M2 = [140, 110, 80, 55] as const
+/** Peak cooling load in summer, W per m², by insulation. */
+export const AIRCON_COOLING_W_PER_M2 = [120, 110, 95, 85] as const
+
+/** Usual split-unit sizes on the Bulgarian market (7000 BTU units are rare): BTU and nominal kW. */
+export const AIRCON_SIZES = [
+  { btu: 9000, kw: 2.6 },
+  { btu: 12000, kw: 3.5 },
+  { btu: 18000, kw: 5.3 },
+  { btu: 24000, kw: 7 },
+] as const
+
+export interface AirconInput {
+  area: number
+  /** m */
+  height: number
+  insulation: number
+  climate: number
+  /** 'both' heats and cools; 'cooling' only cools */
+  use: 'both' | 'cooling'
+  sunny: boolean
+  topFloor: boolean
+}
+
+export interface AirconEstimate {
+  heatingKw: number
+  coolingKw: number
+  needKw: number
+  needBtu: number
+  size: (typeof AIRCON_SIZES)[number] | null
+}
+
+export function estimateAircon(input: AirconInput): AirconEstimate | null {
+  if (!(input.area > 0 && input.height > 0)) return null
+  const index = Math.min(3, Math.max(0, input.insulation))
+  const climate = CLIMATE_ZONES[input.climate] ?? CLIMATE_ZONES[1]
+  const volume = input.height / 2.6
+  const roof = input.topFloor ? 1.15 : 1
+  const heatingKw = (input.area * AIRCON_HEATING_W_PER_M2[index] * volume * climate.factor * roof) / 1000
+  const coolingKw = (input.area * AIRCON_COOLING_W_PER_M2[index] * volume * (input.sunny ? 1.15 : 1) * roof) / 1000
+  const needKw = input.use === 'cooling' ? coolingKw : Math.max(heatingKw, coolingKw)
+  return {
+    heatingKw, coolingKw, needKw, needBtu: needKw * 3412,
+    size: AIRCON_SIZES.find((size) => size.kw >= needKw * 0.9) ?? null,
+  }
+}

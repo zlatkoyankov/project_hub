@@ -17,6 +17,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     letterwell: { kicker: 'Letterwell · word finder', title: 'Find words from your letters', footer: 'zyankov.eu/letterwell' },
     'letterwell-bg': { kicker: 'Letterwell · търсачка за думи', title: 'Думи от букви на български', footer: 'zyankov.eu/letterwell/bg' },
     'energy-cost-calculator': { kicker: 'Home & energy · calculator', title: 'What does it cost to run?', footer: 'zyankov.eu/energy-cost-calculator' },
+    'bg-kalkulator-klimatik': { kicker: 'Дом и енергия · калкулатор', title: 'Колко BTU климатик ми трябва?', footer: 'zyankov.eu/bg/kalkulator-klimatik' },
     'bg-kalkulator-darva': { kicker: 'Дом и енергия · калкулатор', title: 'Колко дърва или пелети ми трябват за зимата?', footer: 'zyankov.eu/bg/kalkulator-darva' },
     'bg-razhod-za-otoplenie': { kicker: 'Дом и енергия · калкулатор', title: 'Дърва, пелети или климатик: кое е най-евтино?', footer: 'zyankov.eu/bg/razhod-za-otoplenie' },
     'bg-razhod-na-tok': { kicker: 'Дом и енергия · калкулатор', title: 'Колко ток харчи уредът?', footer: 'zyankov.eu/bg/razhod-na-tok' },

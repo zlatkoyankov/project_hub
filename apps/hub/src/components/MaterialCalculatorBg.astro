@@ -12,7 +12,7 @@ import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon'
 
 interface Props {
   kind: Kind
@@ -71,6 +71,41 @@ interface Config {
 }
 
 const CONFIGS: Partial<Record<Kind, Config>> = {
+  aircon: {
+    page: {
+      path: '/bg/kalkulator-klimatik/',
+      tool: 'aircon-calculator',
+      title: 'Колко BTU климатик ми трябва: калкулатор по квадратура | Zyankov.eu',
+      description: 'Изчисли каква мощност климатик трябва за стаята: 9000, 12000, 18000 или 24000 BTU, по квадратурата, височината, изолацията и дали ще отопляваш с него.',
+      h1: 'Колко BTU климатик ми трябва?',
+      intro: 'Въведи размера на стаята, колко е изолирана и дали ще отопляваш с климатика или само ще охлаждаш. Калкулаторът смята нужната мощност и предлага стандартен размер.',
+      big: 'BTU',
+      bigOne: 'BTU',
+      resultTitle: 'ПРЕПОРЪЧИТЕЛЕН КЛИМАТИК',
+      caveat: 'Ориентировъчен избор. За цяла къща или необичайна стая попитай монтажник.',
+      formula: 'мощност (kW) = площ × W/м² за изолацията × височина ÷ 2,6 × коефициенти; BTU = kW × 3412',
+      how: 'За отопление се взема топлинната загуба на стаята в най-студените дни: около 55 W/м² за нова, добре изолирана сграда до 140 W/м² за стара без изолация, при таван 2,6 м, по коефициент за района. За охлаждане товарът е 85–120 W/м², с 15% повече за слънчева стая с големи прозорци. Последен етаж под покрива добавя още 15%. Взема се по-голямата от двете мощности и се избира най-малкият стандартен климатик, който я покрива (с около 10% толеранс, защото климатиците отопляват малко над номинала си при умерен студ).',
+      tips: [
+        'Не взимай много по-голям климатик „за всеки случай“: ще пали и гаси често, ще суши въздуха и ще харчи повече.',
+        'За отопление гледай мощността при −7 °C или −15 °C в техническия лист, не само номиналната. Добрите инверторни климатици пазят голяма част от нея.',
+        'За отворено пространство (хол с кухня) смятай общата площ. За няколко стаи често е по-добре един климатик на стая или мулти сплит система.',
+      ],
+      jsonName: 'Калкулатор за климатик',
+    },
+    formTitle: 'Стаята',
+    formHint: 'Размерите са в метри. Ако не знаеш изолацията, избери „Само нова дограма“.',
+    selects: [
+      { name: 'use', label: 'За какво ще го ползваш', options: [{ value: 'both', label: 'Отопление и охлаждане' }, { value: 'cooling', label: 'Само охлаждане' }] },
+      { name: 'insulation', label: 'Изолация', options: HOME_INSULATION.map((item, index) => ({ value: index, label: item.label, selected: index === 1 })) },
+      { name: 'climate', label: 'Район', options: CLIMATE_ZONES.map((item, index) => ({ value: index, label: item.label, selected: index === 1 })) },
+      { name: 'sunny', label: 'Слънце', options: [{ value: 0, label: 'Обикновена стая' }, { value: 1, label: 'Слънчева, големи прозорци на юг или запад' }] },
+      { name: 'topFloor', label: 'Етаж', options: [{ value: 0, label: 'Междинен или партер' }, { value: 1, label: 'Последен етаж, под покрива' }] },
+    ],
+    fields: [
+      { name: 'area', label: 'Площ на стаята', unit: 'м²', value: 20, step: '0.5' },
+      { name: 'height', label: 'Височина на тавана', unit: 'м', value: 2.6, step: '0.05' },
+    ],
+  },
   firewood: {
     page: {
       path: '/bg/kalkulator-darva/',
@@ -726,7 +761,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { estimateAdhesive, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
+  import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -761,7 +796,21 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         const [name, value] = (element.dataset.show ?? '').split(':')
         element.hidden = field(name)?.value !== value
       })
-      if (kind === 'firewood') {
+      if (kind === 'aircon') {
+        const result = estimateAircon({
+          area: num('area'), height: num('height'), insulation: Number(field('insulation')?.value ?? 1), climate: Number(field('climate')?.value ?? 1),
+          use: field('use')?.value === 'cooling' ? 'cooling' : 'both', sunny: field('sunny')?.value === '1', topFloor: field('topFloor')?.value === '1',
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Нужна мощност', `${fmt(result.needKw, 1)} kW`, `около ${fmt(Math.round(result.needBtu / 100) * 100, 0)} BTU`],
+        ]
+        if (field('use')?.value !== 'cooling') rows.push(['За отопление', `${fmt(result.heatingKw, 1)} kW`, 'в студените дни'])
+        rows.push(['За охлаждане', `${fmt(result.coolingKw, 1)} kW`, 'в горещите дни'])
+        if (result.size) rows.push(['Стандартен размер', `${result.size.btu.toLocaleString('bg-BG')} BTU`, `${fmt(result.size.kw, 1)} kW номинално`])
+        else rows.push(['Стандартен размер', 'над 24 000 BTU', 'два климатика или мулти сплит система'])
+        render(result.size ? result.size.btu : null, rows)
+      } else if (kind === 'firewood') {
         const pellets = field('fuel')?.value === 'pellets'
         const result = estimateFuelAmount({
           fuel: pellets ? 'pellets' : 'wood', area: num('area'), heatedShare: num('heatedShare'),
