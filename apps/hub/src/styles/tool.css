@@ -652,3 +652,94 @@ select {
   color: var(--accent);
   font-weight: 700;
 }
+
+/* "Embed this calculator" box on the calculator pages. */
+.tool-embed {
+  margin-top: 28px;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.tool-embed h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+
+.tool-embed p {
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.tool-embed__label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tool-embed__code {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  color: var(--text);
+  background: var(--surface-soft);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  resize: vertical;
+}
+
+.tool-embed__more {
+  margin-top: 10px;
+}
+
+.tool-embed__more summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tool-embed__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  margin: 14px 0 0;
+}
+
+.tool-embed__copy {
+  min-height: 44px;
+  padding: 0 18px;
+  color: var(--cta-ink);
+  background: linear-gradient(var(--cta-top), var(--cta-bottom));
+  border: 1px solid var(--cta-edge);
+  border-radius: 12px;
+  font: 700 15px var(--font-body);
+  cursor: pointer;
+}
+
+.tool-embed__actions a {
+  color: var(--coral-strong);
+  font-weight: 700;
+}
+
+/* Inside an iframe on another site: compact, no page chrome. */
+.tool-page.is-embed {
+  width: 100%;
+  padding: 0;
+}
+
+.tool-page.is-embed main {
+  padding: 0;
+}
+
+.tool-page.is-embed .tool-head {
+  margin-bottom: 14px;
+}
+
+.tool-page.is-embed .tool-head h1 {
+  font-size: 26px;
+}

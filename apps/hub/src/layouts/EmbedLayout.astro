@@ -1,0 +1,68 @@
+---
+// A calculator inside someone else's page (an iframe): no site bar, footer or ads, not indexed,
+// a small credit link, and the page height sent to the host so its iframe can fit.
+import '@zyankov/design-system/tokens.css'
+import '@zyankov/design-system/fonts.css'
+import { renderHead } from '@zyankov/design-system/render'
+import { absolute, type Lang } from '../lib/site'
+
+interface Props {
+  title: string
+  /** The full calculator page this embed belongs to. */
+  canonical: string
+  lang?: Lang
+}
+
+const { title, canonical, lang = 'bg' } = Astro.props
+---
+
+<!doctype html>
+<html lang={lang} data-project="hub" data-embed="1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <Fragment set:html={renderHead({ ads: false })} />
+    <meta name="robots" content="noindex, follow" />
+    <title>{title}</title>
+    <link rel="canonical" href={absolute(canonical)} />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+  </head>
+  <body class="embed-body">
+    <slot />
+    <p class="embed-credit">
+      <a href={absolute(canonical)} target="_blank" rel="noopener">{lang === 'bg' ? 'Калкулатор от zyankov.eu' : 'Calculator by zyankov.eu'} ↗</a>
+    </p>
+    <script is:inline>
+      // Tell the host page how tall the calculator is, so its iframe can fit it.
+      (function () {
+        if (window.parent === window || typeof ResizeObserver === 'undefined') return
+        var post = function () {
+          window.parent.postMessage({ type: 'zyankov-height', height: Math.ceil(document.documentElement.scrollHeight) }, '*')
+        }
+        new ResizeObserver(post).observe(document.body)
+        post()
+      })()
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .embed-body {
+    margin: 0;
+    padding: 16px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+  }
+
+  .embed-credit {
+    margin: 14px 0 0;
+    text-align: right;
+    font-size: 13px;
+  }
+
+  .embed-credit a {
+    color: var(--coral-strong);
+    font-weight: 700;
+  }
+</style>
