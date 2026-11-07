@@ -154,7 +154,7 @@ export function estimateDrywall(input: DrywallInput): DrywallEstimate | null {
   return { walls, ceiling, openings, net, withWaste: total, sheets, sheetLabel: sheet.label, cost: sheets * Math.max(0, input.price), supplies }
 }
 
-/** Notched-trowel sizes with typical cement adhesive use (kg/m²), from Ceresit CM 11's data sheet. */
+/** Notched-trowel sizes with typical cement adhesive use (kg/m²), from the Ceresit CM 11 PLUS data sheet. */
 export const TROWEL_NOTCHES = [
   { mm: 4, kgPerM2: 2.0 },
   { mm: 6, kgPerM2: 2.7 },
@@ -166,7 +166,8 @@ export const TROWEL_NOTCHES = [
 /** Notch by the tile's longest side in cm: the usual rule from adhesive data sheets. */
 export const suggestedNotch = (longestCm: number) => (longestCm <= 10 ? 0 : longestCm <= 15 ? 1 : longestCm <= 25 ? 2 : longestCm <= 31 ? 3 : 4)
 
-/** Grout in kg/m²: (L + W) / (L × W) × joint width × joint depth × 1.6, all in mm. */
+/** Grout in kg/m²: (L + W) / (L × W) × joint width × joint depth × 1.6, all in mm.
+ *  1.6 kg/l is the density of cement grout (e.g. SikaCeram Tile Grout data sheet; Mapei uses the same method). */
 export const groutPerM2 = (lengthMm: number, widthMm: number, jointMm: number, depthMm: number) =>
   ((lengthMm + widthMm) / (lengthMm * widthMm)) * jointMm * depthMm * 1.6
 
@@ -260,11 +261,13 @@ export function estimateWallpaper(input: WallpaperInput): WallpaperEstimate | nu
   return { perimeter, drop, strips, stripsPerRoll, rolls, cost: rolls * Math.max(0, input.price) }
 }
 
-/** Dry mix per m² for each mm of thickness, from manufacturers' data sheets. */
+/** Dry mix per m² for each mm of thickness, from manufacturers' data sheets:
+ *  cement screed Baumit Solido E225 (20 kg/m² per cm), self-levelling Ceresit CN 68 BG (1.5) and
+ *  Baumit Nivello Quattro / Nivello 20 (1.5–1.6), gypsum plaster Knauf MP 75 (10 kg/m² at 10 mm). */
 export const SCREED_MATERIALS = [
   { label: 'Циментова замазка', kgPerM2PerMm: 2.0, bag: 25 },
-  { label: 'Саморазливна замазка', kgPerM2PerMm: 1.8, bag: 25 },
-  { label: 'Гипсова мазилка', kgPerM2PerMm: 0.9, bag: 30 },
+  { label: 'Саморазливна замазка', kgPerM2PerMm: 1.6, bag: 25 },
+  { label: 'Гипсова мазилка', kgPerM2PerMm: 1.0, bag: 30 },
 ]
 
 export interface ScreedInput {

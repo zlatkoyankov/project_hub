@@ -65,3 +65,10 @@ translation: en/tile-waste-percentage
 - **Профили за ръбове и ъгли** се купуват на брой. Преброй ги, не ги изчислявай от площта.
 
 С [калкулатора за плочки](/bg/kalkulator-plochki/) избираш под или стени, въвеждаш размерите, плочката и квадратурата в кашон и виждаш броя плочки и колко цели кашона да купиш.
+
+## Източници
+
+Проверено на 7 ноември 2026.
+
+- [Tiles UK: 10% права наредба, 15% диагонал, до 20% рибена кост](https://tiles.uk.com/how-many-tiles-do-i-need/)
+- [Buildmat: 10% права или тухлена наредба, 15% диагонал](https://www.buildmat.com.au/blogs/help-centre/how-to-calculate-how-many-tiles-you-need)

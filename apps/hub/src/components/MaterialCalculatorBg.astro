@@ -272,6 +272,11 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
         'Остави 1–2 плочки за резерв след ремонта. При счупена плочка след години същата трудно се намира.',
       ],
       jsonName: 'Калкулатор за плочки',
+      checked: '7 ноември 2026',
+      sources: [
+        { label: 'Tiles UK: 10% права наредба, 15% диагонал, до 20% рибена кост', href: 'https://tiles.uk.com/how-many-tiles-do-i-need/' },
+        { label: 'Buildmat: 10% права или тухлена наредба, 15% диагонал', href: 'https://www.buildmat.com.au/blogs/help-centre/how-to-calculate-how-many-tiles-you-need' },
+      ],
     },
     formTitle: 'Площ и плочки',
     formHint: 'Помещението е в метри, плочката в сантиметри, фугата в милиметри. Цената не е задължителна.',
@@ -426,13 +431,20 @@ const screedPage = {
   big: 'торби',
   bigOne: 'торба',
   formula: 'смес (кг) = площ (м²) × дебелина (мм) × разход (кг/м² на мм)',
-  how: 'Производителите дават разхода в килограми суха смес на квадратен метър за всеки милиметър дебелина. Умножава се по площта и средната дебелина, добавя се фира и се дели на теглото на торбата. Типичните стойности са около 2,0 кг за циментова замазка, 1,8 кг за саморазливна и 0,8–1,0 кг за гипсова мазилка.',
+  how: 'Производителите дават разхода в килограми суха смес на квадратен метър за всеки милиметър дебелина. Умножава се по площта и средната дебелина, добавя се фира и се дели на теглото на торбата. Стойностите по подразбиране са от техническите листове: 2,0 кг за циментова замазка (Baumit Solido E225), 1,6 кг за саморазливна (Ceresit CN 68 и Baumit Nivello дават 1,5–1,6) и 1,0 кг за гипсова мазилка (Knauf MP 75; леките мазилки са около 0,8 кг).',
   tips: [
     'Измери нивото на няколко места с мастар или лазер и вземи средната дебелина. Една вдлъбнатина може да промени сметката с няколко торби.',
     'Ако знаеш разхода на конкретния продукт, въведи го. Пише на торбата или в техническия лист.',
     'Саморазливната замазка се разлива наведнъж, затова приготви всички торби предварително.',
   ],
   jsonName: 'Калкулатор за замазка и мазилка',
+  checked: '7 ноември 2026',
+  sources: [
+    { label: 'Baumit Solido E225: циментова замазка, около 20 кг/м² на 10 мм (технически лист)', href: 'https://baumit.pl/files/pl/pdf_files/pds_solido___5___estrich_e___5_bpl_pl_13262.pdf' },
+    { label: 'Ceresit CN 68: саморазливна замазка, около 1,5 кг/м² на мм (технически лист, БГ)', href: 'https://datasheets.tdx.henkel.com/CERESIT-CN-68-bg_BG.pdf' },
+    { label: 'Baumit Nivello Quattro: саморазливна, около 1,5 кг/м² на мм (технически лист)', href: 'https://media.hornbach.at/hb/technicaldatasheet/as.187261153.pdf' },
+    { label: 'Knauf MP 75: гипсова мазилка, 10 кг/м² при 10 мм (технически лист, БГ)', href: 'https://bauhaus.bg/upload/files/120030/2605_MP%2075_2020.pdf' },
+  ],
 }
 
 const wallpaperPage = {
@@ -466,13 +478,20 @@ const adhesivePage = {
       big: 'торби лепило',
       bigOne: 'торба лепило',
       formula: 'фуга кг/м² = (дължина + ширина) ÷ (дължина × ширина) × фуга × дебелина × 1,6',
-      how: 'Лепилото е площта по типичния разход за зъба на маламашката (по данни на Ceresit CM 11). Фугата се смята от обема на фугите: колкото по-малки са плочките, толкова повече фуги има на квадратен метър. Добавя се фира и се закръгля до цели торби.',
+      how: 'Лепилото е площта по разхода за зъба на маламашката от техническия лист на Ceresit CM 11 PLUS. Фугата се смята от обема на фугите по плътност 1,6 кг/л, както в листовете на Sika и Mapei: колкото по-малки са плочките, толкова повече фуги има на квадратен метър. Добавя се фира и се закръгля до цели торби.',
       tips: [
         'Големите плочки искат по-дълбок зъб, за да легнат изцяло в лепилото. При плочки над 60 см намажи и гърба на плочката.',
         'Купи фугата от една партида. Различните партиди може да се различават по цвят.',
         'Фугирай след като лепилото е изсъхнало, обикновено след 24 часа. Виж указанията на производителя.',
       ],
       jsonName: 'Калкулатор за лепило и фуга',
+      checked: '7 ноември 2026',
+      sources: [
+        { label: 'Ceresit CM 11 PLUS: разход на лепило по зъб на маламашката, 4–12 мм (технически лист)', href: 'https://datasheets.tdx.henkel.com/CERESIT-CM-11-PLUS-sk_SK.pdf' },
+        { label: 'Ceresit CM 11 PLUS: технически лист на български', href: 'https://dm.henkel-dam.com/is/content/henkel/Ceresit_CM-11_Plus_TDS_BG' },
+        { label: 'SikaCeram Tile Grout: плътност на фугата около 1,6 кг/л и формула за разход', href: 'https://twn.sika.com/dam/dms/tw01/d/sikaceram_tile_groutf1t.pdf' },
+        { label: 'Ceresit CE 40: таблица с разход на фуга за проверка на формулата', href: 'https://datasheets.tdx.henkel.com/CERESIT-CE-40-de_AT.pdf' },
+      ],
     }
 
 const page: Page = config ? config.page : masonry ? masonryPage : insulation ? insulationPage : screed ? screedPage : wallpaper ? wallpaperPage : adhesive ? adhesivePage : flooring
@@ -490,10 +509,17 @@ const page: Page = config ? config.page : masonry ? masonryPage : insulation ? i
       how: 'Площта на пода се умножава по фирата и се дели на квадратурата в една кутия, след което се закръгля нагоре. Первазите са периметърът на стаята без вратите, плюс същата фира, разделен на дължината на една лайсна.',
       tips: [
         'Купи всички кутии наведнъж и провери, че са от една партида. Следващата може да е в малко различен тон.',
-        'При редене по диагонал или в сложна стая с ниши сложи 12–15% фира вместо 10%.',
+        'При редене по диагонал или в сложна стая с ниши сложи 15% фира вместо 10%. Някои производители искат до 18% за диагонал.',
         'Остави ламината 48 часа в стаята, преди да го редиш, за да свикне с температурата и влажността.',
       ],
       jsonName: 'Калкулатор за ламинат',
+      checked: '7 ноември 2026',
+      sources: [
+        { label: 'EGGER: колко ламинат да купиш, с 10% в повече', href: 'https://www.egger.com/en/blog/how-much-laminate-flooring-do-i-need?country=GB' },
+        { label: 'EGGER поддръжка: минимум 5% за изрезки', href: 'https://support.egger.com/hc/en-us/articles/360001076658-How-much-material-waste-should-be-considered-when-buying-Flooring' },
+        { label: 'Pergo: инструкция за монтаж, 48 часа аклиматизация в затворена опаковка', href: 'https://cdn2.pergo.com/-/media/imported%20assets/flooring/5/b/b/pginstallationlmpherringboneenpdf288141.ashx' },
+        { label: 'Инструкция за монтаж на ламинат: до 10%, при диагонал 18%', href: 'https://cdn.mediavalet.com/usva/rwbrands/KRcvgeYgIUaaJYM5cdG4Ow/ksHhW-pRw0GNpP3uz9080Q/Original/Laminate%20Flooring%20Installation%20Guide.pdf' },
+      ],
     }
   : {
       path: '/bg/kalkulator-gipsokarton/',
@@ -570,7 +596,7 @@ const mainFields: Field[] = config ? config.fields : masonry ? masonryFields : i
       { name: 'length', label: 'Дължина на стаята', unit: 'м', value: 4, step: '0.01' },
       { name: 'width', label: 'Ширина на стаята', unit: 'м', value: 3.5, step: '0.01' },
       { name: 'boxArea', label: 'Квадратура в една кутия', unit: 'м²', value: 2.22, step: '0.001', hint: 'Пише на кутията, често между 1,7 и 2,5 м².' },
-      { name: 'waste', label: 'Фира', unit: '%', value: 10, step: '1', hint: '10% за права наредба, 12–15% за диагонал или сложна стая.' },
+      { name: 'waste', label: 'Фира', unit: '%', value: 10, step: '1', hint: '10% за права наредба, 15% за диагонал или сложна стая.' },
       { name: 'price', label: 'Цена за м²', unit: '€', value: 0, step: '0.01', optional: true },
     ]
   : [
