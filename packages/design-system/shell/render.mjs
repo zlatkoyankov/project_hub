@@ -100,8 +100,8 @@ const t = (lang) => STRINGS[lang] ?? STRINGS.en
 /** Site links in the page language: the Bulgarian homepage and blog live under /bg/. */
 const links = (lang) =>
   lang === 'bg'
-    ? { home: '/bg/', blog: '/bg/blog/', faq: '/bg/#faq' }
-    : { home: '/', blog: '/blog/', faq: '/#faq' }
+    ? { home: '/bg/', blog: '/bg/blog/', faq: '/bg/#faq', about: '/bg/za-saita/', contact: '/bg/za-saita/#kontakt' }
+    : { home: '/', blog: '/blog/', faq: '/#faq', about: '/about/', contact: '/about/#contact' }
 const projectTagline = (p, lang) => (lang === 'bg' && p.tagline_bg) || p.tagline
 /** Site-bar label and link of a project: its section name ("Word games") rather than the product name. */
 const navLabel = (p, lang) => (lang === 'bg' && p.nav_bg) || p.nav || p.name
@@ -130,7 +130,7 @@ export function renderBar({ project = 'hub', main = 'main', lang = 'en', alterna
 <div class="zy-bar" data-zy-shell="bar">
   <div class="zy-bar__inner">
     <a class="zy-bar__brand" href="${l.home}"${current(project === 'hub')}>${monogram('zy-mark')}<span>zyankov.eu</span></a>
-    <nav class="zy-bar__nav" aria-label="zyankov.eu">${projectLinks}<a class="zy-bar__link zy-bar__link--secondary" href="${l.blog}"${current(project === 'blog')}>${s.blog}</a><a class="zy-bar__link zy-bar__link--secondary" href="/about/"${current(project === 'about')}>${s.about}</a></nav>
+    <nav class="zy-bar__nav" aria-label="zyankov.eu">${projectLinks}<a class="zy-bar__link zy-bar__link--secondary" href="${l.blog}"${current(project === 'blog')}>${s.blog}</a><a class="zy-bar__link zy-bar__link--secondary" href="${l.about}"${current(project === 'about')}>${s.about}</a></nav>
     ${languageSwitch(lang, alternates)}<button class="zy-bar__theme" type="button" data-zy-theme-toggle aria-label="${s.theme}" aria-pressed="false">${moon}${sun}</button>
   </div>
 </div>`
@@ -150,8 +150,8 @@ export function renderFooter({ project = 'hub', lang = 'en', year = new Date().g
       <p>${s.tagline}</p>
     </div>
     <nav class="zy-footer__col" aria-label="${s.tools}"><h2>${s.tools}</h2><ul>${tools}</ul></nav>
-    <nav class="zy-footer__col" aria-label="${s.site}"><h2>${s.site}</h2><ul><li><a href="${l.home}">${s.home}</a></li><li><a href="${l.blog}">${s.blog}</a></li><li><a href="/about/">${s.about}</a></li><li><a href="${l.faq}">${s.faq}</a></li></ul></nav>
-    <nav class="zy-footer__col" aria-label="${s.legal}"><h2>${s.legal}</h2><ul><li><a href="/privacy/">${s.privacy}</a></li><li><a href="/terms/">${s.terms}</a></li><li><a href="/disclaimer/">${s.disclaimer}</a></li><li><a href="/about/#contact">${s.contact}</a></li><li><button class="zy-footer__button" type="button" data-zy-consent>${s.consent}</button></li></ul></nav>
+    <nav class="zy-footer__col" aria-label="${s.site}"><h2>${s.site}</h2><ul><li><a href="${l.home}">${s.home}</a></li><li><a href="${l.blog}">${s.blog}</a></li><li><a href="${l.about}">${s.about}</a></li><li><a href="${l.faq}">${s.faq}</a></li></ul></nav>
+    <nav class="zy-footer__col" aria-label="${s.legal}"><h2>${s.legal}</h2><ul><li><a href="/privacy/">${s.privacy}</a></li><li><a href="/terms/">${s.terms}</a></li><li><a href="/disclaimer/">${s.disclaimer}</a></li><li><a href="${l.contact}">${s.contact}</a></li><li><button class="zy-footer__button" type="button" data-zy-consent>${s.consent}</button></li></ul></nav>
   </div>
   <div class="zy-footer__bottom"><span>© ${escape(year)} Zlatko Yankov · zyankov.eu</span><span>${s.local}</span></div>
 </footer>`

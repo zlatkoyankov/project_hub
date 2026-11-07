@@ -9,6 +9,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     home: { kicker: 'Free browser tools', title: 'Small tools. Made with care.' },
     bg: { kicker: 'Безплатни инструменти', title: 'Малки инструменти. Направени с грижа.' },
     about: { kicker: 'About', title: 'Hi, I’m Zlatko. I build small, useful browser tools.' },
+    'bg-za-saita': { kicker: 'За сайта', title: 'Здравей, аз съм Златко. Правя малки полезни инструменти.' },
     privacy: { kicker: 'Privacy policy', title: 'What Zyankov.eu processes and why' },
     terms: { kicker: 'Terms of use', title: 'Terms for Zyankov.eu, Letterwell and BuildCalc' },
     disclaimer: { kicker: 'Disclaimer', title: 'What the estimates and word lists can and cannot tell you' },
