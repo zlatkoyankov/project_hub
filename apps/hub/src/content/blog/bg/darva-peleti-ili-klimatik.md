@@ -57,3 +57,12 @@ tool: heating-cost-calculator
 Газът и парното зависят много от доставчика и града, затова не са в таблицата. В калкулатора ги добавяш с цената от сметката си.
 
 С [калкулатора за разход за отопление](/bg/razhod-za-otoplenie/) въвеждаш своята квадратура, изолация, район и цени и виждаш сравнението за твоето жилище.
+
+## Източници
+
+- Цени на дърва и пелети, COP на термопомпа: [Бизнес новините, септември 2026](https://businessnovinite.bg/bg-biznes/tok-gaz-darva-ili-peleti-koe-e-naj-evtinoto-otoplenie-v-balgarija-za-2026-g.html) и [Пелети Маркет](https://peletimarket.com/)
+- Цена на тока: [ЕНЕРГО-ПРО, цени от 1 юли 2026 г.](https://www.energo-pro.bg/en/novini/kevr-utvrdi-novi-ceni-na-elektroenergiyata-ot-1-yuli-2026-g)
+- Енергия в дървата: [LWF Merkblatt 20](https://lwf.bayern.de/mam/cms04/service/dateien/mb20_scheitholz_2025_rz_web_bf.pdf) (1 пространствен м³ бук ≈ 1900 kWh)
+- Енергия в пелетите: [изисквания на ENplus](https://enplus-pellets.eu/wp-content/uploads/2023/11/Teil-III-Anforderungen-an-die-Pellet-Qualitat.pdf) (клас A1: поне 4,6 kWh/кг)
+- Ефективност на печките: [Регламент (ЕС) 2015/1185](http://data.europa.eu/eli/reg/2015/1185/oj) (поне 65%)
+- Разход за отопление на м²: [ЕнЕфект и ОББ, Брошура за енергийно ефективен дом](https://www.ubb.bg/attachments/Product/227/download_bg/UBB-Eneffect-Digital-Broshure-260722-short-0509-1.pdf). Стойностите за различните видове жилища са наши ориентировъчни оценки, сверени с примерите там.

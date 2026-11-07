@@ -743,3 +743,30 @@ select {
 .tool-page.is-embed .tool-head h1 {
   font-size: 26px;
 }
+
+.tool-sources {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.tool-sources h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
+
+.tool-sources h3 span {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.tool-sources ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.tool-sources a {
+  color: var(--coral-strong);
+}
