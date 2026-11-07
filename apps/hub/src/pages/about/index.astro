@@ -16,7 +16,7 @@ const jsonLd = {
 }
 ---
 
-<PageLayout title={title} description={description} path="/about/" noAds={false} project="about" jsonLd={jsonLd}>
+<PageLayout title={title} description={description} path="/about/" alternates={{ en: '/about/', bg: '/bg/za-saita/' }} noAds={false} project="about" jsonLd={jsonLd}>
       <p class="eyebrow">About</p>
       <h1>Hi, I’m Zlatko.</h1>
       <p class="intro">
@@ -32,7 +32,8 @@ const jsonLd = {
       <section>
         <h2>What you will find here</h2>
         <p><a href="/letterwell/">Letterwell</a> finds words from a set of letters in English or <a href="/letterwell/bg/">Bulgarian</a> and shows Scrabble, Words With Friends and Boggle scores.</p>
-        <p><a href="/calculators/">BuildCalc</a> estimates materials for common home-improvement jobs: concrete, gravel, paint, tile, mulch and floor area, with guides that explain the assumptions behind each estimate.</p>
+        <p><a href="/letterwell/daily/">Letterwell Daily</a> is a five-letter word game with a new word every day, in English and Bulgarian, with spoiler-free hints.</p>
+        <p><a href="/calculators/">BuildCalc</a> estimates materials for home-improvement jobs: concrete, gravel, paint, tile, flooring, drywall, adhesive and grout, screed, wallpaper, insulation and masonry, with guides that explain the assumptions behind each estimate. Bulgarian versions in metres add heating, firewood, air conditioner and electricity calculators, and everyday sums such as VAT, percentages, leva to euro and loan payments.</p>
         <p>New tools and articles are added over time. Each tool works without an account and is designed to work on phones, tablets and desktops.</p>
       </section>
 
@@ -43,9 +44,30 @@ const jsonLd = {
         <p>When someone reports an error, I fix it and note the change. Reports about accessibility problems are especially welcome.</p>
       </section>
 
+      <section id="sources">
+        <h2>Where the numbers come from</h2>
+        <p>An estimate is only worth something if you can check it. Every calculator follows the same rules:</p>
+        <ul>
+          <li><strong>The formula is on the page</strong>, under the calculator, with an explanation of why it works that way.</li>
+          <li><strong>Every default figure has a source</strong>: a manufacturer's data sheet (Knauf, Ceresit, Baumit, Wienerberger and others), a standard or regulation, a public institution, or at least a published article. The sources are linked under each calculator.</li>
+          <li><strong>Our own estimates are labelled as such</strong>, for example a middle value between several published concrete recipes.</li>
+          <li><strong>Prices and figures carry a date</strong> (“checked on …”), because prices and products change.</li>
+        </ul>
+        <p>If a number has no source, it does not go into a calculator. If you find a figure that does not match the product you are using, enter your own value in the calculator and please tell me, so I can check it.</p>
+      </section>
+
+      <section id="changes">
+        <h2>Corrections</h2>
+        <p>When a figure turns out to be wrong, it is corrected and listed here.</p>
+        <ul>
+          <li><strong>7 November 2026</strong>: source check of every calculator. Self-levelling compound 1.8 → 1.6 kg/m² per mm and gypsum plaster 0.9 → 1.0 (Ceresit, Baumit, Knauf data sheets); drywall screws 11 → 15 per m² of board (Knauf); exterior insulation adhesive 5.5 → 5.0 kg/m² (Ceresit CT 85); loose ballast 1.8 → 1.6 t/m³; drywall tape and compound in BuildCalc to USG figures; several appliance presets in the electricity calculator.</li>
+          <li><strong>7 November 2026</strong>: loose firewood is about 1.5 times the stacked volume, not 1.43 (Bavarian State Institute of Forestry).</li>
+        </ul>
+      </section>
+
       <section>
         <h2>English and Bulgarian</h2>
-        <p>I am Bulgarian, and the site is written mainly in English so that the tools are useful to as many people as possible. Where a Bulgarian version adds real value, such as Letterwell’s Bulgarian dictionary, it has its own page.</p>
+        <p>I am Bulgarian, and the site is written in English and Bulgarian. Where a Bulgarian version adds real value, such as Letterwell’s Bulgarian dictionary or calculators in metres with Bulgarian products and prices, it has its own page. <a href="/bg/za-saita/" hreflang="bg" lang="bg">Тази страница на български</a>.</p>
       </section>
 
       <section>

@@ -13,6 +13,8 @@ export async function GET() {
   const entries: Entry[] = [
     { path: '/', alternates: pair('/', '/bg/') },
     { path: '/bg/', alternates: pair('/', '/bg/') },
+    { path: '/about/', alternates: pair('/about/', '/bg/za-saita/') },
+    { path: '/bg/za-saita/', alternates: pair('/about/', '/bg/za-saita/') },
     { path: '/energy-cost-calculator/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },
     { path: '/bg/razhod-za-otoplenie/' },
     { path: '/bg/kalkulator-darva/' },
@@ -29,7 +31,6 @@ export async function GET() {
     { path: '/bg/zamazka-i-mazilka/', alternates: pair('/calculators/screed-plaster-calculator/', '/bg/zamazka-i-mazilka/') },
     { path: '/bg/kalkulator-tapeti/', alternates: pair('/calculators/wallpaper-calculator/', '/bg/kalkulator-tapeti/') },
     { path: '/bg/lepilo-i-fuga/', alternates: pair('/calculators/tile-adhesive-grout-calculator/', '/bg/lepilo-i-fuga/') },
-    { path: '/about/' },
     { path: '/privacy/' },
     { path: '/terms/' },
     { path: '/disclaimer/' },
