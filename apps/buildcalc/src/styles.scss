@@ -833,6 +833,32 @@ p {
   gap: 1rem;
 }
 
+.calc-sources {
+  margin: 1rem 0 1.5rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.calc-sources h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+}
+
+.calc-sources h3 span {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.calc-sources ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.calc-sources li + li {
+  margin-top: 0.3rem;
+}
+
 .notice-card {
   display: flex;
   gap: 0.8rem;

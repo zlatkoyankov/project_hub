@@ -57,3 +57,10 @@ A kitchen floor of 120 sq ft with 12 × 12 in porcelain tiles, 3/8 in thick, 1/8
 ## Work it out for your project
 
 The [tile adhesive and grout calculator](/calculators/tile-adhesive-grout-calculator/) suggests a trowel notch for your tile size, works out the adhesive and grout with waste and rounds up to whole bags. It works in feet or meters and in pounds or kilograms. For the tiles themselves, use the [tile calculator](/calculators/tile-calculator/).
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [Ceresit CM 11 PLUS data sheet: adhesive per trowel notch, 4 to 12 mm](https://datasheets.tdx.henkel.com/CERESIT-CM-11-PLUS-sk_SK.pdf)
+- [SikaCeram Tile Grout data sheet: grout density about 1.6 kg/L and coverage formula](https://twn.sika.com/dam/dms/tw01/d/sikaceram_tile_groutf1t.pdf)

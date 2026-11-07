@@ -70,3 +70,10 @@ Systems differ: some profiles are mitred at the corners and need no corner piece
 ## Work it out for your room
 
 Enter the room size, the coverage on your box and your waste allowance in the [laminate flooring calculator](/calculators/laminate-flooring-calculator/). It rounds up to whole boxes, counts baseboard pieces, corners, end caps, connectors and transition strips, and can add the cost if you enter the prices. It works in feet or meters.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [EGGER: order about 10% extra laminate](https://www.egger.com/en/blog/how-much-laminate-flooring-do-i-need?country=GB)
+- [Pergo installation guide: acclimatize planks for 48 hours](https://cdn2.pergo.com/-/media/imported%20assets/flooring/5/b/b/pginstallationlmpherringboneenpdf288141.ashx)

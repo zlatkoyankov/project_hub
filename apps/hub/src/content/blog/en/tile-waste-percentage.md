@@ -59,3 +59,10 @@ Tiles are made in batches, and colour and size can vary slightly between them (t
 - **Trim pieces** for edges and corners are sold by the piece. Count them, don't estimate them from area.
 
 The [BuildCalc tile calculator](/calculators/tile-calculator/) takes your room size, tile size and waste percentage, and tells you how many tiles and boxes to buy.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [Tiles UK: 10% waste for a straight layout, 15% diagonal, up to 20% herringbone](https://tiles.uk.com/how-many-tiles-do-i-need/)
+- [Buildmat: 10% straight or brick layout, 15% diagonal or herringbone](https://www.buildmat.com.au/blogs/help-centre/how-to-calculate-how-many-tiles-you-need)

@@ -52,3 +52,11 @@ Some blocks have interlocking ends, such as clay blocks like Porotherm and many 
 ## Work it out for your wall
 
 The [brick and block calculator](/calculators/brick-block-calculator/) counts units for your wall size and unit type, and works out the mortar and mortar bags from the yield on the bag. It works in feet or meters.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [BIA Technical Note 10: modular brick about 6.75 per sq ft, mortar per 1,000 brick](https://gobrick.com/media/file/10-dimensioning-and-estimating-brick-masonry.pdf)
+- [Titan America block guide: 1.125 block per sq ft for 8 × 16 in CMU](https://titanamerica.com/wp-content/uploads/2025/01/Titan-America-Block-Estimating-Guide.pdf)
+- [QUIKRETE Mason Mix: an 80 lb bag lays up to 37 bricks or 13 blocks](https://www.Quikrete.com/PDFs/DATA_SHEET-Mason%20Mix%201136.pdf)

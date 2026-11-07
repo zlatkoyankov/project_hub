@@ -6,7 +6,7 @@ import { track } from '@zyankov/design-system/analytics';
 import { SITE_BASE_URL } from '../core/seo.service';
 import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.service';
 import { GUIDES } from '../data/guides';
-import { ARTICLES, CalculatorInfo, CALCULATORS, CalculatorKind, RELATED_SLUGS } from '../data/calculators';
+import { ARTICLES, CalculatorInfo, CALCULATORS, CalculatorKind, RELATED_SLUGS, SOURCES_CHECKED } from '../data/calculators';
 import {
   AdhesiveInput, calculateAdhesive, calculateInsulation, calculateMasonry, MasonryInput, MASONRY_UNITS, InsulationInput, INSULATION_BOARDS, calculateScreed, calculateWallpaper, ScreedInput, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, SCREED_MATERIALS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
 } from '../utils/calculations';
@@ -198,6 +198,7 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
 export class CalculatorPage {
   private readonly route = inject(ActivatedRoute);
   protected readonly calculator = signal<CalculatorInfo | null>(null);
+  protected readonly sourcesChecked = SOURCES_CHECKED;
   protected readonly values = signal<Values>({});
   protected readonly board = computed(() => boardFor(this.calculator()?.kind));
   protected readonly result = signal<Estimate | null>(null);
@@ -513,7 +514,7 @@ export class CalculatorPage {
       area: 'This totals rectangular measurements. Break irregular shapes into separate rectangles without overlap.',
       mulch: 'Depth needs vary with material and intended use. Follow local horticultural guidance and keep mulch clear of plant stems and trunks.',
       flooring: 'This covers a rectangular room. Add closets and alcoves as extra area, check the coverage on your box and follow the manufacturer’s expansion-gap and underlayment instructions.',
-      masonry: 'This counts units for a plain wall with standard joints. Corners, lintels, half units and cutting around openings are not modeled, and mortar varies with the joint and the mason. It is not a structural design.',
+      masonry: 'This counts units for a plain wall with standard joints. Corners, lintels, half units and cutting around openings are not modeled, and mortar varies with the joint and the mason: the mortar here is the theoretical joint volume (BIA), while QUIKRETE rates an 80 lb bag of Mason Mix at up to 37 bricks or 13 blocks, so buy extra. It is not a structural design.',
       insulation: 'This counts boards for flat walls. Corners, reveals around windows and starter tracks are not included, and the supply rates are typical values; anchor patterns depend on wind load and building height, so follow the system manufacturer or your designer.',
       screed: 'Consumption is a typical value from manufacturers’ data sheets; your product may differ, so enter its own figure when you have it. Uneven floors and walls vary in thickness, so measure in several places. This is not a structural or moisture assessment.',
       wallpaper: 'This assumes a rectangular room with walls of one height and whole strips from floor to ceiling. Sloped ceilings, alcoves and half-drop patterns can need more; keep a spare roll from the same batch.',

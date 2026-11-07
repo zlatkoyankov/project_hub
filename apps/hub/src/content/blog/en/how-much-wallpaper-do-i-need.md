@@ -49,3 +49,10 @@ Half-drop patterns, where the pattern lines up half a repeat lower on the next s
 ## Work it out for your room
 
 The [wallpaper calculator](/calculators/wallpaper-calculator/) counts strips per roll for your roll size, wall height and pattern repeat, and rounds up to whole rolls. It works in feet or meters.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [Morris & Co: 10 cm (4 in) trim allowance per drop](https://wmorrisandco.com/uk/wallpaper-quantity-calculator)
+- [Etoffe: count wallpaper in drops, height + trim + pattern repeat](https://www.etoffe.com/en/content/16-calculate-the-number-of-rolls-of-wallpaper)

@@ -64,11 +64,19 @@ The sheet count is only part of the shopping list. Common rules of thumb for the
 - **Studs** at 16 in on center along each wall, plus one at each wall's end: 10 on each 12 ft wall and 9 on each 10 ft wall, **38 studs** in all. With 8 ft walls, each stud is one 8 ft piece.
 - **Floor and ceiling track**: twice the perimeter, 2 × 44 = 88 ft, or about 97 ft with waste, which is **13 pieces** of 8 ft.
 - **Screws**: about one per square foot of board, so around **331**.
-- **Joint tape**: about 0.4 ft per square foot, roughly **132 ft**, so a single 250 ft roll is plenty.
-- **Joint compound**: one 4.5-gallon box of premixed compound covers about 475 sq ft, so **1 box**.
+- **Joint tape**: about 370 ft per 1,000 sq ft (USG), roughly **122 ft**, so a single 250 ft roll is plenty.
+- **Joint compound**: USG lists about 10 gallons of all-purpose compound per 1,000 sq ft, so one 4.5-gallon box covers about 450 sq ft: **1 box**.
 
 These are estimates. Extra studs around doors and windows, ceiling framing and corner bead are not included, and your local building code may require particular boards in some places, such as fire-rated board next to a garage or moisture-resistant board in bathrooms. Check those requirements and your manufacturer's figures before you buy.
 
 ## Work it out for your room
 
 Enter the room size, wall height, openings and sheet size in the [drywall calculator](/calculators/drywall-calculator/). Choose whether to include the ceiling and it counts whole sheets, studs, track, screws, tape and compound, with the cost if you add a price per sheet. It works in feet or meters, with common sheet sizes for each.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [Screw spacing per IRC R702.3.5 (8 in edges, 16 in field): about 1 screw per sq ft on walls](https://drywallcalcs.pages.dev/how-many-screws-per-sheet-of-drywall/)
+- [USG Sheetrock joint tape: about 370 ft per 1,000 sq ft of panels](https://images.homedepot-static.com/catalog/pdfImages/7a/7a2ad9f3-62c7-45ef-b58e-869ccdbca0c6.pdf)
+- [USG: about two 4.5-gallon pails of lightweight compound per 1,000 sq ft (about 10 gallons of all-purpose)](https://assemblies-tools.usg.com/content/usgcom/en/resource-center/faqs/1977.html)

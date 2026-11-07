@@ -156,7 +156,7 @@ describe('calculation utilities', () => {
     expect(row('Floor and ceiling track')).toBeCloseTo(96.8);
     expect(row('Track pieces to buy')).toBe(13);
     expect(row('Drywall screws')).toBe(331);
-    expect(row('Joint tape')).toBeCloseTo(132.4);
+    expect(row('Joint tape')).toBeCloseTo(331 * 0.37);
     expect(row('Joint compound')).toBe(1);
   });
 
@@ -275,7 +275,7 @@ describe('calculation utilities', () => {
     const row = (label: string) => result.rows.find((item) => item.label === label)?.value ?? 0;
     expect(row('Boards')).toBe(179);
     expect(row('Insulation volume') * 0.0283168466).toBeCloseTo(179 * 0.5 * 0.1, 3);
-    expect(row('Board adhesive') * 0.45359237).toBeCloseTo(85 * 5.5, 3);
+    expect(row('Board adhesive') * 0.45359237).toBeCloseTo(85 * 5, 3);
     expect(row('Base coat') * 0.45359237).toBeCloseTo(85 * 4, 3);
     expect(row('Reinforcing mesh') * 0.09290304).toBeCloseTo(93.5, 3);
     expect(row('Anchors')).toBe(510);

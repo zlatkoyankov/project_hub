@@ -15,14 +15,22 @@ export interface CalculatorInfo {
   faqs: { question: string; answer: string }[];
   /** Path of the Bulgarian version on the hub, for hreflang links. */
   bg?: string;
+  /** Where the default figures come from, shown under the calculation. */
+  sources?: { label: string; href: string }[];
 }
+
+/** Date the sources and figures were last checked. */
+export const SOURCES_CHECKED = '7 November 2026';
+
+const src = (...items: [string, string][]) => items.map(([label, href]) => ({ label, href }));
+
 
 export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'gravel-calculator', bg: '/bg/kalkulator-chakal/', title: 'Gravel Calculator', shortTitle: 'Gravel', category: 'Landscaping',
     description: 'Estimate gravel volume, weight, and material cost for a driveway, path, or garden bed.',
     intro: 'Plan a gravel delivery with a practical estimate of volume and weight. Enter your project dimensions and adjust the example density to match your supplier’s material.',
-    kind: 'gravel', icon: 'gravel', keywords: ['stone', 'driveway', 'aggregate', 'rock', 'tons'],
+    sources: src(['Aggregate Markets: loose density of gravel, sand and crushed stone, about 1.35 tons per cubic yard', 'https://aggregatemarkets.com/en/calculators']), kind: 'gravel', icon: 'gravel', keywords: ['stone', 'driveway', 'aggregate', 'rock', 'tons'],
     example: 'A 20 ft × 10 ft area at 3 in deep holds about 1.85 cubic yards before waste.',
     formula: 'Length × width gives area. Area × depth in feet gives cubic feet; divide by 27 for cubic yards. Weight uses your entered density, and waste is added to volume.',
     faqs: [
@@ -34,7 +42,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'paint-calculator', bg: '/bg/kalkulator-boya/', title: 'Paint Calculator', shortTitle: 'Paint', category: 'Painting',
     description: 'Estimate paint coverage and the number of gallons needed for your walls.',
     intro: 'Estimate paint for rectangular walls, subtract doors and windows, and plan for multiple coats. Check the label for the coverage of your exact paint.',
-    kind: 'paint', icon: 'paint', keywords: ['walls', 'gallons', 'coverage', 'painting', 'coats'],
+    sources: src(['Sherwin-Williams: a gallon covers about 350 to 400 sq ft', 'https://www.sherwin-williams.com/en-us/color/color-tools/paint-calculator']), kind: 'paint', icon: 'paint', keywords: ['walls', 'gallons', 'coverage', 'painting', 'coats'],
     example: 'A 12 ft × 8 ft wall is 96 square feet before subtracting openings.',
     formula: 'Net wall area × coats ÷ coverage per gallon = estimated gallons. Whole-gallon purchasing rounds that quantity up.',
     faqs: [
@@ -46,7 +54,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'tile-calculator', bg: '/bg/kalkulator-plochki/', title: 'Tile Calculator', shortTitle: 'Tile', category: 'Flooring & Tile',
     description: 'Calculate approximate tile quantity and boxes for a rectangular floor or wall.',
     intro: 'Estimate tiles for a simple rectangular layout, including a configurable waste allowance. Complex patterns and irregular spaces require additional planning.',
-    kind: 'tile', icon: 'tile', keywords: ['floor', 'bathroom', 'boxes', 'ceramic', 'backsplash'],
+    sources: src(['Tiles UK: 10% waste for a straight layout, 15% diagonal, up to 20% herringbone', 'https://tiles.uk.com/how-many-tiles-do-i-need/'], ['Buildmat: 10% straight or brick layout, 15% diagonal or herringbone', 'https://www.buildmat.com.au/blogs/help-centre/how-to-calculate-how-many-tiles-you-need']), kind: 'tile', icon: 'tile', keywords: ['floor', 'bathroom', 'boxes', 'ceramic', 'backsplash'],
     example: 'A 10 ft × 12 ft room has 120 square feet of floor area before waste.',
     formula: 'Room area ÷ tile face area gives the base tile count. Apply waste, then round tiles and boxes up to whole units.',
     faqs: [
@@ -58,7 +66,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'concrete-calculator', bg: '/bg/kalkulator-beton/', title: 'Concrete Calculator', shortTitle: 'Concrete', category: 'Concrete & Masonry',
     description: 'Estimate concrete volume for a slab and optionally calculate material cost.',
     intro: 'Estimate the volume of concrete for a rectangular slab. The result is a planning estimate, not a structural design or placement specification.',
-    kind: 'concrete', icon: 'concrete', keywords: ['slab', 'cement', 'patio', 'cubic yards', 'foundation'],
+    sources: src(['QUIKRETE Concrete Mix 80 lb: about 0.6 cu ft per bag', 'https://www.pacesupply.com/Product/MORCONCRETE80']), kind: 'concrete', icon: 'concrete', keywords: ['slab', 'cement', 'patio', 'cubic yards', 'foundation'],
     example: 'A 10 ft × 10 ft slab that is 4 in thick is about 1.23 cubic yards before waste.',
     formula: 'Length × width × thickness in feet gives cubic feet; divide by 27 to convert to cubic yards. Apply waste to the volume.',
     faqs: [
@@ -82,7 +90,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'mulch-calculator', title: 'Mulch Calculator', shortTitle: 'Mulch', category: 'Landscaping',
     description: 'Estimate mulch volume for garden beds and landscaping areas.',
     intro: 'Estimate mulch in cubic feet and cubic yards from the bed dimensions and planned depth. Depth recommendations vary by material and use.',
-    kind: 'mulch', icon: 'mulch', keywords: ['garden', 'landscape', 'cubic yards', 'bark', 'beds'],
+    sources: src(['Mississippi State University Extension: 2 to 3 inches of mulch for landscape beds', 'https://extension.msstate.edu/news/southern-gardening/2022/use-mulch-for-beauty-and-weed-temperature-control']), kind: 'mulch', icon: 'mulch', keywords: ['garden', 'landscape', 'cubic yards', 'bark', 'beds'],
     example: 'A 10 ft × 10 ft bed at 3 in deep holds about 0.93 cubic yards before waste.',
     formula: 'Length × width gives area. Multiply by depth in feet for cubic feet, divide by 27 for cubic yards, then apply waste.',
     faqs: [
@@ -94,7 +102,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'laminate-flooring-calculator', bg: '/bg/kalkulator-laminat/', title: 'Laminate Flooring Calculator', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
     description: 'Work out how many boxes of laminate or vinyl plank flooring you need for a room, with waste and cost.',
     intro: 'Enter the room size and the coverage printed on the box. The estimate adds a waste allowance for cuts and rounds up to whole boxes.',
-    kind: 'flooring', icon: 'flooring', keywords: ['laminate', 'vinyl plank', 'LVP', 'floor', 'boxes', 'hardwood', 'underlayment'],
+    sources: src(['EGGER: order about 10% extra laminate', 'https://www.egger.com/en/blog/how-much-laminate-flooring-do-i-need?country=GB'], ['Pergo installation guide: acclimatize planks for 48 hours', 'https://cdn2.pergo.com/-/media/imported%20assets/flooring/5/b/b/pginstallationlmpherringboneenpdf288141.ashx']), kind: 'flooring', icon: 'flooring', keywords: ['laminate', 'vinyl plank', 'LVP', 'floor', 'boxes', 'hardwood', 'underlayment'],
     example: 'A 14 ft × 12 ft room is 168 square feet of floor before waste.',
     formula: 'Length × width gives the floor area. Add the waste allowance, divide by the coverage per box and round up to whole boxes.',
     faqs: [
@@ -106,7 +114,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'drywall-calculator', bg: '/bg/kalkulator-gipsokarton/', title: 'Drywall Calculator', shortTitle: 'Drywall', category: 'General Construction',
     description: 'Estimate drywall sheets for the walls and ceiling of a room, minus doors and windows, with waste and cost.',
     intro: 'Enter the room size and wall height, subtract doors and windows, and choose a sheet size. The estimate adds waste and rounds up to whole sheets.',
-    kind: 'drywall', icon: 'drywall', keywords: ['plasterboard', 'gypsum board', 'sheetrock', 'walls', 'ceiling', 'sheets'],
+    sources: src(['Screw spacing per IRC R702.3.5 (8 in edges, 16 in field): about 1 screw per sq ft on walls', 'https://drywallcalcs.pages.dev/how-many-screws-per-sheet-of-drywall/'], ['USG Sheetrock joint tape: about 370 ft per 1,000 sq ft of panels', 'https://images.homedepot-static.com/catalog/pdfImages/7a/7a2ad9f3-62c7-45ef-b58e-869ccdbca0c6.pdf'], ['USG: about two 4.5-gallon pails of lightweight compound per 1,000 sq ft (about 10 gallons of all-purpose)', 'https://assemblies-tools.usg.com/content/usgcom/en/resource-center/faqs/1977.html'], ['Knauf Type A 12.5 mm: sheet sizes 1.2 × 2.0 to 3.0 m', 'https://knauf.com/bg-BG/p/produkt/gipskartoneni-ploskosti-tip-a-12-5-mm-10003_0102']), kind: 'drywall', icon: 'drywall', keywords: ['plasterboard', 'gypsum board', 'sheetrock', 'walls', 'ceiling', 'sheets'],
     example: 'A 12 ft × 10 ft room with 8 ft walls has 352 square feet of wall before openings.',
     formula: 'Room perimeter × wall height gives the wall area; add the ceiling if needed and subtract openings. Add waste, divide by the sheet area and round up.',
     faqs: [
@@ -118,7 +126,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'tile-adhesive-grout-calculator', bg: '/bg/lepilo-i-fuga/', title: 'Tile Adhesive & Grout Calculator', shortTitle: 'Tile adhesive & grout', category: 'Flooring & Tile',
     description: 'Estimate bags of tile adhesive (thinset) and grout from the area, tile size, joint width and trowel notch.',
     intro: 'Enter the area to tile, the tile size and thickness and the joint width. The estimate picks a trowel notch for the tile size, adds waste and rounds up to whole bags.',
-    kind: 'adhesive', icon: 'tile', keywords: ['thinset', 'mortar', 'grout', 'tile adhesive', 'trowel', 'bags'],
+    sources: src(['Ceresit CM 11 PLUS data sheet: adhesive per trowel notch, 4 to 12 mm', 'https://datasheets.tdx.henkel.com/CERESIT-CM-11-PLUS-sk_SK.pdf'], ['SikaCeram Tile Grout data sheet: grout density about 1.6 kg/L and coverage formula', 'https://twn.sika.com/dam/dms/tw01/d/sikaceram_tile_groutf1t.pdf']), kind: 'adhesive', icon: 'tile', keywords: ['thinset', 'mortar', 'grout', 'tile adhesive', 'trowel', 'bags'],
     example: 'Grout for 12 × 12 in tiles with 1/8 in joints, 3/8 in thick, is about 0.32 kg per m² (0.065 lb per sq ft).',
     formula: 'Adhesive = area × the usual consumption for the trowel notch. Grout per m² = (tile length + width) ÷ (length × width) × joint width × tile thickness × 1.6, with sizes in mm. Waste is added and bags are rounded up.',
     faqs: [
@@ -130,7 +138,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'wallpaper-calculator', bg: '/bg/kalkulator-tapeti/', title: 'Wallpaper Calculator', shortTitle: 'Wallpaper', category: 'Paint & Finishes',
     description: 'Estimate rolls of wallpaper for a room from the wall size, roll size and pattern repeat, counted strip by strip.',
     intro: 'Enter the room size and wall height, doors and windows, and the size of one roll. The estimate counts the strips you can cut from each roll, allowing for the pattern repeat.',
-    kind: 'wallpaper', icon: 'paint', keywords: ['wall covering', 'rolls', 'pattern repeat', 'drop', 'strips', 'feature wall'],
+    sources: src(['Morris & Co: 10 cm (4 in) trim allowance per drop', 'https://wmorrisandco.com/uk/wallpaper-quantity-calculator'], ['Etoffe: count wallpaper in drops, height + trim + pattern repeat', 'https://www.etoffe.com/en/content/16-calculate-the-number-of-rolls-of-wallpaper']), kind: 'wallpaper', icon: 'paint', keywords: ['wall covering', 'rolls', 'pattern repeat', 'drop', 'strips', 'feature wall'],
     example: 'A 12 ft × 10 ft room with 8 ft walls needs about 25 strips of 20.5 in wallpaper, or 9 rolls of 33 ft.',
     formula: 'Strips = (room perimeter − opening width) ÷ roll width. Strips per roll = roll length ÷ (wall height in whole pattern repeats + trim). Rolls = strips ÷ strips per roll, rounded up.',
     faqs: [
@@ -142,7 +150,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'screed-plaster-calculator', bg: '/bg/zamazka-i-mazilka/', title: 'Screed & Plaster Calculator', shortTitle: 'Screed & plaster', category: 'Concrete & Masonry',
     description: 'Estimate bags of floor screed, self-leveling compound or gypsum plaster from the area, thickness and the mix’s consumption.',
     intro: 'Enter the area and the average thickness, and choose the material. The estimate multiplies by the consumption per millimeter from manufacturers’ data sheets, adds waste and rounds up to whole bags.',
-    kind: 'screed', icon: 'concrete', keywords: ['floor leveler', 'self-leveling', 'underlayment', 'screed', 'plaster', 'bags', 'thickness'],
+    sources: src(['Baumit Solido E225: cement screed, about 20 kg/m² per cm', 'https://baumit.pl/files/pl/pdf_files/pds_solido___5___estrich_e___5_bpl_pl_13262.pdf'], ['Ceresit CN 68: self-leveling, about 1.5 kg/m² per mm', 'https://datasheets.tdx.henkel.com/CERESIT-CN-68-bg_BG.pdf'], ['Baumit Nivello Quattro: self-leveling, about 1.5 kg/m² per mm', 'https://media.hornbach.at/hb/technicaldatasheet/as.187261153.pdf'], ['Knauf MP 75: gypsum plaster, 10 kg/m² at 10 mm', 'https://bauhaus.bg/upload/files/120030/2605_MP%2075_2020.pdf']), kind: 'screed', icon: 'concrete', keywords: ['floor leveler', 'self-leveling', 'underlayment', 'screed', 'plaster', 'bags', 'thickness'],
     example: 'A 15 m² floor with 40 mm of cement screed takes about 1,200 kg of dry mix before waste.',
     formula: 'Dry mix = area (m²) × thickness (mm) × consumption (kg per m² per mm). Add waste, divide by the bag weight and round up.',
     faqs: [
@@ -154,7 +162,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'insulation-board-calculator', bg: '/bg/kalkulator-izolatsiya/', title: 'Insulation Board Calculator', shortTitle: 'Insulation boards', category: 'General Construction',
     description: 'Estimate rigid foam or mineral wool boards for a wall, and the adhesive, base coat, mesh and anchors for exterior insulation (EIFS).',
     intro: 'Enter the wall area, subtract doors and windows, and choose a board size and thickness. Optionally add the supplies for an exterior insulation system.',
-    kind: 'insulation', icon: 'drywall', keywords: ['rigid foam', 'EPS', 'XPS', 'mineral wool', 'EIFS', 'ETICS', 'facade', 'boards'],
+    sources: src(['Ceresit CT 85 data sheet: adhesive 5.0 kg/m², base coat 4.0 kg/m²', 'https://datasheets.tdx.henkel.com/CERESIT-CT-85-en_GB.pdf'], ['Ceresit CT 325: mesh, about 1.1 m per m²', 'https://datasheets.tdx.henkel.com/CERESIT-CT-325-mk_MK.pdf'], ['ETA 22/0366: at least 6 anchors per m², 8 on buildings over 24 m', 'https://dit.ietcc.csic.es/2022/12/03/ete-22-0366-sistema-de-aislamiento-termico-por-el-exterior-sistema-ferro-term-sistema-chem-term/?lang=en']), kind: 'insulation', icon: 'drywall', keywords: ['rigid foam', 'EPS', 'XPS', 'mineral wool', 'EIFS', 'ETICS', 'facade', 'boards'],
     example: '85 m² of wall with 1 × 0.5 m boards needs about 179 boards with 5% waste.',
     formula: 'Boards = (wall area − openings) × (1 + waste) ÷ board area, rounded up. Supplies use typical rates per m² of board.',
     faqs: [
@@ -166,7 +174,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'brick-block-calculator', bg: '/bg/kalkulator-tuhli/', title: 'Brick & Block Calculator', shortTitle: 'Bricks & blocks', category: 'Concrete & Masonry',
     description: 'Estimate bricks or blocks for a wall, and the mortar and mortar bags, from the wall size and the unit you build with.',
     intro: 'Enter the wall length and height, subtract doors and windows, and choose the brick or block. The estimate counts units per square foot with their joints and works out the mortar in the joints.',
-    kind: 'masonry', icon: 'concrete', keywords: ['bricks', 'blocks', 'CMU', 'mortar', 'wall', 'masonry', 'Porotherm', 'aerated concrete'],
+    sources: src(['BIA Technical Note 10: modular brick about 6.75 per sq ft, mortar per 1,000 brick', 'https://gobrick.com/media/file/10-dimensioning-and-estimating-brick-masonry.pdf'], ['Titan America block guide: 1.125 block per sq ft for 8 × 16 in CMU', 'https://titanamerica.com/wp-content/uploads/2025/01/Titan-America-Block-Estimating-Guide.pdf'], ['QUIKRETE Mason Mix: an 80 lb bag lays up to 37 bricks or 13 blocks', 'https://www.Quikrete.com/PDFs/DATA_SHEET-Mason%20Mix%201136.pdf'], ['Wienerberger Porotherm 25: 375 × 250 × 238 mm, 11 per m² (data sheet)', 'https://www.masterhaus.bg/files/pdf-docs/11/03/01/1103010048-tuhla-poroterm-25-light-plus-375h250h238mm.pdf'], ['Ytong 625 × 250 mm: 6.4 per m², thin-bed joint (data sheet)', 'https://www.baubook.info/m/Daten/Infos/SI2142723510/AT87/ID147470/2023_Ytong_Planstein_gelb_PP2_050_250.pdf']), kind: 'masonry', icon: 'concrete', keywords: ['bricks', 'blocks', 'CMU', 'mortar', 'wall', 'masonry', 'Porotherm', 'aerated concrete'],
     example: 'A wall of modular brick with 3/8 in joints takes about 6.9 bricks per sq ft; 8 × 16 in concrete blocks about 1.125 per sq ft.',
     formula: 'Units per area = 1 ÷ ((unit length + joint) × (unit height + joint)). Mortar fills the bed joints, and the head joints when the units have them, through the wall depth.',
     faqs: [
