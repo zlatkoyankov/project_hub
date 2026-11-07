@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating'
 
 export interface Tool {
   id: string
@@ -217,6 +217,17 @@ export const TOOL_CATALOG: Tool[] = [
     keywords: 'electricity energy kwh heater boiler air conditioner cost ток електричество печка духалка бойлер климатик сметка',
     isNew: true,
   },
+  {
+    id: 'heating',
+    category: 'home',
+    icon: 'heating',
+    href: { en: '/bg/razhod-za-otoplenie/', bg: '/bg/razhod-za-otoplenie/' },
+    name: { en: 'Heating cost (Bulgarian)', bg: 'Разход за отопление' },
+    description: { en: 'Firewood, pellets, air conditioner or electricity: what a winter costs.', bg: 'Дърва, пелети, климатик или ток: колко струва зимата.' },
+    keywords: 'heating cost firewood pellets heat pump отопление дърва пелети климатик ток парно газ зима сметка',
+    isNew: true,
+    only: 'bg',
+  },
 ]
 
 /** Inline stroke icons (24×24) for the calculator tiles. */
@@ -228,6 +239,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   mulch: '<path d="M5 20c0-9 6-15 15-15 0 9-6 15-15 15z"/><path d="M5 20 13 12"/>',
   area: '<path d="M3 17 17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/>',
   energy: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  heating: '<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.4 1.2-4 2.5-5.2.2 1.7 1 2.8 2.1 3.2C11 8.6 11.3 5.6 12 3Z"/>',
   flooring: '<rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9.3h18M3 14.6h18M10 4v5.3M16 9.3v5.3M8 14.6V20"/>',
   bee: '<path d="M12 3l4 2.3v4.6L12 12l-4-2.1V5.3z"/><path d="M8 12l4 2.1V19l-4 2.3-4-2.3v-4.6z"/><path d="M16 12l4 2.1V19l-4 2.3-4-2.3v-4.6z"/>',
   masonry: '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 9.7h18M3 14.3h18M9 5v4.7M15 9.7v4.6M9 14.3V19"/>',
@@ -252,7 +264,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
   { id: 'floors', name: { en: 'Floors and tiles', bg: 'Под и плочки' }, tools: ['tile', 'adhesive', 'flooring', 'screed'] },
   { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
   { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'gravel', 'mulch', 'area'] },
-  { id: 'energy', name: { en: 'Energy', bg: 'Енергия' }, tools: ['energy'] },
+  { id: 'energy', name: { en: 'Energy', bg: 'Енергия и отопление' }, tools: ['heating', 'energy'] },
 ]
 
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
@@ -274,7 +286,8 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   gravel: ['concrete', 'mulch', 'area'],
   mulch: ['gravel', 'area', 'concrete'],
   area: ['flooring', 'paint', 'tile'],
-  energy: ['insulation', 'paint', 'area'],
+  energy: ['heating', 'insulation', 'area'],
+  heating: ['energy', 'insulation', 'masonry'],
 }
 
 /** Catalogue id of the tool a blog post links to (the post's `tool` field). */
@@ -284,6 +297,7 @@ export const POST_TOOL_IDS: Record<string, string> = {
   'crossword-solver': 'crossword-solver',
   'spelling-bee': 'spelling-bee',
   'energy-cost-calculator': 'energy',
+  'heating-cost-calculator': 'heating',
   'concrete-calculator': 'concrete',
   'tile-calculator': 'tile',
   'paint-calculator': 'paint',
