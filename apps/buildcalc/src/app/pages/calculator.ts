@@ -212,7 +212,7 @@ export class CalculatorPage {
     if (!calculator) return '';
     const units = this.embedUnits() === 'metric' ? '?units=metric' : '';
     return [
-      `<iframe src="${SITE_BASE_URL}/embed/${calculator.slug}/${units}" title="${calculator.title} by BuildCalc" width="100%" height="980" style="border:0;max-width:820px" loading="lazy"></iframe>`,
+      `<iframe src="${SITE_BASE_URL}/embed/${calculator.slug}/${units}" title="${calculator.title} by BuildCalc" width="100%" height="980" style="border:0;max-width:820px" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`,
       `<p style="font-size:14px"><a href="${this.fullUrl()}">${calculator.title}</a> by BuildCalc</p>`,
       // Optional: lets the iframe grow to fit, so visitors never scroll inside it.
       `<script>addEventListener("message",function(e){if(e.origin==="https://zyankov.eu"&&e.data&&e.data.type==="buildcalc-height"){document.querySelectorAll("iframe").forEach(function(f){if(f.contentWindow===e.source)f.style.height=e.data.height+"px"})}})</script>`,
@@ -298,7 +298,7 @@ export class CalculatorPage {
         this.previousUnitSystem = units;
         this.reset();
       }
-      track('embed_view', { calculator: this.calculator()?.kind ?? 'unknown' });
+      track('embed_view', { calculator: this.calculator()?.kind ?? 'unknown', host: this.embedHost() });
       // Tell the host page how tall the calculator is, so its iframe can fit it.
       if (window.parent === window || typeof ResizeObserver === 'undefined') return;
       const post = () => window.parent.postMessage({ type: 'buildcalc-height', height: Math.ceil(document.documentElement.scrollHeight) }, '*');
@@ -315,9 +315,29 @@ export class CalculatorPage {
 
   protected setValue(key: string, value: number): void {
     this.values.update((current) => ({ ...current, [key]: Number(value) }));
+    this.noteEmbedUse();
+  }
+
+  /** The site an embedded calculator sits on, from the referrer (browsers send at least the origin). */
+  private embedHost(): string {
+    try {
+      return document.referrer ? new URL(document.referrer).hostname || 'unknown' : 'unknown';
+    } catch {
+      return 'unknown'
+    }
+  }
+
+  private embedUsed = false;
+
+  /** Counts an embed as used (once per visit) when someone changes a value, not just opens it. */
+  private noteEmbedUse(): void {
+    if (!this.embed() || this.embedUsed) return;
+    this.embedUsed = true;
+    track('embed_use', { calculator: this.calculator()?.kind ?? 'unknown', host: this.embedHost() });
   }
 
   protected setUnitValue(key: string, value: number): void {
+    this.noteEmbedUse();
     const nextUnit = Number(value);
     this.values.update((current) => {
       const updated = { ...current };
@@ -457,6 +477,7 @@ export class CalculatorPage {
   }
 
   protected setAreaValue(index: number, key: 'length' | 'width', value: number): void {
+    this.noteEmbedUse();
     this.areas.update((areas) => areas.map((area, itemIndex) => itemIndex === index ? { ...area, [key]: Number(value) } : area));
   }
 
