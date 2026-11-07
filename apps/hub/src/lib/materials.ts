@@ -404,7 +404,10 @@ export function estimateMasonry(input: MasonryInput): MasonryEstimate | null {
 
 // ---------- Concrete (Bulgarian calculator) ----------
 
-/** Typical site-mixed recipes per 1 m³ of concrete. Approximate: they depend on the cement, sand and aggregate size. */
+/** Typical site-mixed recipes per 1 m³ of concrete. Our middle values between published guides: 240/280/300 kg of
+ *  CEM II 42.5 (namerimaistor.eu, +10–15% with 32.5), 280–350 kg for structural classes (buildly.bg), 280/350/400 kg
+ *  in ACI 211.1 nominal mixes; about 1.3 m³ of loose sand and gravel and 180 l of water. Approximate: they depend
+ *  on the cement, sand and aggregate size. */
 export const CONCRETE_MIXES = [
   { label: 'C12/15 (B15) – подложка, тротоар', cementKg: 270, sandM3: 0.48, gravelM3: 0.86, waterL: 180 },
   { label: 'C16/20 (B20) – плоча, основи', cementKg: 320, sandM3: 0.45, gravelM3: 0.85, waterL: 180 },
@@ -478,12 +481,14 @@ export function estimateConcrete(input: ConcreteInput): ConcreteEstimate | null 
 
 // ---------- Gravel, sand and other bulk materials ----------
 
-/** Loose bulk density in tonnes per m³. Suppliers' figures vary with moisture and grading. */
+/** Loose bulk density in tonnes per m³. Suppliers' figures vary with moisture and grading. Gravel, sand and crushed
+ *  stone about 1.5–1.6 and topsoil about 1.25 (aggregatemarkets.com); sand-and-gravel ballast 1.54 loose (quarry
+ *  study, RIEW Plovdiv); 0–63 mm sub-base about 2.15 compacted, so about 1.8 loose (our estimate). */
 export const BULK_MATERIALS = [
   { label: 'Чакъл (речен или трошен)', tPerM3: 1.6 },
   { label: 'Трошен камък (фракция)', tPerM3: 1.5 },
   { label: 'Тампон (трошен камък 0–63 мм)', tPerM3: 1.8 },
-  { label: 'Баластра', tPerM3: 1.8 },
+  { label: 'Баластра', tPerM3: 1.6 },
   { label: 'Пясък', tPerM3: 1.5 },
   { label: 'Декоративни камъчета', tPerM3: 1.5 },
   { label: 'Пръст / хумус', tPerM3: 1.3 },
