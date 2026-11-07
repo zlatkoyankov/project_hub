@@ -2,7 +2,8 @@
    toString(), so it must only use browser globals (no imports, no module-level variables). Runs before first paint:
    applies the saved or system theme, wires every [data-zy-theme-toggle] button and exposes
    window.zyTheme. Apps listen for the 'zyankov-theme-change' event instead of storing theme state.
-   Also handles the skip link, the "Privacy settings" button and cross-project click tracking. */
+   Also handles the skip link, the "Privacy settings" button, cross-project click tracking and remembers
+   recently opened pages for the homepage. */
 export function shellInline() {
   var KEY = 'zyankov-theme';
   var LEGACY_KEYS = ['letterwell-theme', 'buildcalc-theme'];
@@ -78,8 +79,35 @@ export function shellInline() {
     });
   }
 
+  /* Recently opened pages, for "Your tools" on the homepage. Only paths are stored, in this browser.
+     The homepage matches them against its tool catalogue, so non-tool pages are simply ignored there. */
+  var RECENT_KEY = 'zyankov-recent';
+  function remember() {
+    try {
+      var path = window.location.pathname;
+      if (path.charAt(path.length - 1) !== '/') path += '/';
+      if (/^\/(bg\/)?$/.test(path) || /^\/(bg\/)?blog\//.test(path) || /\/(vgradi|embed)\//.test(path)) return;
+      if (/[?&]embed/.test(window.location.search) || window.self !== window.top) return;
+      var list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+      if (!Array.isArray(list)) list = [];
+      list = [path].concat(list.filter(function (item) { return item !== path; })).slice(0, 12);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+    } catch (error) {
+      /* Storage unavailable: nothing is remembered. */
+    }
+  }
+
   apply(read());
   if (window.location.hash === '#privacy-settings') showConsent();
+  remember();
+  /* Letterwell and BuildCalc change pages without reloading. */
+  var pushState = window.history.pushState;
+  window.history.pushState = function () {
+    var result = pushState.apply(this, arguments);
+    remember();
+    return result;
+  };
+  window.addEventListener('popstate', remember);
 
   document.addEventListener('DOMContentLoaded', function () {
     apply(window.zyTheme.get());
