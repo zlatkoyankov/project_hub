@@ -1063,7 +1063,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         if (result.supplies) {
           const s = result.supplies
           rows.push(
-            ['Лепило за плочите', `${fmt(s.adhesive, 0)} кг`, 'около 5,5 кг/м²'],
+            ['Лепило за плочите', `${fmt(s.adhesive, 0)} кг`, 'около 5,0 кг/м²'],
             ['Шпакловка с мрежа', `${fmt(s.baseCoat, 0)} кг`, 'около 4,0 кг/м²'],
             ['Торби лепило-шпакловка', `${s.bags} бр.`, 'по 25 кг, ако е един продукт за двете'],
             ['Мрежа', `${fmt(s.mesh, 0)} м²`, 'с 10% застъпване'],
@@ -1142,7 +1142,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
             ['CW профили за купуване', `${supplies.studPieces} бр.`],
             ['UW профили (под и таван)', `${fmt(supplies.trackLength, 1)} м`, 'само за стените, с фирата'],
             ['UW профили за купуване', `${supplies.trackPieces} бр.`],
-            ['Винтове', `${supplies.screws} бр.`, 'около 11 на м² плоскост'],
+            ['Винтове', `${supplies.screws} бр.`, 'около 15 на м² плоскост'],
             ['Лента за фуги', `${fmt(supplies.tape, 0)} м`, 'фугите и вътрешните ъгли'],
             ['Шпакловка за фуги', `${fmt(supplies.compound, 1)} кг`, 'около 0,5 кг/м² стени и 0,3 кг/м² таван'],
           )
