@@ -2,6 +2,8 @@
 // Bulgarian, metric material calculators (/bg/kalkulator-laminat/, /bg/kalkulator-beton/, …).
 // The English versions live in BuildCalc; the maths is in src/lib/materials.ts.
 import BaseLayout from '../layouts/BaseLayout.astro'
+import EmbedLayout from '../layouts/EmbedLayout.astro'
+import { embedPath } from '../lib/embeds'
 import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
@@ -14,6 +16,8 @@ type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insu
 
 interface Props {
   kind: Kind
+  /** Render for an iframe on another site (/bg/vgradi/…): just the calculator. */
+  embed?: boolean
 }
 
 interface Field {
@@ -210,7 +214,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
   },
 }
 
-const { kind } = Astro.props
+const { kind, embed = false } = Astro.props
 const config = CONFIGS[kind]
 const flooring = kind === 'flooring'
 const adhesive = kind === 'adhesive'
@@ -455,18 +459,25 @@ const jsonLd = {
   operatingSystem: 'Any',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
 }
+const Layout = embed ? EmbedLayout : BaseLayout
+const layoutProps: Record<string, unknown> = embed
+  ? { title: page.title, canonical: page.path, lang: 'bg' }
+  : { title: page.title, description: page.description, path: page.path, lang: 'bg', alternates: { en: page.en, bg: page.path }, project: 'buildcalc', jsonLd }
+const embedUrl = `https://zyankov.eu${embedPath(page.path)}`
+const embedCode = `<iframe src="${embedUrl}" title="${page.jsonName} – zyankov.eu" width="100%" height="900" style="border:0;max-width:820px" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+const embedResize = `<script>addEventListener('message',function(e){if(e.origin!=='https://zyankov.eu'||!e.data||e.data.type!=='zyankov-height')return;document.querySelectorAll('iframe').forEach(function(f){if(f.contentWindow===e.source)f.style.height=e.data.height+'px'})})</script>`
 ---
 
-<BaseLayout title={page.title} description={page.description} path={page.path} lang="bg" alternates={{ en: page.en, bg: page.path }} project="buildcalc" jsonLd={jsonLd}>
-  <div class="tool-page zy-board" data-board={boardFor(kind)}>
+<Layout {...layoutProps}>
+  <div class:list={['tool-page', { 'zy-board': !embed, 'is-embed': embed }]} data-board={boardFor(kind)}>
     <main id="top">
-      <nav class="tool-crumbs" aria-label="Breadcrumb"><a href="/bg/">Начало</a><span aria-hidden="true">/</span><a href="/bg/#home-diy">Дом и ремонт</a></nav>
+      {!embed && <nav class="tool-crumbs" aria-label="Breadcrumb"><a href="/bg/">Начало</a><span aria-hidden="true">/</span><a href="/bg/#home-diy">Дом и ремонт</a></nav>}
       <header class="tool-head">
         <span class="tool-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" set:html={TOOL_ICONS[kind]} /></span>
         <div>
           <p class="tool-kicker">ДОМ И РЕМОНТ · КАЛКУЛАТОР</p>
           <h1>{page.h1}</h1>
-          <p class="tool-intro">{page.intro}</p>
+          {!embed && <p class="tool-intro">{page.intro}</p>}
         </div>
       </header>
 
@@ -573,6 +584,7 @@ const jsonLd = {
         </aside>
       </section>
 
+      {!embed && (<>
       <section class="tool-notes">
         <article>
           <h2>Как се изчислява</h2>
@@ -584,6 +596,22 @@ const jsonLd = {
           <ul>{page.tips.map((tip) => <li>{tip}</li>)}</ul>
           <p class="tool-switch"><a href={page.en} hreflang="en">In English, in feet or metres →</a></p>
         </article>
+      </section>
+
+      <section class="tool-embed" aria-labelledby="tool-embed-title">
+        <h2 id="tool-embed-title">Вгради калкулатора на твоя сайт</h2>
+        <p>Безплатно за блогове, форуми и сайтове на фирми. Постави кода в страницата си и калкулаторът ще работи при теб, с връзка към нас.</p>
+        <label class="tool-embed__label" for="embed-code">Код за вграждане</label>
+        <textarea id="embed-code" class="tool-embed__code" readonly rows="4" data-embed-code>{embedCode}</textarea>
+        <details class="tool-embed__more">
+          <summary>Височината да се нагажда сама (по желание)</summary>
+          <p>Добави и този ред веднъж в страницата. Тогава рамката става точно колкото калкулатора.</p>
+          <textarea class="tool-embed__code" readonly rows="3" aria-label="Скрипт за автоматична височина">{embedResize}</textarea>
+        </details>
+        <p class="tool-embed__actions">
+          <button type="button" class="tool-embed__copy" data-embed-copy>Копирай кода</button>
+          <a href={embedPath(page.path)} target="_blank" rel="noopener">Виж как изглежда ↗</a>
+        </p>
       </section>
 
       <RelatedTools lang="bg" id={kind} />
@@ -603,9 +631,10 @@ const jsonLd = {
           </ul>
         </section>
       )}
+      </>)}
     </main>
   </div>
-</BaseLayout>
+</Layout>
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
@@ -863,13 +892,35 @@ const jsonLd = {
       if (bagInput && bag && !bagTouched) bagInput.value = bag
     })
 
+    // Embedded on another site: which site, and whether it is actually used (never the values).
+    const embedded = document.documentElement.dataset.embed === '1'
+    let host = 'unknown'
+    try { host = document.referrer ? new URL(document.referrer).hostname || 'unknown' : 'unknown' } catch { /* keep unknown */ }
+    if (embedded) track('embed_view', { calculator: kind ?? '', host, language: 'bg' })
+
     form.addEventListener('input', () => {
       update()
       if (!tracked) {
         tracked = true
         // Only that the tool was used, never the values.
         track('material_calculate', { kind: kind ?? '', language: 'bg' })
+        if (embedded) track('embed_use', { calculator: kind ?? '', host, language: 'bg' })
       }
+    })
+
+    const copyButton = document.querySelector<HTMLButtonElement>('[data-embed-copy]')
+    const codeBox = document.querySelector<HTMLTextAreaElement>('[data-embed-code]')
+    copyButton?.addEventListener('click', async () => {
+      if (!codeBox) return
+      try {
+        await navigator.clipboard.writeText(codeBox.value)
+      } catch {
+        codeBox.select()
+        document.execCommand('copy')
+      }
+      copyButton.textContent = 'Копирано ✓'
+      window.setTimeout(() => { copyButton.textContent = 'Копирай кода' }, 2500)
+      track('embed_copy', { calculator: kind ?? '', language: 'bg' })
     })
     form.addEventListener('submit', (event) => event.preventDefault())
     update()

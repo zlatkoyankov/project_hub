@@ -1,0 +1,13 @@
+---
+// Embeddable versions of the Bulgarian calculators: /bg/vgradi/kalkulator-beton/ and so on.
+import MaterialCalculatorBg from '../../../components/MaterialCalculatorBg.astro'
+import { EMBED_SLUGS } from '../../../lib/embeds'
+
+export function getStaticPaths() {
+  return Object.entries(EMBED_SLUGS).map(([slug, kind]) => ({ params: { slug }, props: { kind } }))
+}
+
+const { kind } = Astro.props
+---
+
+<MaterialCalculatorBg kind={kind} embed />
