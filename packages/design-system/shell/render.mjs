@@ -32,7 +32,8 @@ function analyticsTag() {
   if (!analyticsEnabled) return ''
   if (analytics.provider === 'umami') {
     const domains = analytics.domains ? ` data-domains="${escape(analytics.domains)}"` : ''
-    return `<script defer src="${escape(analytics.src)}" data-website-id="${escape(analytics.websiteId)}"${domains}></script>`
+    // data-exclude-search: shared calculator links carry the values in the query string; they never reach analytics.
+    return `<script defer src="${escape(analytics.src)}" data-website-id="${escape(analytics.websiteId)}"${domains} data-exclude-search="true"></script>`
   }
   return `<script defer src="${escape(analytics.src)}" data-domain="${escape(analytics.domain)}"></script>`
 }
