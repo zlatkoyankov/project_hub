@@ -14,7 +14,7 @@ translation: en/how-much-tile-adhesive-and-grout-do-i-need
 
 Лепилото се разстила със зъбна маламашка, а размерът на зъба определя колко дебел е слоят. По-големите плочки искат по-дълбок зъб, за да легнат изцяло в лепилото.
 
-Типичен разход на циментово лепило по данни на Ceresit CM 11:
+Разход на циментово лепило по техническия лист на Ceresit CM 11 PLUS:
 
 | Размер на плочката (по-дългата страна) | Зъб на маламашката | Лепило на м² |
 | --- | --- | --- |
@@ -58,3 +58,12 @@ translation: en/how-much-tile-adhesive-and-grout-do-i-need
 ## Сметни за твоя ремонт
 
 [Калкулаторът за лепило и фуга](/bg/lepilo-i-fuga/) избира зъба на маламашката според плочката, смята лепилото и фугата с фирата и закръгля до цели торби. За самите плочки виж статията [Колко плочки ми трябват](/bg/blog/kolko-plochki-mi-tryabvat/).
+
+## Източници
+
+Проверено на 7 ноември 2026.
+
+- [Ceresit CM 11 PLUS, технически лист: разход по зъб на маламашката, 4–12 мм](https://datasheets.tdx.henkel.com/CERESIT-CM-11-PLUS-sk_SK.pdf)
+- [Ceresit CM 11 PLUS, технически лист на български](https://dm.henkel-dam.com/is/content/henkel/Ceresit_CM-11_Plus_TDS_BG)
+- [SikaCeram Tile Grout, технически лист: плътност около 1,6 кг/л и формула за разход](https://twn.sika.com/dam/dms/tw01/d/sikaceram_tile_groutf1t.pdf)
+- [Ceresit CE 40, технически лист: таблица с разход на фуга](https://datasheets.tdx.henkel.com/CERESIT-CE-40-de_AT.pdf)

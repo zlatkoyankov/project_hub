@@ -70,3 +70,12 @@ translation: en/how-much-laminate-flooring-do-i-need
 ## Сметни за твоята стая
 
 [Калкулаторът за ламинат](/bg/kalkulator-laminat/) е на български и в метри. Въвеждаш размерите на стаята, квадратурата в кутията и фирата. Той закръгля до цели кутии, брои первазите, ъглите, капачките, съединителите и праговете и показва цената, ако въведеш цена за м² и за лайсна.
+
+## Източници
+
+Проверено на 7 ноември 2026.
+
+- [EGGER: колко ламинат да купиш, с 10% в повече](https://www.egger.com/en/blog/how-much-laminate-flooring-do-i-need?country=GB)
+- [EGGER поддръжка: минимум 5% за изрезки](https://support.egger.com/hc/en-us/articles/360001076658-How-much-material-waste-should-be-considered-when-buying-Flooring)
+- [Pergo, инструкция за монтаж: 48 часа аклиматизация](https://cdn2.pergo.com/-/media/imported%20assets/flooring/5/b/b/pginstallationlmpherringboneenpdf288141.ashx)
+- [Инструкция за монтаж на ламинат: до 10%, при диагонал 18%](https://cdn.mediavalet.com/usva/rwbrands/KRcvgeYgIUaaJYM5cdG4Ow/ksHhW-pRw0GNpP3uz9080Q/Original/Laminate%20Flooring%20Installation%20Guide.pdf)
