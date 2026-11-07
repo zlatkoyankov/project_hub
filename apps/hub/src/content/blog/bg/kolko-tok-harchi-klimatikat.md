@@ -49,3 +49,12 @@ tool: energy-cost-calculator
 ## Сметни за твоя климатик
 
 Въведи консумацията на твоя климатик, часовете и цената от сметката в [калкулатора за разход на ток](/bg/razhod-na-tok/). Ще видиш колко струва на ден, месец и година. Ако не знаеш точната консумация, използвай стойността от етикета и намали полето „Средно натоварване“, защото инверторът рядко работи на пълна мощност.
+
+## Източници
+
+Проверено на 7 ноември 2026.
+
+- [ЕНЕРГО-ПРО: цени на тока от 1 юли 2026 г.](https://www.energo-pro.bg/en/novini/kevr-utvrdi-novi-ceni-na-elektroenergiyata-ot-1-yuli-2026-g)
+- [Mitsubishi Heavy SRK35ZS: климатик 12000 BTU, 0,94 kW консумация при отопление](https://editor.alleop.bg/en/air-conditioners/25131-mitsubishi-heavy-industries-srk35zs-wb-src35zs-w-inverter-air-conditioner-12000-btu-25-m-a-a-allergen-free-r-32-white-black-4961317391020.html)
+- [Mitsui MTX12HP24, технически лист: SCOP 4,0 при среден климат](https://www.technim.nl/wp-content/uploads/2023/05/Mitsui_Wall-Trend-12000-35.pdf)
+- [Centre for Sustainable Energy: мощност на духалки и радиатори 2000–3000 W](https://www.nea.org.uk/wp-content/uploads/2021/07/advice_leaflet_what_uses_watt.pdf)

@@ -19,16 +19,26 @@ const alternates = { en: '/energy-cost-calculator/', bg: '/bg/razhod-na-tok/' }
 const presets: { id: string; en: string; bg: string; watts: number; hours: number; load: number }[] = [
   { id: 'heater', en: 'Space heater (fan heater)', bg: 'Вентилаторна печка (духалка)', watts: 2000, hours: 6, load: 100 },
   { id: 'radiator', en: 'Oil-filled radiator', bg: 'Маслен радиатор', watts: 1500, hours: 8, load: 100 },
-  { id: 'ac', en: 'Air conditioner, heating', bg: 'Климатик, отопление', watts: 900, hours: 8, load: 100 },
+  { id: 'ac', en: 'Air conditioner, heating', bg: 'Климатик, отопление', watts: 1000, hours: 8, load: 100 },
   { id: 'boiler', en: 'Electric water heater (boiler)', bg: 'Бойлер', watts: 3000, hours: 2, load: 100 },
   { id: 'oven', en: 'Electric oven', bg: 'Фурна', watts: 2200, hours: 1, load: 100 },
-  { id: 'kettle', en: 'Kettle', bg: 'Електрическа кана', watts: 2000, hours: 0.25, load: 100 },
+  { id: 'kettle', en: 'Kettle', bg: 'Електрическа кана', watts: 2200, hours: 0.25, load: 100 },
   { id: 'washer', en: 'Washing machine', bg: 'Перална машина', watts: 700, hours: 1, load: 100 },
-  { id: 'dishwasher', en: 'Dishwasher', bg: 'Съдомиялна', watts: 1200, hours: 1, load: 100 },
-  { id: 'fridge', en: 'Fridge-freezer', bg: 'Хладилник', watts: 100, hours: 24, load: 40 },
+  { id: 'dishwasher', en: 'Dishwasher', bg: 'Съдомиялна', watts: 1400, hours: 1, load: 100 },
+  { id: 'fridge', en: 'Fridge-freezer', bg: 'Хладилник', watts: 100, hours: 24, load: 25 },
   { id: 'tv', en: 'TV', bg: 'Телевизор', watts: 100, hours: 4, load: 100 },
-  { id: 'pc', en: 'Desktop computer', bg: 'Настолен компютър', watts: 200, hours: 6, load: 100 },
-  { id: 'led', en: 'LED bulb', bg: 'LED крушка', watts: 9, hours: 5, load: 100 },
+  { id: 'pc', en: 'Desktop computer', bg: 'Настолен компютър', watts: 140, hours: 6, load: 100 },
+  { id: 'led', en: 'LED bulb', bg: 'LED крушка', watts: 8, hours: 5, load: 100 },
+]
+
+/** Where the preset power ratings and the example prices come from. Hours of use are only examples. */
+const sources: { bg: string; en: string; href: string }[] = [
+  { bg: 'Centre for Sustainable Energy: мощност на уредите (печки, радиатор, бойлер, фурна, кана, хладилник, компютър)', en: 'Centre for Sustainable Energy: appliance power ratings (heaters, radiator, immersion heater, oven, kettle, fridge, computer)', href: 'https://www.nea.org.uk/wp-content/uploads/2021/07/advice_leaflet_what_uses_watt.pdf' },
+  { bg: 'Electric Ireland: телевизор около 0,1 kWh на час, съдомиялна около 1,5 kWh на цикъл, хладилник клас C 171 kWh на година', en: 'Electric Ireland: TV about 0.1 kWh per hour, dishwasher about 1.5 kWh per cycle, C-rated fridge-freezer 171 kWh a year', href: 'https://prd-cdn.electricireland.ie/media/docs/default-source/know-your-energy/know-your-energy-booklet.pdf' },
+  { bg: 'Mitsubishi Heavy SRK35ZS: климатик 12000 BTU, 0,94 kW консумация при отопление', en: 'Mitsubishi Heavy SRK35ZS: 12,000 BTU air conditioner, 0.94 kW input when heating', href: 'https://editor.alleop.bg/en/air-conditioners/25131-mitsubishi-heavy-industries-srk35zs-wb-src35zs-w-inverter-air-conditioner-12000-btu-25-m-a-a-allergen-free-r-32-white-black-4961317391020.html' },
+  { bg: 'Philips LED A60: 8 W за 806 lm (замества 60 W)', en: 'Philips LED A60: 8 W for 806 lm (replaces 60 W)', href: 'https://www.onninen.fi/en/philips-led-bulb-e27-830-806lm-60w-8w-a60-fr/p/DAA752?term=EI' },
+  { bg: 'ЕНЕРГО-ПРО: цени на тока от 1 юли 2026 г.', en: 'ENERGO-PRO (Bulgaria): electricity prices from 1 July 2026', href: 'https://www.energo-pro.bg/en/novini/kevr-utvrdi-novi-ceni-na-elektroenergiyata-ot-1-yuli-2026-g' },
+  { bg: 'EIA: средна цена на тока за домакинства в САЩ', en: 'EIA: average US residential electricity price', href: 'https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a' },
 ]
 const start = presets[0]
 
@@ -260,6 +270,11 @@ const jsonLd = {
           <h2>{t.howTitle}</h2>
           <p>{t.how}</p>
           <p class="tool-formula">kWh = W ÷ 1000 × h × load</p>
+          <div class="tool-sources">
+            <h3>{bg ? 'Източници' : 'Sources'}<span> · {bg ? 'проверено 7 ноември 2026' : 'checked 7 November 2026'}</span></h3>
+            <ul>{sources.map((source) => <li><a href={source.href} target="_blank" rel="noopener">{bg ? source.bg : source.en}</a></li>)}</ul>
+            <p>{bg ? 'Пералнята (0,7 kWh на цикъл) е наша оценка: зависи силно от програмата. Часовете по подразбиране са само пример.' : 'The washing machine (0.7 kWh per cycle) is our estimate: it depends heavily on the programme. Default hours are only examples.'}</p>
+          </div>
         </article>
         <article>
           <h2>{t.tipsTitle}</h2>
