@@ -159,9 +159,9 @@ export const dailySocialDescriptions: Record<Language, string> = {
 export const dailyMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
   bg: {
     title: 'Дума на деня: българска игра на думи от 5 букви | Letterwell',
-    description: 'Познай думата на деня от 5 букви с 6 опита. Нова дума всеки ден в полунощ, режим „Неограничено“, статистика, серия и споделяне на резултата.',
+    description: 'Познай думата на деня от 5 букви с 6 опита. Нова дума всеки ден в полунощ, подсказки без спойлери, режим „Неограничено“, статистика и серия.',
     structuredDescription: 'Ежедневна игра на думи на български: познай думата от пет букви с шест опита.',
-    features: ['Нова дума всеки ден', 'Режим „Неограничено“', 'Български фонетичен клавиатурен ред', 'Статистика и серия', 'Споделяне без спойлери'],
+    features: ['Нова дума всеки ден', 'Подсказки без спойлери', 'Режим „Неограничено“', 'Български фонетичен клавиатурен ред', 'Статистика и серия', 'Споделяне без спойлери'],
   },
   en: {
     title: 'Letterwell Daily: a free five-letter word game | Letterwell',

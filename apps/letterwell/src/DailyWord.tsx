@@ -1,7 +1,7 @@
 // Letterwell's daily word game: "Дума на деня" (/letterwell/bg/duma-na-denya/) and
 // "Letterwell Daily" (/letterwell/daily/), each with a daily word and an unlimited mode.
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { BarChart3, CircleHelp, Delete, RefreshCw, Share2, Sparkles, X } from 'lucide-react'
+import { BarChart3, CircleHelp, Delete, Lightbulb, RefreshCw, Share2, Sparkles, X } from 'lucide-react'
 import { track } from '@zyankov/design-system/analytics'
 import { HeroDecor } from './Playful'
 import { MoreWordTools, ToolLinks } from './ToolNav'
@@ -9,7 +9,7 @@ import { pagePath, type Language } from './seo'
 import { loadWordleList, WORD_LENGTH } from './wordle'
 import { dictionaryLinks } from './meanings'
 import {
-  answerFor, currentStreak, DAILY_WORDS, emptyStats, KEYBOARD_ROWS, keyMarks, LATIN_TO_CYRILLIC, LETTERS, markGuess, MAX_GUESSES,
+  answerFor, currentStreak, DAILY_WORDS, emptyStats, hintsFor, KEYBOARD_ROWS, keyMarks, LATIN_TO_CYRILLIC, LETTERS, markGuess, MAX_GUESSES,
   msUntilNext, puzzleNumber, randomAnswer, recordResult, shareText, type Mark, type Stats,
 } from './daily'
 import './wordle.css'
@@ -36,6 +36,7 @@ const TEXT = {
     played: 'изиграни', winRate: 'победи', current: 'серия', best: 'най-дълга серия', distribution: 'Разпределение на опитите',
     next: 'Следваща дума след', finishFirst: 'Довърши днешната дума, за да я добавиш към статистиката.', play: 'Да играем',
     unlimitedStats: 'Неограничено: статистиката тук е само за днешните думи.',
+    hints: 'Подсказки', hintsTitle: 'Подсказки без да издаваме думата', hintNext: 'Покажи подсказка', hintNone: 'Още не си отворил подсказка. Започни с най-лесната.', hintsDone: 'Това бяха всички подсказки. Остава само думата.',
     helpText: 'Познай думата от 5 букви с 6 опита. След всеки опит плочките показват колко си близо.',
     helpLegend: <>Кораловото <strong>К</strong> е на точното място, синьото кръгче <strong>Н</strong> е в думата, но на друго място, а сивите букви ги няма.</>,
     helpModes: 'Днешната дума е една за всички и се сменя в полунощ. В „Неограничено“ играеш със случайни думи колкото искаш.',
@@ -59,6 +60,7 @@ const TEXT = {
     played: 'played', winRate: 'won', current: 'streak', best: 'best streak', distribution: 'Guess distribution',
     next: 'Next word in', finishFirst: 'Finish today’s word to add it to your statistics.', play: 'Let’s play',
     unlimitedStats: 'Unlimited mode: these statistics count the daily words only.',
+    hints: 'Hints', hintsTitle: 'Hints without giving the word away', hintNext: 'Show a hint', hintNone: 'No hints opened yet. Start with the gentlest one.', hintsDone: 'That is every hint. Only the word is left.',
     helpText: 'Find the five-letter word in six tries. After each guess the tiles show how close you are.',
     helpLegend: <>The coral <strong>B</strong> is in the right place, the blue circle <strong>R</strong> is in the word but elsewhere, and grey letters are not in it.</>,
     helpModes: 'Today’s word is the same for everyone and changes at midnight (Sofia time). In Unlimited you play random words as often as you like.',
@@ -85,6 +87,8 @@ const NOTES = {
         <p>Познати съществителни и прилагателни в основна форма, без имена, съкращения и ругатни. Опитите може да са всяка дума от 5 букви от речника ни.</p>
         <h3>Как се пази серията?</h3>
         <p>Серията са дните подред, в които си познал днешната дума. Пази се в този браузър, без регистрация. Ако пропуснеш ден, започва отначало.</p>
+        <h3>Има ли подсказки за думата на деня?</h3>
+        <p>Да. Натисни крушката над дъската. Подсказките се отварят една по една: колко гласни има думата, дали има повтаряща се буква, първата и последната буква. Самата дума не се показва.</p>
         <h3>Заседнал съм.</h3>
         <p><a href={pagePath('wordle', 'bg')}>Помощникът за Wordle</a> показва кои думи още пасват на буквите ти. Ползвай го, ако искаш, но серията е по-сладка без него.</p>
       </article>
@@ -108,6 +112,8 @@ const NOTES = {
         <p>Everyday nouns and adjectives, with no names, abbreviations or rude words. Your guesses can be any five-letter word from our dictionary.</p>
         <h3>How does the streak work?</h3>
         <p>Your streak counts the days in a row you solved today’s word. It is kept in this browser, with no sign-up. Miss a day and it starts again.</p>
+        <h3>Are there hints for today’s word?</h3>
+        <p>Yes. Tap the light bulb above the board. Hints open one at a time: how many vowels the word has, whether a letter repeats, the first letter and the last letter. The word itself is never shown.</p>
         <h3>I’m stuck.</h3>
         <p>The <a href={pagePath('finder', 'en')}>word finder</a> lists every word you can make from a set of letters. Use it if you must, but a streak tastes better without it.</p>
       </article>
@@ -158,6 +164,10 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
   const [revealRow, setRevealRow] = useState(-1)
   const [modal, setModal] = useState<'none' | 'help' | 'stats'>('none')
   const [countdown, setCountdown] = useState('')
+  // Hints: how many are open; for the daily word this is kept per puzzle, so a reload keeps them.
+  const hintsKey = `${t.storage}-hints-v1`
+  const [hintsOpen, setHintsOpen] = useState(false)
+  const [hintCount, setHintCount] = useState(0)
   const messageTimer = useRef<number | undefined>(undefined)
   const closeButton = useRef<HTMLButtonElement>(null)
   // Latest typed word and guesses, so fast typing never submits a stale word.
@@ -299,6 +309,29 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
     }
   }
 
+  useEffect(() => {
+    if (!answer) return
+    let shown = 0
+    if (mode === 'daily' && puzzle) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(hintsKey) || 'null') as { puzzle: number; shown: number } | null
+        if (saved && saved.puzzle === puzzle) shown = saved.shown
+      } catch { /* nothing saved */ }
+    }
+    setHintCount(shown)
+    if (typeof window !== 'undefined' && window.location.hash === '#hints') setHintsOpen(true)
+  }, [answer, mode, puzzle, hintsKey])
+
+  const hints = answer ? hintsFor(answer, language) : []
+  const showHint = () => {
+    const next = Math.min(hints.length, hintCount + 1)
+    setHintCount(next)
+    if (mode === 'daily' && puzzle) {
+      try { localStorage.setItem(hintsKey, JSON.stringify({ puzzle, shown: next })) } catch { /* storage unavailable */ }
+    }
+    track('daily_hint', { level: next, mode, language })
+  }
+
   const markLabel = (mark: Mark | null | undefined) => (mark ? `, ${mark === 'correct' ? t.hit : mark === 'present' ? t.near : t.miss}` : '')
 
   const rows = Array.from({ length: MAX_GUESSES }, (_, row) => {
@@ -347,8 +380,23 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
               <button type="button" aria-pressed={mode === 'daily'} onClick={() => startMode('daily')}>{t.daily}</button>
               <button type="button" aria-pressed={mode === 'unlimited'} onClick={() => startMode('unlimited')}>{t.unlimited}</button>
             </div>
-            <button type="button" className="daily-icon" onClick={() => setModal('stats')} aria-label={t.stats}><BarChart3 size={20} /></button>
+            <div className="daily-toolbar__end">
+              <button type="button" className="daily-icon" onClick={() => setHintsOpen((open) => !open)} aria-label={t.hints} aria-expanded={hintsOpen} aria-controls="daily-hints"><Lightbulb size={20} /></button>
+              <button type="button" className="daily-icon" onClick={() => setModal('stats')} aria-label={t.stats}><BarChart3 size={20} /></button>
+            </div>
           </div>
+
+          {hintsOpen && !finished && (
+            <div className="daily-hints" id="daily-hints">
+              <p className="daily-hints__title">{t.hintsTitle}</p>
+              {hintCount === 0 ? <p className="daily-hints__empty">{t.hintNone}</p> : (
+                <ol>{hints.slice(0, hintCount).map((hint) => <li key={hint}>{hint}</li>)}</ol>
+              )}
+              {hintCount < hints.length
+                ? <button type="button" className="daily-link-button" onClick={showHint}><Lightbulb size={16} /> {t.hintNext} ({hintCount + 1}/{hints.length})</button>
+                : <p className="daily-hints__empty">{t.hintsDone}</p>}
+            </div>
+          )}
 
           <p className="daily-streak">{mode === 'daily' ? t.streak(streak) : t.unlimitedNote}</p>
 
