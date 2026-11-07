@@ -619,3 +619,103 @@ export function estimateTiles(input: TileInput): TileEstimate | null {
   const bought = boxes > 0 ? boxes * input.boxArea : withWasteArea
   return { area, withWaste: withWasteArea, tiles: wholeUp(withWasteArea / face), boxes, bought, cost: input.price > 0 ? bought * input.price : 0 }
 }
+
+// ---------- Heating: seasonal heat demand and what each fuel costs ----------
+
+/** Seasonal heat need in kWh per m² of heated floor, by how well the home keeps heat (typical Bulgarian homes). */
+export const HOME_INSULATION = [
+  { label: 'Стара, без изолация', kwhPerM2: 200 },
+  { label: 'Само нова дограма', kwhPerM2: 140 },
+  { label: 'Изолирана фасада и дограма', kwhPerM2: 90 },
+  { label: 'Нова, енергоефективна', kwhPerM2: 55 },
+] as const
+
+/** Climate: colder places need more heat over the season. */
+export const CLIMATE_ZONES = [
+  { label: 'Топло: морето, Пловдив', factor: 0.85 },
+  { label: 'Средно: София, Русе', factor: 1 },
+  { label: 'Студено: планината', factor: 1.3 },
+] as const
+
+/** Neighbours above, below and beside keep an apartment warm. */
+export const HOME_TYPES = [
+  { label: 'Къща', factor: 1 },
+  { label: 'Апартамент, първи или последен етаж', factor: 0.85 },
+  { label: 'Апартамент, среден етаж', factor: 0.7 },
+] as const
+
+export interface HeatDemandInput {
+  area: number
+  insulation: number
+  climate: number
+  homeType: number
+  /** share of the home that is heated, % */
+  heatedShare: number
+}
+
+/** Useful heat for one heating season, kWh. */
+export function heatDemand(input: HeatDemandInput): number {
+  const insulation = HOME_INSULATION[input.insulation] ?? HOME_INSULATION[1]
+  const climate = CLIMATE_ZONES[input.climate] ?? CLIMATE_ZONES[1]
+  const type = HOME_TYPES[input.homeType] ?? HOME_TYPES[0]
+  const share = input.heatedShare > 0 ? Math.min(100, input.heatedShare) / 100 : 1
+  return input.area * share * insulation.kwhPerM2 * climate.factor * type.factor
+}
+
+/** Energy and efficiency assumptions per fuel. */
+export const FUEL = {
+  /** kWh in one stacked cubic metre (пространствен м³) of dry mixed hardwood */
+  woodKwhPerStackedM3: 1850,
+  woodStoveEfficiency: 0.7,
+  pelletKwhPerKg: 4.7,
+  pelletEfficiency: 0.85,
+  /** seasonal coefficient of performance of an inverter air conditioner in Bulgarian winters */
+  airconScop: 3.2,
+  gasEfficiency: 0.92,
+} as const
+
+export interface HeatingInput extends HeatDemandInput {
+  months: number
+  woodPrice: number
+  pelletPrice: number
+  electricityPrice: number
+  gasPrice: number
+  districtPrice: number
+}
+
+export interface HeatingOption {
+  key: 'wood' | 'pellets' | 'aircon' | 'electric' | 'gas' | 'district'
+  label: string
+  cost: number
+  amount: string
+}
+
+export interface HeatingEstimate {
+  demand: number
+  options: HeatingOption[]
+  cheapest: HeatingOption | null
+}
+
+const fmtBg = (value: number, digits = 1) => value.toLocaleString('bg-BG', { maximumFractionDigits: digits, minimumFractionDigits: 0 })
+
+export function estimateHeating(input: HeatingInput): HeatingEstimate | null {
+  if (!(input.area > 0)) return null
+  const demand = heatDemand(input)
+  const options: HeatingOption[] = []
+  const woodM3 = demand / (FUEL.woodKwhPerStackedM3 * FUEL.woodStoveEfficiency)
+  if (input.woodPrice > 0) options.push({ key: 'wood', label: 'Дърва (печка или камина)', cost: woodM3 * input.woodPrice, amount: `${fmtBg(woodM3)} пр. м³` })
+  const pelletTonnes = demand / (FUEL.pelletKwhPerKg * FUEL.pelletEfficiency) / 1000
+  if (input.pelletPrice > 0) options.push({ key: 'pellets', label: 'Пелети (котел или камина)', cost: pelletTonnes * input.pelletPrice, amount: `${fmtBg(pelletTonnes, 2)} т` })
+  if (input.electricityPrice > 0) {
+    const airconKwh = demand / FUEL.airconScop
+    options.push({ key: 'aircon', label: 'Климатик или термопомпа', cost: airconKwh * input.electricityPrice, amount: `${fmtBg(airconKwh, 0)} kWh ток` })
+    options.push({ key: 'electric', label: 'Ток директно (радиатор, конвектор)', cost: demand * input.electricityPrice, amount: `${fmtBg(demand, 0)} kWh ток` })
+  }
+  if (input.gasPrice > 0) {
+    const gasKwh = demand / FUEL.gasEfficiency
+    options.push({ key: 'gas', label: 'Природен газ', cost: gasKwh * input.gasPrice, amount: `${fmtBg(gasKwh, 0)} kWh газ` })
+  }
+  if (input.districtPrice > 0) options.push({ key: 'district', label: 'Парно', cost: demand * input.districtPrice, amount: `${fmtBg(demand, 0)} kWh` })
+  options.sort((a, b) => a.cost - b.cost)
+  return { demand, options, cheapest: options[0] ?? null }
+}

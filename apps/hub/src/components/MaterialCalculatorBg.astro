@@ -8,11 +8,11 @@ import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { getPosts, ogKey, postPath } from '../lib/site'
-import { BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
+import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating'
 
 interface Props {
   kind: Kind
@@ -40,7 +40,8 @@ interface Select {
 
 interface Page {
   path: string
-  en: string
+  /** The English version, if there is one. */
+  en?: string
   tool: string
   title: string
   description: string
@@ -50,6 +51,10 @@ interface Page {
   bigOne: string
   formula: string
   how: string
+  /** Heading above the big number; default "ТРЯБВАТ ТИ". */
+  resultTitle?: string
+  /** Note under the result; default: check the quantities with the shop. */
+  caveat?: string
   tips: string[]
   jsonName: string
 }
@@ -64,6 +69,45 @@ interface Config {
 }
 
 const CONFIGS: Partial<Record<Kind, Config>> = {
+  heating: {
+    page: {
+      path: '/bg/razhod-za-otoplenie/',
+      tool: 'heating-cost-calculator',
+      title: 'Разход за отопление: дърва, пелети, климатик или ток | Zyankov.eu',
+      description: 'Сравни колко струва зимата с дърва, пелети, климатик, ток, газ или парно за твоето жилище. По квадратурата, изолацията и района, с твоите цени.',
+      h1: 'Кое отопление е най-евтино за мен?',
+      intro: 'Въведи квадратурата, колко е изолирано жилището и къде се намира. Калкулаторът смята колко топлина трябва за сезона и колко струва тя с всяко гориво, една до друга.',
+      big: '€ за сезона',
+      bigOne: '€ за сезона',
+      resultTitle: 'НАЙ-ЕВТИНОТО ОТОПЛЕНИЕ',
+      caveat: 'Ориентировъчна сметка по типичен разход. Реалната зависи от зимата и от това колко топло държиш.',
+      formula: 'цена = нужна топлина ÷ (енергия в горивото × ефективност) × цена на горивото',
+      how: 'Нужната топлина за сезона е квадратурата по типичния разход за такова жилище (от около 55 kWh/м² за ново и енергоефективно до 200 kWh/м² за старо без изолация), по коефициент за района и за това дали е къща или апартамент. За всяко гориво тази топлина се дели на енергията в единица гориво и на ефективността на уреда: сухи дърва около 1850 kWh в пространствен кубик при 70% в печка, пелети 4,7 kWh/кг при 85%, климатик около 3,2 kWh топлина от 1 kWh ток, ток директно 1 към 1, газ 92%. После се умножава по цената.',
+      tips: [
+        'Това е ориентировъчна сметка: реалният разход зависи от това колко топло държиш, от прозорците, етажа и зимата. Сравнението между горивата е по-точно от самите суми.',
+        'Климатикът губи от ефективността си при силен студ (под около −10 °C). В планината или при стари климатици сметката излиза по-висока.',
+        'Сухите дърва (под 20% влага) дават с около една трета повече топлина от суровите. Купувай ги през пролетта и ги остави да съхнат.',
+      ],
+      jsonName: 'Калкулатор за разход за отопление',
+    },
+    formTitle: 'Твоето жилище',
+    formHint: 'Цените са примерни за есента на 2026 г. Смени ги с твоите. Газ и парно се показват, ако въведеш цена.',
+    selects: [
+      { name: 'insulation', label: 'Изолация', options: HOME_INSULATION.map((item, index) => ({ value: index, label: item.label, selected: index === 1 })) },
+      { name: 'climate', label: 'Район', options: CLIMATE_ZONES.map((item, index) => ({ value: index, label: item.label, selected: index === 1 })) },
+      { name: 'homeType', label: 'Жилище', options: HOME_TYPES.map((item, index) => ({ value: index, label: item.label, selected: index === 2 })) },
+    ],
+    fields: [
+      { name: 'area', label: 'Квадратура', unit: 'м²', value: 90, step: '1', hint: 'Отопляемата площ, без тераси и мазета.' },
+      { name: 'heatedShare', label: 'Колко от жилището отопляваш', unit: '%', value: 100, step: '5' },
+      { name: 'months', label: 'Месеци отопление', unit: 'мес.', value: 5, step: '1', hint: 'Обикновено от ноември до март.' },
+      { name: 'woodPrice', label: 'Пространствен кубик дърва', unit: '€', value: 65, step: '1', hint: 'Около 60–70 € за пространствен кубик.' },
+      { name: 'pelletPrice', label: 'Тон пелети', unit: '€', value: 400, step: '5', hint: 'Около 270–440 € за тон.' },
+      { name: 'electricityPrice', label: 'Ток за kWh', unit: '€', value: 0.13, step: '0.001', hint: 'Дневната тарифа е около 0,13 €, нощната около 0,08 €.' },
+      { name: 'gasPrice', label: 'Газ за kWh', unit: '€', value: 0, step: '0.001', optional: true, hint: 'От сметката на доставчика, с всички такси.' },
+      { name: 'districtPrice', label: 'Парно за kWh', unit: '€', value: 0, step: '0.001', optional: true, hint: 'От сметката на топлофикацията.' },
+    ],
+  },
   paint: {
     page: {
       path: '/bg/kalkulator-boya/',
@@ -462,7 +506,7 @@ const jsonLd = {
 const Layout = embed ? EmbedLayout : BaseLayout
 const layoutProps: Record<string, unknown> = embed
   ? { title: page.title, canonical: page.path, lang: 'bg' }
-  : { title: page.title, description: page.description, path: page.path, lang: 'bg', alternates: { en: page.en, bg: page.path }, project: 'buildcalc', jsonLd }
+  : { title: page.title, description: page.description, path: page.path, lang: 'bg', alternates: page.en ? { en: page.en, bg: page.path } : {}, project: 'buildcalc', jsonLd }
 const embedUrl = `https://zyankov.eu${embedPath(page.path)}`
 const embedCode = `<iframe src="${embedUrl}" title="${page.jsonName} – zyankov.eu" width="100%" height="900" style="border:0;max-width:820px" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
 const embedResize = `<script>addEventListener('message',function(e){if(e.origin!=='https://zyankov.eu'||!e.data||e.data.type!=='zyankov-height')return;document.querySelectorAll('iframe').forEach(function(f){if(f.contentWindow===e.source)f.style.height=e.data.height+'px'})})</script>`
@@ -577,10 +621,10 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         </form>
 
         <aside class="tool-result" aria-live="polite">
-          <p class="tool-result__kicker">ТРЯБВАТ ТИ</p>
+          <p class="tool-result__kicker">{page.resultTitle ?? 'ТРЯБВАТ ТИ'}</p>
           <p class="tool-result__big"><span data-out="big">–</span> <small data-out="bigUnit" data-one={page.bigOne} data-many={page.big}>{page.big}</small></p>
           <dl data-out="rows"></dl>
-          <p class="tool-result__caveat">Ориентировъчна сметка. Провери количествата с магазина, преди да купиш.</p>
+          <p class="tool-result__caveat">{page.caveat ?? 'Ориентировъчна сметка. Провери количествата с магазина, преди да купиш.'}</p>
         </aside>
       </section>
 
@@ -594,7 +638,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         <article>
           <h2>Съвети</h2>
           <ul>{page.tips.map((tip) => <li>{tip}</li>)}</ul>
-          <p class="tool-switch"><a href={page.en} hreflang="en">In English, in feet or metres →</a></p>
+          {page.en && <p class="tool-switch"><a href={page.en} hreflang="en">In English, in feet or metres →</a></p>}
         </article>
       </section>
 
@@ -638,7 +682,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { estimateAdhesive, estimateBulk, estimateConcrete, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
+  import { estimateAdhesive, estimateBulk, estimateConcrete, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -653,7 +697,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
     let tracked = false
 
     const render = (big: number | null, rows: [string, string, string?][]) => {
-      out('big').textContent = big === null ? '–' : Number.isInteger(big) ? String(big) : fmt(big, 2)
+      out('big').textContent = big === null ? '–' : Number.isInteger(big) ? big.toLocaleString('bg-BG') : fmt(big, 2)
       unitOut.textContent = big === 1 ? unitOut.dataset.one ?? '' : unitOut.dataset.many ?? ''
       out('rows').replaceChildren(...rows.map(([label, value, detail]) => {
         const row = document.createElement('div')
@@ -673,7 +717,21 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         const [name, value] = (element.dataset.show ?? '').split(':')
         element.hidden = field(name)?.value !== value
       })
-      if (kind === 'paint') {
+      if (kind === 'heating') {
+        const months = Math.max(1, Math.round(num('months')) || 1)
+        const result = estimateHeating({
+          area: num('area'), heatedShare: num('heatedShare'), insulation: Number(field('insulation')?.value ?? 1),
+          climate: Number(field('climate')?.value ?? 1), homeType: Number(field('homeType')?.value ?? 0), months,
+          woodPrice: num('woodPrice'), pelletPrice: num('pelletPrice'), electricityPrice: num('electricityPrice'),
+          gasPrice: num('gasPrice'), districtPrice: num('districtPrice'),
+        })
+        if (!result || !result.cheapest) return render(null, [])
+        const rows: [string, string, string?][] = [['Нужна топлина', `${fmt(result.demand, 0)} kWh`, 'за целия сезон']]
+        result.options.forEach((option, index) => {
+          rows.push([`${index === 0 ? 'Най-евтино: ' : ''}${option.label}`, money(option.cost), `${option.amount} · ${money(option.cost / months)} на месец`])
+        })
+        render(Math.round(result.cheapest.cost), rows)
+      } else if (kind === 'paint') {
         const result = estimatePaint({
           length: num('length'), width: num('width'), height: num('height'), openings: num('openings'), ceiling: field('ceiling')?.value === '1',
           coats: num('coats'), coverage: num('coverage'), primer: field('primer')?.value === '1', primerCoverage: num('primerCoverage'), price: num('price'),

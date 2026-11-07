@@ -17,6 +17,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     letterwell: { kicker: 'Letterwell · word finder', title: 'Find words from your letters', footer: 'zyankov.eu/letterwell' },
     'letterwell-bg': { kicker: 'Letterwell · търсачка за думи', title: 'Думи от букви на български', footer: 'zyankov.eu/letterwell/bg' },
     'energy-cost-calculator': { kicker: 'Home & energy · calculator', title: 'What does it cost to run?', footer: 'zyankov.eu/energy-cost-calculator' },
+    'bg-razhod-za-otoplenie': { kicker: 'Дом и енергия · калкулатор', title: 'Дърва, пелети или климатик: кое е най-евтино?', footer: 'zyankov.eu/bg/razhod-za-otoplenie' },
     'bg-razhod-na-tok': { kicker: 'Дом и енергия · калкулатор', title: 'Колко ток харчи уредът?', footer: 'zyankov.eu/bg/razhod-na-tok' },
     'bg-kalkulator-laminat': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко ламинат и первази ми трябват?', footer: 'zyankov.eu/bg/kalkulator-laminat' },
     'bg-kalkulator-gipsokarton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко плоскости гипсокартон ми трябват?', footer: 'zyankov.eu/bg/kalkulator-gipsokarton' },
