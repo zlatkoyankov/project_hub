@@ -509,3 +509,38 @@
   color: var(--coral-strong);
   font-weight: 700;
 }
+
+.daily-toolbar__end {
+  display: flex;
+  gap: 6px;
+}
+
+.daily-hints {
+  width: min(100%, 360px);
+  margin: 0 auto 12px;
+  padding: 14px 16px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.daily-hints__title {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.daily-hints ol {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.daily-hints li + li {
+  margin-top: 4px;
+}
+
+.daily-hints__empty {
+  margin: 0 0 10px;
+  color: var(--text-muted);
+  font-size: 14px;
+}

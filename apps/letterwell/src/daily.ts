@@ -230,3 +230,26 @@ export function shareText(heading: string, guesses: string[], answer: string, wo
   const rows = guesses.map((guess) => markGuess(guess, answer).map((mark) => SQUARES[mark]).join(''))
   return `${heading} · ${won ? guesses.length : 'X'}/${MAX_GUESSES}\n${rows.join('\n')}\n${url}`
 }
+
+const VOWELS: Record<Language, string> = { bg: 'аеиоуъюя', en: 'aeiou' }
+
+/** Spoiler-light hints for an answer, from vaguest to the word itself. */
+export function hintsFor(answer: string, language: Language): string[] {
+  const letters = [...answer]
+  const vowels = letters.filter((letter) => VOWELS[language].includes(letter)).length
+  const repeated = new Set(letters).size < letters.length
+  const upper = (letter: string) => letter.toLocaleUpperCase(language === 'bg' ? 'bg-BG' : 'en-US')
+  return language === 'bg'
+    ? [
+        `Думата има ${vowels} ${vowels === 1 ? 'гласна' : 'гласни'}.`,
+        repeated ? 'Една буква се среща два пъти.' : 'Всички букви са различни.',
+        `Първата буква е ${upper(letters[0])}.`,
+        `Последната буква е ${upper(letters[letters.length - 1])}.`,
+      ]
+    : [
+        `The word has ${vowels} ${vowels === 1 ? 'vowel' : 'vowels'} (A, E, I, O, U).`,
+        repeated ? 'One letter appears twice.' : 'All the letters are different.',
+        `It starts with ${upper(letters[0])}.`,
+        `It ends with ${upper(letters[letters.length - 1])}.`,
+      ]
+}
