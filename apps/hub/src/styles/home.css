@@ -431,8 +431,84 @@ input {
 }
 
 .tool-grid > li {
+  position: relative;
   display: flex;
   min-width: 0;
+}
+
+/* Favourite star on every tool tile. */
+.tool-fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 150ms, transform 150ms;
+}
+
+.tool-fav svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.tool-fav:hover {
+  color: var(--text);
+  transform: scale(1.08);
+}
+
+.tool-fav[aria-pressed='true'] {
+  color: var(--yellow-ink);
+  background: var(--yellow);
+  border-color: var(--yellow);
+}
+
+.tool-fav[aria-pressed='true'] svg {
+  fill: currentColor;
+}
+
+.tool-fav:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tool-grid .tool-tile > strong:first-child {
+  padding-right: 40px;
+}
+
+.home-mine.is-searching {
+  display: none;
+}
+
+.home-mine__hint {
+  margin: -8px 0 18px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.home-mine__clear {
+  padding: 0;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.badge--recent {
+  color: var(--accent-dark);
+  background: var(--accent-soft);
 }
 
 .tool-grid > li[hidden] {

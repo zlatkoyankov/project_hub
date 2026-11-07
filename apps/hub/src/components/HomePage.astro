@@ -31,6 +31,13 @@ const t = bg
       popular: 'Популярни:',
       chips: [['Wordle', '/letterwell/bg/wordle/'], ['Думи от букви', '/letterwell/bg/'], ['Бетон', '/calculators/concrete-calculator/'], ['Боя', '/calculators/paint-calculator/'], ['Плочки', '/calculators/tile-calculator/']],
       art: { wordle: 'ПОМОЩНИК ЗА WORDLE', wordleWord: 'РОЛКА', next: 'Пробвай:', nextWord: 'КАТЕР', concrete: 'КАЛКУЛАТОР ЗА БЕТОН', slab: 'Плоча 3 × 3 м, 10 см', amount: '0,90', unit: 'м³', note: 'Без фира', finder: 'ТЪРСАЧКА ЗА ДУМИ', letters: 'КАРТА', found: 'карта · акт · рак' },
+      mineKicker: 'ТВОИТЕ ИНСТРУМЕНТИ',
+      mineTitle: 'Любими и последно отворени',
+      mineHint: 'Натисни звездичката на някой инструмент, за да го закачиш тук. Пази се само в този браузър.',
+      mineClear: 'Изчисти историята',
+      recent: 'Последно',
+      favAdd: 'Добави в любими',
+      favRemove: 'Махни от любими',
       wordsKicker: 'ДУМИ И ИГРИ',
       wordsTitle: 'Намери думата, спечели играта',
       wordsAll: 'Към Letterwell',
@@ -77,6 +84,13 @@ const t = bg
       popular: 'Popular:',
       chips: [['Wordle helper', '/letterwell/wordle-solver/'], ['Word finder', '/letterwell/'], ['Concrete', '/calculators/concrete-calculator/'], ['Paint', '/calculators/paint-calculator/'], ['Tiles', '/calculators/tile-calculator/']],
       art: { wordle: 'WORDLE HELPER', wordleWord: 'RAISE', next: 'Try next:', nextWord: 'CLASP', concrete: 'CONCRETE CALCULATOR', slab: '10 × 10 ft slab, 4 in deep', amount: '1.23', unit: 'cu yd', note: 'Before waste allowance', finder: 'WORD FINDER', letters: 'TRIANGLE', found: 'integral · altering · relating' },
+      mineKicker: 'YOUR TOOLS',
+      mineTitle: 'Favourites and recently opened',
+      mineHint: 'Tap the star on any tool to pin it here. It is kept only in this browser.',
+      mineClear: 'Clear history',
+      recent: 'Recent',
+      favAdd: 'Add to favourites',
+      favRemove: 'Remove from favourites',
       wordsKicker: 'WORD GAMES',
       wordsTitle: 'Find the word, win the game',
       wordsAll: 'Open Letterwell',
@@ -116,6 +130,16 @@ const t = bg
 const wordleColours = ['absent', 'present', 'absent', 'correct', 'absent']
 const tileColours = ['coral', 'yellow', 'blue', 'white', 'mint']
 const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${tool.name.bg} ${tool.keywords}`.toLowerCase()
+/** Tools shown in this language, for "Your tools": both language paths match the recently opened pages. */
+const mineCatalog = [...words, ...home].filter((tool) => !tool.comingSoon).map((tool) => ({
+  id: tool.id,
+  name: tool.name[lang],
+  description: tool.description[lang],
+  href: tool.href[lang],
+  paths: [...new Set([tool.href.en, tool.href.bg])],
+  icon: tool.icon ? TOOL_ICONS[tool.icon] : '',
+}))
+const star = (tool: (typeof TOOL_CATALOG)[number]) => `<button class="tool-fav" type="button" data-fav="${tool.id}" aria-pressed="false" aria-label="${t.favAdd}: ${tool.name[lang]}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z" /></svg></button>`
 ---
 
 <div class="home">
@@ -156,6 +180,20 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
       </div>
     </section>
 
+    <section class="home-section home-mine" id="my-tools" aria-labelledby="mine-title" data-my-tools hidden>
+      <div class="home-section__head">
+        <div>
+          <p class="home-section__kicker">{t.mineKicker}</p>
+          <h2 id="mine-title">{t.mineTitle}</h2>
+        </div>
+        <button class="home-section__more home-mine__clear" type="button" data-my-tools-clear>{t.mineClear}</button>
+      </div>
+      <p class="home-mine__hint">{t.mineHint}</p>
+      <ul class="tool-grid" data-my-tools-list></ul>
+      <script is:inline type="application/json" data-my-tools-catalog set:html={JSON.stringify(mineCatalog).replace(/</g, '\\u003c')} />
+      <script is:inline type="application/json" data-my-tools-strings set:html={JSON.stringify({ recent: t.recent, favAdd: t.favAdd, favRemove: t.favRemove })} />
+    </section>
+
     <section class="home-section" id="word-games" aria-labelledby="words-title">
       <div class="home-section__head">
         <div>
@@ -166,6 +204,7 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
       </div>
       <ul class="tool-grid">
         <li class="tool-grid__wide" data-tool={searchText(wordle)}>
+          <Fragment set:html={star(wordle)} />
           <a class="feature-tile feature-tile--dark" href={wordle.href[lang]}>
             <div class="feature-tile__body">
               <span class="badge badge--new">{t.new}</span>
@@ -179,6 +218,7 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
           </a>
         </li>
         <li class="tool-grid__wide" data-tool={searchText(finder)}>
+          <Fragment set:html={star(finder)} />
           <a class="feature-tile feature-tile--coral" href={finder.href[lang]}>
             <div class="feature-tile__body">
               <span class="feature-tile__tag">{t.wordsTag}</span>
@@ -190,6 +230,7 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
         </li>
         {words.filter((tool) => tool !== wordle && tool !== finder).map((tool) => (
           <li data-tool={searchText(tool)}>
+            {!tool.comingSoon && <Fragment set:html={star(tool)} />}
             <a class="tool-tile" href={tool.href[lang]}>
               {tool.icon && <span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon]} /></span>}
               <strong>{tool.name[lang]} {tool.isNew && <span class="badge badge--new">{t.new}</span>}</strong>
@@ -214,6 +255,7 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
           <ul class="tool-grid">
             {group.items.map((tool) => (
               <li data-tool={searchText(tool)}>
+                <Fragment set:html={star(tool)} />
                 <a class="tool-tile" href={tool.href[lang]}>
                   <span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon!]} /></span>
                   <strong>{tool.name[lang]} {tool.isNew && <span class="badge badge--new">{t.new}</span>}</strong>
@@ -293,6 +335,79 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
 </div>
 
 <script>
+  import { track } from '@zyankov/design-system/analytics'
+
+  // "Your tools": favourites (tool ids) and recently opened pages (paths), kept in localStorage on this site.
+  interface MineTool { id: string; name: string; description: string; href: string; paths: string[]; icon: string }
+  const FAV_KEY = 'zyankov-favourites'
+  const RECENT_KEY = 'zyankov-recent'
+  const mine = document.querySelector<HTMLElement>('[data-my-tools]')
+  const mineList = document.querySelector<HTMLElement>('[data-my-tools-list]')
+  const catalog: MineTool[] = JSON.parse(document.querySelector('[data-my-tools-catalog]')?.textContent || '[]')
+  const strings = JSON.parse(document.querySelector('[data-my-tools-strings]')?.textContent || '{}')
+  const readList = (key: string): string[] => {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || '[]')
+      return Array.isArray(value) ? value.filter((item) => typeof item === 'string') : []
+    } catch {
+      return []
+    }
+  }
+  const writeList = (key: string, list: string[]) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(list))
+    } catch {
+      /* Storage unavailable: the change lasts only for this page view. */
+    }
+  }
+  const byPath = (path: string) => catalog.find((tool) => tool.paths.includes(path))
+  const escapeHtml = (text: string) => text.replace(/[&<>"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[char]!)
+
+  function renderMine() {
+    if (!mine || !mineList) return
+    const favourites = readList(FAV_KEY).map((id) => catalog.find((tool) => tool.id === id)).filter((tool): tool is MineTool => Boolean(tool))
+    const recent = readList(RECENT_KEY).map(byPath).filter((tool): tool is MineTool => Boolean(tool) && !favourites.includes(tool!))
+    const shown = [...favourites.map((tool) => ({ tool, fav: true })), ...[...new Set(recent)].map((tool) => ({ tool, fav: false }))].slice(0, 8)
+    mine.hidden = shown.length === 0
+    mineList.innerHTML = shown.map(({ tool, fav }) => `
+      <li>
+        <button class="tool-fav" type="button" data-fav="${tool.id}" aria-pressed="${fav}" aria-label="${escapeHtml(`${fav ? strings.favRemove : strings.favAdd}: ${tool.name}`)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z" /></svg></button>
+        <a class="tool-tile" href="${tool.href}">
+          ${tool.icon ? `<span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true">${tool.icon}</svg></span>` : ''}
+          <strong>${escapeHtml(tool.name)}${fav ? '' : ` <span class="badge badge--recent">${escapeHtml(strings.recent)}</span>`}</strong>
+          <span>${escapeHtml(tool.description)}</span>
+        </a>
+      </li>`).join('')
+    const favSet = new Set(favourites.map((tool) => tool.id))
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-fav]')) {
+      const on = favSet.has(button.dataset.fav!)
+      const name = catalog.find((tool) => tool.id === button.dataset.fav)?.name ?? ''
+      button.setAttribute('aria-pressed', String(on))
+      button.setAttribute('aria-label', `${on ? strings.favRemove : strings.favAdd}: ${name}`)
+    }
+  }
+
+  document.addEventListener('click', (event) => {
+    const button = (event.target as Element | null)?.closest<HTMLButtonElement>('[data-fav]')
+    if (button) {
+      const id = button.dataset.fav!
+      const favourites = readList(FAV_KEY)
+      const on = favourites.includes(id)
+      writeList(FAV_KEY, on ? favourites.filter((item) => item !== id) : [id, ...favourites])
+      track(on ? 'favourite_remove' : 'favourite_add', { tool: id })
+      renderMine()
+      return
+    }
+    if ((event.target as Element | null)?.closest('[data-my-tools-clear]')) {
+      writeList(RECENT_KEY, [])
+      renderMine()
+    }
+  })
+  window.addEventListener('storage', (event) => {
+    if (event.key === FAV_KEY || event.key === RECENT_KEY) renderMine()
+  })
+  renderMine()
+
   // Tool search: filters the tool tiles as you type; Enter opens the first match.
   const form = document.querySelector<HTMLFormElement>('[data-tool-search]')
   const input = form?.querySelector<HTMLInputElement>('input')
@@ -310,6 +425,7 @@ const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${t
       group.hidden = searching && ![...group.querySelectorAll<HTMLElement>('[data-tool]')].some((item) => !item.hidden)
     }
     if (empty) empty.hidden = !searching || found.size > 0
+    if (mine) mine.classList.toggle('is-searching', searching)
   })
   form?.addEventListener('submit', (event) => {
     event.preventDefault()
