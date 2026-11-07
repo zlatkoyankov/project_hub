@@ -719,3 +719,77 @@ export function estimateHeating(input: HeatingInput): HeatingEstimate | null {
   options.sort((a, b) => a.cost - b.cost)
   return { demand, options, cheapest: options[0] ?? null }
 }
+
+// ---------- Firewood and pellets for a season ----------
+
+/** Heat in one stacked cubic metre (пространствен м³, 1 m logs) of dry wood (about 20% moisture), kWh. */
+export const WOOD_SPECIES = [
+  { label: 'Бук', kwhPerStackedM3: 1900 },
+  { label: 'Дъб', kwhPerStackedM3: 2000 },
+  { label: 'Габър', kwhPerStackedM3: 2000 },
+  { label: 'Акация', kwhPerStackedM3: 2100 },
+  { label: 'Смесени широколистни', kwhPerStackedM3: 1850 },
+  { label: 'Иглолистни (бор, смърч)', kwhPerStackedM3: 1450 },
+] as const
+
+/** Wet wood spends heat on boiling off its water. */
+export const WOOD_MOISTURE = [
+  { label: 'Сухи (под 20% влага, 1–2 години)', factor: 1 },
+  { label: 'Полусухи (20–30%, от една година)', factor: 0.85 },
+  { label: 'Сурови (над 30%, тази година)', factor: 0.65 },
+] as const
+
+/** One stacked m³ holds about 0.7 m³ of solid wood; split wood thrown loose takes about 1.43 times the space. */
+export const STACKED_TO_SOLID = 0.7
+export const STACKED_TO_LOOSE = 1 / 0.7
+/** Dry wood holds about 4 kWh per kg, so the weight follows from the heat. */
+export const WOOD_KWH_PER_KG = 4
+
+export interface FuelAmountInput extends HeatDemandInput {
+  fuel: 'wood' | 'pellets'
+  species: number
+  moisture: number
+  /** % */
+  efficiency: number
+  /** wood: € per stacked m³; pellets: € per tonne */
+  price: number
+  pelletKwhPerKg: number
+  /** kg per bag of pellets */
+  bag: number
+}
+
+export interface FuelAmountEstimate {
+  demand: number
+  /** wood */
+  stacked: number
+  solid: number
+  loose: number
+  /** tonnes of wood or pellets */
+  tonnes: number
+  /** pellets */
+  bags: number
+  cost: number
+}
+
+export function estimateFuelAmount(input: FuelAmountInput): FuelAmountEstimate | null {
+  if (!(input.area > 0 && input.efficiency > 0)) return null
+  const demand = heatDemand(input)
+  const efficiency = Math.min(100, input.efficiency) / 100
+  if (input.fuel === 'pellets') {
+    if (!(input.pelletKwhPerKg > 0)) return null
+    const kg = demand / (input.pelletKwhPerKg * efficiency)
+    return {
+      demand, stacked: 0, solid: 0, loose: 0, tonnes: kg / 1000,
+      bags: input.bag > 0 ? wholeUp(kg / input.bag) : 0,
+      cost: input.price > 0 ? (kg / 1000) * input.price : 0,
+    }
+  }
+  const species = WOOD_SPECIES[input.species] ?? WOOD_SPECIES[0]
+  const moisture = WOOD_MOISTURE[input.moisture] ?? WOOD_MOISTURE[0]
+  const stacked = demand / (species.kwhPerStackedM3 * moisture.factor * efficiency)
+  return {
+    demand, stacked, solid: stacked * STACKED_TO_SOLID, loose: stacked * STACKED_TO_LOOSE,
+    tonnes: (stacked * species.kwhPerStackedM3) / WOOD_KWH_PER_KG / 1000 / moisture.factor,
+    bags: 0, cost: input.price > 0 ? stacked * input.price : 0,
+  }
+}

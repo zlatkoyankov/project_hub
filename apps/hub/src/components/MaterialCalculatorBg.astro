@@ -8,11 +8,11 @@ import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { getPosts, ogKey, postPath } from '../lib/site'
-import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
+import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood'
 
 interface Props {
   kind: Kind
@@ -35,6 +35,8 @@ interface Field {
 interface Select {
   name: string
   label: string
+  /** Only shown while another select has this value, as "select:value". */
+  show?: string
   options: { value: string | number; label: string; selected?: boolean }[]
 }
 
@@ -69,6 +71,48 @@ interface Config {
 }
 
 const CONFIGS: Partial<Record<Kind, Config>> = {
+  firewood: {
+    page: {
+      path: '/bg/kalkulator-darva/',
+      tool: 'firewood-calculator',
+      title: 'Колко дърва или пелети за зимата: калкулатор | Zyankov.eu',
+      description: 'Изчисли колко пространствени кубика дърва или колко тона пелети трябват за отоплителния сезон, по квадратурата, изолацията и вида дърва. С плътни и насипни кубици.',
+      h1: 'Колко дърва ми трябват за зимата?',
+      intro: 'Въведи жилището и избери дърва или пелети. Калкулаторът смята кубиците за целия сезон: пространствени, плътни и насипни, или тоновете и торбите пелети.',
+      big: 'пространствени м³',
+      bigOne: 'пространствен м³',
+      resultTitle: 'ЗА ЦЕЛИЯ СЕЗОН',
+      caveat: 'Ориентировъчна сметка по типичен разход. Студена зима или влажни дърва искат повече.',
+      formula: 'кубици = нужна топлина ÷ (kWh в кубик × сухота × ефективност на печката)',
+      how: 'Нужната топлина е квадратурата по типичния разход за такова жилище, по район и вид жилище, както в калкулатора за разход за отопление. Делим я на топлината в един пространствен кубик от избрания вид дърва (около 1450 kWh за иглолистни и 1900–2100 kWh за бук, дъб, габър и акация), по коефициент за влагата и по ефективността на печката. Един пространствен кубик е около 0,7 плътни кубика, а нацепени и нахвърлени същите дърва заемат около 1,43 кубика. За пелетите делим на 4,7 kWh на килограм и на ефективността на котела.',
+      tips: [
+        'Питай продавача какъв кубик продава. Пространственият (наредени дърва от 1 м) е стандартът. Плътният е повече дърва, а нахвърленият (насипен) е по-малко.',
+        'Сухите дърва дават с около една трета повече топлина от суровите. Купи за догодина още през пролетта и ги остави на сухо и проветриво.',
+        'Стара печка използва 50–60% от топлината в дървата, а модерна камина или котел 75–85%. Разликата е цели кубици на сезон.',
+      ],
+      jsonName: 'Калкулатор за дърва и пелети',
+    },
+    formTitle: 'Жилище и гориво',
+    formHint: 'Цената не е задължителна. Ако вече знаеш колко ти трябва за сезона, виж и калкулатора за разход за отопление за сравнение.',
+    selects: [
+      { name: 'fuel', label: 'Гориво', options: [{ value: 'wood', label: 'Дърва' }, { value: 'pellets', label: 'Пелети' }] },
+      { name: 'species', label: 'Вид дърва', show: 'fuel:wood', options: WOOD_SPECIES.map((item, index) => ({ value: index, label: item.label })) },
+      { name: 'moisture', label: 'Колко са сухи', show: 'fuel:wood', options: WOOD_MOISTURE.map((item, index) => ({ value: index, label: item.label })) },
+      { name: 'insulation', label: 'Изолация', options: HOME_INSULATION.map((item, index) => ({ value: index, label: item.label, selected: index === 1 })) },
+      { name: 'climate', label: 'Район', options: CLIMATE_ZONES.map((item, index) => ({ value: index, label: item.label, selected: index === 1 })) },
+      { name: 'homeType', label: 'Жилище', options: HOME_TYPES.map((item, index) => ({ value: index, label: item.label })) },
+    ],
+    fields: [
+      { name: 'area', label: 'Отоплявана площ', unit: 'м²', value: 80, step: '1', hint: 'Само стаите, които топлиш с това гориво.' },
+      { name: 'heatedShare', label: 'Колко от зимата с това гориво', unit: '%', value: 100, step: '5', hint: 'Ако отчасти ползваш и климатик, намали.' },
+      { name: 'efficiency', label: 'Ефективност на печката', unit: '%', value: 70, step: '5', show: 'fuel:wood', hint: 'Стара печка 50–60%, камина или котел 70–85%.' },
+      { name: 'pelletEfficiency', label: 'Ефективност на котела', unit: '%', value: 85, step: '5', show: 'fuel:pellets' },
+      { name: 'pelletKwh', label: 'Калоричност на пелетите', unit: 'kWh/кг', value: 4.7, step: '0.1', show: 'fuel:pellets', hint: 'Пише на торбата. Клас A1 е поне 4,6 kWh/кг.' },
+      { name: 'bag', label: 'Торба пелети', unit: 'кг', value: 15, step: '1', show: 'fuel:pellets' },
+      { name: 'woodPrice', label: 'Пространствен кубик', unit: '€', value: 65, step: '1', optional: true, show: 'fuel:wood' },
+      { name: 'pelletPrice', label: 'Тон пелети', unit: '€', value: 400, step: '5', optional: true, show: 'fuel:pellets' },
+    ],
+  },
   heating: {
     page: {
       path: '/bg/razhod-za-otoplenie/',
@@ -531,7 +575,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           <p class="tool-form__hint">{config ? config.formHint : adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : wallpaper ? 'Стаята е в метри, ролката и раппортът в сантиметри. Цената не е задължителна.' : screed ? 'Площта е в м², дебелината в милиметри. Цената не е задължителна.' : insulation ? 'Площите са в м², дебелината в сантиметри. Цената не е задължителна.' : masonry ? 'Стената е в метри, отворите в м². Цената не е задължителна.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
           <div class="tool-fields">
             {config?.selects.map((select) => (
-              <div class="tool-field">
+              <div class="tool-field" data-show={select.show}>
                 <label for={`mat-${select.name}`}>{select.label}</label>
                 <select id={`mat-${select.name}`} name={select.name}>
                   {select.options.map((option) => <option value={option.value} selected={option.selected}>{option.label}</option>)}
@@ -682,7 +726,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { estimateAdhesive, estimateBulk, estimateConcrete, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
+  import { estimateAdhesive, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -717,7 +761,31 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         const [name, value] = (element.dataset.show ?? '').split(':')
         element.hidden = field(name)?.value !== value
       })
-      if (kind === 'heating') {
+      if (kind === 'firewood') {
+        const pellets = field('fuel')?.value === 'pellets'
+        const result = estimateFuelAmount({
+          fuel: pellets ? 'pellets' : 'wood', area: num('area'), heatedShare: num('heatedShare'),
+          insulation: Number(field('insulation')?.value ?? 1), climate: Number(field('climate')?.value ?? 1), homeType: Number(field('homeType')?.value ?? 0),
+          species: Number(field('species')?.value ?? 0), moisture: Number(field('moisture')?.value ?? 0),
+          efficiency: pellets ? num('pelletEfficiency') : num('efficiency'), price: pellets ? num('pelletPrice') : num('woodPrice'),
+          pelletKwhPerKg: num('pelletKwh'), bag: num('bag'),
+        })
+        if (!result) return render(null, [])
+        unitOut.dataset.one = pellets ? 'тон пелети' : 'пространствен м³'
+        unitOut.dataset.many = pellets ? 'тона пелети' : 'пространствени м³'
+        const rows: [string, string, string?][] = [['Нужна топлина', `${fmt(result.demand, 0)} kWh`, 'за целия сезон']]
+        if (pellets) {
+          rows.push(['Торби', `${result.bags} бр.`, `по ${fmt(num('bag'), 0)} кг`], ['Палети', `${fmt(result.tonnes / 1.05, 1)}`, 'по около 1050 кг'])
+        } else {
+          rows.push(
+            ['Плътни кубици', `${fmt(result.solid, 1)} м³`, 'ако продавачът мери плътно'],
+            ['Насипни кубици', `${fmt(result.loose, 1)} м³`, 'нацепени и нахвърлени'],
+            ['Тегло', `около ${fmt(result.tonnes, 1)} т`],
+          )
+        }
+        if (result.cost > 0) rows.push(['Приблизителна цена', money(result.cost)])
+        render(Math.round((pellets ? result.tonnes : result.stacked) * 10) / 10, rows)
+      } else if (kind === 'heating') {
         const months = Math.max(1, Math.round(num('months')) || 1)
         const result = estimateHeating({
           area: num('area'), heatedShare: num('heatedShare'), insulation: Number(field('insulation')?.value ?? 1),

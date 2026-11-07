@@ -13,6 +13,7 @@ export const EMBED_SLUGS = {
   'kalkulator-izolatsiya': 'insulation',
   'kalkulator-tuhli': 'masonry',
   'razhod-za-otoplenie': 'heating',
+  'kalkulator-darva': 'firewood',
 } as const
 
 export type EmbedKind = (typeof EMBED_SLUGS)[keyof typeof EMBED_SLUGS]
