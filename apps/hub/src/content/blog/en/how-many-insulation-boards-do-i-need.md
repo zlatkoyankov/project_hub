@@ -32,14 +32,14 @@ With 4 × 8 ft sheets: 850 × 1.05 = 892.5 sq ft ÷ 32 = 27.9, so **28 sheets**.
 
 ## Step 3: the supplies for exterior insulation
 
-An exterior insulation system (EIFS, called ETICS in Europe) glues the boards to the wall, anchors them, and covers them with a base coat with reinforcing mesh. Typical figures for a cement-based system:
+An exterior insulation system (EIFS, called ETICS in Europe) glues the boards to the wall, anchors them, and covers them with a base coat with reinforcing mesh. Figures from the Ceresit CT 85 data sheet for a cement-based system:
 
-- **Adhesive:** about 5.5 kg per m² of board (about 1.1 lb per sq ft).
+- **Adhesive:** about 5.0 kg per m² of board (about 1.0 lb per sq ft).
 - **Base coat:** about 4.0 kg per m² (0.8 lb per sq ft), with the mesh pressed into it.
 - **Mesh:** the wall area plus about 10% for overlaps.
 - **Anchors:** about 6 per m² on low buildings, more at corners and on tall or windy sites.
 
-For the 850 sq ft wall (about 79 m²) that is roughly 960 lb of adhesive, 700 lb of base coat, 935 sq ft of mesh and 475 anchors. Many products work for both gluing and the base coat, which makes ordering easier.
+For the 850 sq ft wall (about 79 m²) that is roughly 870 lb of adhesive, 700 lb of base coat, 935 sq ft of mesh and 475 anchors. Many products work for both gluing and the base coat, which makes ordering easier.
 
 ## What is not included
 
@@ -52,3 +52,11 @@ The thickness itself depends on your climate, the wall and local energy rules. T
 ## Work it out for your wall
 
 The [insulation board calculator](/calculators/insulation-board-calculator/) counts boards for your wall area, openings, board size and thickness, and can add the adhesive, base coat, mesh and anchors. It works in feet or meters.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [Ceresit CT 85 data sheet: adhesive 5.0 kg/m², base coat 4.0 kg/m²](https://datasheets.tdx.henkel.com/CERESIT-CT-85-en_GB.pdf)
+- [Ceresit CT 325: mesh, about 1.1 m per m²](https://datasheets.tdx.henkel.com/CERESIT-CT-325-mk_MK.pdf)
+- [ETA 22/0366: at least 6 anchors per m², 8 on buildings over 24 m](https://dit.ietcc.csic.es/2022/12/03/ete-22-0366-sistema-de-aislamiento-termico-por-el-exterior-sistema-ferro-term-sistema-chem-term/?lang=en)

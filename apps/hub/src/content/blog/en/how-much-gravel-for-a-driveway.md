@@ -71,3 +71,9 @@ That is a small amount. Bagged decorative gravel is often sold in bags of around
 - **Check delivery limits.** Trucks carry a maximum load and need space to tip. Ask before you order large amounts.
 
 The [BuildCalc gravel calculator](/calculators/gravel-calculator/) converts your dimensions to cubic yards or cubic metres and to weight, using the density you enter.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [Aggregate Markets: loose density of gravel, sand and crushed stone, about 1.35 tons per cubic yard](https://aggregatemarkets.com/en/calculators)

@@ -60,3 +60,11 @@ The exception is a **heat pump**, which includes most modern air conditioners in
 ## Check your own numbers
 
 Every home is different, so the most useful number is your own. Enter your heater's wattage, the hours you use it and the price on your bill in the [energy cost calculator](/energy-cost-calculator/). It shows the cost per hour, day, month and year, and works for any other appliance too.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [EIA Electric Power Monthly: average US residential electricity price](https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a)
+- [Yukon Energy Solutions Centre: portable electric heaters are 100% efficient; a typical heater is 1,500 W](https://emrlibrary.gov.yk.ca/emrlibrary/energy/ets11-electric-heaters.pdf)
+- [NOVEC: most electric heaters are 1,500 watts](https://novec.mydigitalpublication.com/articles/use-portable-space-heaters-wisely)

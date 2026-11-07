@@ -89,3 +89,9 @@ When in doubt, especially for anything structural, ask a professional. A volume 
 5. Confirm the bag yield or minimum delivery with the supplier.
 
 The [BuildCalc concrete calculator](/calculators/concrete-calculator/) does steps 3 and 4 for you, in imperial or metric units, and shows the bag counts for common sizes.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [QUIKRETE Concrete Mix 80 lb: about 0.6 cu ft per bag](https://www.pacesupply.com/Product/MORCONCRETE80)

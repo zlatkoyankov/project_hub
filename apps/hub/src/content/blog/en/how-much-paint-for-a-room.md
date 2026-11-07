@@ -70,3 +70,9 @@ Paint is often sold in 2.5 and 5 litre tins, so this is one 5 L tin plus one 2.5
 - **Don't over-thin.** Thinning spreads paint further but hides less, so you may need an extra coat after all.
 
 The [BuildCalc paint calculator](/calculators/paint-calculator/) does this arithmetic for several walls at once and rounds the result up to whole gallons.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [Sherwin-Williams: a gallon covers about 350 to 400 sq ft](https://www.sherwin-williams.com/en-us/color/color-tools/paint-calculator)

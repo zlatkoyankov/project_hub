@@ -411,9 +411,10 @@ export interface DrywallInput {
   studLength?: number;
 }
 
-/** Rules of thumb for finishing (see the drywall guide): about one screw per sq ft of board,
- *  0.4 ft of joint tape per sq ft, and one 4.5-gallon box of premixed compound per 475 sq ft. */
-export const DRYWALL_SUPPLY_RATES = { screwsPerSqFt: 1, tapeFtPerSqFt: 0.4, sqFtPerCompoundBox: 475 };
+/** Finishing supplies per sq ft of board: about one screw (8 in edge / 16 in field spacing on walls, IRC R702.3.5),
+ *  370 ft of tape per 1,000 sq ft (USG Sheetrock joint tape), and about 10 gallons of all-purpose compound per
+ *  1,000 sq ft (USG), so one 4.5-gallon box per 450 sq ft. */
+export const DRYWALL_SUPPLY_RATES = { screwsPerSqFt: 1, tapeFtPerSqFt: 0.37, sqFtPerCompoundBox: 450 };
 
 export interface FramingEstimate {
   trackLength: number;
@@ -476,7 +477,7 @@ export function calculateDrywall(values: DrywallInput): Estimate {
       count('Track pieces to buy', framing.trackPieces, 'piece', 'pieces'),
     ] : []),
     count('Drywall screws', Math.ceil(net * DRYWALL_SUPPLY_RATES.screwsPerSqFt - 1e-6), 'screw', 'screws', 'about one per sq ft (11 per m²) of board'),
-    { label: 'Joint tape', value: net * DRYWALL_SUPPLY_RATES.tapeFtPerSqFt, unit: 'ft', precision: 0, detail: 'about 0.4 ft per sq ft (1.3 m per m²)' },
+    { label: 'Joint tape', value: net * DRYWALL_SUPPLY_RATES.tapeFtPerSqFt, unit: 'ft', precision: 0, detail: 'about 370 ft per 1,000 sq ft (1.2 m per m²)' },
     count('Joint compound', Math.ceil(net / DRYWALL_SUPPLY_RATES.sqFtPerCompoundBox - 1e-6), 'box', 'boxes', '4.5-gallon boxes of premixed compound'),
   ] : [];
 
@@ -653,11 +654,11 @@ export function calculateWallpaper(values: WallpaperInput): Estimate {
   };
 }
 
-/** Dry mix per m² for each mm of thickness, from manufacturers' data sheets. */
+/** Dry mix per m² for each mm of thickness, from manufacturers' data sheets (sources on the calculator page). */
 export const SCREED_MATERIALS = [
-  { label: 'Cement screed', kgPerM2PerMm: 2.0, source: 'ready-mixed cement screed, about 20 kg/m² per cm (Sika, Baumit)' },
-  { label: 'Self-leveling compound', kgPerM2PerMm: 1.8, source: 'about 1.8 kg/m² per mm (Knauf NE 425)' },
-  { label: 'Gypsum plaster', kgPerM2PerMm: 0.9, source: 'about 0.8 to 1.0 kg/m² per mm (Knauf MP 75)' },
+  { label: 'Cement screed', kgPerM2PerMm: 2.0, source: 'about 20 kg/m² per cm (Baumit Solido E225)' },
+  { label: 'Self-leveling compound', kgPerM2PerMm: 1.6, source: 'about 1.5 to 1.6 kg/m² per mm (Ceresit CN 68, Baumit Nivello)' },
+  { label: 'Gypsum plaster', kgPerM2PerMm: 1.0, source: 'about 10 kg/m² at 10 mm (Knauf MP 75)' },
 ];
 
 export interface ScreedInput {
@@ -717,9 +718,9 @@ export const INSULATION_BOARDS = [
   { label: '1.2 × 0.6 m (mineral wool slab)', sqFt: 0.72 * 10.7639104 },
 ];
 
-/** Exterior insulation (EIFS/ETICS) supplies per m² of board: adhesive and base coat from Ceresit CT 85's
- *  data sheet, mesh with 10% for overlaps, and a common rule of six anchors per m². */
-export const INSULATION_SUPPLY_RATES = { adhesiveKgPerM2: 5.5, baseCoatKgPerM2: 4.0, meshOverlap: 1.1, anchorsPerM2: 6 };
+/** Exterior insulation (EIFS/ETICS) supplies per m² of board: adhesive 5.0 and base coat 4.0 kg from Ceresit CT 85's
+ *  data sheet, mesh 1.1 m²/m² (Ceresit CT 325), and six anchors, the minimum in European ETICS approvals. */
+export const INSULATION_SUPPLY_RATES = { adhesiveKgPerM2: 5.0, baseCoatKgPerM2: 4.0, meshOverlap: 1.1, anchorsPerM2: 6 };
 
 export interface InsulationInput {
   surfaceArea: number;
@@ -777,7 +778,7 @@ export const MASONRY_UNITS = [
   { label: 'Concrete block 16 × 8 × 8 in (CMU)', length: 15.625, height: 7.625, depth: 7.625, joint: 0.375, headJoints: true },
   { label: 'Solid brick 25 × 12 × 6.5 cm, 12 cm wall', length: 25 / 2.54, height: 6.5 / 2.54, depth: 12 / 2.54, joint: 1 / 2.54, headJoints: true },
   { label: 'Solid brick 25 × 12 × 6.5 cm, 25 cm wall', length: 12 / 2.54, height: 6.5 / 2.54, depth: 25 / 2.54, joint: 1 / 2.54, headJoints: true },
-  { label: 'Clay block 25 cm (Porotherm 25)', length: 37.3 / 2.54, height: 23.8 / 2.54, depth: 25 / 2.54, joint: 1.2 / 2.54, headJoints: false },
+  { label: 'Clay block 25 cm (Porotherm 25)', length: 37.5 / 2.54, height: 23.8 / 2.54, depth: 25 / 2.54, joint: 1.2 / 2.54, headJoints: false },
   { label: 'Clay block 11.5 cm (Porotherm 11.5)', length: 50 / 2.54, height: 23.8 / 2.54, depth: 11.5 / 2.54, joint: 1.2 / 2.54, headJoints: false },
   { label: 'Aerated concrete block 62.5 × 25 cm, 25 cm wall', length: 62.5 / 2.54, height: 25 / 2.54, depth: 25 / 2.54, joint: 0.2 / 2.54, headJoints: false },
 ];

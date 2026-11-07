@@ -66,3 +66,9 @@ Bags are easy to carry and store, and you can buy exactly what you need. Bulk mu
 - **Keep some spare.** A few extra bags help to fill thin spots after the first heavy rain.
 
 The [BuildCalc mulch calculator](/calculators/mulch-calculator/) converts your bed size and depth to cubic feet, cubic yards and bags.
+
+## Sources
+
+Checked on 7 November 2026.
+
+- [Mississippi State University Extension: 2 to 3 inches of mulch for landscape beds](https://extension.msstate.edu/news/southern-gardening/2022/use-mulch-for-beauty-and-weed-temperature-control)
