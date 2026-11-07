@@ -204,6 +204,9 @@ export class CalculatorPage {
   protected readonly result = signal<Estimate | null>(null);
   protected readonly error = signal('');
   protected readonly copied = signal(false);
+  protected readonly linkCopied = signal(false);
+  /** Values after the last reset, so a shared link carries only what the visitor changed. */
+  private defaultValues: Values = {};
   protected readonly embed = signal(false);
   protected readonly embedUnits = signal<UnitSystem>('us');
   protected readonly embedCopied = signal(false);
@@ -290,6 +293,22 @@ export class CalculatorPage {
     });
     this.route.data.subscribe((data) => this.embed.set(data['embed'] === true));
     const destroyRef = inject(DestroyRef);
+    afterNextRender(() => {
+      // A shared link (?length=20&depth=4…) fills in the values and shows the estimate.
+      if (this.embed() || !this.calculator() || this.calculator()?.kind === 'area') return;
+      const params = this.route.snapshot.queryParamMap;
+      const current = this.values();
+      const shared: Values = {};
+      for (const key of Object.keys(current)) {
+        const raw = params.get(key);
+        const value = raw === null ? NaN : Number(raw);
+        if (Number.isFinite(value) && value >= 0) shared[key] = value;
+      }
+      if (Object.keys(shared).length === 0) return;
+      this.values.set({ ...current, ...shared });
+      this.calculate();
+      track('open_shared', { calculator: this.calculator()?.kind ?? 'unknown' });
+    });
     afterNextRender(() => {
       if (!this.embed()) return;
       // ?units=metric|us picks the units for this visit without touching the visitor's saved choice.
@@ -458,6 +477,7 @@ export class CalculatorPage {
       }
     }
     this.values.set(defaults);
+    this.defaultValues = { ...defaults };
     if (kind === 'area') {
       const unit: AreaEntry['unit'] = metric ? 'm' : 'ft';
       this.areas.set([{ length: metric ? 3.66 : 12, width: metric ? 3.05 : 10, unit }, { length: metric ? 4.27 : 14, width: metric ? 3.35 : 11, unit }]);
@@ -540,6 +560,27 @@ export class CalculatorPage {
       setTimeout(() => this.copied.set(false), 2500);
     } catch {
       this.error.set('Your browser could not copy the results. Select and copy them manually.');
+    }
+  }
+
+  /** Link to this calculator with the changed values; unit choices always travel with them. */
+  protected async shareLink(): Promise<void> {
+    const calculator = this.calculator();
+    if (!calculator || typeof window === 'undefined') return;
+    const query = new URLSearchParams();
+    for (const [key, value] of Object.entries(this.values())) {
+      if (key.endsWith('Unit') || value !== this.defaultValues[key]) query.set(key, String(value));
+    }
+    const path = window.location.pathname.endsWith('/') ? window.location.pathname : `${window.location.pathname}/`;
+    const url = `${window.location.origin}${path}?${query.toString()}`;
+    try {
+      if (!navigator.clipboard) throw new Error('Clipboard access is unavailable.');
+      await navigator.clipboard.writeText(url);
+      this.linkCopied.set(true);
+      setTimeout(() => this.linkCopied.set(false), 2500);
+      track('share_link', { calculator: calculator.kind });
+    } catch {
+      this.error.set(`Your browser could not copy the link. Copy it from here: ${url}`);
     }
   }
 

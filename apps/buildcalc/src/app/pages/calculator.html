@@ -126,7 +126,7 @@
         @if (result(); as estimate) {
           <p class="result-summary">{{ resultSummary() }}</p>
           <dl class="result-list">@for (row of formattedRows(); track row.label) {<div><dt>{{ row.label }}<small>{{ row.detail }}</small></dt><dd>{{ row.displayValue }}</dd></div>}</dl>
-          <div class="result-actions"><button class="text-button" type="button" (click)="copyResults()">{{ copied() ? 'Copied to clipboard ✓' : 'Copy results' }}</button><button class="text-button" type="button" (click)="printResults()">Print</button></div>
+          <div class="result-actions"><button class="text-button" type="button" (click)="copyResults()">{{ copied() ? 'Copied to clipboard ✓' : 'Copy results' }}</button>@if (calc.kind !== 'area') {<button class="text-button" type="button" (click)="shareLink()">{{ linkCopied() ? 'Link copied ✓' : 'Share link' }}</button>}<button class="text-button" type="button" (click)="printResults()">Print</button></div>
         } @else {
           <p class="result-placeholder">Your estimate will appear here once you calculate.</p>
           <div class="sample-result"><span class="sample-label">A quick example</span><p>{{ calc.example }}</p></div>

@@ -707,7 +707,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         </div>
       </header>
 
-      <section class="tool-layout" aria-label={page.h1} data-material={kind}>
+      <section class="tool-layout" aria-label={page.h1} data-material={kind} data-title={page.jsonName}>
         <form class="tool-form" novalidate>
           <h2>{config ? config.formTitle : adhesive ? 'Площ и плочки' : screed ? 'Площ и дебелина' : insulation ? 'Фасада' : masonry ? 'Стената' : 'Твоята стая'}</h2>
           <p class="tool-form__hint">{config ? config.formHint : adhesive ? 'Плочката е в сантиметри, фугата и дебелината в милиметри. Цените не са задължителни.' : wallpaper ? 'Стаята е в метри, ролката и раппортът в сантиметри. Цената не е задължителна.' : screed ? 'Площта е в м², дебелината в милиметри. Цената не е задължителна.' : insulation ? 'Площите са в м², дебелината в сантиметри. Цената не е задължителна.' : masonry ? 'Стената е в метри, отворите в м². Цената не е задължителна.' : 'Всички мерки са в метри. Цените не са задължителни.'}</p>
@@ -807,6 +807,13 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           <p class="tool-result__big"><span data-out="big">–</span> <small data-out="bigUnit" data-one={page.bigOne} data-many={page.big}>{page.big}</small></p>
           <dl data-out="rows"></dl>
           <p class="tool-result__caveat">{page.caveat ?? 'Ориентировъчна сметка. Провери количествата с магазина, преди да купиш.'}</p>
+          {!embed && (
+            <div class="tool-result__actions">
+              <button type="button" data-copy-list>Копирай списъка</button>
+              <button type="button" data-share-link>Сподели връзка</button>
+              <p class="tool-result__status" role="status" data-share-status></p>
+            </div>
+          )}
         </aside>
       </section>
 
@@ -1207,6 +1214,77 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
       track('embed_copy', { calculator: kind ?? '', language: 'bg' })
     })
     form.addEventListener('submit', (event) => event.preventDefault())
+
+    // Shared links carry the values that differ from the defaults, e.g. ?length=6&thickness=12.
+    const controls = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input[name], select[name]')]
+    const isDefault = (control: HTMLInputElement | HTMLSelectElement) =>
+      control instanceof HTMLSelectElement
+        ? control.selectedIndex === Math.max(0, [...control.options].findIndex((option) => option.defaultSelected))
+        : control.value === control.defaultValue
+    const params = new URLSearchParams(window.location.search)
+    let restored = false
+    for (const control of controls) {
+      const value = params.get(control.name)
+      if (value === null) continue
+      if (control instanceof HTMLSelectElement) {
+        if (![...control.options].some((option) => option.value === value)) continue
+      } else if (!Number.isFinite(Number(value.replace(',', '.')))) continue
+      control.value = value
+      restored = true
+    }
+    if (restored) track('material_open_shared', { kind: kind ?? '', language: 'bg' })
+
+    const shareUrl = () => {
+      const query = new URLSearchParams()
+      for (const control of controls) if (!isDefault(control) && control.value !== '') query.set(control.name, control.value)
+      const search = query.toString()
+      return `${window.location.origin}${window.location.pathname}${search ? `?${search}` : ''}`
+    }
+    const status = root.querySelector<HTMLElement>('[data-share-status]')
+    const say = (text: string) => {
+      if (!status) return
+      status.textContent = text
+      window.setTimeout(() => { if (status.textContent === text) status.textContent = '' }, 3000)
+    }
+    const copyText = async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text)
+        return true
+      } catch {
+        return false
+      }
+    }
+    root.querySelector('[data-copy-list]')?.addEventListener('click', async () => {
+      const lines = [
+        `${root.dataset.title ?? document.title} – zyankov.eu`,
+        `${root.querySelector('.tool-result__kicker')?.textContent?.trim() ?? ''}: ${out('big').textContent} ${unitOut.textContent}`.trim(),
+        ...[...out('rows').querySelectorAll('div')].map((row) => {
+          const label = (row.querySelector('dt')?.firstChild?.textContent?.trim() ?? '').replace(/:$/, '')
+          const value = row.querySelector('dd')?.textContent?.trim() ?? ''
+          const detail = row.querySelector('dt small')?.textContent?.trim()
+          return value ? `• ${label}: ${value}${detail ? ` (${detail})` : ''}` : `${label}:`
+        }),
+        '',
+        root.querySelector('.tool-result__caveat')?.textContent?.trim() ?? '',
+        shareUrl(),
+      ]
+      say((await copyText(lines.join('\n'))) ? 'Списъкът е копиран ✓' : 'Не успях да копирам. Маркирай и копирай ръчно.')
+      track('material_list_copy', { kind: kind ?? '', language: 'bg' })
+    })
+    root.querySelector('[data-share-link]')?.addEventListener('click', async () => {
+      const url = shareUrl()
+      if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
+        try {
+          await navigator.share({ title: root.dataset.title ?? document.title, url })
+          track('material_share', { kind: kind ?? '', method: 'native', language: 'bg' })
+          return
+        } catch {
+          /* Cancelled or unsupported: fall back to copying. */
+        }
+      }
+      say((await copyText(url)) ? 'Връзката е копирана ✓' : url)
+      track('material_share', { kind: kind ?? '', method: 'copy', language: 'bg' })
+    })
     update()
   }
 </script>

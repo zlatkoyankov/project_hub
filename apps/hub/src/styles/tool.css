@@ -266,6 +266,44 @@ select {
   line-height: 1.5;
 }
 
+/* Copy the shopping list or share a link with the values filled in. */
+.tool-result__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.tool-result__actions button {
+  padding: 9px 14px;
+  color: var(--inverse-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--inverse-text) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--inverse-text) 28%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.tool-result__actions button:hover {
+  background: color-mix(in srgb, var(--inverse-text) 18%, transparent);
+}
+
+.tool-result__actions button:focus-visible {
+  outline: 2px solid var(--inverse-text);
+  outline-offset: 2px;
+}
+
+.tool-result__status {
+  flex-basis: 100%;
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--inverse-muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
 /* Notes and articles */
 .tool-notes {
   display: grid;
