@@ -622,7 +622,8 @@ export function estimateTiles(input: TileInput): TileEstimate | null {
 
 // ---------- Heating: seasonal heat demand and what each fuel costs ----------
 
-/** Seasonal heat need in kWh per m² of heated floor, by how well the home keeps heat (typical Bulgarian homes). */
+/** Seasonal heat need in kWh per m² of heated floor, by how well the home keeps heat. Our own typical values for
+ *  Bulgarian homes, in line with EnEffect's examples (about 59 and 105 kWh/m² a year for heating in blocks of flats). */
 export const HOME_INSULATION = [
   { label: 'Стара, без изолация', kwhPerM2: 200 },
   { label: 'Само нова дограма', kwhPerM2: 140 },
@@ -722,7 +723,8 @@ export function estimateHeating(input: HeatingInput): HeatingEstimate | null {
 
 // ---------- Firewood and pellets for a season ----------
 
-/** Heat in one stacked cubic metre (пространствен м³, 1 m logs) of dry wood (about 20% moisture), kWh. */
+/** Heat in one stacked cubic metre (пространствен м³, 1 m logs) of dry wood (about 20% moisture), kWh.
+ *  Beech ≈ 1900 kWh per stacked m³ (LWF Merkblatt 20); others scaled by density (LWF Merkblatt 12). */
 export const WOOD_SPECIES = [
   { label: 'Бук', kwhPerStackedM3: 1900 },
   { label: 'Дъб', kwhPerStackedM3: 2000 },
@@ -739,9 +741,10 @@ export const WOOD_MOISTURE = [
   { label: 'Сурови (над 30%, тази година)', factor: 0.65 },
 ] as const
 
-/** One stacked m³ holds about 0.7 m³ of solid wood; split wood thrown loose takes about 1.43 times the space. */
+/** One stacked m³ holds about 0.7 m³ of solid wood; split wood thrown loose takes about 1.5 times the space
+ *  (LWF Merkblatt 20, Bavarian State Institute of Forestry). */
 export const STACKED_TO_SOLID = 0.7
-export const STACKED_TO_LOOSE = 1 / 0.7
+export const STACKED_TO_LOOSE = 1.5
 /** Dry wood holds about 4 kWh per kg, so the weight follows from the heat. */
 export const WOOD_KWH_PER_KG = 4
 
