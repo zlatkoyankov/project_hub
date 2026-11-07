@@ -54,3 +54,10 @@ translation: en/how-much-wallpaper-do-i-need
 ## Сметни за твоята стая
 
 [Калкулаторът за тапети](/bg/kalkulator-tapeti/) брои ивиците от ролка според нейния размер, височината на стените и раппорта и закръгля до цели ролки.
+
+## Източници
+
+Проверено на 7 ноември 2026.
+
+- [Morris & Co: 10 см за подрязване на всяка ивица](https://wmorrisandco.com/uk/wallpaper-quantity-calculator)
+- [Etoffe: сметка по ивици, височина + 10 см + раппорт](https://www.etoffe.com/en/content/16-calculate-the-number-of-rolls-of-wallpaper)

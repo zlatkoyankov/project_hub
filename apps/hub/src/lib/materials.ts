@@ -95,9 +95,10 @@ export interface DrywallInput {
   profileLength?: number
 }
 
-/** Approximate consumption per m² of board: screws about one per square foot; tape and joint
- *  compound from Knauf's system data (0.75 m of tape; 0.5 kg compound on walls, 0.3 kg on ceilings). */
-export const SUPPLY_RATES = { screwsPerM2: 11, tapePerM2: 0.75, compoundWallKg: 0.5, compoundCeilingKg: 0.3 }
+/** Consumption per m² of board, from Knauf system data: the single-layer partition (C 111 / W 111) takes
+ *  29 TN 25 screws and 1.5 m of tape per m² of wall boarded on both sides, so about 15 screws and 0.75 m of tape
+ *  per m² of board; Knauf Fugen joint compound 0.5 kg/m² on walls and 0.3 kg/m² on ceilings. */
+export const SUPPLY_RATES = { screwsPerM2: 15, tapePerM2: 0.75, compoundWallKg: 0.5, compoundCeilingKg: 0.3 }
 
 export interface DrywallSupplies {
   studs: number
@@ -308,8 +309,9 @@ export const INSULATION_BOARDS = [
   { label: 'Минерална вата 1,2 × 0,6 м', area: 0.72 },
 ]
 
-/** Per m² of board: adhesive and base coat from Ceresit CT 85, mesh with 10% overlaps, six anchors. */
-export const INSULATION_RATES = { adhesiveKg: 5.5, baseCoatKg: 4.0, meshOverlap: 1.1, anchors: 6 }
+/** Per m² of board: adhesive 5.0 and base coat 4.0 kg from Ceresit CT 85, mesh 1.1 m²/m² (Ceresit CT 325),
+ *  and six anchors, the minimum in ETICS approvals for EPS and mineral wool (eight on buildings over about 25 m). */
+export const INSULATION_RATES = { adhesiveKg: 5.0, baseCoatKg: 4.0, meshOverlap: 1.1, anchors: 6 }
 
 export interface InsulationInput {
   area: number
@@ -346,11 +348,13 @@ export function estimateInsulation(input: InsulationInput): InsulationEstimate |
 }
 
 /** Bricks and blocks common in Bulgaria: face length and height, wall depth and joint, in metres.
+ *  Sizes from the manufacturers' sheets: solid brick 250 × 120 × 65, Wienerberger Porotherm 25 (375 × 250 × 238,
+ *  11 per m²) and 11.5 (500 × 115 × 238, 8 per m²), Ytong 625 × 250 with a 2–3 mm thin-bed joint (6.4 per m²).
  *  headJoints is false for interlocking ends (no mortar in the vertical joints). */
 export const MASONRY_UNITS = [
   { label: 'Плътна тухла 25 × 12 × 6,5 см, стена 12 см', length: 0.25, height: 0.065, depth: 0.12, joint: 0.01, headJoints: true },
   { label: 'Плътна тухла 25 × 12 × 6,5 см, стена 25 см', length: 0.12, height: 0.065, depth: 0.25, joint: 0.01, headJoints: true },
-  { label: 'Керамичен блок 25 см (Porotherm 25)', length: 0.373, height: 0.238, depth: 0.25, joint: 0.012, headJoints: false },
+  { label: 'Керамичен блок 25 см (Porotherm 25)', length: 0.375, height: 0.238, depth: 0.25, joint: 0.012, headJoints: false },
   { label: 'Керамичен блок 11,5 см (Porotherm 11,5)', length: 0.5, height: 0.238, depth: 0.115, joint: 0.012, headJoints: false },
   { label: 'Газобетон 62,5 × 25 см, стена 25 см', length: 0.625, height: 0.25, depth: 0.25, joint: 0.002, headJoints: false },
   { label: 'Газобетон 62,5 × 25 см, стена 10 см', length: 0.625, height: 0.25, depth: 0.1, joint: 0.002, headJoints: false },
