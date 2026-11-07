@@ -16,6 +16,7 @@ export async function GET() {
     { path: '/energy-cost-calculator/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },
     { path: '/bg/razhod-za-otoplenie/' },
     { path: '/bg/kalkulator-darva/' },
+    { path: '/bg/kalkulator-klimatik/' },
     { path: '/bg/razhod-na-tok/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },
     { path: '/bg/kalkulator-laminat/', alternates: pair('/calculators/laminate-flooring-calculator/', '/bg/kalkulator-laminat/') },
     { path: '/bg/kalkulator-gipsokarton/', alternates: pair('/calculators/drywall-calculator/', '/bg/kalkulator-gipsokarton/') },
