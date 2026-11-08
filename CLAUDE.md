@@ -94,6 +94,9 @@ npm run lint && npm run lint:colors && npm test
 (cd dist && python3 -m http.server 8765)   # then click through, use trailing-slash URLs
 ```
 
+GitHub Actions (`.github/workflows/build.yml`) runs the tests and the full build (and lint, once
+the CI lint PR is merged) on every PR and on main; a PR should be green before Zlatko merges it.
+
 For UI changes, check the page in a real browser (Playwright screenshots work well), in light and
 dark mode and on a narrow screen.
 
