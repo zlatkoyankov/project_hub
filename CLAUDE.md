@@ -54,7 +54,7 @@ formula and the data are not visible and correct.
 - **New BG page checklist:**
   - the page under `apps/hub/src/pages/bg/<slug>/index.astro`;
   - an entry in `tools.ts`;
-  - an OG image entry (`lib/og.ts`);
+  - an OG image entry in `pages/og/[key].png.ts` (rendering is in `lib/og.ts`);
   - an entry in `pages/sitemap-site.xml.ts`;
   - related tools;
   - sources and a checked date.
