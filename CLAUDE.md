@@ -113,6 +113,9 @@ dark mode and on a narrow screen.
 - **Deploy:** `npm run build`, then `npm run deploy` for a dry run, then `npm run deploy -- --yes`
   (FTPS; login in `.env.deploy`, which is never committed). Uploading `dist/` by hand also
   works.
+- **IndexNow:** `scripts/indexnow.mjs` sends the changed sitemap pages to Bing and the other
+  IndexNow engines; `deploy -- --yes` runs it, after a manual upload run `npm run indexnow`. The key
+  file `apps/hub/public/<key>.txt` must stay in sync with `KEY` in the script.
 - **`.htaccess`** comes from the build. It covers:
   - the HTTPS and bare-domain 301;
   - the old BuildCalc info pages redirected to site-wide pages;

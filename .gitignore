@@ -26,3 +26,6 @@ Claude outputs/
 
 # FTP login for npm run deploy
 .env.deploy
+
+# Pages already sent to IndexNow (scripts/indexnow.mjs)
+.indexnow-sent.json

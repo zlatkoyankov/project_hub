@@ -44,6 +44,9 @@ Run a script for one app with `-w`, for example `npm run build -w letterwell`.
 1. `npm run build`
 2. `npm run deploy` shows what would be uploaded and which files on the server are no longer in the build.
 3. `npm run deploy -- --yes` uploads `dist/` to `public_html` over FTPS and deletes those files.
+4. It then runs `npm run indexnow`, which tells Bing and the other IndexNow engines which pages
+   changed. After uploading `dist/` by hand, run `npm run indexnow` yourself (`-- --dry-run` lists
+   the pages first).
 
 The FTP login is read from `.env.deploy` (copy `.env.deploy.example`; the file is in `.gitignore`).
 Dot files and folders on the server (`.well-known`, cPanel's `.htaccess` and `.user.ini` in subfolders),

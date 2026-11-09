@@ -1,12 +1,13 @@
 // Uploads ./dist to the hosting account over FTPS and removes files that are no longer in the build.
 //
 //   npm run deploy            shows what would change, writes nothing
-//   npm run deploy -- --yes   uploads and deletes
+//   npm run deploy -- --yes   uploads and deletes, then sends the changed pages to IndexNow
 //
 // Login details come from .env.deploy in the repository root (not in git); see .env.deploy.example.
 import { readFile, readdir, stat } from 'node:fs/promises'
 import { dirname, join, posix, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { spawnSync } from 'node:child_process'
 import { Client } from 'basic-ftp'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -103,6 +104,9 @@ try {
     for (const path of deletions) await client.remove(posix.join(remoteRoot, path))
     for (const dir of emptyDirs) await client.removeEmptyDir(posix.join(remoteRoot, dir)).catch(() => console.warn(`  could not remove ${dir}/ (not empty?)`))
     console.log(`Deleted ${deletions.length} files and ${emptyDirs.length} folders. Done.`)
+    // Tell Bing and the other IndexNow engines which pages changed. A failure here does not undo the deploy.
+    const indexnow = spawnSync(process.execPath, [resolve(root, 'scripts/indexnow.mjs')], { stdio: 'inherit' })
+    if (indexnow.status !== 0) console.warn('IndexNow failed; the site is deployed. Retry with "npm run indexnow".')
   }
 } finally {
   client.close()
