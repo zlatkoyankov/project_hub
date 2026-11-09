@@ -813,6 +813,10 @@ a.tool-tile:hover {
   color: var(--accent);
 }
 
+.post-card__category--everyday {
+  color: var(--blue-ink);
+}
+
 .post-card__category--general {
   color: var(--text-muted);
 }

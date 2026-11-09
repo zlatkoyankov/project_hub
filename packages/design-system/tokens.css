@@ -33,6 +33,7 @@
   --tile-yellow: #f3d477;
   --tile-coral: #ef9478;
   --tile-blue: #a3c4d9;
+  --blue-ink: #3d5f80; /* blue for small text, e.g. the "everyday sums" blog label (AA on --bg and --surface) */
   --tile-mint: #a9cfb2;
   --tile-white: #f4f3e8;
   --tile-ink: #20352d; /* letters on tiles */
@@ -139,6 +140,7 @@
   --success: #70a984;
 
   --border: #405548;
+  --blue-ink: #a3c4d9;
   --border-strong: #506b56;
   --line-strong: #8fa896;
   --grid: #3a5042;

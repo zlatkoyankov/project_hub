@@ -215,6 +215,7 @@
 
 .post-tile__category--words { color: var(--coral-strong); }
 .post-tile__category--home { color: var(--accent); }
+.post-tile__category--everyday { color: var(--blue-ink); }
 .post-tile__category--general { color: var(--text-muted); }
 
 .post-tile h2,

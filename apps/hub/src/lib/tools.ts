@@ -338,8 +338,12 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
 }
 
 /** Blog category of a post, from the tool it links to. */
-export function postCategory(tool?: string): ToolCategory | 'general' {
+/** Everyday sums (percentages, VAT, euro, loans, dates) get their own blog category. */
+const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator'])
+
+export function postCategory(tool?: string): ToolCategory | 'everyday' | 'general' {
   if (!tool) return 'general'
+  if (EVERYDAY_POST_TOOLS.has(tool)) return 'everyday'
   return tool === 'letterwell' || tool === 'wordle-solver' || tool === 'crossword-solver' || tool === 'spelling-bee' ? 'words' : 'home'
 }
 
@@ -389,6 +393,11 @@ export const POST_TOOL_IDS: Record<string, string> = {
   'crossword-solver': 'crossword-solver',
   'spelling-bee': 'spelling-bee',
   'energy-cost-calculator': 'energy',
+  'percent-calculator': 'percent',
+  'vat-calculator': 'vat',
+  'euro-converter': 'euro',
+  'loan-calculator': 'loan',
+  'date-calculator': 'dates',
   'heating-cost-calculator': 'heating',
   'firewood-calculator': 'firewood',
   'aircon-calculator': 'aircon',
