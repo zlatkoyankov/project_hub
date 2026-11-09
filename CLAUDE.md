@@ -64,7 +64,9 @@ formula and the data are not visible and correct.
   - sources and a checked date.
 - **Blog:** `apps/hub/src/content/blog/{en,bg}/*.md`. Frontmatter: `title`, `description`,
   `date`, optional `updated`, `lang`, `tags`, `tool` (the linked calculator id). EN and BG
-  translations are paired for hreflang (see `getTranslation` in `lib/site.ts`).
+  translations are paired for hreflang (see `getTranslation` in `lib/site.ts`). A new `tool` value also needs
+  an entry in `TOOLS` (`lib/site.ts`), `POST_TOOL_IDS` and, for its category, `postCategory` (`lib/tools.ts`).
+  Categories: words, home, everyday (percent, VAT, euro, loan, dates) and general.
 - **BuildCalc:**
   - `data/calculators.ts`: `CalculatorInfo` with `sources`;
   - `pages/calculator.*`: the calculator page; `shareLink()` keeps changed values plus unit
@@ -147,9 +149,9 @@ dark mode and on a narrow screen.
   - publisher `ca-pub-4282820287798834`;
   - before reapplying, check for thin or empty pages and keep the privacy page accurate.
 
-## Backlog (as of 8 November 2026)
+## Backlog (as of 9 November 2026)
 
-1. Articles with sources for the everyday tools: ДДС, лева в евро, кредит, проценти, дати.
+1. EN versions of the everyday-sums articles are not planned (the tools are BG-only).
 2. An embed version of the BG energy calculator (the EN one has one).
 3. Check the Umami events for favourites, sharing and hints after a few days of traffic.
 4. Weekly Search Console check; AdSense readiness review before mid-December.
