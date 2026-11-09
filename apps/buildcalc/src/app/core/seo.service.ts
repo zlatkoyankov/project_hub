@@ -1,12 +1,14 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { CALCULATORS } from '../data/calculators';
+import { CALCULATORS, SOURCES_CHECKED_ISO } from '../data/calculators';
 import { GUIDES } from '../data/guides';
 
 // Public origin plus the sub-path the app is deployed under.
 export const SITE_BASE_URL: string = 'https://zyankov.eu/calculators';
 const SITE_NAME = 'BuildCalc';
+// The person behind the site, for structured data (author and publisher).
+const AUTHOR = { '@type': 'Person', name: 'Zlatko Yankov', url: 'https://zyankov.eu/about/' };
 const JSON_LD_ID = 'buildcalc-json-ld';
 const SECTION_NAMES: Record<string, string> = { 'all-calculators': 'Calculators', guides: 'Material guides' };
 
@@ -74,6 +76,22 @@ export class SeoService {
     if (calculator) {
       data.push({
         '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: calculator.title,
+        description: description ?? calculator.description,
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Any',
+        inLanguage: 'en',
+        isAccessibleForFree: true,
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        author: AUTHOR,
+        publisher: AUTHOR,
+        // When the formula, rates and sources were last checked (shown on the page).
+        dateModified: SOURCES_CHECKED_ISO,
+        ...(url && { url }),
+      });
+      data.push({
+        '@context': 'https://schema.org',
         '@type': 'FAQPage',
         mainEntity: calculator.faqs.map((faq) => ({
           '@type': 'Question',
@@ -89,7 +107,8 @@ export class SeoService {
         '@type': 'Article',
         headline: guide.title,
         description: description ?? guide.description,
-        publisher: { '@type': 'Organization', name: SITE_NAME },
+        author: AUTHOR,
+        publisher: AUTHOR,
         ...(url && { mainEntityOfPage: url }),
       });
     }

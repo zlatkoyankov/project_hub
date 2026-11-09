@@ -19,8 +19,15 @@ export interface CalculatorInfo {
   sources?: { label: string; href: string }[];
 }
 
-/** Date the sources and figures were last checked. */
-export const SOURCES_CHECKED = '7 November 2026';
+/** Date the sources and figures were last checked (ISO). Used in dateModified. */
+export const SOURCES_CHECKED_ISO = '2026-11-07';
+/** The same date as shown on the page, e.g. "7 November 2026". */
+export const SOURCES_CHECKED = new Date(SOURCES_CHECKED_ISO).toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
 
 const src = (...items: [string, string][]) => items.map(([label, href]) => ({ label, href }));
 

@@ -7,7 +7,7 @@ import { embedPath } from '../lib/embeds'
 import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
-import { getPosts, ogKey, postPath } from '../lib/site'
+import { AUTHOR, getPosts, isoFromBgDate, ogKey, postPath } from '../lib/site'
 import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
@@ -874,9 +874,16 @@ const posts = (await getPosts('bg')).filter((post) => post.data.tool === page.to
 const jsonLd = {
   '@type': 'WebApplication',
   name: page.jsonName,
+  description: page.description,
   applicationCategory: 'UtilitiesApplication',
   operatingSystem: 'Any',
+  inLanguage: 'bg',
+  isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  author: AUTHOR,
+  publisher: AUTHOR,
+  // When the formula, rates and sources were last checked (shown on the page as "проверено").
+  ...(page.checked && { dateModified: isoFromBgDate(page.checked) }),
 }
 const Layout = embed ? EmbedLayout : BaseLayout
 const layoutProps: Record<string, unknown> = embed

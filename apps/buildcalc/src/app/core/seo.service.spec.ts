@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot } from '@angular/router';
+import { SOURCES_CHECKED, SOURCES_CHECKED_ISO } from '../data/calculators';
 import { SeoService, SITE_BASE_URL } from './seo.service';
 
 function snapshot(segments: string[], data: Record<string, unknown>, title: string): ActivatedRouteSnapshot {
@@ -26,8 +27,20 @@ describe('SeoService', () => {
     expect(doc.querySelector('link[rel="canonical"]')?.getAttribute('href')).toBe(`${SITE_BASE_URL}/gravel-calculator/`);
     expect(doc.querySelector('meta[property="og:image"]')?.getAttribute('content')).toBe(`${SITE_BASE_URL}/images/gravel.webp`);
     expect(doc.querySelector('meta[name="robots"]')?.getAttribute('content')).toBe('index, follow');
-    const json = JSON.parse(doc.getElementById('buildcalc-json-ld')!.textContent!) as { '@type': string; name?: string }[];
-    expect(json.map((item) => item['@type'])).toEqual(['FAQPage', 'BreadcrumbList']);
+    const json = JSON.parse(doc.getElementById('buildcalc-json-ld')!.textContent!) as {
+      '@type': string;
+      name?: string;
+      dateModified?: string;
+      author?: { name: string };
+    }[];
+    expect(json.map((item) => item['@type'])).toEqual(['WebApplication', 'FAQPage', 'BreadcrumbList']);
+    expect(json[0].dateModified).toBe(SOURCES_CHECKED_ISO);
+    expect(json[0].author?.name).toBe('Zlatko Yankov');
+  });
+
+  it('shows the checked date in words', () => {
+    expect(SOURCES_CHECKED_ISO).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(SOURCES_CHECKED).toMatch(/^\d{1,2} [A-Z][a-z]+ \d{4}$/);
   });
 
   it('names section breadcrumbs and drops canonical for noindex pages', () => {

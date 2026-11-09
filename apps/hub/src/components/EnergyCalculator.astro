@@ -3,7 +3,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
-import { getPosts, ogKey, postPath, readingMinutes, type Lang } from '../lib/site'
+import { AUTHOR, formatDate, getPosts, ogKey, postPath, readingMinutes, type Lang } from '../lib/site'
 import '../styles/tool.css'
 
 interface Props {
@@ -145,12 +145,21 @@ const t = bg
     }
 
 const posts = (await getPosts(lang)).filter((post) => post.data.tool === 'energy-cost-calculator')
+// When the presets, prices and sources were last checked: shown on the page and in dateModified.
+const CHECKED = '2026-11-07'
+const checkedText = formatDate(new Date(CHECKED), lang)
 const jsonLd = {
   '@type': 'WebApplication',
   name: bg ? 'Калкулатор за разход на ток' : 'Appliance energy cost calculator',
+  description: t.description,
   applicationCategory: 'UtilitiesApplication',
   operatingSystem: 'Any',
+  inLanguage: lang,
+  isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+  author: AUTHOR,
+  publisher: AUTHOR,
+  dateModified: CHECKED,
 }
 ---
 
@@ -271,7 +280,7 @@ const jsonLd = {
           <p>{t.how}</p>
           <p class="tool-formula">kWh = W ÷ 1000 × h × load</p>
           <div class="tool-sources">
-            <h3>{bg ? 'Източници' : 'Sources'}<span> · {bg ? 'проверено 7 ноември 2026' : 'checked 7 November 2026'}</span></h3>
+            <h3>{bg ? 'Източници' : 'Sources'}<span> · {bg ? 'проверено' : 'checked'} {checkedText}</span></h3>
             <ul>{sources.map((source) => <li><a href={source.href} target="_blank" rel="noopener">{bg ? source.bg : source.en}</a></li>)}</ul>
             <p>{bg ? 'Пералнята (0,7 kWh на цикъл) е наша оценка: зависи силно от програмата. Часовете по подразбиране са само пример.' : 'The washing machine (0.7 kWh per cycle) is our estimate: it depends heavily on the programme. Default hours are only examples.'}</p>
           </div>
