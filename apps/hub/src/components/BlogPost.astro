@@ -110,7 +110,7 @@ const jsonLd = {
             {related.map((entry) => (
               <li>
                 <a class="post-tile" href={postPath(entry)}>
-                  <img src={`/og/${ogKey(postPath(entry))}.png`} alt="" width="1200" height="630" loading="lazy" decoding="async" />
+                  <img src={`/og/${ogKey(postPath(entry))}.png`} alt={entry.data.title} width="1200" height="630" loading="lazy" decoding="async" />
                   <div class="post-tile__body">
                     <span class={`post-tile__category post-tile__category--${postCategory(entry.data.tool)}`}>{t.categories[postCategory(entry.data.tool)]}</span>
                     <h3>{entry.data.title}</h3>

@@ -45,7 +45,7 @@ const cover = (post: Post) => `/og/${ogKey(postPath(post))}.png`
 
       {featured && (
         <a class="featured-post" href={postPath(featured)} data-category={postCategory(featured.data.tool)}>
-          <img src={cover(featured)} alt="" width="1200" height="630" decoding="async" />
+          <img src={cover(featured)} alt={featured.data.title} width="1200" height="630" decoding="async" />
           <div class="featured-post__body">
             <p class="featured-post__kicker">{t.featured} · {t.categories[postCategory(featured.data.tool)]}</p>
             <h2>{featured.data.title}</h2>
@@ -60,7 +60,7 @@ const cover = (post: Post) => `/og/${ogKey(postPath(post))}.png`
         {rest.map((post) => (
           <li data-category={postCategory(post.data.tool)}>
             <a class="post-tile" href={postPath(post)}>
-              <img src={cover(post)} alt="" width="1200" height="630" loading="lazy" decoding="async" />
+              <img src={cover(post)} alt={post.data.title} width="1200" height="630" loading="lazy" decoding="async" />
               <div class="post-tile__body">
                 <span class={`post-tile__category post-tile__category--${postCategory(post.data.tool)}`}>{t.categories[postCategory(post.data.tool)]}</span>
                 <h2>{post.data.title}</h2>

@@ -303,7 +303,7 @@ const star = (tool: (typeof TOOL_CATALOG)[number]) => `<button class="tool-fav" 
         {posts.map((post) => (
           <li>
             <a class="post-card" href={postPath(post)}>
-              <img src={`/og/${ogKey(postPath(post))}.png`} alt="" width="1200" height="630" loading="lazy" decoding="async" />
+              <img src={`/og/${ogKey(postPath(post))}.png`} alt={post.data.title} width="1200" height="630" loading="lazy" decoding="async" />
               <div class="post-card__body">
                 <span class={`post-card__category post-card__category--${postCategory(post.data.tool)}`}>{t.categories[postCategory(post.data.tool)]}</span>
                 <h3>{post.data.title}</h3>

@@ -1,5 +1,5 @@
 ---
-title: 'How much laminate flooring do I need? Boxes, waste and a worked example'
+title: 'How much laminate flooring do I need? Boxes, waste and an example'
 description: 'Measure the room, add the right waste allowance and turn square feet into boxes of laminate or vinyl plank, with a worked example and common mistakes.'
 date: 2026-11-04
 lang: en

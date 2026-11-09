@@ -8,12 +8,13 @@ import { absolute, type Lang } from '../lib/site'
 
 interface Props {
   title: string
+  description?: string
   /** The full calculator page this embed belongs to. */
   canonical: string
   lang?: Lang
 }
 
-const { title, canonical, lang = 'bg' } = Astro.props
+const { title, description, canonical, lang = 'bg' } = Astro.props
 ---
 
 <!doctype html>
@@ -23,7 +24,8 @@ const { title, canonical, lang = 'bg' } = Astro.props
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <Fragment set:html={renderHead({ ads: false })} />
     <meta name="robots" content="noindex, follow" />
-    <title>{title}</title>
+    <title>{title.length > 70 ? title.replace(/ \| Zyankov\.eu$/, '') : title}</title>
+    {description && <meta name="description" content={description} />}
     <link rel="canonical" href={absolute(canonical)} />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
   </head>

@@ -15,6 +15,11 @@ export const EMBED_SLUGS = {
   'razhod-za-otoplenie': 'heating',
   'kalkulator-darva': 'firewood',
   'kalkulator-klimatik': 'aircon',
+  'kalkulator-protsenti': 'percent',
+  'kalkulator-dds': 'vat',
+  'leva-v-evro': 'euro',
+  'kalkulator-dati': 'dates',
+  'kalkulator-kredit': 'loan',
 } as const
 
 export type EmbedKind = (typeof EMBED_SLUGS)[keyof typeof EMBED_SLUGS]
