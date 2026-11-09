@@ -36,6 +36,19 @@ export function formatDate(date: Date, lang: Lang) {
 
 export const isoDate = (date: Date) => date.toISOString().slice(0, 10)
 
+const BG_MONTHS = ['януари', 'февруари', 'март', 'април', 'май', 'юни', 'юли', 'август', 'септември', 'октомври', 'ноември', 'декември']
+
+/** "7 ноември 2026" -> "2026-11-07". Fails the build on anything else, so a typo cannot ship a wrong date. */
+export function isoFromBgDate(text: string): string {
+  const match = text.trim().match(/^(\d{1,2}) (\S+) (\d{4})$/)
+  const month = match ? BG_MONTHS.indexOf(match[2]) : -1
+  if (!match || month < 0) throw new Error(`Not a Bulgarian date like "7 ноември 2026": "${text}"`)
+  return `${match[3]}-${String(month + 1).padStart(2, '0')}-${match[1].padStart(2, '0')}`
+}
+
+/** The person behind the site, for structured data (author and publisher). */
+export const AUTHOR = { '@type': 'Person', name: 'Zlatko Yankov', url: 'https://zyankov.eu/about/' } as const
+
 /** Approximate reading time in minutes (about 220 words a minute). */
 export function readingMinutes(body = '') {
   const words = body.replace(/[#>*_`[\]()-]/g, ' ').split(/\s+/).filter(Boolean).length

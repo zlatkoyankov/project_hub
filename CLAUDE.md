@@ -29,7 +29,9 @@ formula and the data are not visible and correct.
 - Link a source for every coefficient: a standard, a manufacturer's datasheet, an official body
   (NAP, BNB, ECB, EUR-Lex) or at least a reputable article.
 - Label our own estimates or middle values as such.
-- Show a "checked" date (`checked` in the hub configs, `SOURCES_CHECKED` in BuildCalc).
+- Show a "checked" date (`checked` in the hub configs, `CHECKED` in `EnergyCalculator.astro`,
+  `SOURCES_CHECKED_ISO` in BuildCalc). It also becomes `dateModified` in the page's JSON-LD, next to
+  the author (`AUTHOR` in `lib/site.ts` / `seo.service.ts`), so update it whenever you re-check.
 - Keep a short source comment next to each constant in code (`apps/hub/src/lib/materials.ts`,
   `apps/buildcalc/src/app/utils/calculations.ts`).
 - No number without a source. If a source cannot be found, say so and ask.
@@ -145,8 +147,7 @@ dark mode and on a narrow screen.
 ## Backlog (as of 8 November 2026)
 
 1. Articles with sources for the everyday tools: ДДС, лева в евро, кредит, проценти, дати.
-2. `dateModified` in JSON-LD, taken from `checked`.
-3. An embed version of the BG energy calculator (the EN one has one).
-4. Check the Umami events for favourites, sharing and hints after a few days of traffic.
-5. Weekly Search Console check; AdSense readiness review before mid-December.
-6. Later: a separate SEO page for daily-word hints, short video clips, more everyday tools.
+2. An embed version of the BG energy calculator (the EN one has one).
+3. Check the Umami events for favourites, sharing and hints after a few days of traffic.
+4. Weekly Search Console check; AdSense readiness review before mid-December.
+5. Later: a separate SEO page for daily-word hints, short video clips, more everyday tools.
