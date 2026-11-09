@@ -29,3 +29,6 @@ Claude outputs/
 
 # Personal Claude Code settings
 .claude/settings.local.json
+
+# Pages already sent to IndexNow (scripts/indexnow.mjs)
+.indexnow-sent.json
