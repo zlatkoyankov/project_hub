@@ -26,3 +26,6 @@ Claude outputs/
 
 # FTP login for npm run deploy
 .env.deploy
+
+# Personal Claude Code settings
+.claude/settings.local.json
