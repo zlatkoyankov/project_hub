@@ -29,3 +29,8 @@ for (const part of parts) {
   await cp(resolve(root, part.from), resolve(output, part.to), { recursive: true })
   console.log(`${part.name}: ${part.from} -> dist/${part.to === '.' ? '' : `${part.to}/`}`)
 }
+
+// Angular's SSR builder also writes index.csr.html, the client-only shell of the home page. Every route is
+// prerendered, so nothing uses it, and on the server it is a copy of /calculators/ without a canonical tag, which
+// Search Console reports as "Duplicate without user-selected canonical". The deploy then deletes it from the server.
+await rm(resolve(output, 'calculators/index.csr.html'), { force: true })
