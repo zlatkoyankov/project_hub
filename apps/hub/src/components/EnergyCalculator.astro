@@ -300,7 +300,7 @@ const jsonLd = {
             {posts.map((post) => (
               <li>
                 <a href={postPath(post)}>
-                  <img src={`/og/${ogKey(postPath(post))}.png`} alt="" width="1200" height="630" loading="lazy" decoding="async" />
+                  <img src={`/og/${ogKey(postPath(post))}.png`} alt={post.data.title} width="1200" height="630" loading="lazy" decoding="async" />
                   <span><strong>{post.data.title}</strong><small>{readingMinutes(post.body)} {t.min}</small></span>
                 </a>
               </li>
