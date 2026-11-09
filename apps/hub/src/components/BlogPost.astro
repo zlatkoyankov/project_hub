@@ -41,7 +41,7 @@ const jsonLd = {
 }
 ---
 
-<BaseLayout project="blog" title={`${post.data.title} | Zyankov.eu`} description={post.data.description} path={path} lang={lang} alternates={alternates} ogType="article" rss={`${blogPath}rss.xml`} jsonLd={jsonLd}>
+<BaseLayout project="blog" title={`${post.data.title} | Zyankov.eu`} description={post.data.description} path={path} lang={lang} alternates={alternates} ogType="article" rss={`${blogPath}rss.xml`} jsonLd={jsonLd} breadcrumbs={[{ name: bg ? 'Начало' : 'Home', path: bg ? '/bg/' : '/' }, { name: t.blog, path: blogPath }, { name: post.data.title, path }]}>
   <div class="blog-page">
     <main id="top">
       <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={blogPath}>{t.blog}</a><span aria-hidden="true">/</span><span>{t.categories[category]}</span></nav>
