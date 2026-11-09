@@ -163,7 +163,7 @@ const jsonLd = {
 }
 ---
 
-<BaseLayout title={t.title} description={t.description} path={path} lang={lang} alternates={alternates} project="buildcalc" jsonLd={jsonLd}>
+<BaseLayout title={t.title} description={t.description} path={path} lang={lang} alternates={alternates} project="buildcalc" jsonLd={jsonLd} breadcrumbs={[{ name: t.crumbs[0], path: bg ? '/bg/' : '/' }, { name: jsonLd.name, path }]}>
   <div class="tool-page zy-board" data-board={'blueprint'}>
     <main id="top">
       <nav class="tool-crumbs" aria-label="Breadcrumb"><a href={bg ? '/bg/' : '/'}>{t.crumbs[0]}</a><span aria-hidden="true">/</span><a href={bg ? '/bg/#home-diy' : '/#home-diy'}>{t.crumbs[1]}</a></nav>

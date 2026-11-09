@@ -25,16 +25,18 @@ interface Props {
   ogType?: 'website' | 'article'
   jsonLd?: Record<string, unknown> | Record<string, unknown>[]
   rss?: string
+  /** Trail from the home page to this page, for the BreadcrumbList in search results. */
+  breadcrumbs?: { name: string; path: string }[]
 }
 
-const { title: fullTitle, description, path, lang = 'en', alternates = {}, noAds = false, project = 'hub', ogType = 'website', jsonLd, rss } = Astro.props
+const { title: fullTitle, description, path, lang = 'en', alternates = {}, noAds = false, project = 'hub', ogType = 'website', jsonLd, rss, breadcrumbs = [] } = Astro.props
 // Search engines cut titles at about 70 characters, and they show the site name on their own. A long title drops the
 // " | Zyankov.eu" suffix instead of being cut in the middle of the words that matter.
 const title = fullTitle.length > 70 ? fullTitle.replace(/ \| Zyankov\.eu$/, '') : fullTitle
 const url = absolute(path)
 const ogImage = absolute(`/og/${ogKey(path)}.png`)
 const alternateUrls = Object.fromEntries(Object.entries(alternates).map(([key, value]) => [key, absolute(value as string)]))
-const structured = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map((item) => ({
+const structured: Record<string, unknown>[] = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map((item) => ({
   '@context': 'https://schema.org',
   url,
   name: title,
@@ -43,6 +45,13 @@ const structured = (Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : []).map
   isPartOf: { '@type': 'WebSite', name: 'Zyankov.eu', url: 'https://zyankov.eu/' },
   ...item,
 }))
+if (breadcrumbs.length > 1) {
+  structured.push({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((crumb, index) => ({ '@type': 'ListItem', position: index + 1, name: crumb.name, item: absolute(crumb.path) })),
+  })
+}
 ---
 
 <!doctype html>

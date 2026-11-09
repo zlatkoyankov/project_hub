@@ -122,7 +122,7 @@ export class SeoService {
           ...crumbs.map((_, index) => ({
             '@type': 'ListItem',
             position: index + 2,
-            name: index === crumbs.length - 1 ? title.replace(` | ${SITE_NAME}`, '') : SECTION_NAMES[crumbs[index]] ?? crumbs[index],
+            name: index === crumbs.length - 1 ? calculator?.title ?? title.replace(` | ${SITE_NAME}`, '') : SECTION_NAMES[crumbs[index]] ?? crumbs[index],
             item: this.pageUrl(`/${crumbs.slice(0, index + 1).join('/')}`),
           })),
         ],

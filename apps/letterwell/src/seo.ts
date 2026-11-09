@@ -129,7 +129,7 @@ export const beeSocialDescriptions: Record<Language, string> = {
 export const beeMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
   en: {
     title: 'Spelling Bee Solver & Hints: Words and Pangrams | Letterwell',
-    description: 'Stuck on the Spelling Bee? Enter the centre letter and the six around it. Get hints by first letter and length, then reveal the words and pangrams when you are ready.',
+    description: 'Stuck on the Spelling Bee? Enter the centre letter and the six around it. Get hints by first letter and length, then reveal the words and pangrams.',
     structuredDescription: 'A Spelling Bee helper that lists words made from seven letters that always use the centre letter, with spoiler-free hints and pangrams.',
     features: ['Spoiler-free hint grid', 'Two-letter starts', 'Pangram finder', 'Points total'],
   },
