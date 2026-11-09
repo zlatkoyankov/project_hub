@@ -24,7 +24,7 @@ export const routes: Routes = [
   {
     path: 'all-calculators',
     loadComponent: () => import('./pages/directory').then((module) => module.DirectoryPage),
-    title: 'Construction Calculators | BuildCalc',
+    title: 'All Construction Material Calculators | BuildCalc',
     data: { description: 'Browse free gravel, paint, tile, concrete, square footage, and mulch calculators for your next project.' },
   },
   {
@@ -40,13 +40,13 @@ export const routes: Routes = [
     path: ':slug',
     canMatch: [(_route: Route, segments: UrlSegment[]) => CALCULATORS.some((calculator) => calculator.slug === segments[0]?.path)],
     loadComponent: () => import('./pages/calculator').then((module) => module.CalculatorPage),
-    title: (route) => `${calculatorForRoute(route)?.title ?? 'Calculator'} | BuildCalc`,
+    title: (route) => `${calculatorForRoute(route)?.seoTitle ?? 'Calculator'} | BuildCalc`,
     resolve: { description: calculatorDescriptionResolver },
   },
   {
     path: 'guides',
     loadComponent: () => import('./pages/content').then((module) => module.ContentPage),
-    title: 'Material Guides | BuildCalc',
+    title: 'Material Guides: How Much to Buy | BuildCalc',
     data: {
       contentKey: 'guides',
       description: 'Practical material guides for estimating gravel, paint, tile, concrete, mulch and area, understanding coverage, and planning your project.',
@@ -60,7 +60,7 @@ export const routes: Routes = [
     resolve: { description: guideDescriptionResolver },
   },
   ...[
-    { path: 'about', key: 'about', title: 'About BuildCalc', description: 'Learn about BuildCalc’s browser-based planning tools and transparent material estimate assumptions.' },
+    { path: 'about', key: 'about', title: 'About BuildCalc: Where the Numbers Come From', description: 'Learn about BuildCalc’s browser-based planning tools and transparent material estimate assumptions.' },
   ].map((page) => ({
     path: page.path,
     loadComponent: () => import('./pages/content').then((module) => module.ContentPage),
