@@ -1,7 +1,9 @@
 # CLAUDE.md
 
 Working notes for Claude on zyankov.eu. The README covers setup and commands; this file covers
-what matters when changing the site. Talk to Zlatko in Bulgarian; code, comments and commit
+what matters when changing the site. `apps/buildcalc/CLAUDE.md` and `apps/letterwell/CLAUDE.md`
+add the details for those apps. `.claude/settings.json` allows the build, lint and test commands,
+blocks `.env.deploy` and the deploy script, and runs the colour lint after CSS edits. Talk to Zlatko in Bulgarian; code, comments and commit
 messages stay in English.
 
 ## What the site is
@@ -94,8 +96,8 @@ npm run lint && npm run lint:colors && npm test
 (cd dist && python3 -m http.server 8765)   # then click through, use trailing-slash URLs
 ```
 
-GitHub Actions (`.github/workflows/build.yml`) runs the tests and the full build (and lint, once
-the CI lint PR is merged) on every PR and on main; a PR should be green before Zlatko merges it.
+GitHub Actions (`.github/workflows/build.yml`) runs lint, lint:colors, the tests and the full
+build on every PR and on main; a PR should be green before Zlatko merges it.
 
 For UI changes, check the page in a real browser (Playwright screenshots work well), in light and
 dark mode and on a narrow screen.
