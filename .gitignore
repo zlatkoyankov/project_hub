@@ -27,5 +27,8 @@ Claude outputs/
 # FTP login for npm run deploy
 .env.deploy
 
+# Personal Claude Code settings
+.claude/settings.local.json
+
 # Pages already sent to IndexNow (scripts/indexnow.mjs)
 .indexnow-sent.json
