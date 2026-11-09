@@ -17,6 +17,9 @@ export interface CalculatorInfo {
   bg?: string;
   /** Where the default figures come from, shown under the calculation. */
   sources?: { label: string; href: string }[];
+  /** The answer in two or three sentences with one worked example, shown under the intro. Search engines and AI
+   *  assistants quote this paragraph, so every number in it must come from utils/calculations.ts (see the spec). */
+  answer?: string;
 }
 
 /** Date the sources and figures were last checked (ISO). Used in dateModified. */
@@ -49,6 +52,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     slug: 'paint-calculator', bg: '/bg/kalkulator-boya/', title: 'Paint Calculator', shortTitle: 'Paint', category: 'Painting',
     description: 'Estimate paint coverage and the number of gallons needed for your walls.',
     intro: 'Estimate paint for rectangular walls, subtract doors and windows, and plan for multiple coats. Check the label for the coverage of your exact paint.',
+    answer: 'Net wall area × coats ÷ the coverage on the label, rounded up to whole gallons. A 12 × 10 ft room with 8 ft walls has 352 sq ft of wall; minus 32 sq ft for a door and a window, that is 320 sq ft. Two coats at 350 sq ft per gallon need 1.83 gallons, so buy 2.',
     sources: src(['Sherwin-Williams: a gallon covers about 350 to 400 sq ft', 'https://www.sherwin-williams.com/en-us/color/color-tools/paint-calculator']), kind: 'paint', icon: 'paint', keywords: ['walls', 'gallons', 'coverage', 'painting', 'coats'],
     example: 'A 12 ft × 8 ft wall is 96 square feet before subtracting openings.',
     formula: 'Net wall area × coats ÷ coverage per gallon = estimated gallons. Whole-gallon purchasing rounds that quantity up.',

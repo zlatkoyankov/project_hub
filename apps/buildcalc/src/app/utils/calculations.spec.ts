@@ -1,6 +1,7 @@
 import {
   calculateAdhesive, calculateArea, calculateInsulation, calculateMasonry, MASONRY_UNITS, masonryPerSquareFoot, calculateScreed, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
+import { CALCULATORS } from '../data/calculators';
 
 describe('calculation utilities', () => {
   it('converts gravel volume and density to tons', () => {
@@ -306,5 +307,18 @@ describe('calculation utilities', () => {
     const litres = row('Mortar') * 28.3168466;
     expect(litres / 24 / 1.05).toBeCloseTo(0.12 * 0.01 / 0.075 * 1000 + perM2 * 0.065 * 0.01 * 0.12 * 1000, 1);
     expect(row('Mortar bags')).toBe(Math.ceil(litres / 16));
+  });
+});
+
+describe('worked examples in the "In short" answers', () => {
+  it('matches the paint calculator answer', () => {
+    const answer = CALCULATORS.find((item) => item.slug === 'paint-calculator')!.answer!;
+    const rows = calculatePaint({ width: 44, height: 8, openings: 32, coats: 2, coverage: 350, waste: 0 }).rows;
+    const value = (label: string) => rows.find((row) => row.label === label)!.value;
+    expect(value('Gross wall area')).toBe(352);
+    expect(value('Net wall area')).toBe(320);
+    expect(value('Estimated paint').toFixed(2)).toBe('1.83');
+    expect(value('Whole-gallon purchase')).toBe(2);
+    for (const text of ['352 sq ft', '320 sq ft', '350 sq ft per gallon', '1.83 gallons', 'buy 2']) expect(answer).toContain(text);
   });
 });
