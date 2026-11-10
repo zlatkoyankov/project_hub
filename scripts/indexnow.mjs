@@ -20,8 +20,12 @@ const SITE = 'https://zyankov.eu'
 const HOST = 'zyankov.eu'
 // Public by design: the same value is served at https://zyankov.eu/<KEY>.txt
 // (apps/hub/public/<KEY>.txt) so the engines can check that the request comes from the site owner.
-const KEY = '5c5ee1c142e70c2929de1706f6db7171'
-const ENDPOINT = 'https://api.indexnow.org/indexnow'
+// Replaced on 10 November 2026: Bing kept answering 403 for the first key, probably because the first send
+// ran before the key file was on the server.
+const KEY = '4853336ada3a8185d5c93f52dbc3c0eb'
+// The shared endpoint passes the URLs to every IndexNow engine. Yandex is a second door: if Bing refuses but
+// Yandex accepts, the key file is fine and the problem is on Bing's side.
+const ENDPOINTS = ['https://api.indexnow.org/indexnow', 'https://yandex.com/indexnow']
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = resolve(root, 'dist')
@@ -49,9 +53,22 @@ async function pageHash(url) {
   return createHash('sha256').update(stable).digest('hex').slice(0, 16)
 }
 
+async function checkLiveKey() {
+  const live = await fetch(`${SITE}/${KEY}.txt`, { redirect: 'manual' }).catch((error) => error)
+  const liveText = live instanceof Response && live.status === 200 ? (await live.text()).trim() : ''
+  if (liveText !== KEY) {
+    const why = live instanceof Response ? `answered ${live.status}${live.headers.get('location') ? ` -> ${live.headers.get('location')}` : ''}` : live.message
+    throw new Error(`${SITE}/${KEY}.txt ${liveText ? 'has different content' : why}. Deploy the new build first, then run npm run indexnow.`)
+  }
+  console.log(`IndexNow: key file is live at ${SITE}/${KEY}.txt`)
+}
+
 async function main() {
   const keyFile = await readFile(resolve(dist, `${KEY}.txt`), 'utf8').catch(() => '')
   if (keyFile.trim() !== KEY) throw new Error(`dist/${KEY}.txt is missing or wrong. Run npm run build first.`)
+
+  // The engines read the key from the live site, so check it the same way before sending anything.
+  if (!dryRun) await checkLiveKey()
 
   let sent = {}
   try {
@@ -82,19 +99,26 @@ async function main() {
   for (const url of urls) console.log(`  ${url}`)
   if (dryRun) return
 
-  // One request takes up to 10,000 URLs.
+  // One request takes up to 10,000 URLs. Try the endpoints in order and stop at the first that accepts.
   for (let i = 0; i < urls.length; i += 10_000) {
     const urlList = urls.slice(i, i + 10_000)
-    const response = await fetch(ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
-      body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `${SITE}/${KEY}.txt`, urlList }),
-    })
-    // 200 = received, 202 = received and the key check is still pending (normal on the first send).
-    if (response.status !== 200 && response.status !== 202) {
-      throw new Error(`IndexNow answered ${response.status} ${response.statusText}: ${await response.text()}`)
+    const refusals = []
+    for (const endpoint of ENDPOINTS) {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify({ host: HOST, key: KEY, keyLocation: `${SITE}/${KEY}.txt`, urlList }),
+      }).catch((error) => error)
+      // 200 = received, 202 = received and the key check is still pending (normal on the first send).
+      if (response instanceof Response && (response.status === 200 || response.status === 202)) {
+        console.log(`IndexNow: ${new URL(endpoint).host} accepted (${response.status}).`)
+        break
+      }
+      const answer = response instanceof Response ? `${response.status} ${await response.text()}` : response.message
+      console.log(`IndexNow: ${new URL(endpoint).host} refused: ${answer}`)
+      refusals.push(endpoint)
     }
-    console.log(`IndexNow: accepted (${response.status}).`)
+    if (refusals.length === ENDPOINTS.length) throw new Error('IndexNow: every endpoint refused, nothing was recorded as sent.')
   }
 
   for (const url of urls) if (hashes[url]) sent[url] = hashes[url]
