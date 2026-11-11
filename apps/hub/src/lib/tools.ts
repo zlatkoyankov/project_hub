@@ -254,12 +254,11 @@ export const TOOL_CATALOG: Tool[] = [
     id: 'percent',
     category: 'home',
     icon: 'percent',
-    href: { en: '/bg/kalkulator-protsenti/', bg: '/bg/kalkulator-protsenti/' },
-    name: { en: 'Percentages (Bulgarian)', bg: 'Проценти' },
-    description: { en: 'Percent of a number, change and discounts.', bg: 'Процент от число, промяна в % и цена след отстъпка.' },
+    href: { en: '/percentage-calculator/', bg: '/bg/kalkulator-protsenti/' },
+    name: { en: 'Percentage calculator', bg: 'Проценти' },
+    description: { en: '% of a number, percent change, discounts.', bg: 'Процент от число, промяна в % и цена след отстъпка.' },
     keywords: 'percent percentage discount change проценти процент отстъпка надценка промяна',
     isNew: true,
-    only: 'bg',
   },
   {
     id: 'vat',
@@ -287,23 +286,21 @@ export const TOOL_CATALOG: Tool[] = [
     id: 'dates',
     category: 'home',
     icon: 'dates',
-    href: { en: '/bg/kalkulator-dati/', bg: '/bg/kalkulator-dati/' },
-    name: { en: 'Dates (Bulgarian)', bg: 'Дати и срокове' },
+    href: { en: '/date-calculator/', bg: '/bg/kalkulator-dati/' },
+    name: { en: 'Date calculator', bg: 'Дати и срокове' },
     description: { en: 'Days between dates, date after N days.', bg: 'Дни между две дати и коя дата е след N дни.' },
     keywords: 'date days between deadline дати дни срок между две дати делнични',
     isNew: true,
-    only: 'bg',
   },
   {
     id: 'loan',
     category: 'home',
     icon: 'loan',
-    href: { en: '/bg/kalkulator-kredit/', bg: '/bg/kalkulator-kredit/' },
-    name: { en: 'Loan payment (Bulgarian)', bg: 'Кредит' },
+    href: { en: '/loan-calculator/', bg: '/bg/kalkulator-kredit/' },
+    name: { en: 'Loan payment', bg: 'Кредит' },
     description: { en: 'Monthly payment and total interest.', bg: 'Месечна вноска, обща сума и лихва по кредит.' },
     keywords: 'loan mortgage payment interest кредит заем вноска лихва ипотека анюитет',
     isNew: true,
-    only: 'bg',
   },
   {
     id: 'holidays-2027',
@@ -402,12 +399,12 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   heating: ['firewood', 'energy', 'insulation'],
   firewood: ['heating', 'aircon', 'insulation'],
   aircon: ['heating', 'energy', 'insulation'],
-  percent: ['vat', 'euro', 'loan'],
+  percent: ['vat', 'euro', 'loan', 'dates'],
   vat: ['percent', 'euro', 'loan'],
   euro: ['vat', 'percent', 'loan'],
   dates: ['holidays-2027', 'loan', 'percent'],
   'holidays-2027': ['dates', 'salary', 'loan'],
-  loan: ['percent', 'dates', 'vat'],
+  loan: ['percent', 'dates', 'vat', 'salary'],
   salary: ['loan', 'percent', 'dates'],
 }
 
@@ -446,5 +443,5 @@ export const POST_TOOL_IDS: Record<string, string> = {
 export const toolById = (id: string) => TOOL_CATALOG.find((tool) => tool.id === id)
 
 /** Related tools for a catalogue id, skipping any that are missing. */
-export const relatedTools = (id: string | undefined) =>
-  (id ? RELATED_TOOLS[id] ?? [] : []).map(toolById).filter((tool): tool is Tool => Boolean(tool))
+export const relatedTools = (id: string | undefined, lang?: Lang) =>
+  (id ? RELATED_TOOLS[id] ?? [] : []).map(toolById).filter((tool): tool is Tool => Boolean(tool) && (!lang || !tool!.only || tool!.only === lang))

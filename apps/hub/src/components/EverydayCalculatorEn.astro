@@ -1,0 +1,444 @@
+---
+// English everyday calculators (percentages, dates, loan payment). The Bulgarian versions are in
+// MaterialCalculatorBg.astro; both use the same maths from src/lib/everyday.ts.
+import BaseLayout from '../layouts/BaseLayout.astro'
+import RelatedTools from './RelatedTools.astro'
+import '@zyankov/design-system/boards.css'
+import { boardFor } from '@zyankov/design-system/boards'
+import { AUTHOR, getPosts, ogKey, postPath } from '../lib/site'
+import { TOOL_ICONS } from '../lib/tools'
+import '../styles/tool.css'
+
+type Kind = 'percent' | 'dates' | 'loan'
+
+interface Props {
+  kind: Kind
+}
+
+interface Field {
+  name: string
+  label: string
+  unit: string
+  value: number | string
+  type?: 'number' | 'date'
+  signed?: boolean
+  step?: string
+  hint?: string
+  show?: string
+}
+
+interface Select {
+  name: string
+  label: string
+  options: { value: string; label: string }[]
+}
+
+interface Config {
+  path: string
+  bg: string
+  tool: string
+  catalogId: string
+  title: string
+  description: string
+  h1: string
+  intro: string
+  answer: string
+  resultTitle: string
+  big: string
+  caveat: string
+  formula: string
+  how: string
+  tips: string[]
+  sources?: { label: string; href: string }[]
+  checked?: string
+  checkedIso?: string
+  jsonName: string
+  formTitle: string
+  formHint: string
+  selects: Select[]
+  fields: Field[]
+}
+
+const CONFIGS: Record<Kind, Config> = {
+  percent: {
+    path: '/percentage-calculator/',
+    bg: '/bg/kalkulator-protsenti/',
+    tool: 'percent-calculator',
+    catalogId: 'percent',
+    title: 'Percentage Calculator: % of a Number, Percent Change, Discounts | Zyankov.eu',
+    description: 'Work out X% of a number, what percent one number is of another, the percent change between two values, and a price after a discount or markup.',
+    h1: 'Percentage calculator',
+    intro: 'Pick what you want to work out and enter the two numbers. The result updates as you type.',
+    answer: '15% of 200 is 30 (15 ÷ 100 × 200). Going from 80 to 100 is a 25% increase, because the change of 20 is divided by the old value, 80. A 50 price with 20% off costs 40.',
+    resultTitle: 'RESULT',
+    big: '',
+    caveat: 'Rounded to two decimal places.',
+    formula: 'X% of Y = X ÷ 100 × Y · percent change = (new − old) ÷ old × 100',
+    how: 'A percent is a hundredth: 15% of 200 is 15 ÷ 100 × 200 = 30. What percent A is of B is A ÷ B × 100. A percent change is the difference between the new and the old value, divided by the old value. A discount or markup multiplies the price by (1 ± percent ÷ 100).',
+    tips: [
+      '20% off and then another 10% off is not 30% off but 28%: the second discount applies to the already reduced price.',
+      'If a price falls by 50%, it has to rise by 100% to get back to where it was.',
+      'For a discount, enter the percent with a minus sign, for example −15.',
+    ],
+    jsonName: 'Percentage calculator',
+    formTitle: 'What to work out',
+    formHint: 'Decimals are fine.',
+    selects: [
+      { name: 'mode', label: 'Calculation', options: [{ value: 'of', label: 'What is X% of a number' }, { value: 'share', label: 'What percent is A of B' }, { value: 'change', label: 'Percent change from A to B' }, { value: 'add', label: 'Price after a discount or markup' }] },
+    ],
+    fields: [
+      { name: 'pct', label: 'Percent', unit: '%', value: 15, signed: true, show: 'mode:of' },
+      { name: 'base', label: 'Of the number', unit: '', value: 200, signed: true, show: 'mode:of' },
+      { name: 'part', label: 'Number A', unit: '', value: 30, signed: true, show: 'mode:share' },
+      { name: 'whole', label: 'Of number B', unit: '', value: 200, signed: true, show: 'mode:share' },
+      { name: 'old', label: 'Old value', unit: '', value: 80, signed: true, show: 'mode:change' },
+      { name: 'new', label: 'New value', unit: '', value: 100, signed: true, show: 'mode:change' },
+      { name: 'price', label: 'Price', unit: '', value: 50, show: 'mode:add' },
+      { name: 'adjust', label: 'Discount (−) or markup (+)', unit: '%', value: -20, signed: true, show: 'mode:add' },
+    ],
+  },
+  dates: {
+    path: '/date-calculator/',
+    bg: '/bg/kalkulator-dati/',
+    tool: 'date-calculator',
+    catalogId: 'dates',
+    title: 'Date Calculator: Days Between Dates and Date After N Days | Zyankov.eu',
+    description: 'Count the days between two dates, how many of them are weekdays, and find the date a number of days after or before another. For deadlines, notice periods and trips.',
+    h1: 'Date calculator',
+    intro: 'Count how many days are left until a date or have passed since one, or find the date 30, 60 or 90 days from now. Handy for deadlines, notice periods and payment terms.',
+    answer: 'From 1 January to 31 December 2027 there are 364 days (the end date is not counted, so add 1 to include both), of which 260 are Monday to Friday. 90 days after 1 March 2027 is 30 May 2027.',
+    resultTitle: 'RESULT',
+    big: 'days',
+    caveat: 'Weekdays are Monday to Friday. Public holidays are not taken out.',
+    formula: 'days = end date − start date (the end date is not counted)',
+    how: 'The difference between two dates is counted in whole days: the start day counts and the end day does not, so Monday to the next Monday is 7 days. Weekdays are the Mondays to Fridays in that span. For a date N days later, N days are added to the start date, taking the different month lengths and leap years into account.',
+    tips: [
+      'If a term says "within 14 days of receipt", the day of receipt usually does not count. Check the contract or the law for the exact rule.',
+      'To count both end days (for example days of leave), add 1.',
+      'Public holidays are not subtracted from the weekdays. See the US or UK holiday list for the year.',
+    ],
+    jsonName: 'Date calculator',
+    formTitle: 'The dates',
+    formHint: 'An empty date is filled in with today.',
+    selects: [
+      { name: 'mode', label: 'Calculation', options: [{ value: 'between', label: 'Days between two dates' }, { value: 'add', label: 'Date after (or before) N days' }] },
+    ],
+    fields: [
+      { name: 'from', label: 'Start date', unit: '', value: '', type: 'date' },
+      { name: 'to', label: 'End date', unit: '', value: '', type: 'date', show: 'mode:between' },
+      { name: 'days', label: 'Number of days', unit: 'days', value: 30, step: '1', signed: true, show: 'mode:add', hint: 'Use a minus sign for a date in the past, for example −14.' },
+    ],
+  },
+  loan: {
+    path: '/loan-calculator/',
+    bg: '/bg/kalkulator-kredit/',
+    tool: 'loan-calculator',
+    catalogId: 'loan',
+    title: 'Loan Payment Calculator: Monthly Payment and Total Interest | Zyankov.eu',
+    description: 'Work out the monthly payment on a fixed-rate loan, the total you pay back and the interest, from the amount, the annual rate and the term. The formula is on the page.',
+    h1: 'Loan payment calculator',
+    intro: 'Enter the loan amount, the annual interest rate and the term. The calculator works out the equal monthly payment (amortized loan), the total paid and the interest.',
+    answer: 'A 25,000 loan at 7% a year over 5 years costs 495.03 a month. Over 60 payments you pay back 29,701.80, so the interest is 4,701.80. The same formula works for car loans, personal loans and fixed-rate mortgages.',
+    resultTitle: 'MONTHLY PAYMENT',
+    big: 'per month',
+    caveat: 'Principal and interest only. Fees, insurance, taxes and escrow are not included; the APR on the offer shows the full cost.',
+    formula: 'payment = P × r ÷ (1 − (1 + r)^−n), where r = annual rate ÷ 12 and n = number of months',
+    how: 'With an amortized loan you pay the same amount every month. Early payments are mostly interest, later ones mostly principal. The payment comes from the annuity formula with a monthly rate equal to the annual rate divided by 12. The total is the payment times the number of months, and the interest is the total minus the amount borrowed.',
+    tips: [
+      'Compare loans by APR, not just the interest rate. The APR includes the lender\'s fees.',
+      'A longer term lowers the payment but raises the total interest.',
+      'This is for a fixed rate. With a variable rate the payment changes with the index.',
+    ],
+    sources: [
+      { label: 'Math Central (University of Regina): the amortization payment formula', href: 'https://mathcentral.uregina.ca/QandQ/topics/amortization' },
+      { label: 'CFPB: the difference between a loan\'s interest rate and its APR', href: 'https://www.consumerfinance.gov/ask-cfpb/what-is-an-apr-en-733/' },
+      { label: 'AJ Design: worked example, 25,000 at 7% for 5 years ≈ 495.03 a month', href: 'https://ajdesigner.com/loan/' },
+    ],
+    checked: '11 November 2026',
+    checkedIso: '2026-11-11',
+    jsonName: 'Loan payment calculator',
+    formTitle: 'The loan',
+    formHint: 'Any currency. The rate is per year; the term is in years or months.',
+    selects: [
+      { name: 'termUnit', label: 'Term in', options: [{ value: 'years', label: 'years' }, { value: 'months', label: 'months' }] },
+    ],
+    fields: [
+      { name: 'principal', label: 'Loan amount', unit: '', value: 25000 },
+      { name: 'rate', label: 'Annual interest rate', unit: '%', value: 7 },
+      { name: 'term', label: 'Term', unit: '', value: 5, step: '1' },
+    ],
+  },
+}
+
+const { kind } = Astro.props
+const page = CONFIGS[kind]
+const posts = (await getPosts('en')).filter((post) => post.data.tool === page.tool)
+const jsonLd = {
+  '@type': 'WebApplication',
+  name: page.jsonName,
+  description: page.description,
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Any',
+  inLanguage: 'en',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  author: AUTHOR,
+  publisher: AUTHOR,
+  ...(page.checkedIso && { dateModified: page.checkedIso }),
+}
+---
+
+<BaseLayout title={page.title} description={page.description} path={page.path} lang="en" alternates={{ en: page.path, bg: page.bg }} project="buildcalc" jsonLd={jsonLd} breadcrumbs={[{ name: 'Home', path: '/' }, { name: page.jsonName, path: page.path }]}>
+  <div class="tool-page zy-board" data-board={boardFor(kind)}>
+    <main id="top">
+      <nav class="tool-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/#everyday">Everyday sums</a></nav>
+      <header class="tool-head">
+        <span class="tool-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24" set:html={TOOL_ICONS[kind]} /></span>
+        <div>
+          <p class="tool-kicker">EVERYDAY SUMS · CALCULATOR</p>
+          <h1>{page.h1}</h1>
+          <p class="tool-intro">{page.intro}</p>
+          <p class="tool-answer"><strong>In short:</strong> {page.answer}</p>
+        </div>
+      </header>
+
+      <section class="tool-layout" aria-label={page.h1} data-everyday={kind} data-title={page.jsonName}>
+        <form class="tool-form" novalidate>
+          <h2>{page.formTitle}</h2>
+          <p class="tool-form__hint">{page.formHint}</p>
+          <div class="tool-fields">
+            {page.selects.map((select) => (
+              <div class="tool-field">
+                <label for={`ev-${select.name}`}>{select.label}</label>
+                <select id={`ev-${select.name}`} name={select.name}>
+                  {select.options.map((option) => <option value={option.value}>{option.label}</option>)}
+                </select>
+              </div>
+            ))}
+            {page.fields.map((field) => (
+              <div class="tool-field" data-show={field.show}>
+                <label for={`ev-${field.name}`}>{field.label}</label>
+                <div class="tool-input">{field.type === 'date'
+                  ? <input id={`ev-${field.name}`} name={field.name} type="date" value={field.value} data-today aria-describedby={field.hint ? `ev-${field.name}-hint` : undefined} />
+                  : <input id={`ev-${field.name}`} name={field.name} type="number" inputmode="decimal" min={field.signed ? undefined : '0'} step={field.step ?? 'any'} value={field.value} aria-describedby={field.hint ? `ev-${field.name}-hint` : undefined} />}{field.unit && <span>{field.unit}</span>}</div>
+                {field.hint && <small id={`ev-${field.name}-hint`}>{field.hint}</small>}
+              </div>
+            ))}
+          </div>
+        </form>
+
+        <aside class="tool-result" aria-live="polite">
+          <p class="tool-result__kicker">{page.resultTitle}</p>
+          <p class="tool-result__big"><span data-out="big">–</span> <small data-out="bigUnit">{page.big}</small></p>
+          <dl data-out="rows"></dl>
+          <p class="tool-result__caveat">{page.caveat}</p>
+          <div class="tool-result__actions">
+            <button type="button" data-copy-list>Copy the result</button>
+            <button type="button" data-share-link>Share link</button>
+            <p class="tool-result__status" role="status" data-share-status></p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="tool-notes">
+        <article>
+          <h2>How it is calculated</h2>
+          <p>{page.how}</p>
+          <p class="tool-formula">{page.formula}</p>
+          {page.sources && (
+            <div class="tool-sources">
+              <h3>Sources{page.checked && <span> · checked {page.checked}</span>}</h3>
+              <ul>{page.sources.map((source) => <li><a href={source.href} target="_blank" rel="noopener">{source.label}</a></li>)}</ul>
+            </div>
+          )}
+        </article>
+        <article>
+          <h2>Tips</h2>
+          <ul>{page.tips.map((tip) => <li>{tip}</li>)}</ul>
+          <p class="tool-switch"><a href={page.bg} hreflang="bg">На български →</a></p>
+        </article>
+      </section>
+
+      <RelatedTools lang="en" id={page.catalogId} />
+
+      {posts.length > 0 && (
+        <section class="tool-articles" aria-labelledby="tool-articles-title">
+          <h2 id="tool-articles-title">Articles on this</h2>
+          <ul>
+            {posts.map((post) => (
+              <li>
+                <a href={postPath(post)}>
+                  <img src={`/og/${ogKey(postPath(post))}.png`} alt={post.data.title} width="1200" height="630" loading="lazy" decoding="async" />
+                  <span><strong>{post.data.title}</strong></span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </main>
+  </div>
+</BaseLayout>
+
+<script>
+  import { track } from '@zyankov/design-system/analytics'
+  import { addDays, daysBetween, loanPayment, percent, type PercentMode } from '../lib/everyday'
+
+  const root = document.querySelector<HTMLElement>('[data-everyday]')
+  if (root) {
+    const kind = root.dataset.everyday
+    const form = root.querySelector('form')!
+    const field = (name: string) => form.querySelector<HTMLInputElement | HTMLSelectElement>(`[name="${name}"]`)
+    const num = (name: string) => Math.max(0, Number(field(name)?.value.replace(',', '.')) || 0)
+    const signed = (name: string) => Number(field(name)?.value.replace(',', '.')) || 0
+    const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 10)
+    form.querySelectorAll<HTMLInputElement>('input[data-today]').forEach((input) => { if (!input.value) input.value = today })
+    const out = (name: string) => root.querySelector<HTMLElement>(`[data-out="${name}"]`)!
+    const fmt = (value: number, digits = 2) => value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: digits })
+    const money = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    const unitOut = out('bigUnit')
+    const defaultUnit = unitOut.textContent ?? ''
+    let tracked = false
+
+    const render = (big: string | null, rows: [string, string, string?][], unit = defaultUnit) => {
+      out('big').textContent = big ?? '–'
+      unitOut.textContent = unit
+      out('rows').replaceChildren(...rows.map(([label, value, detail]) => {
+        const row = document.createElement('div')
+        const dt = document.createElement('dt')
+        dt.textContent = label
+        if (detail) dt.append(Object.assign(document.createElement('small'), { textContent: detail }))
+        row.append(dt, Object.assign(document.createElement('dd'), { textContent: value }))
+        return row
+      }))
+    }
+
+    const update = () => {
+      root.querySelectorAll<HTMLElement>('[data-show]').forEach((element) => {
+        const [name, value] = (element.dataset.show ?? '').split(':')
+        element.hidden = field(name)?.value !== value
+      })
+      if (kind === 'percent') {
+        const mode = (field('mode')?.value ?? 'of') as PercentMode
+        const a = mode === 'of' ? signed('pct') : mode === 'share' ? signed('part') : mode === 'change' ? signed('old') : signed('adjust')
+        const b = mode === 'of' ? signed('base') : mode === 'share' ? signed('whole') : mode === 'change' ? signed('new') : num('price')
+        const result = percent(mode, a, b)
+        const unit = mode === 'share' || mode === 'change' ? '%' : ''
+        if (!result) return render(null, [['Result', 'none', 'cannot divide by 0']], unit)
+        const rows: [string, string, string?][] =
+          mode === 'of' ? [['Sum', `${fmt(a)}% of ${fmt(b)}`], ['Result', fmt(result.value)]]
+          : mode === 'share' ? [['Sum', `${fmt(a)} of ${fmt(b)}`], ['Share', `${fmt(result.value)}%`]]
+          : mode === 'change' ? [['Change', `${result.value > 0 ? '+' : ''}${fmt(result.value)}%`, result.value >= 0 ? 'increase' : 'decrease'], ['Difference', `${result.extra! > 0 ? '+' : ''}${fmt(result.extra!)}`]]
+          : [['New price', money(result.value)], [a < 0 ? 'You save' : 'Markup', money(Math.abs(result.extra!))]]
+        render(fmt(Math.round(result.value * 100) / 100), rows, unit)
+      } else if (kind === 'dates') {
+        const from = field('from')?.value ?? ''
+        if (field('mode')?.value === 'add') {
+          const date = addDays(from, Math.round(signed('days')))
+          if (!date) return render(null, [])
+          const shown = new Date(`${date}T12:00:00`)
+          render(shown.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }), [
+            ['Day of the week', shown.toLocaleDateString('en-US', { weekday: 'long' })],
+            ['Date', date],
+          ], '')
+          return
+        }
+        const span = daysBetween(from, field('to')?.value ?? '')
+        if (!span) return render(null, [])
+        render(span.days.toLocaleString('en-US'), [
+          ['Weekdays', `${span.weekdays}`, 'Monday – Friday, holidays not removed'],
+          ['Weeks', `${span.weeks} wk and ${Math.abs(span.restDays)} days`],
+          ['Counting both end dates', `${span.days + Math.sign(span.days || 1)}`, 'if you count the last day too'],
+        ], Math.abs(span.days) === 1 ? 'day' : 'days')
+      } else if (kind === 'loan') {
+        const months = field('termUnit')?.value === 'months' ? num('term') : num('term') * 12
+        const result = loanPayment(num('principal'), num('rate'), months)
+        if (!result) return render(null, [])
+        render(money(result.payment), [
+          ['Number of payments', `${result.months}`],
+          ['Total paid', money(result.total)],
+          ['Interest', money(result.interest), `${fmt((result.interest / num('principal')) * 100, 1)}% of the amount`],
+        ])
+      }
+    }
+
+    form.addEventListener('input', () => {
+      update()
+      if (!tracked) {
+        tracked = true
+        // Only that the tool was used, never the values.
+        track('material_calculate', { kind: kind ?? '', language: 'en' })
+      }
+    })
+    form.addEventListener('submit', (event) => event.preventDefault())
+
+    // Shared links carry the values that differ from the defaults, e.g. ?rate=5.5&term=10.
+    const controls = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input[name], select[name]')]
+    const isDefault = (control: HTMLInputElement | HTMLSelectElement) =>
+      control instanceof HTMLSelectElement ? control.selectedIndex === 0 : control.value === control.defaultValue
+    const params = new URLSearchParams(window.location.search)
+    let restored = false
+    for (const control of controls) {
+      const value = params.get(control.name)
+      if (value === null) continue
+      if (control instanceof HTMLSelectElement) {
+        if (![...control.options].some((option) => option.value === value)) continue
+      } else if (control.type === 'date' ? !/^\d{4}-\d{2}-\d{2}$/.test(value) : !Number.isFinite(Number(value.replace(',', '.')))) continue
+      control.value = value
+      restored = true
+    }
+    if (restored) track('material_open_shared', { kind: kind ?? '', language: 'en' })
+
+    const shareUrl = () => {
+      const query = new URLSearchParams()
+      for (const control of controls) if (!isDefault(control) && control.value !== '') query.set(control.name, control.value)
+      const search = query.toString()
+      return `${window.location.origin}${window.location.pathname}${search ? `?${search}` : ''}`
+    }
+    const status = root.querySelector<HTMLElement>('[data-share-status]')
+    const say = (text: string) => {
+      if (!status) return
+      status.textContent = text
+      window.setTimeout(() => { if (status.textContent === text) status.textContent = '' }, 3000)
+    }
+    const copyText = async (text: string) => {
+      try {
+        await navigator.clipboard.writeText(text)
+        return true
+      } catch {
+        return false
+      }
+    }
+    root.querySelector('[data-copy-list]')?.addEventListener('click', async () => {
+      const lines = [
+        `${root.dataset.title ?? document.title} – zyankov.eu`,
+        `${root.querySelector('.tool-result__kicker')?.textContent?.trim() ?? ''}: ${out('big').textContent} ${unitOut.textContent}`.trim(),
+        ...[...out('rows').querySelectorAll('div')].map((row) => {
+          const label = row.querySelector('dt')?.firstChild?.textContent?.trim() ?? ''
+          const value = row.querySelector('dd')?.textContent?.trim() ?? ''
+          const detail = row.querySelector('dt small')?.textContent?.trim()
+          return `• ${label}: ${value}${detail ? ` (${detail})` : ''}`
+        }),
+        '',
+        shareUrl(),
+      ]
+      say((await copyText(lines.join('\n'))) ? 'Copied ✓' : 'Could not copy. Select the text and copy it by hand.')
+      track('material_list_copy', { kind: kind ?? '', language: 'en' })
+    })
+    root.querySelector('[data-share-link]')?.addEventListener('click', async () => {
+      const url = shareUrl()
+      if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
+        try {
+          await navigator.share({ title: root.dataset.title ?? document.title, url })
+          track('material_share', { kind: kind ?? '', method: 'native', language: 'en' })
+          return
+        } catch {
+          /* Cancelled or unsupported: fall back to copying. */
+        }
+      }
+      say((await copyText(url)) ? 'Link copied ✓' : url)
+      track('material_share', { kind: kind ?? '', method: 'copy', language: 'en' })
+    })
+    update()
+  }
+</script>
