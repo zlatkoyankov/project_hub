@@ -80,6 +80,7 @@ export const TOOLS = {
   'percent-calculator': { en: { href: '/bg/kalkulator-protsenti/', name: 'Percentage calculator', cta: 'Open the percentage calculator' }, bg: { href: '/bg/kalkulator-protsenti/', name: 'Калкулатор за проценти', cta: 'Към калкулатора за проценти' } },
   'vat-calculator': { en: { href: '/bg/kalkulator-dds/', name: 'VAT calculator', cta: 'Open the VAT calculator' }, bg: { href: '/bg/kalkulator-dds/', name: 'Калкулатор за ДДС', cta: 'Към калкулатора за ДДС' } },
   'euro-converter': { en: { href: '/bg/leva-v-evro/', name: 'Leva to euro converter', cta: 'Open the leva to euro converter' }, bg: { href: '/bg/leva-v-evro/', name: 'Лева в евро', cta: 'Към превалутирането лева – евро' } },
+  'salary-calculator': { en: { href: '/bg/kalkulator-zaplata/', name: 'Salary calculator', cta: 'Open the salary calculator' }, bg: { href: '/bg/kalkulator-zaplata/', name: 'Калкулатор за заплата', cta: 'Към калкулатора за заплата' } },
   'loan-calculator': { en: { href: '/bg/kalkulator-kredit/', name: 'Loan calculator', cta: 'Open the loan calculator' }, bg: { href: '/bg/kalkulator-kredit/', name: 'Кредитен калкулатор', cta: 'Към кредитния калкулатор' } },
   'date-calculator': { en: { href: '/bg/kalkulator-dati/', name: 'Date calculator', cta: 'Open the date calculator' }, bg: { href: '/bg/kalkulator-dati/', name: 'Калкулатор за дати', cta: 'Към калкулатора за дати' } },
 } as const

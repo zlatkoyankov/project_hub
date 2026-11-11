@@ -20,6 +20,7 @@ export const EMBED_SLUGS = {
   'leva-v-evro': 'euro',
   'kalkulator-dati': 'dates',
   'kalkulator-kredit': 'loan',
+  'kalkulator-zaplata': 'salary',
 } as const
 
 export type EmbedKind = (typeof EMBED_SLUGS)[keyof typeof EMBED_SLUGS]

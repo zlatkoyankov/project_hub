@@ -12,7 +12,7 @@ import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary'
 
 interface Props {
   kind: Kind
@@ -270,6 +270,50 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       { name: 'principal', label: 'Сума на кредита', unit: '€', value: 10000, step: 'any' },
       { name: 'rate', label: 'Годишна лихва', unit: '%', value: 7.5, step: 'any' },
       { name: 'term', label: 'Срок', unit: '', value: 5, step: '1' },
+    ],
+  },
+  salary: {
+    page: {
+      path: '/bg/kalkulator-zaplata/',
+      tool: 'salary-calculator',
+      title: 'Калкулатор за заплата 2026: от бруто към нето и обратно | Zyankov.eu',
+      description: 'Сметни нетната заплата от брутната (и обратно) по трудов договор: осигуровки 13,78%, данък 10%, разход за работодателя. Ставки от 1 август 2026 г.',
+      h1: 'Калкулатор за заплата: бруто и нето',
+      intro: 'Въведи брутната заплата, за да видиш колко ще получиш на ръка, или нетната, за да видиш каква брутна заплата ѝ отговаря. Показва и всички осигуровки и колко струва заплатата на работодателя.',
+      answer: 'При брутна заплата 1 500 € по трудов договор удръжките за осигуровки са 206,70 € (13,78%), данъкът е 129,33 € (10% от 1 293,30 €) и на ръка остават 1 163,97 €. Работодателят плаща още 283,80 € осигуровки (с 0,4% ТЗПБ), така че общият разход е 1 783,80 €.',
+      big: '€ нето',
+      bigOne: '€ нето',
+      resultTitle: 'НА РЪКА',
+      caveat: 'Трудов договор, трета категория труд, пълен месец. Не включва ТЕЛК облекчения, данъчни облекчения за деца, ваучери и допълнителни възнаграждения.',
+      formula: 'нето = (бруто − осигуровки 13,78%) × 0,90, като осигуровките се смятат върху най-много 2 300 €',
+      how: 'От брутната заплата първо се удържат личните осигуровки: 8,38% за ДОО (пенсии, болнични, безработица), 2,2% за допълнителна пенсия (ДЗПО) и 3,2% здравни, общо 13,78%. Те се смятат върху осигурителния доход, който от 1 август 2026 г. е най-много 2 300 € месечно, така че над тази сума осигуровките не растат. Върху остатъка се удържа 10% данък (ДДФЛ). Работодателят плаща отгоре своите 18,52% плюс вноска за трудова злополука (ТЗПБ) от 0,4% до 1,1% според дейността. Обратната сметка (от нето към бруто) решава същата формула и проверява резултата до стотинка.',
+      tips: [
+        'За родените преди 1960 г. общата лична вноска е същата (13,78%), но всичко отива в държавния фонд „Пенсии“, без ДЗПО.',
+        'Максималният осигурителен доход е 2 300 € от 1 август 2026 г. (до 31 юли беше 2 111,64 €). За 2027 г. се предлага 2 400 €, още не е приет.',
+        'Минималната заплата за 2026 г. е 620,20 €. За 2027 г. се предлага 660 €.',
+        'Ако работиш само част от месеца или си в болничен, сметката е различна: осигуровките и данъкът се смятат само върху изплатеното.',
+      ],
+      jsonName: 'Калкулатор за заплата бруто нето',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: '11 ноември 2026',
+      sources: [
+        { label: 'kik-info: таблица на осигурителните вноски от 01.08.2026 (по фондове, за работника и работодателя)', href: 'https://kik-info.com/spravochnik/osigurovki-i-danaci/7354f89bb31b1bf4ab99aaa7d008b2db' },
+        { label: 'kik-info: „От 01.08.2026: Осигуровки, МОД, ТЗПБ“, ЗБДОО 2026 (ДВ бр. 68), максимален осигурителен доход 2 300 €', href: 'https://kik-info.com/novini/novini-i-akcenti/Ot-01082026-Osigurovki-MOD-TZPB-bolnichni.208156.php' },
+        { label: 'НАП: минимална работна заплата 620,20 € от 01.01.2026 (ПМС № 243 от 13.11.2025)', href: 'https://nra.bg/wps/portal/nra/actualno/vpisvane_v_registura_na_zaetostta_vuv_vruzka_s_opredelenata_mrz_ot_01.01.2026' },
+        { label: 'PwC Tax Summaries: обща лична вноска 13,78% и здравна 3,2% / 4,8%', href: 'https://taxsummaries.pwc.com/bulgaria/individual/other-taxes' },
+        { label: 'Капитал: предложение за 2027 г. (МРЗ 660 €, максимален осигурителен доход 2 400 €)', href: 'https://www.capital.bg/politika_i_ikonomika/danaci-osiguriavane/2026/11/06/4977294_pravitelstvoto_otnovo_vdiga_vsichki_osiguritelni' },
+      ],
+    },
+    formTitle: 'Заплатата',
+    formHint: 'Сумите са в евро за пълен месец.',
+    selects: [
+      { name: 'mode', label: 'Въвеждам', options: [{ value: 'gross', label: 'брутна заплата' }, { value: 'net', label: 'нетна заплата (на ръка)' }] },
+      { name: 'born', label: 'Роден(а)', options: [{ value: 'after1959', label: 'след 31.12.1959 г.' }, { value: 'before1960', label: 'преди 1.1.1960 г.' }] },
+      { name: 'accident', label: 'ТЗПБ на работодателя', options: [{ value: 0.4, label: '0,4% (офис, ИТ, търговия)' }, { value: 0.5, label: '0,5%' }, { value: 0.7, label: '0,7%' }, { value: 0.9, label: '0,9%' }, { value: 1.1, label: '1,1% (строителство, производство)' }] },
+    ],
+    fields: [
+      { name: 'amount', label: 'Сума', unit: '€', value: 1500, step: 'any' },
     ],
   },
   aircon: {
@@ -1012,7 +1056,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         </form>
 
         <aside class="tool-result" aria-live="polite">
-          <p class="tool-result__kicker">{page.resultTitle ?? 'ТРЯБВАТ ТИ'}</p>
+          <p class="tool-result__kicker" data-out="resultTitle">{page.resultTitle ?? 'ТРЯБВАТ ТИ'}</p>
           <p class="tool-result__big"><span data-out="big">–</span> <small data-out="bigUnit" data-one={page.bigOne} data-many={page.big}>{page.big}</small></p>
           <dl data-out="rows"></dl>
           <p class="tool-result__caveat">{page.caveat ?? 'Ориентировъчна сметка. Провери количествата с магазина, преди да купиш.'}</p>
@@ -1086,7 +1130,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { addDays, convertEuro, daysBetween, loanPayment, percent, vat, type PercentMode } from '../lib/everyday'
+  import { addDays, convertEuro, daysBetween, loanPayment, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
@@ -1191,6 +1235,29 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           ['Общо връщаш', money(result.total)],
           ['Лихва', money(result.interest), `${fmt((result.interest / num('principal')) * 100, 1)}% от сумата`],
         ])
+      } else if (kind === 'salary') {
+        const fromNet = field('mode')?.value === 'net'
+        const born = (field('born')?.value === 'before1960' ? 'before1960' : 'after1959') as BirthGroup
+        const accident = Number(field('accident')?.value ?? 0.4)
+        const result = fromNet ? salaryFromNet(num('amount'), born, accident) : salaryFromGross(num('amount'), born, accident)
+        unitOut.dataset.one = fromNet ? '€ бруто' : '€ нето'
+        unitOut.dataset.many = unitOut.dataset.one
+        out('resultTitle').textContent = fromNet ? 'БРУТНА ЗАПЛАТА' : 'НА РЪКА'
+        if (!result) return render(null, [])
+        const e = result.employee
+        const rows: [string, string, string?][] = [
+          ['Брутна заплата', money(result.gross)],
+          ['Осигуровки (лични)', `− ${money(e.total)}`, result.insurable < result.gross ? `13,78% от тавана ${fmt(MAX_INSURABLE_EUR)} €` : '13,78%'],
+          ['· ДОО: пенсии, болнични, безработица', money(e.pension + e.sickness + e.unemployment), born === 'before1960' ? '10,58%' : '8,38%'],
+          ...(e.supplementary ? [['· ДЗПО (универсален пенсионен фонд)', money(e.supplementary), '2,2%'] as [string, string, string]] : []),
+          ['· Здравни', money(e.health), '3,2%'],
+          ['Данък (ДДФЛ)', `− ${money(result.tax)}`, `10% от ${money(result.taxBase)}`],
+          ['Нетна заплата', money(result.net)],
+          ['Осигуровки на работодателя', money(result.employer.total), `18,52% + ТЗПБ ${fmt(accident, 1)}%`],
+          ['Общ разход за работодателя', money(result.cost)],
+        ]
+        if (result.gross < MIN_WAGE_EUR) rows.push(['Внимание', 'под минималната', `МРЗ е ${fmt(MIN_WAGE_EUR)} € за пълен месец`])
+        render(fromNet ? result.gross : result.net, rows)
       } else if (kind === 'aircon') {
         const result = estimateAircon({
           area: num('area'), height: num('height'), insulation: Number(field('insulation')?.value ?? 1), climate: Number(field('climate')?.value ?? 1),

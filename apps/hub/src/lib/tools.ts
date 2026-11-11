@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary'
 
 export interface Tool {
   id: string
@@ -305,6 +305,17 @@ export const TOOL_CATALOG: Tool[] = [
     isNew: true,
     only: 'bg',
   },
+  {
+    id: 'salary',
+    category: 'home',
+    icon: 'salary',
+    href: { en: '/bg/kalkulator-zaplata/', bg: '/bg/kalkulator-zaplata/' },
+    name: { en: 'Salary gross to net (Bulgarian)', bg: 'Заплата бруто/нето' },
+    description: { en: 'Net pay, contributions and employer cost.', bg: 'Нетна заплата от брутна и обратно, осигуровки и данък.' },
+    keywords: 'salary gross net payroll заплата бруто нето осигуровки данък ддфл трудов договор работодател',
+    isNew: true,
+    only: 'bg',
+  },
 ]
 
 /** Inline stroke icons (24×24) for the calculator tiles. */
@@ -313,6 +324,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   vat: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
   euro: '<path d="M18 6.5A7 7 0 1 0 18 17.5"/><path d="M4 10h9M4 14h9"/>',
   dates: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  salary: '<path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/><path d="M9 13h6M12 10v6"/>',
   loan: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5h.01M17.5 14.5h.01"/>',
   concrete: '<path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>',
   paint: '<rect x="3" y="3" width="15" height="6" rx="1.5"/><path d="M18 6h3v5h-9v3"/><rect x="10" y="14" width="4" height="7" rx="1"/>',
@@ -339,7 +351,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
 
 /** Blog category of a post, from the tool it links to. */
 /** Everyday sums (percentages, VAT, euro, loans, dates) get their own blog category. */
-const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator'])
+const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator'])
 
 export function postCategory(tool?: string): ToolCategory | 'everyday' | 'general' {
   if (!tool) return 'general'
@@ -353,7 +365,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
   { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
   { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'gravel', 'mulch', 'area'] },
   { id: 'energy', name: { en: 'Energy', bg: 'Енергия и отопление' }, tools: ['heating', 'firewood', 'aircon', 'energy'] },
-  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['percent', 'vat', 'euro', 'loan', 'dates'] },
+  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'percent', 'vat', 'euro', 'loan', 'dates'] },
 ]
 
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
@@ -384,6 +396,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   euro: ['vat', 'percent', 'loan'],
   dates: ['loan', 'percent', 'euro'],
   loan: ['percent', 'dates', 'vat'],
+  salary: ['loan', 'percent', 'dates'],
 }
 
 /** Catalogue id of the tool a blog post links to (the post's `tool` field). */
@@ -398,6 +411,7 @@ export const POST_TOOL_IDS: Record<string, string> = {
   'euro-converter': 'euro',
   'loan-calculator': 'loan',
   'date-calculator': 'dates',
+  'salary-calculator': 'salary',
   'heating-cost-calculator': 'heating',
   'firewood-calculator': 'firewood',
   'aircon-calculator': 'aircon',
