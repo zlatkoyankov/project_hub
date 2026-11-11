@@ -381,7 +381,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
 
 /** Blog category of a post, from the tool it links to. */
 /** Everyday sums (percentages, VAT, euro, loans, dates) get their own blog category. */
-const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator', 'holidays-2027'])
+const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator', 'holidays-2027', 'us-holidays-2027'])
 
 export function postCategory(tool?: string): ToolCategory | 'everyday' | 'general' {
   if (!tool) return 'general'
@@ -446,6 +446,7 @@ export const POST_TOOL_IDS: Record<string, string> = {
   'date-calculator': 'dates',
   'salary-calculator': 'salary',
   'holidays-2027': 'holidays-2027',
+  'us-holidays-2027': 'us-holidays-2027',
   'heating-cost-calculator': 'heating',
   'firewood-calculator': 'firewood',
   'aircon-calculator': 'aircon',
