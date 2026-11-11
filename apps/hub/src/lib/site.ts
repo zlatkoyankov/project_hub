@@ -77,13 +77,13 @@ export const TOOLS = {
   'wallpaper-calculator': { en: { href: '/calculators/wallpaper-calculator/', name: 'Wallpaper calculator', cta: 'Open the wallpaper calculator' }, bg: { href: '/bg/kalkulator-tapeti/', name: 'Калкулатор за тапети', cta: 'Към калкулатора за тапети' } },
   'tile-adhesive-grout-calculator': { en: { href: '/calculators/tile-adhesive-grout-calculator/', name: 'Tile adhesive & grout calculator', cta: 'Open the adhesive and grout calculator' }, bg: { href: '/bg/lepilo-i-fuga/', name: 'Калкулатор за лепило и фуга', cta: 'Към калкулатора за лепило и фуга' } },
   'gravel-calculator': { en: { href: '/calculators/gravel-calculator/', name: 'Gravel calculator', cta: 'Open the gravel calculator' }, bg: { href: '/bg/kalkulator-chakal/', name: 'Калкулатор за чакъл', cta: 'Към калкулатора за чакъл' } },
-  'percent-calculator': { en: { href: '/bg/kalkulator-protsenti/', name: 'Percentage calculator', cta: 'Open the percentage calculator' }, bg: { href: '/bg/kalkulator-protsenti/', name: 'Калкулатор за проценти', cta: 'Към калкулатора за проценти' } },
+  'percent-calculator': { en: { href: '/percentage-calculator/', name: 'Percentage calculator', cta: 'Open the percentage calculator' }, bg: { href: '/bg/kalkulator-protsenti/', name: 'Калкулатор за проценти', cta: 'Към калкулатора за проценти' } },
   'vat-calculator': { en: { href: '/bg/kalkulator-dds/', name: 'VAT calculator', cta: 'Open the VAT calculator' }, bg: { href: '/bg/kalkulator-dds/', name: 'Калкулатор за ДДС', cta: 'Към калкулатора за ДДС' } },
   'euro-converter': { en: { href: '/bg/leva-v-evro/', name: 'Leva to euro converter', cta: 'Open the leva to euro converter' }, bg: { href: '/bg/leva-v-evro/', name: 'Лева в евро', cta: 'Към превалутирането лева – евро' } },
   'salary-calculator': { en: { href: '/bg/kalkulator-zaplata/', name: 'Salary calculator', cta: 'Open the salary calculator' }, bg: { href: '/bg/kalkulator-zaplata/', name: 'Калкулатор за заплата', cta: 'Към калкулатора за заплата' } },
   'holidays-2027': { en: { href: '/bg/pochivni-dni-2027/', name: 'Bulgarian days off 2027', cta: 'See the days off in 2027' }, bg: { href: '/bg/pochivni-dni-2027/', name: 'Почивни дни 2027', cta: 'Към почивните дни 2027' } },
-  'loan-calculator': { en: { href: '/bg/kalkulator-kredit/', name: 'Loan calculator', cta: 'Open the loan calculator' }, bg: { href: '/bg/kalkulator-kredit/', name: 'Кредитен калкулатор', cta: 'Към кредитния калкулатор' } },
-  'date-calculator': { en: { href: '/bg/kalkulator-dati/', name: 'Date calculator', cta: 'Open the date calculator' }, bg: { href: '/bg/kalkulator-dati/', name: 'Калкулатор за дати', cta: 'Към калкулатора за дати' } },
+  'loan-calculator': { en: { href: '/loan-calculator/', name: 'Loan calculator', cta: 'Open the loan calculator' }, bg: { href: '/bg/kalkulator-kredit/', name: 'Кредитен калкулатор', cta: 'Към кредитния калкулатор' } },
+  'date-calculator': { en: { href: '/date-calculator/', name: 'Date calculator', cta: 'Open the date calculator' }, bg: { href: '/bg/kalkulator-dati/', name: 'Калкулатор за дати', cta: 'Към калкулатора за дати' } },
 } as const
 
 export type ToolKey = keyof typeof TOOLS

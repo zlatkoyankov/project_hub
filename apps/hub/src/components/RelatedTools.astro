@@ -11,7 +11,7 @@ interface Props {
 }
 
 const { lang, id, title } = Astro.props
-const tools = relatedTools(id)
+const tools = relatedTools(id, lang)
 const heading = title ?? (lang === 'bg' ? 'Свързани инструменти' : 'Related tools')
 ---
 
