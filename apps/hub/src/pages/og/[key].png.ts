@@ -26,6 +26,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-leva-v-evro': { kicker: 'Всекидневни сметки · калкулатор', title: 'Лева в евро по курса 1,95583', footer: 'zyankov.eu/bg/leva-v-evro' },
     'bg-kalkulator-dati': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко дни остават до датата?', footer: 'zyankov.eu/bg/kalkulator-dati' },
     'bg-kalkulator-kredit': { kicker: 'Всекидневни сметки · калкулатор', title: 'Каква ще е месечната вноска по кредита?', footer: 'zyankov.eu/bg/kalkulator-kredit' },
+    'us-federal-holidays-2027': { kicker: 'Everyday sums · calendar', title: 'Which days are federal holidays in 2027?', footer: 'zyankov.eu/us-federal-holidays-2027' },
+    'uk-bank-holidays-2027': { kicker: 'Everyday sums · calendar', title: 'When are the bank holidays in 2027?', footer: 'zyankov.eu/uk-bank-holidays-2027' },
     'percentage-calculator': { kicker: 'Everyday sums · calculator', title: 'What is X% of a number?', footer: 'zyankov.eu/percentage-calculator' },
     'date-calculator': { kicker: 'Everyday sums · calculator', title: 'How many days until that date?', footer: 'zyankov.eu/date-calculator' },
     'loan-calculator': { kicker: 'Everyday sums · calculator', title: 'What will the monthly loan payment be?', footer: 'zyankov.eu/loan-calculator' },

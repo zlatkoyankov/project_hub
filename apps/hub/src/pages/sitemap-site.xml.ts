@@ -29,6 +29,8 @@ export async function GET() {
     { path: '/loan-calculator/', alternates: pair('/loan-calculator/', '/bg/kalkulator-kredit/') },
     { path: '/bg/kalkulator-zaplata/' },
     { path: '/bg/pochivni-dni-2027/' },
+    { path: '/us-federal-holidays-2027/' },
+    { path: '/uk-bank-holidays-2027/' },
     { path: '/bg/razhod-na-tok/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },
     { path: '/bg/kalkulator-laminat/', alternates: pair('/calculators/laminate-flooring-calculator/', '/bg/kalkulator-laminat/') },
     { path: '/bg/kalkulator-gipsokarton/', alternates: pair('/calculators/drywall-calculator/', '/bg/kalkulator-gipsokarton/') },
