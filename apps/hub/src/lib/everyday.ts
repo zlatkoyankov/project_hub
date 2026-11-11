@@ -96,3 +96,79 @@ export function loanPayment(principal: number, annualRate: number, months: numbe
   const payment = r === 0 ? principal / n : (principal * r) / (1 - (1 + r) ** -n)
   return { payment, total: payment * n, interest: payment * n - principal, months: n }
 }
+
+// Salary under a labour contract, 3rd work category, from 1 August 2026 (ЗБДОО 2026, ДВ бр. 68 от 28.07.2026;
+// rates unchanged from 1 January 2026). Table: kik-info.com/spravochnik/osigurovki-i-danaci/7354f89bb31b1bf4ab99aaa7d008b2db
+/** Employee's share in percent of the insurable income. Born after 1959: pension 6.58 + ДЗПО 2.20;
+ *  born before 1960: pension 8.78 and no ДЗПО. Total 13.78% either way. */
+export const SALARY_EMPLOYEE = {
+  after1959: { pension: 6.58, sickness: 1.4, unemployment: 0.4, supplementary: 2.2, health: 3.2 },
+  before1960: { pension: 8.78, sickness: 1.4, unemployment: 0.4, supplementary: 0, health: 3.2 },
+}
+/** Employer's share: pension 8.22 + ДЗПО 2.80 (or 11.02 and no ДЗПО), ОЗМ 2.10, unemployment 0.60, health 4.80 = 18.52%.
+ *  ТЗПБ (work accidents) is added on top: 0.4–1.1% by economic activity. */
+export const SALARY_EMPLOYER = {
+  after1959: { pension: 8.22, sickness: 2.1, unemployment: 0.6, supplementary: 2.8, health: 4.8 },
+  before1960: { pension: 11.02, sickness: 2.1, unemployment: 0.6, supplementary: 0, health: 4.8 },
+}
+/** Maximum monthly insurable income from 1 August 2026 (ЗБДОО 2026, art. 6). */
+export const MAX_INSURABLE_EUR = 2300
+/** Minimum monthly wage for 2026 (ПМС № 243 от 13.11.2025, ДВ бр. 98). */
+export const MIN_WAGE_EUR = 620.2
+/** Flat personal income tax on employment income (ЗДДФЛ, art. 48). */
+export const INCOME_TAX = 10
+
+export type BirthGroup = keyof typeof SALARY_EMPLOYEE
+
+export interface SalaryResult {
+  gross: number
+  insurable: number
+  employee: { pension: number; sickness: number; unemployment: number; supplementary: number; health: number; total: number }
+  taxBase: number
+  tax: number
+  net: number
+  employer: { pension: number; sickness: number; unemployment: number; supplementary: number; health: number; accident: number; total: number }
+  cost: number
+}
+
+const cents = (value: number) => Math.round(value * 100) / 100
+
+/** Net pay and employer cost for a monthly gross salary. Each contribution is rounded to cents, as on a pay slip. */
+export function salaryFromGross(gross: number, born: BirthGroup = 'after1959', accidentRate = 0.4): SalaryResult | null {
+  if (!(gross > 0)) return null
+  const g = cents(gross)
+  const insurable = Math.min(g, MAX_INSURABLE_EUR)
+  const share = (rates: Record<string, number>) => Object.fromEntries(Object.entries(rates).map(([key, rate]) => [key, cents((insurable * rate) / 100)]))
+  const own = share(SALARY_EMPLOYEE[born]) as Omit<SalaryResult['employee'], 'total'>
+  const ownTotal = cents(own.pension + own.sickness + own.unemployment + own.supplementary + own.health)
+  const taxBase = cents(g - ownTotal)
+  const tax = cents((taxBase * INCOME_TAX) / 100)
+  const theirs = share(SALARY_EMPLOYER[born]) as Omit<SalaryResult['employer'], 'total' | 'accident'>
+  const accident = cents((insurable * accidentRate) / 100)
+  const theirTotal = cents(theirs.pension + theirs.sickness + theirs.unemployment + theirs.supplementary + theirs.health + accident)
+  return {
+    gross: g, insurable,
+    employee: { ...own, total: ownTotal },
+    taxBase, tax, net: cents(taxBase - tax),
+    employer: { ...theirs, accident, total: theirTotal },
+    cost: cents(g + theirTotal),
+  }
+}
+
+/** The gross salary that gives a net amount: solve the formula, then step by cents so the rounded net matches. */
+export function salaryFromNet(net: number, born: BirthGroup = 'after1959', accidentRate = 0.4): SalaryResult | null {
+  if (!(net > 0)) return null
+  const keep = (100 - INCOME_TAX) / 100
+  const ownRate = 0.1378
+  // Below the cap: net = gross · (1 − 0.1378) · 0.9; above it the contributions are fixed at 0.1378 · cap.
+  let gross = net / ((1 - ownRate) * keep)
+  if (gross > MAX_INSURABLE_EUR) gross = net / keep + ownRate * MAX_INSURABLE_EUR
+  gross = cents(gross)
+  for (let step = 0; step < 20; step += 1) {
+    const result = salaryFromGross(gross, born, accidentRate)!
+    const diff = cents(net - result.net)
+    if (diff === 0) return result
+    gross = cents(gross + (diff > 0 ? 0.01 : -0.01))
+  }
+  return salaryFromGross(gross, born, accidentRate)
+}

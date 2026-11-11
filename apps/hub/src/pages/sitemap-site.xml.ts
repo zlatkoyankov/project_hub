@@ -24,6 +24,7 @@ export async function GET() {
     { path: '/bg/leva-v-evro/' },
     { path: '/bg/kalkulator-dati/' },
     { path: '/bg/kalkulator-kredit/' },
+    { path: '/bg/kalkulator-zaplata/' },
     { path: '/bg/razhod-na-tok/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },
     { path: '/bg/kalkulator-laminat/', alternates: pair('/calculators/laminate-flooring-calculator/', '/bg/kalkulator-laminat/') },
     { path: '/bg/kalkulator-gipsokarton/', alternates: pair('/calculators/drywall-calculator/', '/bg/kalkulator-gipsokarton/') },

@@ -26,6 +26,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-leva-v-evro': { kicker: 'Всекидневни сметки · калкулатор', title: 'Лева в евро по курса 1,95583', footer: 'zyankov.eu/bg/leva-v-evro' },
     'bg-kalkulator-dati': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко дни остават до датата?', footer: 'zyankov.eu/bg/kalkulator-dati' },
     'bg-kalkulator-kredit': { kicker: 'Всекидневни сметки · калкулатор', title: 'Каква ще е месечната вноска по кредита?', footer: 'zyankov.eu/bg/kalkulator-kredit' },
+    'bg-kalkulator-zaplata': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко е заплатата ми на ръка?', footer: 'zyankov.eu/bg/kalkulator-zaplata' },
     'bg-razhod-na-tok': { kicker: 'Дом и енергия · калкулатор', title: 'Колко ток харчи уредът?', footer: 'zyankov.eu/bg/razhod-na-tok' },
     'bg-kalkulator-laminat': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко ламинат и первази ми трябват?', footer: 'zyankov.eu/bg/kalkulator-laminat' },
     'bg-kalkulator-gipsokarton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко плоскости гипсокартон ми трябват?', footer: 'zyankov.eu/bg/kalkulator-gipsokarton' },
