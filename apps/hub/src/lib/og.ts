@@ -23,10 +23,10 @@ function loadFonts() {
   return fonts
 }
 
-const INK = '#20352d'
-const LIGHT = '#f6f7ec'
-const MUTED = '#c0cfc4'
-const CORAL = '#ef896e'
+const INK = '#1f2a44' // --inverse-bg
+const LIGHT = '#f7f3ea' // --inverse-text
+const MUTED = '#c4cad8' // --inverse-muted
+const CORAL = '#ef8a5f' // --coral (dark theme)
 
 const monogram = `data:image/svg+xml;utf8,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 5 44 30"><path d="M3 8h15L4 28h16M15 8l8 9 9-9m-9 9v11m5-20h14M30 17h11M30 28h11m-11-20v20" fill="none" stroke="${LIGHT}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 32h12" stroke="${CORAL}" stroke-width="2.6" stroke-linecap="round"/></svg>`,
@@ -60,7 +60,7 @@ export async function renderOg({ title, kicker, footer = 'zyankov.eu' }: OgCard)
     ]),
     el('div', { display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 24, color: MUTED }, [
       el('div', { display: 'flex' }, footer),
-      el('div', { display: 'flex', gap: '10px' }, ['#ef9478', '#f3d477', '#a3c4d9', '#f4f3e8', '#a9cfb2'].map((background) =>
+      el('div', { display: 'flex', gap: '10px' }, ['#f2b294', '#f5d77e', '#b9d3ea', '#fffdf8', '#c9dfb8'] /* --topic-heat, -words, -money, --surface, --topic-build */.map((background) =>
         el('div', { width: 30, height: 34, borderRadius: 4, backgroundColor: background }),
       )),
     ]),
