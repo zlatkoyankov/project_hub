@@ -27,6 +27,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-kalkulator-dati': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко дни остават до датата?', footer: 'zyankov.eu/bg/kalkulator-dati' },
     'bg-kalkulator-kredit': { kicker: 'Всекидневни сметки · калкулатор', title: 'Каква ще е месечната вноска по кредита?', footer: 'zyankov.eu/bg/kalkulator-kredit' },
     'bg-kalkulator-zaplata': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко е заплатата ми на ръка?', footer: 'zyankov.eu/bg/kalkulator-zaplata' },
+    'bg-pochivni-dni-2027': { kicker: 'Всекидневни сметки · календар', title: 'Кои са почивните дни през 2027 г.?', footer: 'zyankov.eu/bg/pochivni-dni-2027' },
     'bg-razhod-na-tok': { kicker: 'Дом и енергия · калкулатор', title: 'Колко ток харчи уредът?', footer: 'zyankov.eu/bg/razhod-na-tok' },
     'bg-kalkulator-laminat': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко ламинат и первази ми трябват?', footer: 'zyankov.eu/bg/kalkulator-laminat' },
     'bg-kalkulator-gipsokarton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко плоскости гипсокартон ми трябват?', footer: 'zyankov.eu/bg/kalkulator-gipsokarton' },
