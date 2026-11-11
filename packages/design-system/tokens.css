@@ -1,39 +1,39 @@
-/* zyankov.eu design tokens — the single source of truth for colour, type, shape and spacing.
+/* zyankov.eu design tokens (warm paper and navy theme, November 2026) — the single source of truth for colour, type, shape and spacing.
    Every app imports this file from @zyankov/design-system; never copy or override it per app.
    Light theme on :root, dark theme on :root[data-theme='dark']. */
 :root {
   color-scheme: light;
 
   /* Surfaces */
-  --canvas: #e9f0e9; /* outermost page background behind framed layouts */
-  --bg: #f1f5ef; /* page background */
-  --surface: #fbfcf8; /* cards, inputs, bars */
-  --surface-soft: #e9f0e9; /* subtle panels */
-  --surface-hover: #e4ebe2; /* hover fill on quiet controls */
+  --canvas: #efe9dc; /* outermost page background behind framed layouts */
+  --bg: #f7f3ea; /* page background */
+  --surface: #fffdf8; /* cards, inputs, bars */
+  --surface-soft: #efe9dc; /* subtle panels */
+  --surface-hover: #ebe3d3; /* hover fill on quiet controls */
 
   /* Text */
-  --text: #20352d;
-  --text-muted: #4e6155; /* secondary text, WCAG AA on --bg and --coral-soft */
-  --text-subtle: #64736a; /* placeholders and small labels; WCAG AA on --bg */
+  --text: #22262f;
+  --text-muted: #575b64; /* secondary text, WCAG AA on --bg and --coral-soft */
+  --text-subtle: #686b72; /* placeholders and small labels; WCAG AA on --bg */
 
   /* Brand */
-  --accent: #3f6b54;
-  --accent-dark: #2f5440;
-  --accent-soft: #dce8de;
+  --accent: #2c4875;
+  --accent-dark: #1f2a44;
+  --accent-soft: #dde6f2;
   --on-accent: #ffffff;
-  --coral: #e76d53;
-  --coral-strong: #9c4936; /* coral for text and icons on light backgrounds (AA on --bg and --coral-soft) */
-  --coral-heading: #cf5a3f; /* coral for large headline text (AA large on --bg) */
-  --coral-soft: #f3dcd1;
-  --yellow: #efd276;
-  --yellow-ink: #655322; /* text on --yellow */
+  --coral: #e07a4f;
+  --coral-strong: #a2400f; /* coral for text and icons on light backgrounds (AA on --bg and --coral-soft) */
+  --coral-heading: #c0501c; /* coral for large headline text (AA large on --bg) */
+  --coral-soft: #f6dccd;
+  --yellow: #f5c451;
+  --yellow-ink: #5c4510; /* text on --yellow */
   --success: #70a984;
 
   /* Illustration palette (same in both themes) */
   --tile-yellow: #f3d477;
   --tile-coral: #ef9478;
   --tile-blue: #a3c4d9;
-  --blue-ink: #3d5f80; /* blue for small text, e.g. the "everyday sums" blog label (AA on --bg and --surface) */
+  --blue-ink: #2c4f7c; /* blue for small text, e.g. the "everyday sums" blog label (AA on --bg and --surface) */
   --tile-mint: #a9cfb2;
   --tile-white: #f4f3e8;
   --tile-ink: #20352d; /* letters on tiles */
@@ -51,19 +51,35 @@
   --daily-miss-edge: #b3bfb4;
   --daily-miss-ink: #4e6155;
   /* Raised call-to-action button (Wordle helper): gradient, bottom edge, text. */
-  --cta-top: #d4623f;
-  --cta-bottom: #b04429;
-  --cta-edge: #82301d;
+  --cta-top: #bd4c17;
+  --cta-bottom: #b7410e;
+  --cta-edge: #7f2c08;
   --cta-ink: #ffffff;
 
+  /* Topics: one colour per kind of tool, the same on the homepage, menus and labels.
+     Fill = card background, soft = chips, dot = the small marker (bright in both themes). */
+  --topic-ink: #22262f;
+  --topic-money: #b9d3ea;
+  --topic-money-soft: #e1ecf6;
+  --topic-money-dot: #8fb4d9;
+  --topic-build: #c9dfb8;
+  --topic-build-soft: #e6f0dd;
+  --topic-build-dot: #9cc487;
+  --topic-heat: #f2b294;
+  --topic-heat-soft: #f9dfd2;
+  --topic-heat-dot: #ec9b74;
+  --topic-words: #f5d77e;
+  --topic-words-soft: #fbedc4;
+  --topic-words-dot: #e9c24f;
+
   /* Lines */
-  --border: #dce5dc;
-  --border-strong: #c8d7ca;
-  --line-strong: #2a4937; /* illustration strokes */
-  --grid: #d3ddd3;
-  --grid-line: rgba(42, 73, 55, 0.035); /* background grid pattern */
-  --focus-ring: #729785;
-  --focus: rgba(63, 107, 84, 0.4);
+  --border: #e6dfd0;
+  --border-strong: #d6ccb7;
+  --line-strong: #2b3550; /* illustration strokes */
+  --grid: #e3dccd;
+  --grid-line: rgba(34, 38, 47, 0.035); /* background grid pattern */
+  --focus-ring: #5d7cab;
+  --focus: rgba(44, 72, 117, 0.4);
 
   /* Feedback */
   --danger: #8a2a2a;
@@ -71,9 +87,9 @@
   --danger-line: #f2cece;
 
   /* Inverse band: dark panels in both themes (footer, Letterwell art card) */
-  --inverse-bg: #20352d;
-  --inverse-text: #f6f7ec;
-  --inverse-muted: #c0cfc4;
+  --inverse-bg: #1f2a44;
+  --inverse-text: #f7f3ea;
+  --inverse-muted: #c4cad8;
   --footer-bg: var(--inverse-bg);
   --footer-text: var(--inverse-text);
   --footer-muted: var(--inverse-muted);
@@ -83,9 +99,9 @@
   --sun-b: #bed1a1;
 
   /* Effects */
-  --shadow-color: #1c2e24;
-  --shadow: 0 10px 24px rgba(32, 53, 45, 0.08);
-  --shadow-soft: 0 4px 10px rgba(32, 53, 45, 0.08);
+  --shadow-color: #1f2a44;
+  --shadow: 0 10px 24px rgba(31, 42, 68, 0.08);
+  --shadow-soft: 0 4px 10px rgba(31, 42, 68, 0.08);
 
   /* Per-project accent: set data-project on <html> */
   --project-accent: var(--accent);
@@ -117,44 +133,53 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --canvas: #101d16;
-  --bg: #17271e;
-  --surface: #24372d;
-  --surface-soft: #2a4033;
-  --surface-hover: #354b3d;
+  --canvas: #0f141e;
+  --bg: #141a26;
+  --surface: #1c2433;
+  --surface-soft: #222c3e;
+  --surface-hover: #2a3549;
 
-  --text: #eef2e8;
-  --text-muted: #b0bdb0;
-  --text-subtle: #91a096;
+  --text: #efe9dc;
+  --text-muted: #b7b2a6;
+  --text-subtle: #9a968c;
 
-  --accent: #8fc2a3;
-  --accent-dark: #a9d3b9;
-  --accent-soft: #34503f;
-  --on-accent: #12211a;
-  --coral: #ef896e;
-  --coral-strong: #f5a88d;
-  --coral-heading: #ef896e;
-  --coral-soft: #4d3b34;
-  --yellow: #d7b85f;
-  --yellow-ink: #352e18;
+  --accent: #9db8e3;
+  --accent-dark: #bcd0ef;
+  --accent-soft: #2a3a58;
+  --on-accent: #101727;
+  --coral: #ef8a5f;
+  --coral-strong: #f6a985;
+  --coral-heading: #ef8a5f;
+  --coral-soft: #4a3127;
+  --yellow: #e3b54a;
+  --yellow-ink: #2f2509;
   --success: #70a984;
 
-  --border: #405548;
-  --blue-ink: #a3c4d9;
-  --border-strong: #506b56;
-  --line-strong: #8fa896;
-  --grid: #3a5042;
-  --grid-line: rgba(228, 239, 225, 0.035);
-  --focus-ring: #8fc2a3;
-  --focus: rgba(143, 194, 163, 0.5);
+  --border: #2f3a50;
+  --topic-ink: #efe9dc;
+  --topic-money: #24365a;
+  --topic-money-soft: #1f2d47;
+  --topic-build: #26402e;
+  --topic-build-soft: #20332a;
+  --topic-heat: #4d2f22;
+  --topic-heat-soft: #3b261e;
+  --topic-words: #4a3b16;
+  --topic-words-soft: #3a2f14;
+  --blue-ink: #a9c4e6;
+  --border-strong: #3d4a63;
+  --line-strong: #9aa6bd;
+  --grid: #263045;
+  --grid-line: rgba(239, 233, 220, 0.035);
+  --focus-ring: #9db8e3;
+  --focus: rgba(157, 184, 227, 0.5);
 
   --danger: #f2b0b0;
   --danger-bg: #4a2a2a;
   --danger-line: #6e3c3c;
 
-  --inverse-bg: #0f1c15;
-  --inverse-text: #eef2e8;
-  --inverse-muted: #9fb0a3;
+  --inverse-bg: #0d121c;
+  --inverse-text: #efe9dc;
+  --inverse-muted: #a9b1c2;
 
   --sun-a: #f3dcd1;
   --sun-b: #ef896e;
@@ -166,12 +191,12 @@
   --daily-hit-edge: #8e3a26;
   --daily-near: #3a7cb0;
   --daily-near-edge: #27577d;
-  --daily-miss: #36423c;
-  --daily-miss-edge: #27302b;
-  --daily-miss-ink: #a9b6ad;
-  --cta-top: #ffbfa6;
-  --cta-bottom: #f08a6e;
-  --cta-edge: #b8583f;
+  --daily-miss: #2c3546;
+  --daily-miss-edge: #212938;
+  --daily-miss-ink: #aab2c2;
+  --cta-top: #ffbf9f;
+  --cta-bottom: #f08a5e;
+  --cta-edge: #b8562f;
   --cta-ink: #2b120a;
 
   --shadow-color: #000000;
@@ -183,17 +208,17 @@
   --project-accent: var(--coral);
 }
 
-/* BuildCalc's raised buttons are green; everything else keeps the coral call to action. */
+/* BuildCalc's raised buttons are navy; everything else keeps the coral call to action. */
 :root[data-project='buildcalc'] {
-  --cta-top: #4f8466;
-  --cta-bottom: #3a6450;
-  --cta-edge: #23402f;
+  --cta-top: #31528a;
+  --cta-bottom: #24365c;
+  --cta-edge: #141e33;
   --cta-ink: #ffffff;
 }
 
 :root[data-theme='dark'][data-project='buildcalc'] {
-  --cta-top: #b9e0c7;
-  --cta-bottom: #8fc2a3;
-  --cta-edge: #5a8a6d;
-  --cta-ink: #10221a;
+  --cta-top: #c3d4f0;
+  --cta-bottom: #9db8e3;
+  --cta-edge: #5f7aa5;
+  --cta-ink: #101727;
 }

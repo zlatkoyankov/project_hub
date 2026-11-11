@@ -1,8 +1,10 @@
 ---
-// The homepage in English (/) and Bulgarian (/bg/): tool search, the tools by category, latest posts.
+// Topic ids are also link targets elsewhere (/bg/#everyday, /bg/#home-diy, /#home-diy), so keep them stable.
+// The homepage in English (/) and Bulgarian (/bg/): a question, search and a quick estimate first, then the tools
+// by colour-coded topic, every tool in one list, a seasonal pick, the latest answers and the daily word game.
 import { analyticsEnabled } from '@zyankov/design-system/render'
-import { HOME_GROUPS, TOOL_CATALOG, TOOL_ICONS, postCategory } from '../lib/tools'
-import { ogKey, postPath, readingMinutes, type Lang, type Post } from '../lib/site'
+import { TOOL_CATALOG, TOOL_ICONS, postCategory, type Tool } from '../lib/tools'
+import { postPath, type Lang, type Post } from '../lib/site'
 import '../styles/home.css'
 
 interface Props {
@@ -13,55 +15,100 @@ interface Props {
 const { lang, posts } = Astro.props
 const bg = lang === 'bg'
 const blogPath = bg ? '/bg/blog/' : '/blog/'
-const words = TOOL_CATALOG.filter((tool) => tool.category === 'words' && (!tool.only || tool.only === lang))
-const home = TOOL_CATALOG.filter((tool) => tool.category === 'home' && (!tool.only || tool.only === lang))
-const homeGroups = HOME_GROUPS.map((group) => ({ ...group, items: group.tools.map((id) => home.find((tool) => tool.id === id)).filter((tool): tool is (typeof home)[number] => Boolean(tool)) })).filter((group) => group.items.length > 0)
-const wordle = words.find((tool) => tool.id === 'wordle-solver')!
-const finder = words.find((tool) => tool.id === 'word-finder')!
+const shown = TOOL_CATALOG.filter((tool) => !tool.comingSoon && (!tool.only || tool.only === lang))
+const byId = (id: string) => shown.find((tool) => tool.id === id)
+const pick = (ids: string[]) => ids.map(byId).filter((tool): tool is Tool => Boolean(tool))
+
+/** Colour of a topic: matches the --topic-* tokens. "plain" has no colour of its own. */
+type TopicColour = 'money' | 'build' | 'heat' | 'words' | 'plain'
+interface Topic { id: string; colour: TopicColour; name: string; door: boolean; tools: Tool[] }
+
+const topics: Topic[] = (bg
+  ? [
+      { id: 'everyday', colour: 'money', name: 'Пари и сметки', door: true, ids: ['euro', 'vat', 'loan', 'percent', 'dates'] },
+      { id: 'home-diy', colour: 'build', name: 'Ремонт', door: true, ids: ['tile', 'paint', 'concrete', 'adhesive', 'flooring', 'screed', 'wallpaper', 'drywall', 'insulation', 'masonry', 'gravel', 'mulch', 'area'] },
+      { id: 'energy', colour: 'heat', name: 'Ток и отопление', door: true, ids: ['heating', 'firewood', 'energy', 'aircon'] },
+      { id: 'word-games', colour: 'words', name: 'Думи и игри', door: true, ids: ['daily-word', 'wordle-solver', 'word-finder', 'crossword-solver', 'spelling-bee'] },
+    ]
+  : [
+      { id: 'home-diy', colour: 'money', name: 'Floors & tiles', door: true, ids: ['tile', 'flooring', 'adhesive', 'screed'] },
+      { id: 'walls', colour: 'build', name: 'Walls & finishing', door: true, ids: ['paint', 'drywall', 'wallpaper', 'insulation', 'masonry'] },
+      { id: 'yard', colour: 'heat', name: 'Concrete & yard', door: true, ids: ['concrete', 'gravel', 'mulch', 'area'] },
+      { id: 'word-games', colour: 'words', name: 'Word games', door: true, ids: ['daily-word', 'wordle-solver', 'word-finder', 'crossword-solver', 'spelling-bee'] },
+      { id: 'running-costs', colour: 'plain', name: 'Running costs', door: false, ids: ['energy'] },
+    ]
+).map(({ ids, ...topic }) => ({ ...topic, tools: pick(ids) })).filter((topic) => topic.tools.length > 0) as Topic[]
+const toolCount = topics.reduce((sum, topic) => sum + topic.tools.length, 0)
+const href = (id: string) => byId(id)?.href[lang] ?? '#'
+
+// The seasonal pick follows the month the site is built in; the deploys are frequent enough for that.
+const month = new Date().getMonth() + 1
+const season = month >= 11 || month <= 2 ? 'winter' : month <= 5 ? 'spring' : month <= 8 ? 'summer' : 'autumn'
+const seasons = {
+  bg: {
+    winter: { kicker: 'Сезонно · зима', title: 'Колко ще струва зимата?', text: 'Сравни дърва, пелети, климатик, ток и парно за твоето жилище, с твоите цени.', links: [['Сравни отоплението', href('heating')], ['Колко дърва', href('firewood')], ['Климатик: колко BTU', href('aircon')]] },
+    spring: { kicker: 'Сезонно · пролет', title: 'Ремонт през пролетта?', text: 'Колко боя, плочки и ламинат да купиш, с фира и цели опаковки.', links: [['Колко боя', href('paint')], ['Колко плочки', href('tile')], ['Колко ламинат', href('flooring')]] },
+    summer: { kicker: 'Сезонно · лято', title: 'Климатик и двор', text: 'Колко BTU климатик трябва за стаята, колко ток ще харчи и колко бетон за плочата на двора.', links: [['Климатик: колко BTU', href('aircon')], ['Разход на ток', href('energy')], ['Колко бетон', href('concrete')]] },
+    autumn: { kicker: 'Сезонно · есен', title: 'Подготовка за зимата', text: 'Дърва за сезона, изолация на фасадата и колко ще струва отоплението.', links: [['Колко дърва', href('firewood')], ['Топлоизолация', href('insulation')], ['Разход за отопление', href('heating')]] },
+  },
+  en: {
+    winter: { kicker: 'This season · winter', title: 'What will that space heater cost you?', text: 'Watts, hours a day and your electricity rate: see the cost per day, month and winter.', links: [['Work out the running cost', href('energy')], ['Read the worked example', '/blog/how-much-does-a-space-heater-cost-to-run/']] },
+    spring: { kicker: 'This season · spring', title: 'Spring projects', text: 'How much paint, tile and flooring to buy, with waste and whole packs.', links: [['Paint', href('paint')], ['Tiles', href('tile')], ['Laminate flooring', href('flooring')]] },
+    summer: { kicker: 'This season · summer', title: 'Yard and garden', text: 'Mulch for the beds, gravel for the path and concrete for a new slab.', links: [['Mulch', href('mulch')], ['Gravel', href('gravel')], ['Concrete', href('concrete')]] },
+    autumn: { kicker: 'This season · autumn', title: 'Before the cold sets in', text: 'Insulation boards and drywall for the walls, and what a heater will cost to run.', links: [['Insulation boards', href('insulation')], ['Drywall', href('drywall')], ['Appliance energy cost', href('energy')]] },
+  },
+}[lang][season]
+
+/** The quick estimate's modes. The maths lives in the script below; these are the labels and links. */
+const modes = bg
+  ? [
+      { id: 'toEur', label: 'Лева → евро', input: 'Сума в лева', output: 'В евро', more: ['Таблица и правило за закръгляне', href('euro')] },
+      { id: 'toBgn', label: 'Евро → лева', input: 'Сума в евро', output: 'В лева', more: ['Към превалутирането', href('euro')] },
+      { id: 'addVat', label: '+ ДДС 20%', input: 'Цена без ДДС', output: 'С ДДС', more: ['Ставка 9% и подробности', href('vat')] },
+      { id: 'removeVat', label: '− ДДС 20%', input: 'Цена с ДДС', output: 'Без ДДС', more: ['Защо се дели на 1,20', href('vat')] },
+    ]
+  : [
+      { id: 'paint', label: 'Paint', input: 'Wall area to paint (sq ft)', output: 'Two coats', more: ['Doors, windows and your paint’s label', href('paint')] },
+      { id: 'slab', label: 'Concrete slab', input: 'Slab area at 4 in thick (sq ft)', output: 'Volume', more: ['Other thicknesses, bags and waste', href('concrete')] },
+      { id: 'area', label: 'sq ft → m²', input: 'Area in square feet', output: 'In square metres', more: ['Add up rooms and odd shapes', href('area')] },
+    ]
 
 const t = bg
   ? {
-      kicker: ['БЕЗПЛАТНИ ИНСТРУМЕНТИ', 'БЕЗ РЕГИСТРАЦИЯ'],
-      title: ['Малки инструменти.', 'Направени с грижа.'],
-      intro: 'Помощници за игри с думи и калкулатори за ремонт, които отговарят добре на един въпрос. Работят в браузъра, на български и английски.',
+      title: 'Какво искаш да сметнеш днес?',
+      intro: `${toolCount} безплатни инструмента: калкулатори и помощници за игри с думи. Всеки резултат показва формулата и откъде са числата.`,
       searchLabel: 'Търси инструмент',
-      searchPlaceholder: 'Какво ти трябва? Напр. „Wordle“ или „бетон“',
+      searchPlaceholder: 'Напр. „ДДС“, „плочки“, „Wordle“',
       searchButton: 'Намери',
       noMatch: 'Няма такъв инструмент засега. Пиши ни на hello@zyankov.eu с идея.',
-      popular: 'Популярни:',
-      chips: [['Wordle', '/letterwell/bg/wordle/'], ['Думи от букви', '/letterwell/bg/'], ['Бетон', '/calculators/concrete-calculator/'], ['Боя', '/calculators/paint-calculator/'], ['Плочки', '/calculators/tile-calculator/']],
-      art: { wordle: 'ПОМОЩНИК ЗА WORDLE', wordleWord: 'РОЛКА', next: 'Пробвай:', nextWord: 'КАТЕР', concrete: 'КАЛКУЛАТОР ЗА БЕТОН', slab: 'Плоча 3 × 3 м, 10 см', amount: '0,90', unit: 'м³', note: 'Без фира', finder: 'ТЪРСАЧКА ЗА ДУМИ', letters: 'КАРТА', found: 'карта · акт · рак' },
-      mineKicker: 'ТВОИТЕ ИНСТРУМЕНТИ',
-      mineTitle: 'Любими и последно отворени',
-      mineHint: 'Натисни звездичката на някой инструмент, за да го закачиш тук. Пази се само в този браузър.',
+      popular: 'Най-търсени:',
+      chips: [['Лева в евро', 'euro', 'money'], ['ДДС', 'vat', 'money'], ['Кредит', 'loan', 'money'], ['Плочки', 'tile', 'build'], ['Отопление', 'heating', 'heat'], ['Wordle', 'wordle-solver', 'words']],
+      quick: 'Бърза сметка',
+      quickStart: '100',
+      formula: 'Формула',
+      mineTitle: 'Твоите инструменти',
+      mineHint: 'Натисни звездичката до инструмент в пълния списък, за да го закачиш тук. Пази се само в този браузър.',
       mineClear: 'Изчисти историята',
       recent: 'Последно',
       favAdd: 'Добави в любими',
       favRemove: 'Махни от любими',
-      wordsKicker: 'ДУМИ И ИГРИ',
-      wordsTitle: 'Намери думата, спечели играта',
-      wordsAll: 'Към Letterwell',
-      wordsTag: 'БЪЛГАРСКИ И АНГЛИЙСКИ',
-      open: 'Отвори',
-      new: 'НОВО',
-      soon: 'СКОРО',
-      homeKicker: 'ДОМ И РЕМОНТ',
-      homeTitle: 'Купи точното количество от първия път',
-      homeAll: 'Всички калкулатори',
-      embedTitle: 'Имаш блог или магазин?',
-      embedText: 'Вгради всеки калкулатор на сайта си безплатно.',
-      embedLink: 'Вземи кода',
-      trust: [
-        ['Работи в браузъра', 'Буквите и мерките ти не се изпращат към сървър.'],
-        ['Без акаунт и такси', 'Отваряш инструмента и го ползваш. Това е цялата регистрация.'],
-        ['Български и английски', 'Инструменти и статии на двата езика, метрични и US мерки.'],
-      ],
-      blogKicker: 'ОТ БЛОГА',
-      blogTitle: 'Статии с примери и изчисления',
+      topics: 'Теми',
+      also: 'Още:',
+      all: (n: number) => `Всички ${n} инструмента на едно място`,
+      hide: 'Скрий',
+      show: 'Покажи',
+      answers: 'Отговори с пример',
       allPosts: 'Всички статии',
-      noPosts: 'Скоро тук ще има статии на български.',
-      min: 'мин четене',
-      categories: { words: 'ДУМИ И ИГРИ', home: 'ДОМ И РЕМОНТ', everyday: 'ВСЕКИДНЕВНИ СМЕТКИ', general: 'ЗА САЙТА' },
+      categories: { words: 'Думи и игри', home: 'Дом и ремонт', everyday: 'Всекидневни сметки', general: 'За сайта' },
+      dailyTitle: 'Дума на деня',
+      dailyText: 'Една дума от 5 букви за цяла България, нова в полунощ. 6 опита, подсказки без спойлери.',
+      dailyCta: 'Играй днешната',
+      dailyWord: 'КАРТА',
+      trust: [
+        ['Формулата е на страницата.', 'Виждаш как е сметнато, не само резултата.'],
+        ['Всяко число има източник.', 'НАП, БНБ, ЕЦБ, производители и стандарти, с дата на проверка.'],
+        ['Нищо не се изпраща.', 'Сметките и буквите остават в браузъра ти. Без акаунт.'],
+      ],
       aboutTitle: 'За сайта',
       aboutText: 'Zyankov.eu е независима колекция от практични инструменти, които създавам и поддържам аз, Златко Янков от София. Всеки инструмент обяснява допусканията си, а сигнали за грешки и идеи са винаги добре дошли.',
       aboutLink: 'Повече за мен и сайта',
@@ -74,47 +121,40 @@ const t = bg
       ],
     }
   : {
-      kicker: ['FREE BROWSER TOOLS', 'NO SIGN-UP'],
-      title: ['Small tools.', 'Made with care.'],
-      intro: 'Word game helpers and home-project calculators that answer one question well. Everything runs in your browser, in English and Bulgarian.',
-      searchLabel: 'Search tools',
-      searchPlaceholder: 'What do you need? Try “Wordle” or “concrete”',
-      searchButton: 'Find a tool',
+      title: 'What do you need to work out today?',
+      intro: `${toolCount} free calculators and word-game helpers. Every result shows the formula and where the numbers come from.`,
+      searchLabel: 'Search the tools',
+      searchPlaceholder: 'Try “paint”, “concrete”, “Wordle”',
+      searchButton: 'Search',
       noMatch: 'No tool for that yet. Send your idea to hello@zyankov.eu.',
-      popular: 'Popular:',
-      chips: [['Wordle helper', '/letterwell/wordle-solver/'], ['Word finder', '/letterwell/'], ['Concrete', '/calculators/concrete-calculator/'], ['Paint', '/calculators/paint-calculator/'], ['Tiles', '/calculators/tile-calculator/']],
-      art: { wordle: 'WORDLE HELPER', wordleWord: 'RAISE', next: 'Try next:', nextWord: 'CLASP', concrete: 'CONCRETE CALCULATOR', slab: '10 × 10 ft slab, 4 in deep', amount: '1.23', unit: 'cu yd', note: 'Before waste allowance', finder: 'WORD FINDER', letters: 'TRIANGLE', found: 'integral · altering · relating' },
-      mineKicker: 'YOUR TOOLS',
-      mineTitle: 'Favourites and recently opened',
-      mineHint: 'Tap the star on any tool to pin it here. It is kept only in this browser.',
+      popular: 'Most used:',
+      chips: [['Paint', 'paint', 'build'], ['Concrete', 'concrete', 'heat'], ['Tiles', 'tile', 'money'], ['Square footage', 'area', 'heat'], ['Wordle helper', 'wordle-solver', 'words']],
+      quick: 'Quick estimate',
+      quickStart: '320',
+      formula: 'Formula',
+      mineTitle: 'Your tools',
+      mineHint: 'Tap the star next to a tool in the full list to pin it here. It is kept only in this browser.',
       mineClear: 'Clear history',
       recent: 'Recent',
       favAdd: 'Add to favourites',
       favRemove: 'Remove from favourites',
-      wordsKicker: 'WORD GAMES',
-      wordsTitle: 'Find the word, win the game',
-      wordsAll: 'Open Letterwell',
-      wordsTag: 'ENGLISH & BULGARIAN',
-      open: 'Open',
-      new: 'NEW',
-      soon: 'SOON',
-      homeKicker: 'HOME & DIY',
-      homeTitle: 'Buy the right amount, the first time',
-      homeAll: 'All calculators',
-      embedTitle: 'Have a DIY blog or shop?',
-      embedText: 'Embed any calculator on your site for free.',
-      embedLink: 'Get the code',
-      trust: [
-        ['Runs in your browser', 'Your letters and measurements are never sent to a server.'],
-        ['No account, no paywall', 'Open a tool and use it. That is the whole sign-up.'],
-        ['English and Bulgarian', 'Word tools and guides in both languages, metric and US units.'],
-      ],
-      blogKicker: 'FROM THE BLOG',
-      blogTitle: 'Guides with worked examples',
+      topics: 'Topics',
+      also: 'Also:',
+      all: (n: number) => `All ${n} tools in one place`,
+      hide: 'Hide',
+      show: 'Show',
+      answers: 'Answers with a worked example',
       allPosts: 'All articles',
-      noPosts: 'Articles are on their way.',
-      min: 'min read',
-      categories: { words: 'WORD GAMES', home: 'HOME & DIY', everyday: 'EVERYDAY SUMS', general: 'ABOUT THE SITE' },
+      categories: { words: 'Word games', home: 'Home & DIY', everyday: 'Everyday sums', general: 'About the site' },
+      dailyTitle: 'Letterwell Daily',
+      dailyText: 'One five-letter word for everyone, new at midnight. Six tries, spoiler-free hints.',
+      dailyCta: 'Play today’s word',
+      dailyWord: 'CRANE',
+      trust: [
+        ['The formula is on the page.', 'You see how the number is worked out, not just the result.'],
+        ['Every rate has a source.', 'Manufacturer datasheets, standards and extension services, with a checked date.'],
+        ['Nothing is sent anywhere.', 'Your measurements and letters stay in your browser. No account.'],
+      ],
       aboutTitle: 'About the site',
       aboutText: 'Zyankov.eu is an independent collection of practical browser tools, created and maintained by Zlatko Yankov in Sofia, Bulgaria. Every tool explains its assumptions, and feedback about errors and new ideas is always welcome.',
       aboutLink: 'More about me and the site',
@@ -127,11 +167,10 @@ const t = bg
       ],
     }
 
-const wordleColours = ['absent', 'present', 'absent', 'correct', 'absent']
-const tileColours = ['coral', 'yellow', 'blue', 'white', 'mint']
-const searchText = (tool: (typeof TOOL_CATALOG)[number]) => `${tool.name.en} ${tool.name.bg} ${tool.keywords}`.toLowerCase()
+const dailyClues = ['hit', 'miss', 'near', 'miss', 'miss']
+const searchText = (tool: Tool) => `${tool.name.en} ${tool.name.bg} ${tool.keywords}`.toLowerCase()
 /** Tools shown in this language, for "Your tools": both language paths match the recently opened pages. */
-const mineCatalog = [...words, ...home].filter((tool) => !tool.comingSoon).map((tool) => ({
+const mineCatalog = shown.map((tool) => ({
   id: tool.id,
   name: tool.name[lang],
   description: tool.description[lang],
@@ -139,15 +178,14 @@ const mineCatalog = [...words, ...home].filter((tool) => !tool.comingSoon).map((
   paths: [...new Set([tool.href.en, tool.href.bg])],
   icon: tool.icon ? TOOL_ICONS[tool.icon] : '',
 }))
-const star = (tool: (typeof TOOL_CATALOG)[number]) => `<button class="tool-fav" type="button" data-fav="${tool.id}" aria-pressed="false" aria-label="${t.favAdd}: ${tool.name[lang]}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z" /></svg></button>`
+const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z" /></svg>'
 ---
 
 <div class="home">
   <main id="top">
     <section class="home-hero" aria-labelledby="page-title">
       <div class="home-hero__copy">
-        <p class="home-kicker">{t.kicker[0]} <span aria-hidden="true"></span> {t.kicker[1]}</p>
-        <h1 id="page-title">{t.title[0]}<br /><em>{t.title[1]}</em></h1>
+        <h1 id="page-title">{t.title}</h1>
         <p class="home-hero__intro">{t.intro}</p>
         <form class="tool-search" role="search" data-tool-search>
           <label class="sr-only" for="tool-search">{t.searchLabel}</label>
@@ -156,36 +194,25 @@ const star = (tool: (typeof TOOL_CATALOG)[number]) => `<button class="tool-fav" 
           <button class="zy-cta" type="submit">{t.searchButton}</button>
         </form>
         <p class="tool-search__empty" role="status" data-tool-search-empty hidden>{t.noMatch}</p>
-        <p class="home-chips"><span>{t.popular}</span>{t.chips.map(([label, href]) => <a class="zy-key" href={href}>{label}</a>)}</p>
+        <p class="home-chips"><span>{t.popular}</span>{t.chips.map(([label, id, colour]) => <a class={`home-chip home-chip--${colour}`} href={href(id)}>{label}</a>)}</p>
       </div>
 
-      <div class="home-hero__art" aria-hidden="true">
-        <div class="art-backdrop"></div>
-        <div class="art-card art-card--wordle">
-          <p class="art-label">{t.art.wordle}</p>
-          <div class="art-wordle">{[...t.art.wordleWord].map((letter, index) => <span class={`clue clue--${wordleColours[index]}`}>{letter}</span>)}</div>
-          <p class="art-note">{t.art.next} <strong>{t.art.nextWord}</strong></p>
+      <section class="quick" aria-labelledby="quick-title" data-quick={lang}>
+        <h2 class="quick__kicker" id="quick-title">{t.quick}</h2>
+        <div class="quick__modes" role="group" aria-labelledby="quick-title">
+          {modes.map((mode, index) => <button type="button" class="quick__mode" data-mode={mode.id} data-input={mode.input} data-output={mode.output} data-more={mode.more[0]} data-href={mode.more[1]} aria-pressed={index === 0 ? 'true' : 'false'}>{mode.label}</button>)}
         </div>
-        <div class="art-card art-card--result">
-          <p class="art-label">{t.art.concrete}</p>
-          <p class="art-sub">{t.art.slab}</p>
-          <p class="art-amount">{t.art.amount} <span>{t.art.unit}</span></p>
-          <p class="art-pill">{t.art.note}</p>
-        </div>
-        <div class="art-card art-card--finder">
-          <p class="art-label">{t.art.finder}</p>
-          <div class="art-letters">{[...t.art.letters].map((letter, index) => <span class={`letter zy-gloss letter--${tileColours[index % tileColours.length]}`}>{letter}</span>)}</div>
-          <p class="art-note">{t.art.found}</p>
-        </div>
-      </div>
+        <label class="quick__label" for="quick-amount" data-quick-input>{modes[0].input}</label>
+        <input class="quick__input" id="quick-amount" inputmode="decimal" autocomplete="off" value={t.quickStart} />
+        <p class="quick__result"><span data-quick-output>{modes[0].output}</span> <output for="quick-amount" data-quick-result></output></p>
+        <p class="quick__formula"><span>{t.formula}:</span> <span data-quick-formula></span></p>
+        <a class="quick__more" href={modes[0].more[1]} data-quick-more>{modes[0].more[0]} <span aria-hidden="true">→</span></a>
+      </section>
     </section>
 
     <section class="home-section home-mine" id="my-tools" aria-labelledby="mine-title" data-my-tools hidden>
       <div class="home-section__head">
-        <div>
-          <p class="home-section__kicker">{t.mineKicker}</p>
-          <h2 id="mine-title">{t.mineTitle}</h2>
-        </div>
+        <h2 id="mine-title">{t.mineTitle}</h2>
         <button class="home-section__more home-mine__clear" type="button" data-my-tools-clear>{t.mineClear}</button>
       </div>
       <p class="home-mine__hint">{t.mineHint}</p>
@@ -194,125 +221,77 @@ const star = (tool: (typeof TOOL_CATALOG)[number]) => `<button class="tool-fav" 
       <script is:inline type="application/json" data-my-tools-strings set:html={JSON.stringify({ recent: t.recent, favAdd: t.favAdd, favRemove: t.favRemove })} />
     </section>
 
-    <section class="home-section" id="word-games" aria-labelledby="words-title">
-      <div class="home-section__head">
-        <div>
-          <p class="home-section__kicker home-section__kicker--coral">{t.wordsKicker}</p>
-          <h2 id="words-title">{t.wordsTitle}</h2>
-        </div>
-        <a class="home-section__more" href={bg ? '/letterwell/bg/' : '/letterwell/'}>{t.wordsAll} <span aria-hidden="true">→</span></a>
-      </div>
-      <ul class="tool-grid">
-        <li class="tool-grid__wide" data-tool={searchText(wordle)}>
-          <Fragment set:html={star(wordle)} />
-          <a class="feature-tile feature-tile--dark" href={wordle.href[lang]}>
-            <div class="feature-tile__body">
-              <span class="badge badge--new">{t.new}</span>
-              <h3>{wordle.name[lang]}</h3>
-              <p>{wordle.description[lang]}</p>
-              <span class="feature-tile__cta">{t.open} <span aria-hidden="true">→</span></span>
-            </div>
-            <div class="feature-tile__board" aria-hidden="true">
-              {['absent', 'present', 'absent', 'correct', 'absent', 'correct', 'absent', 'present', 'correct', 'absent', 'correct', 'correct', 'correct', 'correct', 'correct'].map((clue) => <span class={`clue clue--${clue}`}></span>)}
-            </div>
-          </a>
-        </li>
-        <li class="tool-grid__wide" data-tool={searchText(finder)}>
-          <Fragment set:html={star(finder)} />
-          <a class="feature-tile feature-tile--coral" href={finder.href[lang]}>
-            <div class="feature-tile__body">
-              <span class="feature-tile__tag">{t.wordsTag}</span>
-              <h3>{finder.name[lang]}</h3>
-              <p>{finder.description[lang]}</p>
-              <span class="feature-tile__cta">{t.open} <span aria-hidden="true">→</span></span>
-            </div>
-          </a>
-        </li>
-        {words.filter((tool) => tool !== wordle && tool !== finder).map((tool) => (
-          <li data-tool={searchText(tool)}>
-            {!tool.comingSoon && <Fragment set:html={star(tool)} />}
-            <a class="tool-tile" href={tool.href[lang]}>
-              {tool.icon && <span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon]} /></span>}
-              <strong>{tool.name[lang]} {tool.isNew && <span class="badge badge--new">{t.new}</span>}</strong>
-              <span>{tool.description[lang]}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    <section class="home-section" id="home-diy" aria-labelledby="home-title">
-      <div class="home-section__head">
-        <div>
-          <p class="home-section__kicker">{t.homeKicker}</p>
-          <h2 id="home-title">{t.homeTitle}</h2>
-        </div>
-        <a class="home-section__more" href="/calculators/all-calculators/">{t.homeAll} <span aria-hidden="true">→</span></a>
-      </div>
-      {homeGroups.map((group) => (
-        <div class="tool-group" id={group.id} data-tool-group>
-          <h3 class="tool-group__title">{group.name[lang]}</h3>
-          <ul class="tool-grid">
-            {group.items.map((tool) => (
-              <li data-tool={searchText(tool)}>
-                <Fragment set:html={star(tool)} />
-                <a class="tool-tile" href={tool.href[lang]}>
-                  <span class="tool-tile__icon"><svg viewBox="0 0 24 24" aria-hidden="true" set:html={TOOL_ICONS[tool.icon!]} /></span>
-                  <strong>{tool.name[lang]} {tool.isNew && <span class="badge badge--new">{t.new}</span>}</strong>
-                  <span>{tool.description[lang]}</span>
-                </a>
-              </li>
-            ))}
-            {group.id === 'energy' && (
-              <li data-tool="embed widget website blog shop вграждане сайт блог магазин">
-                <a class="tool-tile tool-tile--embed" href="/calculators/concrete-calculator/#embed-title">
-                  <strong>{t.embedTitle}</strong>
-                  <span>{t.embedText}</span>
-                  <span class="tool-tile__cta">{t.embedLink} <span aria-hidden="true">→</span></span>
-                </a>
-              </li>
-            )}
+    <section class="doors" aria-label={t.topics}>
+      {topics.filter((topic) => topic.door).map((topic) => (
+        <div class={`door door--${topic.colour}`} id={topic.id}>
+          <h2>{topic.name} <span>{topic.tools.length}</span></h2>
+          <ul>
+            {topic.tools.slice(0, 3).map((tool) => <li><a href={tool.href[lang]}>{tool.name[lang]} <span aria-hidden="true">→</span></a></li>)}
           </ul>
+          {topic.tools.length > 3 && (
+            <p class="door__more"><span>{t.also}</span> {topic.tools.slice(3).map((tool, index) => <>{index > 0 && <span aria-hidden="true"> · </span>}<a href={tool.href[lang]}>{tool.name[lang]}</a></>)}</p>
+          )}
         </div>
       ))}
     </section>
 
-    <section class="trust" aria-label={t.trust[0][0]}>
-      {t.trust.map(([title, text], index) => (
-        <div class="trust__item">
-          <span class="trust__icon" aria-hidden="true">
-            {index === 0 && <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>}
-            {index === 1 && <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></svg>}
-            {index === 2 && <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>}
-          </span>
-          <div><strong>{title}</strong><p>{text}</p></div>
+    <section class="home-section" id="all-tools" aria-labelledby="all-title">
+      <details class="all-tools" open data-all-tools>
+        <summary><h2 id="all-title">{t.all(toolCount)}</h2><span class="all-tools__toggle" aria-hidden="true"><span class="all-tools__hide">{t.hide}</span><span class="all-tools__show">{t.show}</span></span></summary>
+        <div class="all-tools__grid">
+          {topics.map((topic) => (
+            <div class="all-tools__group" data-tool-group>
+              <h3><span class={`topic-dot topic-dot--${topic.colour}`} aria-hidden="true"></span>{topic.name}</h3>
+              <ul>
+                {topic.tools.map((tool) => (
+                  <li data-tool={searchText(tool)}>
+                    <a href={tool.href[lang]} title={tool.description[lang]}>{tool.name[lang]}</a>
+                    <button class="tool-fav" type="button" data-fav={tool.id} aria-pressed="false" aria-label={`${t.favAdd}: ${tool.name[lang]}`} set:html={starIcon} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-      ))}
+      </details>
     </section>
 
-    <section class="home-section" id="blog" aria-labelledby="blog-title">
-      <div class="home-section__head">
-        <div>
-          <p class="home-section__kicker home-section__kicker--muted">{t.blogKicker}</p>
-          <h2 id="blog-title">{t.blogTitle}</h2>
-        </div>
-        {posts.length > 0 && <a class="home-section__more" href={blogPath}>{t.allPosts} <span aria-hidden="true">→</span></a>}
+    <section class="season" aria-labelledby="season-title">
+      <div class="season__copy">
+        <p class="season__kicker">{seasons.kicker}</p>
+        <h2 id="season-title">{seasons.title}</h2>
+        <p>{seasons.text}</p>
       </div>
-      {posts.length === 0 && <p class="home-empty">{t.noPosts}</p>}
-      <ul class="post-cards">
-        {posts.map((post) => (
-          <li>
-            <a class="post-card" href={postPath(post)}>
-              <img src={`/og/${ogKey(postPath(post))}.png`} alt={post.data.title} width="1200" height="630" loading="lazy" decoding="async" />
-              <div class="post-card__body">
-                <span class={`post-card__category post-card__category--${postCategory(post.data.tool)}`}>{t.categories[postCategory(post.data.tool)]}</span>
-                <h3>{post.data.title}</h3>
-                <span class="post-card__meta">{readingMinutes(post.body)} {t.min}</span>
-              </div>
-            </a>
-          </li>
-        ))}
-      </ul>
+      <p class="season__links">{seasons.links.map(([label, link], index) => <a class={index === 0 ? 'season__primary' : ''} href={link}>{label}</a>)}</p>
+    </section>
+
+    <section class="home-split">
+      <div class="answers" aria-labelledby="answers-title">
+        <div class="home-section__head">
+          <h2 id="answers-title" class="answers__title">{t.answers}</h2>
+          <a class="home-section__more" href={blogPath}>{t.allPosts} <span aria-hidden="true">→</span></a>
+        </div>
+        <ul>
+          {posts.map((post) => (
+            <li>
+              <a href={postPath(post)}>
+                <span class={`answers__category answers__category--${postCategory(post.data.tool)}`}>{t.categories[postCategory(post.data.tool)]}</span>
+                {post.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="daily-card">
+        <h2>{t.dailyTitle}</h2>
+        <p class="daily-card__tiles" aria-hidden="true">{[...t.dailyWord].map((letter, index) => <span class={`daily-tile daily-tile--${dailyClues[index]}`}>{letter}</span>)}</p>
+        <p>{t.dailyText}</p>
+        <a class="zy-cta daily-card__cta" href={href('daily-word')}>{t.dailyCta}</a>
+      </div>
+    </section>
+
+    <section class="trust-line" aria-label={t.trust[0][0]}>
+      {t.trust.map(([title, text]) => <p><strong>{title}</strong> {text}</p>)}
     </section>
 
     <section class="home-about" id="about" aria-labelledby="about-title">
@@ -336,6 +315,63 @@ const star = (tool: (typeof TOOL_CATALOG)[number]) => `<button class="tool-fav" 
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
+  import { convertEuro, vat } from '../lib/everyday'
+
+  // Quick estimate. BG: leva and euro (the fixed rate) and 20% VAT, with the same functions as the calculators.
+  // EN: paint at 350 sq ft per gallon and two coats (Sherwin-Williams: 350 to 400, the BuildCalc paint default),
+  // a 4 in slab in cubic yards (27 cu ft per yd³) and sq ft to m² (1 ft = 0.3048 m exactly).
+  const quick = document.querySelector<HTMLElement>('[data-quick]')
+  if (quick) {
+    const bg = quick.dataset.quick === 'bg'
+    const locale = bg ? 'bg-BG' : 'en-US'
+    const fmt = (value: number, digits = 2) => value.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits })
+    const input = quick.querySelector<HTMLInputElement>('input')!
+    const result = quick.querySelector<HTMLElement>('[data-quick-result]')!
+    const formula = quick.querySelector<HTMLElement>('[data-quick-formula]')!
+    const inputLabel = quick.querySelector<HTMLElement>('[data-quick-input]')!
+    const outputLabel = quick.querySelector<HTMLElement>('[data-quick-output]')!
+    const more = quick.querySelector<HTMLAnchorElement>('[data-quick-more]')!
+    const buttons = [...quick.querySelectorAll<HTMLButtonElement>('[data-mode]')]
+    let mode = buttons[0]?.dataset.mode ?? ''
+    const calc: Record<string, (n: number) => [string, string]> = {
+      toEur: (n) => [`${fmt(convertEuro(n, 'toEur') ?? 0)} €`, 'лева ÷ 1,95583, закръглено до цент'],
+      toBgn: (n) => [`${fmt(convertEuro(n, 'toBgn') ?? 0)} лв.`, 'евро × 1,95583'],
+      addVat: (n) => {
+        const r = vat(n, 20, 'add')
+        return [`${fmt(r?.gross ?? 0)} €`, `цена × 1,20; ДДС = ${fmt(r?.vat ?? 0)} €`]
+      },
+      removeVat: (n) => {
+        const r = vat(n, 20, 'remove')
+        return [`${fmt(r?.net ?? 0)} €`, `цена ÷ 1,20, а не −20%; ДДС = ${fmt(r?.vat ?? 0)} €`]
+      },
+      paint: (n) => {
+        const gallons = (n * 2) / 350
+        return [`${fmt(gallons)} gal`, `area × 2 coats ÷ 350 sq ft per gallon. Buy ${Math.ceil(gallons - 1e-9)} gal.`]
+      },
+      slab: (n) => [`${fmt((n * (4 / 12)) / 27)} yd³`, 'area × 4/12 ft ÷ 27 cu ft per cubic yard'],
+      area: (n) => [`${fmt(n * 0.09290304)} m²`, 'sq ft × 0.09290304'],
+    }
+    const update = () => {
+      const amount = Math.max(0, Number(input.value.replace(/\s/g, '').replace(',', '.')) || 0)
+      const [value, text] = calc[mode]?.(amount) ?? ['', '']
+      result.textContent = value
+      formula.textContent = text
+    }
+    for (const button of buttons) {
+      button.addEventListener('click', () => {
+        mode = button.dataset.mode!
+        for (const other of buttons) other.setAttribute('aria-pressed', String(other === button))
+        inputLabel.textContent = button.dataset.input ?? ''
+        outputLabel.textContent = button.dataset.output ?? ''
+        more.firstChild!.textContent = `${button.dataset.more ?? ''} `
+        more.href = button.dataset.href ?? '#'
+        update()
+        track('quick_estimate_mode', { mode })
+      })
+    }
+    input.addEventListener('input', update)
+    update()
+  }
 
   // "Your tools": favourites (tool ids) and recently opened pages (paths), kept in localStorage on this site.
   interface MineTool { id: string; name: string; description: string; href: string; paths: string[]; icon: string }
@@ -408,11 +444,14 @@ const star = (tool: (typeof TOOL_CATALOG)[number]) => `<button class="tool-fav" 
   })
   renderMine()
 
-  // Tool search: filters the tool tiles as you type; Enter opens the first match.
+  // Tool search: filters the full list as you type (and opens it); Enter opens the first match.
   const form = document.querySelector<HTMLFormElement>('[data-tool-search]')
   const input = form?.querySelector<HTMLInputElement>('input')
   const empty = document.querySelector<HTMLElement>('[data-tool-search-empty]')
+  const allTools = document.querySelector<HTMLDetailsElement>('[data-all-tools]')
   const items = [...document.querySelectorAll<HTMLElement>('[data-tool]')]
+  // On a phone the topic cards already list every tool, so the full list starts closed.
+  if (allTools && window.matchMedia('(max-width: 760px)').matches) allTools.open = false
   const matches = () => {
     const terms = (input?.value ?? '').toLowerCase().trim().split(/\s+/).filter(Boolean)
     return items.filter((item) => terms.every((term) => (item.dataset.tool ?? '').includes(term)))
@@ -420,18 +459,17 @@ const star = (tool: (typeof TOOL_CATALOG)[number]) => `<button class="tool-fav" 
   input?.addEventListener('input', () => {
     const found = new Set(matches())
     const searching = Boolean(input.value.trim())
+    if (searching && allTools) allTools.open = true
     for (const item of items) item.hidden = searching && !found.has(item)
     for (const group of document.querySelectorAll<HTMLElement>('[data-tool-group]')) {
       group.hidden = searching && ![...group.querySelectorAll<HTMLElement>('[data-tool]')].some((item) => !item.hidden)
     }
     if (empty) empty.hidden = !searching || found.size > 0
-    if (mine) mine.classList.toggle('is-searching', searching)
   })
   form?.addEventListener('submit', (event) => {
     event.preventDefault()
-    const first = matches().find((item) => item.querySelector('a'))
-    const link = first?.querySelector('a')
+    const link = matches()[0]?.querySelector('a')
     if (input?.value.trim() && link) window.location.assign(link.href)
-    else document.getElementById('word-games')?.scrollIntoView({ behavior: 'smooth' })
+    else document.getElementById('all-tools')?.scrollIntoView({ behavior: 'smooth' })
   })
 </script>

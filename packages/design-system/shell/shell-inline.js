@@ -34,7 +34,7 @@ export function shellInline() {
   function apply(theme) {
     root.setAttribute('data-theme', theme);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', theme === 'dark' ? '#17271e' : '#f1f5ef');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#141a26' : '#f7f3ea');
     var buttons = document.querySelectorAll('[data-zy-theme-toggle]');
     for (var i = 0; i < buttons.length; i++) {
       buttons[i].setAttribute('aria-pressed', String(theme === 'dark'));
