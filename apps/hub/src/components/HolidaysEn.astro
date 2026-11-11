@@ -1,0 +1,182 @@
+---
+// US federal holidays and UK bank holidays for one year (/us-federal-holidays-2027/, /uk-bank-holidays-2027/).
+// The dates come from src/lib/holidays-en.ts; the long weekends are worked out from them here.
+import PageLayout from '../layouts/PageLayout.astro'
+import RelatedTools from './RelatedTools.astro'
+import { AUTHOR } from '../lib/site'
+import { UK_REGIONS, ukBankHolidays, usFederalHolidays, westernEaster, workdays, type Holiday } from '../lib/holidays-en'
+
+interface Props {
+  country: 'us' | 'uk'
+  year: number
+}
+
+const { country, year } = Astro.props
+const CHECKED = '11 November 2026'
+const CHECKED_ISO = '2026-11-11'
+const DAY = 86_400_000
+const time = (date: string) => Date.parse(`${date}T00:00:00Z`)
+const iso = (value: number) => new Date(value).toISOString().slice(0, 10)
+const weekend = (value: number) => [0, 6].includes(new Date(value).getUTCDay())
+const show = (date: string, options: Intl.DateTimeFormatOptions) => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { ...options, timeZone: 'UTC' })
+
+/** Breaks of 3+ days that contain a holiday, and the 1-day-of-leave bridges that join a holiday to a weekend. */
+function breaks(list: Holiday[]) {
+  const off = new Set(list.map((holiday) => holiday.date))
+  const free = (value: number) => weekend(value) || off.has(iso(value))
+  const runs: { from: string; to: string; days: number; leave?: string; names: string[] }[] = []
+  const seen = new Set<string>()
+  for (const holiday of list) {
+    if (seen.has(holiday.date)) continue
+    let start = time(holiday.date)
+    let end = start
+    while (free(start - DAY)) start -= DAY
+    while (free(end + DAY)) end += DAY
+    const names = list.filter((item) => time(item.date) >= start && time(item.date) <= end)
+    names.forEach((item) => seen.add(item.date))
+    const days = Math.round((end - start) / DAY) + 1
+    if (days >= 3) runs.push({ from: iso(start), to: iso(end), days, names: names.map((item) => item.name) })
+    // One working day between this break and the next weekend: a day of leave makes it longer.
+    for (const gap of [start - DAY, end + DAY]) {
+      if (!free(gap - DAY) || !free(gap + DAY)) continue
+      let from = gap
+      let to = gap
+      while (free(from - DAY)) from -= DAY
+      while (free(to + DAY)) to += DAY
+      runs.push({ from: iso(from), to: iso(to), days: Math.round((to - from) / DAY) + 1, leave: iso(gap), names: names.map((item) => item.name) })
+    }
+  }
+  return runs.sort((x, y) => x.from.localeCompare(y.from) || (x.leave ? 1 : -1))
+}
+
+const us = country === 'us'
+const usList = us ? usFederalHolidays(year) : []
+const ukLists = us ? [] : UK_REGIONS.map((region) => ({ ...region, list: ukBankHolidays(year, region.id) }))
+const path = us ? `/us-federal-holidays-${year}/` : `/uk-bank-holidays-${year}/`
+const ewList = ukLists[0]?.list ?? []
+const usWorkdays = us ? workdays(year, usList) : 0
+const ewWorkdays = us ? 0 : workdays(year, ewList)
+
+const title = us
+  ? `US Federal Holidays ${year}: Dates, Observed Days and Long Weekends | Zyankov.eu`
+  : `UK Bank Holidays ${year}: England, Scotland, Wales and Northern Ireland | Zyankov.eu`
+const description = us
+  ? `All ${usList.length} federal holidays observed in ${year}, including the days moved off weekends, ${usWorkdays} federal working days, long weekends and a calendar file.`
+  : `Bank holidays in ${year} for England and Wales (${ukLists[0]?.list.length}), Scotland (${ukLists[1]?.list.length}) and Northern Ireland (${ukLists[2]?.list.length}), substitute days, long weekends and calendar files.`
+const faq = us
+  ? [
+      { q: `How many federal holidays are there in ${year}?`, a: `There are 11 federal holidays by law. In ${year} federal offices close on ${usList.length} days, because New Year's Day ${year + 1} falls on a Saturday and is observed on Friday 31 December ${year}.` },
+      { q: `When is the 4th of July holiday in ${year}?`, a: `Independence Day is Sunday 4 July ${year}, so it is observed on Monday 5 July.` },
+      { q: `Is Christmas Eve a federal holiday in ${year}?`, a: `Christmas Day is a Saturday in ${year}, so the holiday is observed on Friday 24 December. It is the observed Christmas holiday, not a separate Christmas Eve holiday.` },
+      { q: 'Do private employers have to give these days off?', a: 'No. The list is for federal employees. Private employers, banks, schools and stock markets set their own holidays, often following the federal list.' },
+    ]
+  : [
+      { q: `How many bank holidays are there in ${year}?`, a: `England and Wales have ${ukLists[0]?.list.length}, Scotland ${ukLists[1]?.list.length} and Northern Ireland ${ukLists[2]?.list.length}.` },
+      { q: `Why are 27 and 28 December bank holidays in ${year}?`, a: `Christmas Day is a Saturday and Boxing Day a Sunday, so the substitute days are Monday 27 and Tuesday 28 December in all of the UK.` },
+      { q: `Is Easter Monday a bank holiday in Scotland?`, a: 'No. Scotland has Good Friday but not Easter Monday. It has 2 January and St Andrew\'s Day instead.' },
+      { q: 'Does my employer have to give me bank holidays off?', a: 'No. GOV.UK says employers do not have to give paid leave on bank holidays; it depends on your contract. Paid holiday is at least 5.6 weeks a year, and bank holidays can be counted in it.' },
+    ]
+const jsonLd = [
+  { '@type': 'WebPage', inLanguage: 'en', dateModified: CHECKED_ISO, author: AUTHOR },
+  { '@type': 'FAQPage', mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })) },
+]
+const sources = us
+  ? [
+      { label: '5 U.S.C. § 6103: the legal public holidays (Cornell LII)', href: 'https://www.law.cornell.edu/uscode/text/5/6103' },
+      { label: 'OPM: federal holidays and the "in lieu of" rule', href: 'https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/' },
+      { label: `FedRateCalc: OPM's ${year} list with observed dates, including 31 December ${year}`, href: `https://fedratecalc.com/federal-holidays-${year}/` },
+    ]
+  : [
+      { label: 'GOV.UK: UK bank holidays', href: 'https://www.gov.uk/bank-holidays' },
+      { label: `FedRateCalc: GOV.UK's ${year} data for the three regions`, href: `https://fedratecalc.com/uk/bank-holidays-${year}/` },
+      { label: 'GOV.UK: holiday entitlement (5.6 weeks, bank holidays can be included)', href: 'https://www.gov.uk/holiday-entitlement-rights' },
+    ]
+const tables = us ? [{ id: 'us', name: 'Federal holidays', list: usList }] : ukLists
+---
+
+<PageLayout title={title} description={description} path={path} lang="en" jsonLd={jsonLd} breadcrumbs={[{ name: 'Home', path: '/' }, { name: us ? `US federal holidays ${year}` : `UK bank holidays ${year}`, path }]}>
+  <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/#everyday">Everyday sums</a></nav>
+  <p class="eyebrow">Everyday sums · calendar</p>
+  <h1>{us ? `US federal holidays ${year}` : `UK bank holidays ${year}`}</h1>
+  <p class="updated">Checked {CHECKED}</p>
+  {us ? (
+    <p class="intro">In {year} federal offices close on <strong>{usList.length} days</strong>: the 11 federal holidays, with Juneteenth, Independence Day and Christmas moved off the weekend, plus <strong>Friday 31 December</strong> for New Year's Day {year + 1}. That leaves <strong>{usWorkdays} federal working days</strong>.</p>
+  ) : (
+    <p class="intro">In {year} England and Wales have <strong>{ukLists[0].list.length} bank holidays</strong>, Scotland <strong>{ukLists[1].list.length}</strong> and Northern Ireland <strong>{ukLists[2].list.length}</strong>. Christmas Day and Boxing Day fall on the weekend, so <strong>Monday 27 and Tuesday 28 December</strong> are the substitute days everywhere. England and Wales have {ewWorkdays} working days.</p>
+  )}
+  <p class="actions">
+    {us
+      ? <a class="button" href={`/us-federal-holidays-${year}.ics`} download>Add to your calendar (.ics)</a>
+      : UK_REGIONS.map((region, index) => <a class:list={['button', { 'button--ghost': index > 0 }]} href={`/uk-bank-holidays-${year}-${region.id}.ics`} download>{region.name} (.ics)</a>)}
+    <a class="button button--ghost" href="/date-calculator/">Date calculator</a>
+  </p>
+
+  {tables.map((table) => (
+    <section id={table.id}>
+      <h2>{us ? `Federal holidays ${year}` : `${table.name} (${table.list.length})`}</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Day off</th><th>Holiday</th></tr></thead>
+          <tbody>
+            {table.list.map((holiday) => (
+              <tr class:list={{ moved: holiday.actual }}>
+                <td>{show(holiday.date, { day: 'numeric', month: 'long' })}<small class="weekday">{show(holiday.date, { weekday: 'long' })}</small></td>
+                <td>{holiday.name}{holiday.actual && <small class="weekday">{holiday.actual.startsWith(`${year}-`) ? '' : `${holiday.actual.slice(0, 4)}: `}falls on {show(holiday.actual, { weekday: 'long', day: 'numeric', month: 'long' })}</small>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  ))}
+  <p class="note">{us
+    ? 'A holiday on a Saturday is observed on the Friday before, and one on a Sunday on the Monday after (5 U.S.C. § 6103(b) and Executive Order 11582). These are the days off for federal employees on a Monday-to-Friday week. A presidential order can add a one-off day; none is announced for this year.'
+    : 'If a bank holiday falls on a weekend, a substitute weekday becomes a bank holiday, normally the following Monday. One-off bank holidays (for example for a coronation) are added by royal proclamation; none is announced for this year.'}</p>
+
+  <section>
+    <h2>Long weekends{us ? '' : ' in England and Wales'}</h2>
+    <ul class="bridges">
+      {breaks(us ? usList : ewList).map((run) => (
+        <li>
+          <strong>{show(run.from, { day: 'numeric', month: 'short' })} – {show(run.to, { day: 'numeric', month: 'short', year: run.to.startsWith(`${year}-`) ? undefined : 'numeric' })}</strong>: {run.days} days off{run.leave ? <> with <strong>1 day of leave</strong> on {show(run.leave, { weekday: 'long', day: 'numeric', month: 'short' })}</> : ''} ({run.names.join(', ')})
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    {faq.map((item) => (<><h3>{item.q}</h3><p>{item.a}</p></>))}
+  </section>
+
+  <section class="sources">
+    <h2>How the dates are worked out</h2>
+    <p>{us
+      ? 'The dates follow the rules in the law: fixed dates (1 January, 19 June, 4 July, 11 November, 25 December) and the nth Monday or Thursday of a month for the others, moved off weekends as above. The result matches OPM\'s published schedule.'
+      : `Easter is worked out with the Gregorian Easter algorithm (${show(westernEaster(year), { day: 'numeric', month: 'long' })} in ${year}), the Monday holidays are the first or last Monday of the month, and fixed-date holidays on a weekend get the next free weekday. The result matches the GOV.UK lists for all three regions.`}</p>
+    <h2>Sources</h2>
+    <ul>{sources.map((source) => <li><a href={source.href} target="_blank" rel="noopener">{source.label}</a></li>)}</ul>
+    <p class="note">Checked {CHECKED}.</p>
+  </section>
+
+  <RelatedTools lang="en" id={us ? 'us-holidays-2027' : 'uk-holidays-2027'} />
+</PageLayout>
+
+<style>
+  .crumbs { margin: 0 0 18px; color: var(--text-muted); font-size: var(--text-sm); }
+  .intro strong { color: var(--text); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 36px; }
+  .button { display: inline-block; padding: 11px 18px; border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent); font-weight: 700; text-decoration: none; }
+  .button--ghost { border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); }
+  section { margin: 0 0 40px; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: var(--text-base); }
+  th, td { padding: 10px 14px; border-top: 1px solid var(--border); color: var(--text); text-align: left; vertical-align: top; }
+  th { border-top: 0; background: var(--surface-soft); }
+  td:first-child { white-space: nowrap; }
+  .weekday { display: block; color: var(--text-muted); font-weight: 400; }
+  tr.moved td:first-child { font-weight: 700; }
+  .note { color: var(--text-muted); font-size: var(--text-sm); }
+  .bridges li { margin: 0 0 10px; }
+  h3 { margin: 22px 0 6px; font-size: var(--text-lg); }
+</style>

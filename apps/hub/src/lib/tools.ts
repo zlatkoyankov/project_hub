@@ -303,6 +303,28 @@ export const TOOL_CATALOG: Tool[] = [
     isNew: true,
   },
   {
+    id: 'us-holidays-2027',
+    category: 'home',
+    icon: 'dates',
+    href: { en: '/us-federal-holidays-2027/', bg: '/us-federal-holidays-2027/' },
+    name: { en: 'US federal holidays 2027', bg: 'Празници в САЩ 2027' },
+    description: { en: 'Observed dates, long weekends, calendar file.', bg: 'Федералните празници в САЩ.' },
+    keywords: 'us federal holidays 2027 observed juneteenth july 4 thanksgiving christmas long weekends calendar',
+    isNew: true,
+    only: 'en',
+  },
+  {
+    id: 'uk-holidays-2027',
+    category: 'home',
+    icon: 'dates',
+    href: { en: '/uk-bank-holidays-2027/', bg: '/uk-bank-holidays-2027/' },
+    name: { en: 'UK bank holidays 2027', bg: 'Банкови празници във Великобритания 2027' },
+    description: { en: 'England, Scotland, Wales and NI, substitute days.', bg: 'Банковите празници във Великобритания.' },
+    keywords: 'uk bank holidays 2027 england wales scotland northern ireland substitute day easter christmas long weekends',
+    isNew: true,
+    only: 'en',
+  },
+  {
     id: 'holidays-2027',
     category: 'home',
     icon: 'dates',
@@ -373,7 +395,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
   { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
   { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'gravel', 'mulch', 'area'] },
   { id: 'energy', name: { en: 'Energy', bg: 'Енергия и отопление' }, tools: ['heating', 'firewood', 'aircon', 'energy'] },
-  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'percent', 'vat', 'euro', 'loan', 'dates', 'holidays-2027'] },
+  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'percent', 'vat', 'euro', 'loan', 'dates', 'holidays-2027', 'us-holidays-2027', 'uk-holidays-2027'] },
 ]
 
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
@@ -402,7 +424,9 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   percent: ['vat', 'euro', 'loan', 'dates'],
   vat: ['percent', 'euro', 'loan'],
   euro: ['vat', 'percent', 'loan'],
-  dates: ['holidays-2027', 'loan', 'percent'],
+  dates: ['holidays-2027', 'us-holidays-2027', 'uk-holidays-2027', 'loan', 'percent'],
+  'us-holidays-2027': ['uk-holidays-2027', 'dates', 'loan'],
+  'uk-holidays-2027': ['us-holidays-2027', 'dates', 'percent'],
   'holidays-2027': ['dates', 'salary', 'loan'],
   loan: ['percent', 'dates', 'vat', 'salary'],
   salary: ['loan', 'percent', 'dates'],
