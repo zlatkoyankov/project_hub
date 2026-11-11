@@ -89,7 +89,14 @@ formula and the data are not visible and correct.
   - The privacy page mentions both.
 - **Analytics:** Umami (`packages/design-system/site.config.json`, `analytics.js` `track()`), with
   `data-exclude-search="true"`. Events cover favourites, sharing and hints.
-- **Colours:** only in `packages/design-system/tokens.css`. `npm run lint:colors` enforces it.
+- **Colours:** only in `packages/design-system/tokens.css`. `npm run lint:colors` enforces it. Theme since
+  November 2026: warm paper and navy, light and dark. Each topic has a colour (`--topic-money`, `-build`,
+  `-heat`, `-words`, with `-soft` and `-dot` variants), used on the homepage; keep the same colour per topic
+  elsewhere. Check AA contrast for every new text/background pair in both themes.
+- **Homepage** (`components/HomePage.astro`): question + search + quick estimate (BG: leva/euro and VAT with
+  `lib/everyday.ts`; EN: paint, slab, sq ft to m²), topic cards, the full tool list (stars for favourites),
+  a seasonal band chosen by the build month, latest posts, the daily word, about and FAQ. The topic ids
+  (`everyday`, `home-diy`, `energy`, `word-games`) are link targets from other pages; keep them.
 
 ## Checks before a PR
 
