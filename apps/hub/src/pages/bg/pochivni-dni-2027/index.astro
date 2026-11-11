@@ -1,0 +1,151 @@
+---
+import PageLayout from '../../../layouts/PageLayout.astro'
+import { AUTHOR } from '../../../lib/site'
+import { daysOff, workdaysByMonth } from '../../../lib/holidays'
+
+const YEAR = 2027
+const CHECKED = '11 ноември 2026'
+const CHECKED_ISO = '2026-11-11'
+const days = daysOff(YEAR)
+const months = workdaysByMonth(YEAR)
+const totalDays = months.reduce((sum, month) => sum + month.workdays, 0)
+const offOnWeekdays = days.filter((day) => ![0, 6].includes(new Date(`${day.date}T12:00:00Z`).getUTCDay())).length
+const MONTHS = ['Януари', 'Февруари', 'Март', 'Април', 'Май', 'Юни', 'Юли', 'Август', 'Септември', 'Октомври', 'Ноември', 'Декември']
+const show = (date: string, options: Intl.DateTimeFormatOptions) => new Date(`${date}T12:00:00Z`).toLocaleDateString('bg-BG', { ...options, timeZone: 'UTC' })
+
+// Long weekends: the leave days are the weekdays inside each stretch that are not days off (checked by the build below).
+const bridges = [
+  { from: '2027-04-30', to: '2027-05-09', leave: ['2027-05-05', '2027-05-07'], text: 'Великден, 1 май и Гергьовден са в една седмица.' },
+  { from: '2027-12-24', to: '2028-01-03', leave: ['2027-12-29', '2027-12-30', '2027-12-31'], text: 'Коледа и Нова година. 1 януари 2028 г. е събота, затова 3 януари е почивен.' },
+  { from: '2027-02-27', to: '2027-03-03', leave: ['2027-03-01', '2027-03-02'], text: '3 март е сряда. Може и с отпуск на 4 и 5 март.' },
+  { from: '2027-09-18', to: '2027-09-22', leave: ['2027-09-20', '2027-09-21'], text: '22 септември е сряда. Може и с отпуск на 23 и 24 септември.' },
+]
+const free = new Set([...days.map((day) => day.date), '2028-01-01', '2028-01-03'])
+for (const bridge of bridges) {
+  for (let time = Date.parse(`${bridge.from}T00:00:00Z`); time <= Date.parse(`${bridge.to}T00:00:00Z`); time += 86_400_000) {
+    const date = new Date(time).toISOString().slice(0, 10)
+    const weekday = ![0, 6].includes(new Date(time).getUTCDay())
+    if (weekday && !free.has(date) !== bridge.leave.includes(date)) throw new Error(`Bridge ${bridge.from}: ${date} does not match the days off`)
+  }
+}
+const span = (from: string, to: string) => Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000) + 1
+
+const title = `Почивни дни ${YEAR}: официални празници и работни дни по месеци | Zyankov.eu`
+const description = `Всички официални почивни дни в България през ${YEAR} г., работните дни и часове по месеци (общо ${totalDays}), дълги уикенди и календар за изтегляне.`
+const path = '/bg/pochivni-dni-2027/'
+const faq = [
+  { q: `Колко са работните дни през ${YEAR} г.?`, a: `${totalDays} работни дни, или ${totalDays * 8} часа при 8-часов работен ден и петдневна седмица, по Кодекса на труда без допълнителни решения на Министерския съвет.` },
+  { q: 'Кога е Великден 2027?', a: 'Православният Великден е на 2 май 2027 г. Почивни са Велики петък (30 април), Велика събота (1 май), Великден (2 май) и вторият ден (3 май).' },
+  { q: 'Почивен ли е 4 май 2027?', a: 'Да. 1 май се пада в събота, а първият работен ден след него, 3 май, вече е Великден. Затова по чл. 154, ал. 2 от Кодекса на труда почивен е вторник, 4 май.' },
+  { q: 'Колко дни почиваме за Коледа 2027?', a: '24 декември е петък, а 25 и 26 декември са събота и неделя. Вместо тях почивни са понеделник 27 и вторник 28 декември, така че от 24 до 28 декември почиваме 5 дни.' },
+]
+const jsonLd = [
+  { '@type': 'WebPage', inLanguage: 'bg', dateModified: CHECKED_ISO, author: AUTHOR },
+  { '@type': 'FAQPage', mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })) },
+]
+---
+
+<PageLayout title={title} description={description} path={path} lang="bg" jsonLd={jsonLd} breadcrumbs={[{ name: 'Начало', path: '/bg/' }, { name: `Почивни дни ${YEAR}`, path }]}>
+  <nav class="crumbs" aria-label="Навигация"><a href="/bg/">Начало</a> / <a href="/bg/#everyday">Всекидневни сметки</a></nav>
+  <p class="eyebrow">Всекидневни сметки · календар</p>
+  <h1>Почивни дни {YEAR}</h1>
+  <p class="updated">Проверено на {CHECKED}</p>
+  <p class="intro">
+    През {YEAR} г. в България има <strong>{offOnWeekdays} почивни дни</strong> в делнични дни и <strong>{totalDays} работни дни</strong> ({totalDays * 8} часа). Най-дългите почивки са около Великден и 1 май (30 април – 9 май с 2 дни отпуск) и около Коледа и Нова година (24 декември – 3 януари с 3 дни отпуск).
+  </p>
+  <p class="actions">
+    <a class="button" href="/bg/pochivni-dni-2027.ics" download>Изтегли в календара си (.ics)</a>
+    <a class="button button--ghost" href="/bg/kalkulator-dati/">Калкулатор за дати</a>
+  </p>
+
+  <section>
+    <h2>Официални почивни дни {YEAR}</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Дата</th><th>Празник</th></tr></thead>
+        <tbody>
+          {days.map((day) => {
+            const weekend = [0, 6].includes(new Date(`${day.date}T12:00:00Z`).getUTCDay())
+            return (
+              <tr class:list={{ weekend, moved: day.moved }}>
+                <td>{show(day.date, { day: 'numeric', month: 'long' })}<small class="weekday">{show(day.date, { weekday: 'long' })}</small></td>
+                <td>{day.name}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Празниците, паднали се в събота или неделя, се отработват с почивка в първия работен ден след тях (чл. 154, ал. 2 от Кодекса на труда). Това не важи за Великденските празници. Министерският съвет може да обяви и допълнителни почивни дни с отработване в събота; към {CHECKED} за {YEAR} г. няма такова решение.</p>
+  </section>
+
+  <section>
+    <h2>Работни дни и часове по месеци</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Месец</th><th>Работни дни</th><th>Часове</th></tr></thead>
+        <tbody>
+          {months.map((month) => <tr><td>{MONTHS[month.month - 1]}</td><td>{month.workdays}</td><td>{month.hours}</td></tr>)}
+          <tr class="total"><td>Общо</td><td>{totalDays}</td><td>{totalDays * 8}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Петдневна работна седмица по 8 часа. Работен ден е всеки ден от понеделник до петък, който не е официален почивен ден.</p>
+  </section>
+
+  <section>
+    <h2>Дълги почивки и колко дни отпуск трябват</h2>
+    <ul class="bridges">
+      {bridges.map((bridge) => (
+        <li>
+          <strong>{show(bridge.from, { day: 'numeric', month: 'long' })} – {show(bridge.to, { day: 'numeric', month: 'long', year: bridge.to.startsWith('2028') ? 'numeric' : undefined })}</strong>: {span(bridge.from, bridge.to)} дни почивка с {bridge.leave.length} дни отпуск ({bridge.leave.map((date) => show(date, { day: 'numeric', month: 'numeric' })).join(', ')}). {bridge.text}
+        </li>
+      ))}
+      <li><strong>Тридневни уикенди</strong>: 1–3 януари, 22–24 май и 4–6 септември.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Как е сметнато</h2>
+    <p>Празниците са по чл. 154, ал. 1 от Кодекса на труда. Датата на православния Великден е сметната по Юлианския календар (алгоритъм на Меес) и преведена в Григориански: 2 май {YEAR} г. Ако празник се падне в събота или неделя, почивен е първият следващ работен ден, който вече не е почивен. Така 1 май (събота) се премества на 4 май, защото 3 май е Великден, а 25 и 26 декември на 27 и 28 декември. Работните дни по месеци са сметнати от същия списък и съвпадат с месечните календари на kik-info.</p>
+    <p>Проверка: същата сметка за 2026 г. дава 249 работни дни. Официалните са 248, защото правителството обяви 2 януари 2026 г. за почивен заради въвеждането на еврото. Такова отделно решение за {YEAR} г. засега няма.</p>
+  </section>
+
+  <section>
+    <h2>Въпроси</h2>
+    {faq.map((item) => (<><h3>{item.q}</h3><p>{item.a}</p></>))}
+  </section>
+
+  <section class="sources">
+    <h2>Източници</h2>
+    <ul>
+      <li><a href="https://www.lex.bg/laws/ldoc/1594373121">Кодекс на труда, чл. 154 (lex.bg)</a></li>
+      <li><a href="https://kik-info.com/spravochnik/calendar/2027/05/">kik-info: календар за май 2027 (17 работни дни)</a> и <a href="https://kik-info.com/spravochnik/calendar/2027/12/">декември 2027 (20 работни дни)</a></li>
+      <li><a href="https://kik-info.com/novini/noi/2-ri-yanuari-2017-g-e-neprisastven-den.4050.php">НОИ чрез kik-info: текстът на чл. 154, ал. 2 КТ (в сила от 2017 г.)</a></li>
+      <li><a href="https://kik-info.com/novini/novini-i-akcenti/Ofitsialni-pochivni-i-rabotni-dni-prez-2026-godina.205294.php">kik-info: почивни и работни дни 2026 (248 дни, с 2 януари)</a> и <a href="https://sofiaglobe.com/2026/01/01/bulgarias-public-holidays-and-long-weekends-in-2026/">Sofia Globe: 2 януари 2026 като отделно решение заради еврото</a></li>
+      <li><a href="https://www.innovires.com/blog/raboten-kalendar-2026.html">Innovires: работен календар 2026 и правилото за отместване на празниците</a></li>
+    </ul>
+    <p class="note">Проверено на {CHECKED}. Ако Министерският съвет обяви допълнителни почивни дни за {YEAR} г., страницата ще бъде обновена.</p>
+  </section>
+</PageLayout>
+
+<style>
+  .crumbs { margin: 0 0 18px; color: var(--text-muted); font-size: var(--text-sm); }
+  .intro strong { color: var(--text); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 36px; }
+  .button { display: inline-block; padding: 11px 18px; border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent); font-weight: 700; text-decoration: none; }
+  .button--ghost { border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); }
+  section { margin: 0 0 40px; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: var(--text-base); }
+  th, td { padding: 10px 14px; border-top: 1px solid var(--border); color: var(--text); text-align: left; vertical-align: top; }
+  th { border-top: 0; background: var(--surface-soft); }
+  td:first-child { white-space: nowrap; }
+  td small { color: var(--text-muted); }
+  .weekday { display: block; font-weight: 400; }
+  tr.weekend td { color: var(--text-muted); }
+  tr.moved td, tr.total td { font-weight: 700; }
+  .note { color: var(--text-muted); font-size: var(--text-sm); }
+  .bridges li { margin: 0 0 10px; }
+  h3 { margin: 22px 0 6px; font-size: var(--text-lg); }
+</style>

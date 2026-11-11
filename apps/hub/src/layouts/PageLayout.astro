@@ -13,6 +13,7 @@ interface Props {
   noAds?: boolean
   project?: string
   jsonLd?: Record<string, unknown> | Record<string, unknown>[]
+  breadcrumbs?: { name: string; path: string }[]
 }
 
 const props = Astro.props

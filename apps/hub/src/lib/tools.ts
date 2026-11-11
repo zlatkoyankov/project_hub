@@ -306,6 +306,17 @@ export const TOOL_CATALOG: Tool[] = [
     only: 'bg',
   },
   {
+    id: 'holidays-2027',
+    category: 'home',
+    icon: 'dates',
+    href: { en: '/bg/pochivni-dni-2027/', bg: '/bg/pochivni-dni-2027/' },
+    name: { en: 'Bulgarian holidays 2027', bg: 'Почивни дни 2027' },
+    description: { en: 'Days off and working days by month.', bg: 'Официални празници, работни дни по месеци и дълги почивки.' },
+    keywords: 'holidays 2027 bulgaria days off почивни дни 2027 празници работни дни календар великден коледа отпуск',
+    isNew: true,
+    only: 'bg',
+  },
+  {
     id: 'salary',
     category: 'home',
     icon: 'salary',
@@ -365,7 +376,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
   { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
   { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'gravel', 'mulch', 'area'] },
   { id: 'energy', name: { en: 'Energy', bg: 'Енергия и отопление' }, tools: ['heating', 'firewood', 'aircon', 'energy'] },
-  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'percent', 'vat', 'euro', 'loan', 'dates'] },
+  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'percent', 'vat', 'euro', 'loan', 'dates', 'holidays-2027'] },
 ]
 
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
@@ -394,7 +405,8 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   percent: ['vat', 'euro', 'loan'],
   vat: ['percent', 'euro', 'loan'],
   euro: ['vat', 'percent', 'loan'],
-  dates: ['loan', 'percent', 'euro'],
+  dates: ['holidays-2027', 'loan', 'percent'],
+  'holidays-2027': ['dates', 'salary', 'loan'],
   loan: ['percent', 'dates', 'vat'],
   salary: ['loan', 'percent', 'dates'],
 }
