@@ -255,3 +255,74 @@ export function compoundSavings(principal: number, monthly: number, annualRate: 
   const contributions = principal + monthly * months
   return { balance, contributions, interest: balance - contributions, years: table }
 }
+
+// ---- Sick pay (временна неработоспособност), employees, from 1 January 2024 ----
+// КСО чл. 40, ал. 5: the employer pays the first two working days at 70% of the average daily gross wage of the month
+// the illness began (three days before 2024). Not paid when the leave continues an earlier one without a break.
+// КСО чл. 41: from the third working day НОИ pays 80% (90% for a work accident or occupational disease, from the first
+// day) of the average daily insurable income over the 18 calendar months before the month of illness, divided by the
+// working days in those months; the daily benefit may not exceed the average daily net wage for the same period.
+// Source: НОИ, „Парично обезщетение при временна неработоспособност“ (nssi.bg).
+export const SICK_EMPLOYER_DAYS = 2
+export const SICK_EMPLOYER_RATE = 0.7
+export const SICK_NOI_RATE = { illness: 0.8, accident: 0.9 }
+export const SICK_PERIOD_MONTHS = 18
+
+export interface SickPayInput {
+  /** Average monthly gross over the last 18 months (one figure for all months). */
+  gross: number
+  /** Gross for the month the illness began, for the employer's days; defaults to gross. */
+  monthGross?: number
+  /** First and last day of the sick leave (both included), yyyy-mm-dd. */
+  from: string
+  to: string
+  cause: 'illness' | 'accident'
+  /** The leave continues an earlier one without a break: no employer days. */
+  continuation?: boolean
+}
+
+export interface SickPayResult {
+  workdays: number
+  employerDays: number
+  noiDays: number
+  employerPerDay: number
+  employer: number
+  noiPerDay: number
+  noiGrossRate: number
+  noiNetCap: number
+  capped: boolean
+  noi: number
+  total: number
+  /** Net pay you would have had for the same working days, for comparison. */
+  usualNet: number
+  periodWorkdays: number
+}
+
+const nextDay = (date: string) => new Date(Date.parse(`${date}T00:00:00Z`) + DAY).toISOString().slice(0, 10)
+const monthStart = (date: string, shift = 0) => {
+  const d = new Date(`${date}T00:00:00Z`)
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + shift, 1)).toISOString().slice(0, 10)
+}
+
+export function sickPay(input: SickPayInput, countWorkdays: (from: string, to: string) => number): SickPayResult | null {
+  if (!(input.gross > 0) || parseDate(input.from) === null || parseDate(input.to) === null || input.to < input.from) return null
+  const insurable = Math.min(input.gross, MAX_INSURABLE_EUR)
+  const workdays = countWorkdays(input.from, nextDay(input.to))
+  const periodWorkdays = countWorkdays(monthStart(input.from, -SICK_PERIOD_MONTHS), monthStart(input.from))
+  const monthWorkdays = countWorkdays(monthStart(input.from), monthStart(input.from, 1))
+  if (!(periodWorkdays > 0 && monthWorkdays > 0)) return null
+  const employerDays = input.cause === 'illness' && !input.continuation ? Math.min(SICK_EMPLOYER_DAYS, workdays) : 0
+  const noiDays = workdays - employerDays
+  const employerPerDay = cents((SICK_EMPLOYER_RATE * (input.monthGross ?? input.gross)) / monthWorkdays)
+  const noiGrossRate = (SICK_NOI_RATE[input.cause] * insurable * SICK_PERIOD_MONTHS) / periodWorkdays
+  const net = salaryFromGross(input.gross)!.net
+  const noiNetCap = (net * SICK_PERIOD_MONTHS) / periodWorkdays
+  const capped = input.cause === 'illness' && noiGrossRate > noiNetCap
+  const noiPerDay = cents(capped ? noiNetCap : noiGrossRate)
+  const employer = cents(employerPerDay * employerDays)
+  const noi = cents(noiPerDay * noiDays)
+  return {
+    workdays, employerDays, noiDays, employerPerDay, employer, noiPerDay, noiGrossRate: cents(noiGrossRate), noiNetCap: cents(noiNetCap), capped, noi,
+    total: cents(employer + noi), usualNet: cents((net / monthWorkdays) * workdays), periodWorkdays,
+  }
+}

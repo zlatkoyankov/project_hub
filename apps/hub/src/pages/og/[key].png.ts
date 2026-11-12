@@ -32,6 +32,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'percentage-calculator': { kicker: 'Everyday sums · calculator', title: 'What is X% of a number?', footer: 'zyankov.eu/percentage-calculator' },
     'date-calculator': { kicker: 'Everyday sums · calculator', title: 'How many days until that date?', footer: 'zyankov.eu/date-calculator' },
     'loan-calculator': { kicker: 'Everyday sums · calculator', title: 'What will the monthly loan payment be?', footer: 'zyankov.eu/loan-calculator' },
+    'bg-kalkulator-bolnichni': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко ще получа за болничния?', footer: 'zyankov.eu/bg/kalkulator-bolnichni' },
     'bg-kalkulator-zaplata': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко е заплатата ми на ръка?', footer: 'zyankov.eu/bg/kalkulator-zaplata' },
     'bg-pochivni-dni-2027': { kicker: 'Всекидневни сметки · календар', title: 'Кои са почивните дни през 2027 г.?', footer: 'zyankov.eu/bg/pochivni-dni-2027' },
     'bg-razhod-na-tok': { kicker: 'Дом и енергия · калкулатор', title: 'Колко ток харчи уредът?', footer: 'zyankov.eu/bg/razhod-na-tok' },

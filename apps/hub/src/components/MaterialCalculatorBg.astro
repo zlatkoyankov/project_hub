@@ -12,7 +12,7 @@ import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick'
 
 interface Props {
   kind: Kind
@@ -369,6 +369,51 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       { name: 'spacing', label: 'Разстояние между коловете', unit: 'м', value: 2.5, step: '0.1', show: 'type:mesh', hint: 'Обикновено 2–2,5 м.' },
       { name: 'holeSide', label: 'Страна на дупката за кола', unit: 'см', value: 30, step: '1', hint: 'Наша ориентировъчна стойност. 0, ако коловете не се бетонират.' },
       { name: 'holeDepth', label: 'Дълбочина на дупката', unit: 'м', value: 0.6, step: '0.05', hint: 'Около 0,6 м: толкова от кола влиза в земята по таблицата на Betafence.' },
+    ],
+  },
+  sick: {
+    page: {
+      path: '/bg/kalkulator-bolnichni/',
+      tool: 'sick-pay-calculator',
+      title: 'Калкулатор за болничен 2026: колко ще получа | Zyankov.eu',
+      description: 'Колко плаща работодателят за първите два дни и колко НОИ от третия ден: 70% и 80% от среднодневния доход за 18 месеца, с тавана до нетната заплата.',
+      h1: 'Калкулатор за болничен',
+      intro: 'Въведи брутната си заплата и датите на болничния. Калкулаторът брои работните дни без празниците и показва колко плаща работодателят, колко НОИ и колко е това спрямо обичайната ти нетна заплата.',
+      answer: 'Работодателят плаща първите 2 работни дни по 70% от среднодневната брутна заплата за месеца, а НОИ от третия ден 80% от среднодневния доход за последните 18 месеца, но не повече от среднодневната нетна заплата. При 1 500 € бруто и болничен от 16 до 20 ноември 2026 г. (5 работни дни) работодателят плаща 2 × 50 € = 100 €, а НОИ 3 × 56,02 € = 168,06 €, общо 268,06 €. За същите дни нетната заплата би била около 277 €.',
+      big: '€ общо',
+      bigOne: '€ общо',
+      resultTitle: 'ЗА БОЛНИЧНИЯ',
+      caveat: 'По трудов договор, с поне 6 месеца осигурителен стаж и еднаква заплата през последните 18 месеца. Таванът на осигурителния доход е 2 300 € (до 31.07.2026 г. беше 2 111,64 €). Точната сума се изчислява от НОИ по данните от осигуряването ти.',
+      formula: 'работодател = 2 дни × 70% × бруто за месеца ÷ работни дни в месеца; НОИ = останалите работни дни × min(80% × доход за 18 месеца ÷ работни дни в тях, нетна заплата за 18 месеца ÷ работни дни в тях)',
+      how: 'Обезщетението се плаща само за работните дни в болничния. За първите два работни дни работодателят плаща 70% от среднодневното брутно възнаграждение за месеца, в който започва болничният. От третия ден НОИ плаща 80% от среднодневния осигурителен доход: доходът за 18-те календарни месеца преди месеца на болничния, разделен на работните дни в тях. Дневната сума не може да е по-голяма от среднодневната нетна заплата за същия период. Тъй като нетната заплата е около 77,6% от брутната, таванът обикновено решава сумата. При трудова злополука или професионална болест НОИ плаща 90% от първия ден, без таван до нетната заплата.',
+      tips: [
+        'Ако болничният е продължение на предишен без прекъсване, работодателят не плаща отново първите два дни. Избери „Продължение“.',
+        'Трябват поне 6 месеца осигурителен стаж за общо заболяване. Без тях НОИ не плаща обезщетение, с изключение на трудова злополука и за лица под 18 години.',
+        'Ако през някои месеци от последните 18 не си бил осигурен, за тях НОИ смята с минималната заплата и сумата ще е различна.',
+        'Работните дни се броят без събота, неделя и официалните празници. При работа на смени НОИ смята по часовете в графика ти.',
+      ],
+      jsonName: 'Калкулатор за болничен',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: '12 ноември 2026',
+      sources: [
+        { label: 'НОИ: парично обезщетение при временна неработоспособност (2 дни от работодателя от 1.1.2024 г., 80%, 18 месеца, таван до нетната заплата)', href: 'https://nssi.bg/fizicheski-lica/po-bg-zakonodatelstvo/vremenna-nerabotosposobnost/' },
+        { label: 'kik-info: периодът за обезщетенията при временна неработоспособност остава 18 календарни месеца през 2026 г.', href: 'https://kik-info.com/novini/novini-i-akcenti/Ot-01012026-Osigurovki-MOD-MRZ-i-obezshteteniya-v.205319.php' },
+        { label: 'kik-info: максимален осигурителен доход 2 300 € от 1.8.2026 г.', href: 'https://kik-info.com/novini/novini-i-akcenti/Ot-01082026-Osigurovki-MOD-TZPB-bolnichni.208156.php' },
+        { label: 'Innovires: болнични 2026, пример с 2 дни от работодателя и 80% от НОИ', href: 'https://www.innovires.com/blog/bolnichni-obezshtetenie-vremenna-nerabotosposobnost.html' },
+      ],
+    },
+    formTitle: 'Болничният',
+    formHint: 'Сумите са в евро. Двете дати се включват.',
+    selects: [
+      { name: 'cause', label: 'Причина', options: [{ value: 'illness', label: 'Общо заболяване' }, { value: 'accident', label: 'Трудова злополука или професионална болест' }] },
+      { name: 'continuation', label: 'Болничният е', options: [{ value: 'first', label: 'Първичен (нов)' }, { value: 'continuation', label: 'Продължение без прекъсване' }] },
+    ],
+    fields: [
+      { name: 'gross', label: 'Брутна заплата (средно за 18 месеца)', unit: '€', value: 1500, step: 'any' },
+      { name: 'from', label: 'Първи ден', unit: '', value: '2026-11-16', type: 'date' },
+      { name: 'to', label: 'Последен ден', unit: '', value: '2026-11-20', type: 'date' },
+      { name: 'monthGross', label: 'Бруто за месеца на болничния', unit: '€', value: 0, step: 'any', optional: true, hint: 'Само ако е различно от средното. Ползва се за двата дни от работодателя.' },
     ],
   },
   aircon: {
@@ -1196,7 +1241,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 <script>
   import { track } from '@zyankov/design-system/analytics'
   import { addWorkdays, workdaysBetween } from '../lib/workdays'
-  import { addDays, convertEuro, daysBetween, loanPayment, loanSchedule, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
+  import { addDays, convertEuro, daysBetween, loanPayment, loanSchedule, sickPay, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateFence, FENCE_PANELS as PANELS } from '../lib/materials'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
@@ -1384,6 +1429,25 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           rows.push(['Или сух бетон', `${result.concreteBags} торби по 25 кг`, 'около 12 л от торба'])
         }
         render(result.posts, rows)
+      } else if (kind === 'sick') {
+        const result = sickPay({
+          gross: num('gross'),
+          monthGross: num('monthGross') > 0 ? num('monthGross') : undefined,
+          from: field('from')?.value ?? '',
+          to: field('to')?.value ?? '',
+          cause: field('cause')?.value === 'accident' ? 'accident' : 'illness',
+          continuation: field('continuation')?.value === 'continuation',
+        }, (a, b) => workdaysBetween(a, b, 'bg')?.workdays ?? 0)
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Работни дни в болничния', `${result.workdays}`, 'без събота, неделя и празници'],
+          ['От работодателя', money(result.employer), `${result.employerDays} дни × ${money(result.employerPerDay)} (70%)`],
+          ['От НОИ', money(result.noi), `${result.noiDays} дни × ${money(result.noiPerDay)}${result.capped ? ', до нетната заплата' : field('cause')?.value === 'accident' ? ' (90%)' : ' (80%)'}`],
+          ['80% от среднодневния доход', money(result.noiGrossRate), `${result.periodWorkdays} работни дни за 18 месеца`],
+          ['Таван: среднодневна нетна заплата', money(result.noiNetCap)],
+          ['Нетна заплата за същите дни', money(result.usualNet), 'за сравнение'],
+        ]
+        render(result.total, rows)
       } else if (kind === 'aircon') {
         const result = estimateAircon({
           area: num('area'), height: num('height'), insulation: Number(field('insulation')?.value ?? 1), climate: Number(field('climate')?.value ?? 1),
