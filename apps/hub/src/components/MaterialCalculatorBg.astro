@@ -257,6 +257,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
         'Сравнявай кредитите по ГПР (годишен процент на разходите), не само по лихвата. ГПР включва и таксите.',
         'По-дълъг срок намалява вноската, но увеличава общата лихва.',
         'Тази сметка е за фиксирана лихва. При плаваща лихва вноската се променя заедно с индекса.',
+        'Допълнителното погасяване в първите години спестява най-много лихва, защото тогава остатъкът е най-голям. Провери в договора дали има такса за предсрочно погасяване.',
       ],
       jsonName: 'Кредитен калкулатор',
       kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
@@ -275,6 +276,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       { name: 'principal', label: 'Сума на кредита', unit: '€', value: 10000, step: 'any' },
       { name: 'rate', label: 'Годишна лихва', unit: '%', value: 7.5, step: 'any' },
       { name: 'term', label: 'Срок', unit: '', value: 5, step: '1' },
+      { name: 'extra', label: 'Допълнително погасяване всеки месец', unit: '€', value: 0, step: 'any', hint: 'По желание: сума над вноската, която отива за главницата.' },
     ],
   },
   salary: {
@@ -1076,6 +1078,15 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         </aside>
       </section>
 
+      {kind === 'loan' && (
+        <section class="tool-schedule" data-schedule hidden aria-labelledby="schedule-title">
+          <h2 id="schedule-title">Погасителен план</h2>
+          <p>Колко от вноските е лихва и колко главница, и колко дължиш след всяка година. Лихвата за месеца е остатъкът × годишната лихва ÷ 12.</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th data-schedule-period>Година</th><th>Платено</th><th>Лихва</th><th>Главница</th><th>Остатък</th></tr></thead><tbody data-schedule-body></tbody></table></div>
+          <button type="button" data-schedule-toggle data-labels="Покажи по месеци|Покажи по години" data-periods="Месец|Година">Покажи по месеци</button>
+        </section>
+      )}
+
       {!embed && (<>
       <section class="tool-notes">
         <article>
@@ -1137,7 +1148,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 <script>
   import { track } from '@zyankov/design-system/analytics'
   import { addWorkdays, workdaysBetween } from '../lib/workdays'
-  import { addDays, convertEuro, daysBetween, loanPayment, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
+  import { addDays, convertEuro, daysBetween, loanPayment, loanSchedule, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
@@ -1155,6 +1166,30 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
     const money = (value: number) => `${value.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
     const unitOut = out('bigUnit')
     let tracked = false
+    // Loan repayment plan: a table under the calculator, by year or by month.
+    const schedule = document.querySelector<HTMLElement>('[data-schedule]')
+    let scheduleView: 'years' | 'months' = 'years'
+    let lastPlan: { years: ScheduleRow[]; months: ScheduleRow[] } | null = null
+    const showSchedule = (rows: ScheduleRow[] | null) => {
+      if (!schedule) return
+      schedule.hidden = !rows?.length
+      if (!rows) return
+      const body = schedule.querySelector('[data-schedule-body]')!
+      body.replaceChildren(...rows.map((row) => {
+        const tr = document.createElement('tr')
+        for (const value of [String(row.period), money(row.payment), money(row.interest), money(row.principal), money(row.balance)]) tr.append(Object.assign(document.createElement('td'), { textContent: value }))
+        return tr
+      }))
+    }
+    schedule?.querySelector<HTMLButtonElement>('[data-schedule-toggle]')?.addEventListener('click', (event) => {
+      const button = event.currentTarget as HTMLButtonElement
+      scheduleView = scheduleView === 'years' ? 'months' : 'years'
+      const [toMonths, toYears] = (button.dataset.labels ?? '').split('|')
+      const [month, year] = (button.dataset.periods ?? '').split('|')
+      button.textContent = scheduleView === 'years' ? toMonths : toYears
+      schedule.querySelector('[data-schedule-period]')!.textContent = scheduleView === 'years' ? year : month
+      if (lastPlan) showSchedule(lastPlan[scheduleView])
+    })
 
     const render = (big: number | null, rows: [string, string, string?][]) => {
       out('big').textContent = big === null ? '–' : Number.isInteger(big) ? big.toLocaleString('bg-BG') : fmt(big, 2)
@@ -1239,12 +1274,21 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
       } else if (kind === 'loan') {
         const months = field('termUnit')?.value === 'months' ? num('term') : num('term') * 12
         const result = loanPayment(num('principal'), num('rate'), months)
-        if (!result) return render(null, [])
-        render(Math.round(result.payment * 100) / 100, [
+        if (!result) { showSchedule(null); return render(null, []) }
+        const extra = num('extra')
+        const plan = loanSchedule(num('principal'), num('rate'), months, extra)
+        lastPlan = plan
+        showSchedule(plan?.[scheduleView] ?? null)
+        const rows: [string, string, string?][] = [
           ['Брой вноски', `${result.months}`],
           ['Общо връщаш', money(result.total)],
           ['Лихва', money(result.interest), `${fmt((result.interest / num('principal')) * 100, 1)}% от сумата`],
-        ])
+        ]
+        if (plan && extra > 0) {
+          rows.push(['С допълнително погасяване', `${plan.paidOffIn} месеца`, `${result.months - plan.paidOffIn} месеца по-рано`])
+          rows.push(['Спестена лихва', money(result.interest - plan.totalInterest), `лихва ${money(plan.totalInterest)}`])
+        }
+        render(Math.round(result.payment * 100) / 100, rows)
       } else if (kind === 'salary') {
         const fromNet = field('mode')?.value === 'net'
         const born = (field('born')?.value === 'before1960' ? 'before1960' : 'after1959') as BirthGroup
