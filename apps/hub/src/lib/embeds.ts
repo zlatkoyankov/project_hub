@@ -22,6 +22,7 @@ export const EMBED_SLUGS = {
   'kalkulator-dati': 'dates',
   'kalkulator-kredit': 'loan',
   'kalkulator-zaplata': 'salary',
+  'kalkulator-bolnichni': 'sick',
 } as const
 
 export type EmbedKind = (typeof EMBED_SLUGS)[keyof typeof EMBED_SLUGS]
