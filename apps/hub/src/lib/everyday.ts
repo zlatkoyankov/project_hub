@@ -216,6 +216,46 @@ export function loanSchedule(principal: number, annualRate: number, months: numb
   return { months: rows, years, totalInterest: rows.reduce((sum, row) => sum + row.interest, 0), paidOffIn: rows.length }
 }
 
+// ---- Compound interest with monthly deposits ----
+// FV = P(1 + r/12)^(12t) + PMT × ((1 + r/12)^(12t) − 1) ÷ (r/12), deposits at the end of each month, interest
+// compounded monthly (the method of the SEC's Investor.gov compound interest calculator).
+export interface SavingsYear {
+  year: number
+  deposits: number
+  interest: number
+  balance: number
+}
+
+export interface SavingsResult {
+  balance: number
+  contributions: number
+  interest: number
+  years: SavingsYear[]
+}
+
+export function compoundSavings(principal: number, monthly: number, annualRate: number, years: number): SavingsResult | null {
+  const months = Math.round(years * 12)
+  if (!(principal >= 0 && monthly >= 0 && annualRate >= 0 && months > 0 && months <= 1200) || principal + monthly <= 0) return null
+  const r = annualRate / 100 / 12
+  let balance = principal
+  const table: SavingsYear[] = []
+  let yearDeposits = 0
+  let yearInterest = 0
+  for (let month = 1; month <= months; month += 1) {
+    const interest = balance * r
+    balance += interest + monthly
+    yearDeposits += monthly
+    yearInterest += interest
+    if (month % 12 === 0 || month === months) {
+      table.push({ year: Math.ceil(month / 12), deposits: yearDeposits, interest: yearInterest, balance })
+      yearDeposits = 0
+      yearInterest = 0
+    }
+  }
+  const contributions = principal + monthly * months
+  return { balance, contributions, interest: balance - contributions, years: table }
+}
+
 // ---- Sick pay (временна неработоспособност), employees, from 1 January 2024 ----
 // КСО чл. 40, ал. 5: the employer pays the first two working days at 70% of the average daily gross wage of the month
 // the illness began (three days before 2024). Not paid when the leave continues an earlier one without a break.

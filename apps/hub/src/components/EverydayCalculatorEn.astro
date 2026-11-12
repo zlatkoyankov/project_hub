@@ -9,7 +9,7 @@ import { AUTHOR, getPosts, ogKey, postPath } from '../lib/site'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'percent' | 'dates' | 'loan'
+type Kind = 'percent' | 'dates' | 'loan' | 'savings'
 
 interface Props {
   kind: Kind
@@ -173,6 +173,45 @@ const CONFIGS: Record<Kind, Config> = {
       { name: 'extra', label: 'Extra payment each month', unit: '', value: 0, hint: 'Optional: an amount on top of the payment that goes to the principal.' },
     ],
   },
+  savings: {
+    path: '/compound-interest-calculator/',
+    bg: '',
+    tool: 'compound-interest-calculator',
+    catalogId: 'savings',
+    title: 'Compound Interest Calculator with Monthly Deposits | Zyankov.eu',
+    description: 'See how savings grow with compound interest: a starting amount, a monthly deposit, the annual rate and the years, with the balance year by year. The formula is on the page.',
+    h1: 'Compound interest calculator',
+    intro: 'Enter what you start with, what you add each month, the annual interest rate and how many years. See the final balance, how much of it is your own money and how much is interest.',
+    answer: '10,000 plus 200 a month at 7% a year for 20 years grows to 144,572.72. You put in 58,000; the other 86,572.72 is interest. Without the monthly deposits, the 10,000 alone would be 40,387.39. At 7% money roughly doubles every 10 years (72 ÷ 7 ≈ 10.3).',
+    resultTitle: 'FINAL BALANCE',
+    big: '',
+    caveat: 'Interest compounded monthly, deposits at the end of each month, a fixed rate, before tax and fees. Real returns on investments change from year to year.',
+    formula: 'balance = P × (1 + r)^n + PMT × ((1 + r)^n − 1) ÷ r, where r = annual rate ÷ 12 and n = number of months',
+    how: 'Each month the balance earns the monthly rate (the annual rate divided by 12), and the deposit is added at the end of the month. The interest then earns interest of its own, which is why the curve gets steeper with time. The total is the starting amount grown for all the months plus every deposit grown for the months it was in the account. This is the same method as the SEC’s Investor.gov calculator with monthly compounding.',
+    tips: [
+      'Start early: with the same deposits, the extra years at the end add the most, because the balance is biggest then.',
+      'A bank quotes APY (annual percentage yield) when interest is compounded. 7% compounded monthly is an APY of about 7.23%.',
+      'The rule of 72 gives the doubling time: 72 ÷ the rate in percent. At 4% about 18 years, at 8% about 9.',
+      'Inflation and tax reduce what the balance can buy. Enter a lower rate to see a real (after-inflation) estimate.',
+    ],
+    sources: [
+      { label: 'SEC Investor.gov: compound interest calculator (monthly compounding, regular deposits)', href: 'https://www.investor.gov/financial-tools-calculators/calculators/compound-interest-calculator' },
+      { label: 'SEC Investor.gov glossary: the rule of 72', href: 'https://www.investor.gov/introduction-investing/investing-basics/glossary/rule-72' },
+      { label: 'Worked example elsewhere: 10,000 + 200 a month at 7% for 20 years = 144,572.72', href: 'https://hiinformation.pages.dev/calculators/finance/compound-interest/' },
+    ],
+    checked: '12 November 2026',
+    checkedIso: '2026-11-12',
+    jsonName: 'Compound interest calculator',
+    formTitle: 'Your savings',
+    formHint: 'Any currency. The rate is per year.',
+    selects: [],
+    fields: [
+      { name: 'principal', label: 'Starting amount', unit: '', value: 10000 },
+      { name: 'monthly', label: 'Monthly deposit', unit: '', value: 200 },
+      { name: 'rate', label: 'Annual interest rate', unit: '%', value: 7 },
+      { name: 'years', label: 'Years', unit: 'yr', value: 20, step: '1' },
+    ],
+  },
 }
 
 const { kind } = Astro.props
@@ -193,7 +232,7 @@ const jsonLd = {
 }
 ---
 
-<BaseLayout title={page.title} description={page.description} path={page.path} lang="en" alternates={{ en: page.path, bg: page.bg }} project="buildcalc" jsonLd={jsonLd} breadcrumbs={[{ name: 'Home', path: '/' }, { name: page.jsonName, path: page.path }]}>
+<BaseLayout title={page.title} description={page.description} path={page.path} lang="en" alternates={page.bg ? { en: page.path, bg: page.bg } : undefined} project="buildcalc" jsonLd={jsonLd} breadcrumbs={[{ name: 'Home', path: '/' }, { name: page.jsonName, path: page.path }]}>
   <div class="tool-page zy-board" data-board={boardFor(kind)}>
     <main id="top">
       <nav class="tool-crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><a href="/#everyday">Everyday sums</a></nav>
@@ -245,6 +284,14 @@ const jsonLd = {
         </aside>
       </section>
 
+      {kind === 'savings' && (
+        <section class="tool-schedule" data-growth hidden aria-labelledby="growth-title">
+          <h2 id="growth-title">Year by year</h2>
+          <p>What you add each year, the interest it earns and the balance at the end of the year.</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th>Year</th><th>Deposits</th><th>Interest</th><th>Balance</th></tr></thead><tbody data-growth-body></tbody></table></div>
+        </section>
+      )}
+
       {kind === 'loan' && (
         <section class="tool-schedule" data-schedule hidden aria-labelledby="schedule-title">
           <h2 id="schedule-title">Amortization schedule</h2>
@@ -269,7 +316,7 @@ const jsonLd = {
         <article>
           <h2>Tips</h2>
           <ul>{page.tips.map((tip) => <li>{tip}</li>)}</ul>
-          <p class="tool-switch"><a href={page.bg} hreflang="bg">На български →</a></p>
+          {page.bg && <p class="tool-switch"><a href={page.bg} hreflang="bg">На български →</a></p>}
         </article>
       </section>
 
@@ -296,7 +343,7 @@ const jsonLd = {
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { addDays, daysBetween, loanPayment, loanSchedule, percent, type PercentMode, type ScheduleRow } from '../lib/everyday'
+  import { addDays, compoundSavings, daysBetween, loanPayment, loanSchedule, percent, type PercentMode, type ScheduleRow } from '../lib/everyday'
   import { addWorkdays, workdaysBetween, type HolidayCalendar } from '../lib/workdays'
 
   const root = document.querySelector<HTMLElement>('[data-everyday]')
@@ -392,6 +439,24 @@ const jsonLd = {
           ['Weeks', `${span.weeks} wk and ${Math.abs(span.restDays)} days`],
           ['Counting both end dates', `${span.days + Math.sign(span.days || 1)}`, 'if you count the last day too'],
         ], Math.abs(span.days) === 1 ? 'day' : 'days')
+      } else if (kind === 'savings') {
+        const result = compoundSavings(num('principal'), num('monthly'), num('rate'), num('years'))
+        const growth = document.querySelector<HTMLElement>('[data-growth]')
+        if (growth) {
+          growth.hidden = !result
+          growth.querySelector('[data-growth-body]')!.replaceChildren(...(result?.years ?? []).map((row) => {
+            const tr = document.createElement('tr')
+            for (const value of [String(row.year), money(row.deposits), money(row.interest), money(row.balance)]) tr.append(Object.assign(document.createElement('td'), { textContent: value }))
+            return tr
+          }))
+        }
+        if (!result) return render(null, [])
+        const rate = num('rate')
+        render(money(result.balance), [
+          ['Your deposits', money(result.contributions), `starting amount + ${money(num('monthly'))} × ${Math.round(num('years') * 12)} months`],
+          ['Interest earned', money(result.interest), `${fmt((result.interest / result.balance) * 100, 1)}% of the balance`],
+          ...(rate > 0 ? [['Doubling time (rule of 72)', `about ${fmt(72 / rate, 1)} years`] as [string, string]] : []),
+        ])
       } else if (kind === 'loan') {
         const months = field('termUnit')?.value === 'months' ? num('term') : num('term') * 12
         const result = loanPayment(num('principal'), num('rate'), months)

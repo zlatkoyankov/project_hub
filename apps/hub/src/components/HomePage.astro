@@ -35,7 +35,7 @@ const topics: Topic[] = (bg
       { id: 'walls', colour: 'build', name: 'Walls & finishing', door: true, ids: ['paint', 'drywall', 'wallpaper', 'insulation', 'masonry'] },
       { id: 'yard', colour: 'heat', name: 'Concrete & yard', door: true, ids: ['concrete', 'gravel', 'mulch', 'area'] },
       { id: 'word-games', colour: 'words', name: 'Word games', door: true, ids: ['daily-word', 'wordle-solver', 'word-finder', 'crossword-solver', 'spelling-bee'] },
-      { id: 'everyday', colour: 'plain', name: 'Everyday sums', door: false, ids: ['percent', 'loan', 'dates', 'us-holidays-2027', 'uk-holidays-2027'] },
+      { id: 'everyday', colour: 'plain', name: 'Everyday sums', door: false, ids: ['percent', 'loan', 'savings', 'dates', 'us-holidays-2027', 'uk-holidays-2027'] },
       { id: 'running-costs', colour: 'plain', name: 'Running costs', door: false, ids: ['energy'] },
     ]
 ).map(({ ids, ...topic }) => ({ ...topic, tools: pick(ids) })).filter((topic) => topic.tools.length > 0) as Topic[]

@@ -30,6 +30,7 @@ export async function GET() {
     { path: '/bg/kalkulator-zaplata/' },
     { path: '/bg/kalkulator-bolnichni/' },
     { path: '/bg/pochivni-dni-2027/' },
+    { path: '/compound-interest-calculator/' },
     { path: '/us-federal-holidays-2027/' },
     { path: '/uk-bank-holidays-2027/' },
     { path: '/bg/razhod-na-tok/', alternates: pair('/energy-cost-calculator/', '/bg/razhod-na-tok/') },

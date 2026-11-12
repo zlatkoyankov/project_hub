@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings'
 
 export interface Tool {
   id: string
@@ -347,6 +347,17 @@ export const TOOL_CATALOG: Tool[] = [
     only: 'bg',
   },
   {
+    id: 'savings',
+    category: 'home',
+    icon: 'savings',
+    href: { en: '/compound-interest-calculator/', bg: '/compound-interest-calculator/' },
+    name: { en: 'Compound interest', bg: 'Сложна лихва (EN)' },
+    description: { en: 'Savings with monthly deposits, year by year.', bg: 'Спестявания с месечни вноски.' },
+    keywords: 'compound interest calculator savings monthly deposit investment growth future value rule of 72 apy',
+    isNew: true,
+    only: 'en',
+  },
+  {
     id: 'sick',
     category: 'home',
     icon: 'sick',
@@ -376,6 +387,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   vat: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
   euro: '<path d="M18 6.5A7 7 0 1 0 18 17.5"/><path d="M4 10h9M4 14h9"/>',
   dates: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  savings: '<path d="M4 19h16"/><path d="M6 16v-3M10 16V9M14 16v-5M18 16V5"/>',
   sick: '<rect x="4" y="4" width="16" height="17" rx="2"/><path d="M9 4V2h6v2M12 9v6M9 12h6"/>',
   fence: '<path d="M5 21V6l2-3 2 3v15M15 21V6l2-3 2 3v15"/><path d="M3 10h18M3 16h18"/>',
   salary: '<path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/><path d="M9 13h6M12 10v6"/>',
@@ -405,7 +417,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
 
 /** Blog category of a post, from the tool it links to. */
 /** Everyday sums (percentages, VAT, euro, loans, dates) get their own blog category. */
-const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator', 'holidays-2027', 'us-holidays-2027'])
+const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator', 'holidays-2027', 'us-holidays-2027', 'compound-interest-calculator'])
 
 export function postCategory(tool?: string): ToolCategory | 'everyday' | 'general' {
   if (!tool) return 'general'
@@ -419,7 +431,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
   { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
   { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'fence', 'gravel', 'mulch', 'area'] },
   { id: 'energy', name: { en: 'Energy', bg: 'Енергия и отопление' }, tools: ['heating', 'firewood', 'aircon', 'energy'] },
-  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'sick', 'percent', 'vat', 'euro', 'loan', 'dates', 'holidays-2027', 'us-holidays-2027', 'uk-holidays-2027'] },
+  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'sick', 'savings', 'percent', 'vat', 'euro', 'loan', 'dates', 'holidays-2027', 'us-holidays-2027', 'uk-holidays-2027'] },
 ]
 
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
@@ -453,7 +465,8 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   'us-holidays-2027': ['uk-holidays-2027', 'dates', 'loan'],
   'uk-holidays-2027': ['us-holidays-2027', 'dates', 'percent'],
   'holidays-2027': ['dates', 'salary', 'loan'],
-  loan: ['percent', 'dates', 'vat', 'salary'],
+  loan: ['percent', 'dates', 'vat', 'salary', 'savings'],
+  savings: ['loan', 'percent', 'dates'],
   salary: ['sick', 'loan', 'percent', 'dates'],
   sick: ['salary', 'dates', 'holidays-2027'],
 }
@@ -473,6 +486,7 @@ export const POST_TOOL_IDS: Record<string, string> = {
   'salary-calculator': 'salary',
   'holidays-2027': 'holidays-2027',
   'us-holidays-2027': 'us-holidays-2027',
+  'compound-interest-calculator': 'savings',
   'heating-cost-calculator': 'heating',
   'firewood-calculator': 'firewood',
   'aircon-calculator': 'aircon',
