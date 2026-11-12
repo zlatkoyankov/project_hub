@@ -41,6 +41,10 @@ export function orthodoxEaster(year: number): string {
   return iso(utc(year, month, day) + 13 * DAY)
 }
 
+/** Extra days off the Council of Ministers declared (чл. 154, ал. 3 КТ). Add new decisions here with their source.
+ *  2 January 2026: day off for the switch to the euro, without a working Saturday (248 working days in 2026). */
+export const EXTRA_DAYS_OFF: DayOff[] = [{ date: '2026-01-02', name: 'Почивен ден по решение на Министерския съвет (въвеждане на еврото)' }]
+
 /** All official days off in a year, in date order. Weekend days are included when they are holidays. */
 export function daysOff(year: number): DayOff[] {
   const easter = Date.parse(`${orthodoxEaster(year)}T00:00:00Z`)
@@ -60,6 +64,7 @@ export function daysOff(year: number): DayOff[] {
     taken.add(iso(time))
     list.push({ date: iso(time), name: `Почивен ден вместо ${name} (${md.split('-').reverse().join('.')})`, moved: true })
   }
+  for (const extra of EXTRA_DAYS_OFF) if (extra.date.startsWith(`${year}-`)) list.push(extra)
   // 1 May and Holy Saturday can fall on the same day: keep one entry with both names.
   const merged = new Map<string, DayOff>()
   for (const day of list) {

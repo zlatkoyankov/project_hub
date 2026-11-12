@@ -2,6 +2,7 @@
 title: 'How to count days between two dates (and why you get an off-by-one)'
 description: 'Counting days between dates, inclusive or not, weekdays only, 30/60/90 days from a date, leap years, and how deadlines are counted, with worked 2027 examples.'
 date: 2026-11-11
+updated: 2026-11-12
 lang: en
 tags: [dates, everyday-sums]
 tool: date-calculator
@@ -52,7 +53,7 @@ For legal deadlines, the day of the event that starts the period is usually **no
 - **Forgetting holidays in working days.** Weekdays are not the same as working days.
 - **Forgetting that the end day is excluded in "within 14 days".** Read the rule for your deadline.
 
-The [date calculator](/date-calculator/) does both sums: days between two dates with weekdays, and the date a number of days before or after another.
+The [date calculator](/date-calculator/) does both sums: days and business days between two dates, with the US federal or UK bank holidays taken out if you pick a calendar, and the date a number of days or business days before or after another.
 
 ## Sources
 
