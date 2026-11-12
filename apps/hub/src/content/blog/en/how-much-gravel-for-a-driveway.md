@@ -2,6 +2,7 @@
 title: 'How much gravel do I need for a driveway or path?'
 description: 'Work out gravel volume and weight for a driveway or garden path, with depth guidance, compaction and worked examples in cubic yards, tons and tonnes.'
 date: 2026-11-04
+updated: 2026-11-12
 lang: en
 tags: [gravel, landscaping]
 tool: gravel-calculator
@@ -40,6 +41,10 @@ Driveways are usually built in layers: a coarser base stone that is compacted, t
 
 The weight of a cubic yard of gravel depends on the stone, its size and how wet it is. A common rule of thumb is around 1.4 tons per cubic yard (about 2,700–2,800 lb), or roughly 1.6 tonnes per cubic metre. Crushed stone, pea gravel and road base all differ, so ask the supplier for the density of the exact product. The calculator lets you enter it.
 
+
+### How many cubic yards is a ton of gravel?
+
+Turn the density around: at 1.35 tons per cubic yard, one ton is 1 ÷ 1.35 = **about 0.74 cubic yards**, and at 1.4 tons it is about 0.71. So 10 tons of gravel cover roughly 7.1 to 7.4 cubic yards, or 5.4 to 5.7 cubic metres. If the supplier quotes by the ton, divide the tons by their density to get the volume you can spread.
 ## Example 1: a 50 × 10 ft driveway top layer, 4 inches deep
 
 1. Depth: 4 ÷ 12 = 0.333 ft

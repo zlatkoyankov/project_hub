@@ -310,6 +310,26 @@ describe('calculation utilities', () => {
   });
 });
 
+describe('UK bricks and packs', () => {
+  it('gives about 60 UK bricks and 10 UK blocks per m²', () => {
+    const uk = MASONRY_UNITS.findIndex((unit) => unit.label.startsWith('UK brick'));
+    const block = MASONRY_UNITS.findIndex((unit) => unit.label.startsWith('UK concrete block'));
+    expect(masonryPerSquareFoot(MASONRY_UNITS[uk]).units * 10.7639104).toBeCloseTo(1 / (0.225 * 0.075), 6);
+    expect(masonryPerSquareFoot(MASONRY_UNITS[block]).units * 10.7639104).toBeCloseTo(1 / (0.45 * 0.225), 6);
+  });
+
+  it('rounds up to whole packs', () => {
+    const uk = MASONRY_UNITS.findIndex((unit) => unit.label.startsWith('UK brick'));
+    // 5 m × 2.4 m = 12 m² at 59.26 per m² with 5% waste = 747 bricks; packs of 500 → 2 packs.
+    const rows = calculateMasonry({ length: 5, height: 2.4, openings: 0, unit: uk, waste: 5, mortarYield: 16, packSize: 500, dimensionUnit: 2, openingsUnit: 2, yieldUnit: 1 }).rows;
+    const value = (label: string) => rows.find((row) => row.label === label)?.value;
+    expect(value('Bricks or blocks')).toBe(Math.ceil(12 / (0.225 * 0.075) * 1.05));
+    expect(value('Packs')).toBe(2);
+    const without = calculateMasonry({ length: 5, height: 2.4, openings: 0, unit: uk, waste: 5, mortarYield: 16, dimensionUnit: 2, openingsUnit: 2, yieldUnit: 1 }).rows;
+    expect(without.some((row) => row.label === 'Packs')).toBe(false);
+  });
+});
+
 describe('worked examples in the "In short" answers', () => {
   it('matches the paint calculator answer', () => {
     const answer = CALCULATORS.find((item) => item.slug === 'paint-calculator')!.answer!;
