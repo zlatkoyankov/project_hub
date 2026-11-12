@@ -107,6 +107,7 @@ export class SeoService {
         '@type': 'Article',
         headline: guide.title,
         description: description ?? guide.description,
+        dateModified: SOURCES_CHECKED_ISO,
         author: AUTHOR,
         publisher: AUTHOR,
         ...(url && { mainEntityOfPage: url }),
