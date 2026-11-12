@@ -820,3 +820,98 @@ select {
 .tool-sources a {
   color: var(--coral-strong);
 }
+
+/* Loan repayment plan under the loan calculators (filled by the page script). */
+.tool-schedule {
+  margin-top: 36px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.tool-schedule h2 {
+  margin: 0 0 6px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.tool-schedule > p {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.tool-schedule__wrap {
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.tool-schedule table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tool-schedule th,
+.tool-schedule td {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.tool-schedule th {
+  position: sticky;
+  top: 0;
+  border-top: 0;
+  background: var(--surface-soft);
+  font-weight: 600;
+}
+
+.tool-schedule th:first-child,
+.tool-schedule td:first-child {
+  text-align: left;
+}
+
+.tool-schedule button {
+  margin-top: 14px;
+  padding: 9px 16px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  background: var(--surface-soft);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.tool-schedule button:hover {
+  border-color: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .tool-schedule {
+    padding: 18px 14px;
+  }
+
+  .tool-schedule th,
+  .tool-schedule td {
+    padding: 7px 6px;
+    font-size: 13px;
+  }
+
+  /* The payment is the same every month (and shown above), so the column is dropped to fit a phone. */
+  .tool-schedule th:nth-child(2),
+  .tool-schedule td:nth-child(2) {
+    display: none;
+  }
+}

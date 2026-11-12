@@ -206,20 +206,21 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-dati/',
       en: '/date-calculator/',
       tool: 'date-calculator',
-      title: 'Калкулатор за дати: дни между две дати и дата след N дни | Zyankov.eu',
-      description: 'Изчисли колко дни има между две дати, колко от тях са делнични, и коя дата е след или преди определен брой дни. За срокове, отпуски и договори.',
+      title: 'Калкулатор за дати и работни дни: дни между две дати | Zyankov.eu',
+      description: 'Колко дни и колко работни дни (без официалните празници в България) има между две дати, коя дата е след N дни или след N работни дни. За срокове и отпуски.',
       h1: 'Калкулатор за дати',
       intro: 'Сметни колко дни остават до дата или колко са минали, или коя дата е след 30, 60 или 90 дни. Полезно за срокове по договори, отпуски и плащания.',
       big: 'дни',
       bigOne: 'ден',
       resultTitle: 'РЕЗУЛТАТ',
-      caveat: 'Делничните дни са от понеделник до петък. Официалните празници не са извадени.',
-      formula: 'дни = крайна дата − начална дата (крайният ден не се брои)',
+      caveat: 'Работните дни са без съботите, неделите и официалните почивни дни по чл. 154 от Кодекса на труда, плюс обявените от Министерския съвет (2 януари 2026 г.).',
+      formula: 'дни = крайна дата − начална дата (крайният ден не се брои); работни дни = делничните дни без официалните празници',
       how: 'Разликата между две дати се брои в цели дни, като началният ден се брои, а крайният не: от понеделник до следващия понеделник са 7 дни. Делничните дни са тези от понеделник до петък в този период. За дата след N дни към началната дата се добавят N дни, като се отчитат различните дължини на месеците и високосните години.',
       tips: [
         'Ако срокът е „в 14-дневен срок от получаването“, денят на получаване обикновено не се брои. За точния срок виж договора или закона.',
         'Ако трябва да броиш и двата крайни дни (например дни отпуск), добави 1.',
-        'Официалните празници в България не са извадени от делничните дни. Провери ги в календара за годината.',
+        'Работните дни вадят официалните празници в България, сметнати по Кодекса на труда за всяка година (виж почивните дни за 2027 г.). Допълнителни почивни дни на Министерския съвет се добавят, когато бъдат обявени.',
+        'При „след N работни дни“ началният ден не се брои: 3 работни дни след сряда 28 април 2027 г. е петък 7 май, заради Великден, 1 май и Гергьовден.',
       ],
       jsonName: 'Калкулатор за дати',
       kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
@@ -228,12 +229,13 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     formTitle: 'Датите',
     formHint: 'Празното поле за дата се попълва с днешната.',
     selects: [
-      { name: 'mode', label: 'Сметка', options: [{ value: 'between', label: 'Дни между две дати' }, { value: 'add', label: 'Дата след (или преди) N дни' }] },
+      { name: 'mode', label: 'Сметка', options: [{ value: 'between', label: 'Дни между две дати' }, { value: 'add', label: 'Дата след (или преди) N дни' }, { value: 'addwork', label: 'Дата след (или преди) N работни дни' }] },
     ],
     fields: [
       { name: 'from', label: 'Начална дата', unit: '', value: '', type: 'date' },
       { name: 'to', label: 'Крайна дата', unit: '', value: '', type: 'date', show: 'mode:between' },
       { name: 'days', label: 'Брой дни', unit: 'дни', value: 30, step: '1', signed: true, show: 'mode:add', hint: 'С минус за дата назад, например −14.' },
+      { name: 'workdays', label: 'Брой работни дни', unit: 'дни', value: 10, step: '1', signed: true, show: 'mode:addwork', hint: 'Без събота, неделя и официалните празници. С минус за назад.' },
     ],
   },
   loan: {
@@ -241,9 +243,9 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-kredit/',
       en: '/loan-calculator/',
       tool: 'loan-calculator',
-      title: 'Кредитен калкулатор: месечна вноска и лихва | Zyankov.eu',
-      description: 'Изчисли месечната вноска по кредит с равни вноски, общо колко ще върнеш и колко е лихвата, по сумата, годишния лихвен процент и срока.',
-      h1: 'Кредитен калкулатор',
+      title: 'Калкулатор за лихва и вноска по кредит | Zyankov.eu',
+      description: 'Как се изчислява лихвата по кредит: месечна вноска, обща лихва и колко ще върнеш, по сумата, годишния лихвен процент и срока. Формулата е на страницата.',
+      h1: 'Калкулатор за лихва и вноска по кредит',
       intro: 'Въведи сумата, годишния лихвен процент и срока. Калкулаторът смята равната месечна вноска (анюитет), общата сума и лихвата.',
       big: '€ на месец',
       bigOne: '€ на месец',
@@ -255,6 +257,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
         'Сравнявай кредитите по ГПР (годишен процент на разходите), не само по лихвата. ГПР включва и таксите.',
         'По-дълъг срок намалява вноската, но увеличава общата лихва.',
         'Тази сметка е за фиксирана лихва. При плаваща лихва вноската се променя заедно с индекса.',
+        'Допълнителното погасяване в първите години спестява най-много лихва, защото тогава остатъкът е най-голям. Провери в договора дали има такса за предсрочно погасяване.',
       ],
       jsonName: 'Кредитен калкулатор',
       kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
@@ -273,6 +276,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       { name: 'principal', label: 'Сума на кредита', unit: '€', value: 10000, step: 'any' },
       { name: 'rate', label: 'Годишна лихва', unit: '%', value: 7.5, step: 'any' },
       { name: 'term', label: 'Срок', unit: '', value: 5, step: '1' },
+      { name: 'extra', label: 'Допълнително погасяване всеки месец', unit: '€', value: 0, step: 'any', hint: 'По желание: сума над вноската, която отива за главницата.' },
     ],
   },
   salary: {
@@ -753,9 +757,10 @@ const screedPage = {
   path: '/bg/zamazka-i-mazilka/',
   en: '/calculators/screed-plaster-calculator/',
   tool: 'screed-plaster-calculator',
-  title: 'Калкулатор за замазка и мазилка: колко торби ми трябват | Zyankov.eu',
-  description: 'Изчисли колко торби циментова или саморазливна замазка или гипсова мазилка трябват по площ и дебелина, с разхода от техническите листове.',
+  title: 'Замазка и мазилка: разходна норма и колко торби | Zyankov.eu',
+  description: 'Разходна норма на саморазливна и циментова замазка и гипсова мазилка (кг/м² на мм) и колко торби трябват по площ и дебелина, по техническите листове.',
   h1: 'Колко замазка или мазилка ми трябва?',
+  answer: 'Разходната норма на саморазливната замазка е около 1,5–1,6 кг/м² за всеки милиметър дебелина, на циментовата замазка около 2 кг/м² на мм, а на гипсовата мазилка около 1 кг/м² на мм. 10 м² саморазливна замазка с дебелина 5 мм при 1,6 кг/м² на мм са 80 кг суха смес, тоест 4 торби по 25 кг.',
   intro: 'Въведи площта и средната дебелина и избери материала. Калкулаторът умножава по разхода на милиметър от техническите листове, добавя фира и закръгля до цели торби.',
   big: 'торби',
   bigOne: 'торба',
@@ -1121,6 +1126,15 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         </aside>
       </section>
 
+      {kind === 'loan' && (
+        <section class="tool-schedule" data-schedule hidden aria-labelledby="schedule-title">
+          <h2 id="schedule-title">Погасителен план</h2>
+          <p>Колко от вноските е лихва и колко главница, и колко дължиш след всяка година. Лихвата за месеца е остатъкът × годишната лихва ÷ 12.</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th data-schedule-period>Година</th><th>Платено</th><th>Лихва</th><th>Главница</th><th>Остатък</th></tr></thead><tbody data-schedule-body></tbody></table></div>
+          <button type="button" data-schedule-toggle data-labels="Покажи по месеци|Покажи по години" data-periods="Месец|Година">Покажи по месеци</button>
+        </section>
+      )}
+
       {!embed && (<>
       <section class="tool-notes">
         <article>
@@ -1181,7 +1195,8 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { addDays, convertEuro, daysBetween, loanPayment, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
+  import { addWorkdays, workdaysBetween } from '../lib/workdays'
+  import { addDays, convertEuro, daysBetween, loanPayment, loanSchedule, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateFence, FENCE_PANELS as PANELS } from '../lib/materials'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
@@ -1200,6 +1215,30 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
     const money = (value: number) => `${value.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
     const unitOut = out('bigUnit')
     let tracked = false
+    // Loan repayment plan: a table under the calculator, by year or by month.
+    const schedule = document.querySelector<HTMLElement>('[data-schedule]')
+    let scheduleView: 'years' | 'months' = 'years'
+    let lastPlan: { years: ScheduleRow[]; months: ScheduleRow[] } | null = null
+    const showSchedule = (rows: ScheduleRow[] | null) => {
+      if (!schedule) return
+      schedule.hidden = !rows?.length
+      if (!rows) return
+      const body = schedule.querySelector('[data-schedule-body]')!
+      body.replaceChildren(...rows.map((row) => {
+        const tr = document.createElement('tr')
+        for (const value of [String(row.period), money(row.payment), money(row.interest), money(row.principal), money(row.balance)]) tr.append(Object.assign(document.createElement('td'), { textContent: value }))
+        return tr
+      }))
+    }
+    schedule?.querySelector<HTMLButtonElement>('[data-schedule-toggle]')?.addEventListener('click', (event) => {
+      const button = event.currentTarget as HTMLButtonElement
+      scheduleView = scheduleView === 'years' ? 'months' : 'years'
+      const [toMonths, toYears] = (button.dataset.labels ?? '').split('|')
+      const [month, year] = (button.dataset.periods ?? '').split('|')
+      button.textContent = scheduleView === 'years' ? toMonths : toYears
+      schedule.querySelector('[data-schedule-period]')!.textContent = scheduleView === 'years' ? year : month
+      if (lastPlan) showSchedule(lastPlan[scheduleView])
+    })
 
     const render = (big: number | null, rows: [string, string, string?][]) => {
       out('big').textContent = big === null ? '–' : Number.isInteger(big) ? big.toLocaleString('bg-BG') : fmt(big, 2)
@@ -1259,8 +1298,9 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         ])
       } else if (kind === 'dates') {
         const from = field('from')?.value ?? ''
-        if (field('mode')?.value === 'add') {
-          const date = addDays(from, Math.round(signed('days')))
+        if (field('mode')?.value === 'add' || field('mode')?.value === 'addwork') {
+          const work = field('mode')?.value === 'addwork'
+          const date = work ? addWorkdays(from, Math.round(signed('workdays')), 'bg') : addDays(from, Math.round(signed('days')))
           if (!date) return render(null, [])
           const shown = new Date(`${date}T12:00:00`)
           render(null, [
@@ -1272,21 +1312,32 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           return
         }
         const span = daysBetween(from, field('to')?.value ?? '')
-        if (!span) return render(null, [])
+        const work = workdaysBetween(from, field('to')?.value ?? '', 'bg')
+        if (!span || !work) return render(null, [])
         render(span.days, [
-          ['Делнични дни', `${span.weekdays}`, 'понеделник – петък, без празниците'],
+          ['Работни дни', `${work.workdays}`, `без събота, неделя и ${work.holidays} ${work.holidays === 1 ? 'празник' : 'празника'} в делничен ден`],
+          ['Делнични дни', `${span.weekdays}`, 'понеделник – петък, с празниците'],
           ['Седмици', `${span.weeks} седм. и ${Math.abs(span.restDays)} дни`],
           ['С двата крайни дни', `${span.days + Math.sign(span.days || 1)}`, 'ако броиш и последния ден'],
         ])
       } else if (kind === 'loan') {
         const months = field('termUnit')?.value === 'months' ? num('term') : num('term') * 12
         const result = loanPayment(num('principal'), num('rate'), months)
-        if (!result) return render(null, [])
-        render(Math.round(result.payment * 100) / 100, [
+        if (!result) { showSchedule(null); return render(null, []) }
+        const extra = num('extra')
+        const plan = loanSchedule(num('principal'), num('rate'), months, extra)
+        lastPlan = plan
+        showSchedule(plan?.[scheduleView] ?? null)
+        const rows: [string, string, string?][] = [
           ['Брой вноски', `${result.months}`],
           ['Общо връщаш', money(result.total)],
           ['Лихва', money(result.interest), `${fmt((result.interest / num('principal')) * 100, 1)}% от сумата`],
-        ])
+        ]
+        if (plan && extra > 0) {
+          rows.push(['С допълнително погасяване', `${plan.paidOffIn} месеца`, `${result.months - plan.paidOffIn} месеца по-рано`])
+          rows.push(['Спестена лихва', money(result.interest - plan.totalInterest), `лихва ${money(plan.totalInterest)}`])
+        }
+        render(Math.round(result.payment * 100) / 100, rows)
       } else if (kind === 'salary') {
         const fromNet = field('mode')?.value === 'net'
         const born = (field('born')?.value === 'before1960' ? 'before1960' : 'after1959') as BirthGroup

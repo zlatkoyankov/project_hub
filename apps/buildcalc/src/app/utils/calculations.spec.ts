@@ -1,5 +1,5 @@
 import {
-  calculateAdhesive, calculateArea, calculateInsulation, calculateMasonry, MASONRY_UNITS, masonryPerSquareFoot, calculateScreed, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
+  calculateAdhesive, TROWEL_NOTCHES, calculateArea, calculateInsulation, calculateMasonry, MASONRY_UNITS, masonryPerSquareFoot, calculateScreed, calculateWallpaper, calculateConcrete, calculateDrywall, estimateFraming, groutPerSquareMeter, suggestedNotch, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile,
 } from './calculations';
 import { CALCULATORS } from '../data/calculators';
 
@@ -310,6 +310,26 @@ describe('calculation utilities', () => {
   });
 });
 
+describe('UK bricks and packs', () => {
+  it('gives about 60 UK bricks and 10 UK blocks per m²', () => {
+    const uk = MASONRY_UNITS.findIndex((unit) => unit.label.startsWith('UK brick'));
+    const block = MASONRY_UNITS.findIndex((unit) => unit.label.startsWith('UK concrete block'));
+    expect(masonryPerSquareFoot(MASONRY_UNITS[uk]).units * 10.7639104).toBeCloseTo(1 / (0.225 * 0.075), 6);
+    expect(masonryPerSquareFoot(MASONRY_UNITS[block]).units * 10.7639104).toBeCloseTo(1 / (0.45 * 0.225), 6);
+  });
+
+  it('rounds up to whole packs', () => {
+    const uk = MASONRY_UNITS.findIndex((unit) => unit.label.startsWith('UK brick'));
+    // 5 m × 2.4 m = 12 m² at 59.26 per m² with 5% waste = 747 bricks; packs of 500 → 2 packs.
+    const rows = calculateMasonry({ length: 5, height: 2.4, openings: 0, unit: uk, waste: 5, mortarYield: 16, packSize: 500, dimensionUnit: 2, openingsUnit: 2, yieldUnit: 1 }).rows;
+    const value = (label: string) => rows.find((row) => row.label === label)?.value;
+    expect(value('Bricks or blocks')).toBe(Math.ceil(12 / (0.225 * 0.075) * 1.05));
+    expect(value('Packs')).toBe(2);
+    const without = calculateMasonry({ length: 5, height: 2.4, openings: 0, unit: uk, waste: 5, mortarYield: 16, dimensionUnit: 2, openingsUnit: 2, yieldUnit: 1 }).rows;
+    expect(without.some((row) => row.label === 'Packs')).toBe(false);
+  });
+});
+
 describe('worked examples in the "In short" answers', () => {
   it('matches the paint calculator answer', () => {
     const answer = CALCULATORS.find((item) => item.slug === 'paint-calculator')!.answer!;
@@ -320,5 +340,49 @@ describe('worked examples in the "In short" answers', () => {
     expect(value('Estimated paint').toFixed(2)).toBe('1.83');
     expect(value('Whole-gallon purchase')).toBe(2);
     for (const text of ['352 sq ft', '320 sq ft', '350 sq ft per gallon', '1.83 gallons', 'buy 2']) expect(answer).toContain(text);
+  });
+
+  const answerOf = (slug: string) => CALCULATORS.find((item) => item.slug === slug)!.answer!;
+  const kgOf = (lb: number) => lb * 0.45359237;
+
+  it('matches the laminate flooring answer', () => {
+    const rows = calculateFlooring({ length: 14, width: 12, waste: 10, boxArea: 20, baseboards: false }).rows;
+    const value = (label: string) => rows.find((row) => row.label === label)!.value;
+    expect(value('Floor area')).toBe(168);
+    expect(value('Area with waste')).toBeCloseTo(184.8, 5);
+    expect(value('Boxes needed')).toBe(10);
+    for (const text of ['168 sq ft', '184.8 sq ft', '20 sq ft boxes', '10 boxes']) expect(answerOf('laminate-flooring-calculator')).toContain(text);
+  });
+
+  it('matches the tile adhesive and grout answer', () => {
+    const rows = calculateAdhesive({ surfaceArea: 10, openingsUnit: 2, tileLength: 300, tileWidth: 300, tileThickness: 8, tileUnit: 4, grout: 3, groutUnit: 4, notch: -1, waste: 0, adhesiveBag: 25, groutBag: 5, weightUnit: 1 }).rows;
+    const value = (label: string) => rows.find((row) => row.label === label)!.value;
+    expect(value('Trowel notch')).toBe(10);
+    expect(kgOf(value('Tile adhesive'))).toBeCloseTo(42, 5);
+    expect(value('Adhesive bags')).toBe(2);
+    expect(kgOf(value('Grout')).toFixed(1)).toBe('2.6');
+    expect(TROWEL_NOTCHES.find((notch) => notch.mm === 6)!.kgPerM2).toBe(2.7);
+    expect(groutPerSquareMeter(300, 300, 3, 8).toFixed(2)).toBe('0.26');
+    for (const text of ['4.2 kg per m²', '0.86 lb per sq ft', '2.7 kg per m²', '0.26 kg per m²', '42 kg', '2 bags of 25 kg', '2.6 kg']) expect(answerOf('tile-adhesive-grout-calculator')).toContain(text);
+  });
+
+  it('matches the self-leveling compound answer', () => {
+    const metric = calculateScreed({ surfaceArea: 10, thickness: 5, material: 1, waste: 0, bagSize: 25, openingsUnit: 2, depthUnit: 4, weightUnit: 1 }).rows;
+    const us = calculateScreed({ surfaceArea: 100, thickness: 0.25, material: 1, waste: 0, bagSize: 50, openingsUnit: 0, depthUnit: 1, weightUnit: 0 }).rows;
+    const value = (rows: typeof metric, label: string) => rows.find((row) => row.label === label)!.value;
+    expect(kgOf(value(metric, 'Dry mix'))).toBeCloseTo(80, 5);
+    expect(value(metric, 'Bags')).toBe(4);
+    expect(Math.round(value(us, 'Dry mix'))).toBe(208);
+    expect(value(us, 'Bags')).toBe(5);
+    for (const text of ['1.5 to 1.6 kg per m²', '80 kg', '4 bags of 25 kg', '208 lb', '5 bags of 50 lb']) expect(answerOf('screed-plaster-calculator')).toContain(text);
+  });
+
+  it('matches the brick answer', () => {
+    const rows = calculateMasonry({ length: 20, height: 6, openings: 0, unit: 0, waste: 0, mortarYield: 0.65, dimensionUnit: 0, openingsUnit: 0, yieldUnit: 0 }).rows;
+    const value = (label: string) => rows.find((row) => row.label === label)!.value;
+    expect(value('Units per sq ft').toFixed(1)).toBe('6.9');
+    expect(value('Bricks or blocks')).toBe(823);
+    expect(Math.round(masonryPerSquareFoot(MASONRY_UNITS[2]).units * 10.7639104)).toBe(51);
+    for (const text of ['6.9 bricks per sq ft', '823 bricks', '51 bricks per m²']) expect(answerOf('brick-block-calculator')).toContain(text);
   });
 });

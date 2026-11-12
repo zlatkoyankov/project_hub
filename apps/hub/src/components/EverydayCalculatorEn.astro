@@ -102,31 +102,34 @@ const CONFIGS: Record<Kind, Config> = {
     bg: '/bg/kalkulator-dati/',
     tool: 'date-calculator',
     catalogId: 'dates',
-    title: 'Date Calculator: Days Between Dates and Date After N Days | Zyankov.eu',
-    description: 'Count the days between two dates, how many of them are weekdays, and find the date a number of days after or before another. For deadlines, notice periods and trips.',
+    title: 'Date & Business Days Calculator: Days Between Dates | Zyankov.eu',
+    description: 'Count the days and business days between two dates, without US federal or UK bank holidays, and find the date N days or N business days from another date.',
     h1: 'Date calculator',
     intro: 'Count how many days are left until a date or have passed since one, or find the date 30, 60 or 90 days from now. Handy for deadlines, notice periods and payment terms.',
     answer: 'From 1 January to 31 December 2027 there are 364 days (the end date is not counted, so add 1 to include both), of which 260 are Monday to Friday. 90 days after 1 March 2027 is 30 May 2027.',
     resultTitle: 'RESULT',
     big: 'days',
-    caveat: 'Weekdays are Monday to Friday. Public holidays are not taken out.',
-    formula: 'days = end date − start date (the end date is not counted)',
-    how: 'The difference between two dates is counted in whole days: the start day counts and the end day does not, so Monday to the next Monday is 7 days. Weekdays are the Mondays to Fridays in that span. For a date N days later, N days are added to the start date, taking the different month lengths and leap years into account.',
+    caveat: 'Business days skip weekends and, if you pick a calendar, the US federal holidays or the UK bank holidays of that region (observed dates).',
+    formula: 'days = end date − start date (the end date is not counted); business days = weekdays − holidays on weekdays',
+    how: 'The difference between two dates is counted in whole days: the start day counts and the end day does not, so Monday to the next Monday is 7 days. Weekdays are the Mondays to Fridays in that span. For a date N days later, N days are added to the start date, taking the different month lengths and leap years into account. Business days are the weekdays left after the holidays of the calendar you pick; for N business days later the start day is not counted and each following working day is.',
     tips: [
       'If a term says "within 14 days of receipt", the day of receipt usually does not count. Check the contract or the law for the exact rule.',
       'To count both end days (for example days of leave), add 1.',
-      'Public holidays are not subtracted from the weekdays. See the US or UK holiday list for the year.',
+      'Pick a holiday calendar to take out the US federal holidays or the UK bank holidays. They are worked out by the published rules for every year; one-off days (such as a state funeral) are not included.',
+      'For "N business days after", the start day does not count: 3 business days after Wednesday 22 December 2027 is Tuesday 28 December in the US, because Christmas is observed on Friday 24 December.',
     ],
     jsonName: 'Date calculator',
     formTitle: 'The dates',
     formHint: 'An empty date is filled in with today.',
     selects: [
-      { name: 'mode', label: 'Calculation', options: [{ value: 'between', label: 'Days between two dates' }, { value: 'add', label: 'Date after (or before) N days' }] },
+      { name: 'mode', label: 'Calculation', options: [{ value: 'between', label: 'Days between two dates' }, { value: 'add', label: 'Date after (or before) N days' }, { value: 'addwork', label: 'Date after (or before) N business days' }] },
+      { name: 'calendar', label: 'Holidays to skip', options: [{ value: 'none', label: 'None (weekends only)' }, { value: 'us', label: 'US federal holidays' }, { value: 'england-and-wales', label: 'UK: England and Wales' }, { value: 'scotland', label: 'UK: Scotland' }, { value: 'northern-ireland', label: 'UK: Northern Ireland' }] },
     ],
     fields: [
       { name: 'from', label: 'Start date', unit: '', value: '', type: 'date' },
       { name: 'to', label: 'End date', unit: '', value: '', type: 'date', show: 'mode:between' },
       { name: 'days', label: 'Number of days', unit: 'days', value: 30, step: '1', signed: true, show: 'mode:add', hint: 'Use a minus sign for a date in the past, for example −14.' },
+      { name: 'workdays', label: 'Number of business days', unit: 'days', value: 10, step: '1', signed: true, show: 'mode:addwork', hint: 'Use a minus sign to count back.' },
     ],
   },
   loan: {
@@ -148,6 +151,7 @@ const CONFIGS: Record<Kind, Config> = {
       'Compare loans by APR, not just the interest rate. The APR includes the lender\'s fees.',
       'A longer term lowers the payment but raises the total interest.',
       'This is for a fixed rate. With a variable rate the payment changes with the index.',
+      'Extra payments in the first years save the most interest, because the balance is highest then. Check whether your loan has a prepayment penalty.',
     ],
     sources: [
       { label: 'Math Central (University of Regina): the amortization payment formula', href: 'https://mathcentral.uregina.ca/QandQ/topics/amortization' },
@@ -166,6 +170,7 @@ const CONFIGS: Record<Kind, Config> = {
       { name: 'principal', label: 'Loan amount', unit: '', value: 25000 },
       { name: 'rate', label: 'Annual interest rate', unit: '%', value: 7 },
       { name: 'term', label: 'Term', unit: '', value: 5, step: '1' },
+      { name: 'extra', label: 'Extra payment each month', unit: '', value: 0, hint: 'Optional: an amount on top of the payment that goes to the principal.' },
     ],
   },
 }
@@ -240,6 +245,15 @@ const jsonLd = {
         </aside>
       </section>
 
+      {kind === 'loan' && (
+        <section class="tool-schedule" data-schedule hidden aria-labelledby="schedule-title">
+          <h2 id="schedule-title">Amortization schedule</h2>
+          <p>How much of your payments goes to interest and how much to principal, and what you still owe after each year. Each month's interest is the balance × the annual rate ÷ 12.</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th data-schedule-period>Year</th><th>Paid</th><th>Interest</th><th>Principal</th><th>Balance</th></tr></thead><tbody data-schedule-body></tbody></table></div>
+          <button type="button" data-schedule-toggle data-labels="Show by month|Show by year" data-periods="Month|Year">Show by month</button>
+        </section>
+      )}
+
       <section class="tool-notes">
         <article>
           <h2>How it is calculated</h2>
@@ -282,7 +296,8 @@ const jsonLd = {
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { addDays, daysBetween, loanPayment, percent, type PercentMode } from '../lib/everyday'
+  import { addDays, daysBetween, loanPayment, loanSchedule, percent, type PercentMode, type ScheduleRow } from '../lib/everyday'
+  import { addWorkdays, workdaysBetween, type HolidayCalendar } from '../lib/workdays'
 
   const root = document.querySelector<HTMLElement>('[data-everyday]')
   if (root) {
@@ -299,6 +314,29 @@ const jsonLd = {
     const unitOut = out('bigUnit')
     const defaultUnit = unitOut.textContent ?? ''
     let tracked = false
+    // Amortization schedule: a table under the calculator, by year or by month.
+    const schedule = document.querySelector<HTMLElement>('[data-schedule]')
+    let scheduleView: 'years' | 'months' = 'years'
+    let lastPlan: { years: ScheduleRow[]; months: ScheduleRow[] } | null = null
+    const showSchedule = (rows: ScheduleRow[] | null) => {
+      if (!schedule) return
+      schedule.hidden = !rows?.length
+      if (!rows) return
+      schedule.querySelector('[data-schedule-body]')!.replaceChildren(...rows.map((row) => {
+        const tr = document.createElement('tr')
+        for (const value of [String(row.period), money(row.payment), money(row.interest), money(row.principal), money(row.balance)]) tr.append(Object.assign(document.createElement('td'), { textContent: value }))
+        return tr
+      }))
+    }
+    schedule?.querySelector<HTMLButtonElement>('[data-schedule-toggle]')?.addEventListener('click', (event) => {
+      const button = event.currentTarget as HTMLButtonElement
+      scheduleView = scheduleView === 'years' ? 'months' : 'years'
+      const [toMonths, toYears] = (button.dataset.labels ?? '').split('|')
+      const [month, year] = (button.dataset.periods ?? '').split('|')
+      button.textContent = scheduleView === 'years' ? toMonths : toYears
+      schedule.querySelector('[data-schedule-period]')!.textContent = scheduleView === 'years' ? year : month
+      if (lastPlan) showSchedule(lastPlan[scheduleView])
+    })
 
     const render = (big: string | null, rows: [string, string, string?][], unit = defaultUnit) => {
       out('big').textContent = big ?? '–'
@@ -333,8 +371,10 @@ const jsonLd = {
         render(fmt(Math.round(result.value * 100) / 100), rows, unit)
       } else if (kind === 'dates') {
         const from = field('from')?.value ?? ''
-        if (field('mode')?.value === 'add') {
-          const date = addDays(from, Math.round(signed('days')))
+        const calendar = (field('calendar')?.value ?? 'none') as HolidayCalendar
+        if (field('mode')?.value === 'add' || field('mode')?.value === 'addwork') {
+          const work = field('mode')?.value === 'addwork'
+          const date = work ? addWorkdays(from, Math.round(signed('workdays')), calendar) : addDays(from, Math.round(signed('days')))
           if (!date) return render(null, [])
           const shown = new Date(`${date}T12:00:00`)
           render(shown.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }), [
@@ -344,21 +384,32 @@ const jsonLd = {
           return
         }
         const span = daysBetween(from, field('to')?.value ?? '')
-        if (!span) return render(null, [])
+        const work = workdaysBetween(from, field('to')?.value ?? '', calendar)
+        if (!span || !work) return render(null, [])
         render(span.days.toLocaleString('en-US'), [
-          ['Weekdays', `${span.weekdays}`, 'Monday – Friday, holidays not removed'],
+          ['Business days', `${work.workdays}`, calendar === 'none' ? 'Monday – Friday; pick a calendar to skip holidays' : `without weekends and ${work.holidays} holiday${work.holidays === 1 ? '' : 's'} on a weekday`],
+          ['Weekdays', `${span.weekdays}`, 'Monday – Friday, holidays included'],
           ['Weeks', `${span.weeks} wk and ${Math.abs(span.restDays)} days`],
           ['Counting both end dates', `${span.days + Math.sign(span.days || 1)}`, 'if you count the last day too'],
         ], Math.abs(span.days) === 1 ? 'day' : 'days')
       } else if (kind === 'loan') {
         const months = field('termUnit')?.value === 'months' ? num('term') : num('term') * 12
         const result = loanPayment(num('principal'), num('rate'), months)
-        if (!result) return render(null, [])
-        render(money(result.payment), [
+        if (!result) { showSchedule(null); return render(null, []) }
+        const extra = num('extra')
+        const plan = loanSchedule(num('principal'), num('rate'), months, extra)
+        lastPlan = plan
+        showSchedule(plan?.[scheduleView] ?? null)
+        const rows: [string, string, string?][] = [
           ['Number of payments', `${result.months}`],
           ['Total paid', money(result.total)],
           ['Interest', money(result.interest), `${fmt((result.interest / num('principal')) * 100, 1)}% of the amount`],
-        ])
+        ]
+        if (plan && extra > 0) {
+          rows.push(['With the extra payment', `${plan.paidOffIn} months`, `${result.months - plan.paidOffIn} months sooner`])
+          rows.push(['Interest saved', money(result.interest - plan.totalInterest), `interest ${money(plan.totalInterest)}`])
+        }
+        render(money(result.payment), rows)
       }
     }
 

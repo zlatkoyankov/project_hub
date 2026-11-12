@@ -172,3 +172,46 @@ export function salaryFromNet(net: number, born: BirthGroup = 'after1959', accid
   }
   return salaryFromGross(gross, born, accidentRate)
 }
+
+export interface ScheduleRow {
+  /** Month number, or year number in a yearly summary. */
+  period: number
+  payment: number
+  interest: number
+  principal: number
+  balance: number
+}
+
+export interface LoanSchedule {
+  months: ScheduleRow[]
+  years: ScheduleRow[]
+  totalInterest: number
+  /** Months until the loan is paid off (fewer than the term with an extra payment). */
+  paidOffIn: number
+}
+
+/** Month-by-month repayment plan of an equal-payment loan, with an optional extra payment towards the principal each
+ *  month. Interest each month is the balance × annual rate ÷ 12 (the same r as in loanPayment). */
+export function loanSchedule(principal: number, annualRate: number, months: number, extra = 0): LoanSchedule | null {
+  const base = loanPayment(principal, annualRate, months)
+  if (!base || !(extra >= 0)) return null
+  const r = annualRate / 100 / 12
+  const rows: ScheduleRow[] = []
+  let balance = principal
+  for (let month = 1; balance > 1e-9 && month <= base.months; month += 1) {
+    const interest = balance * r
+    const principalPart = Math.min(balance, base.payment - interest + extra)
+    balance -= principalPart
+    rows.push({ period: month, payment: interest + principalPart, interest, principal: principalPart, balance: Math.max(0, balance) })
+  }
+  const years: ScheduleRow[] = []
+  rows.forEach((row) => {
+    const year = Math.ceil(row.period / 12)
+    const last = years[year - 1] ?? (years[year - 1] = { period: year, payment: 0, interest: 0, principal: 0, balance: 0 })
+    last.payment += row.payment
+    last.interest += row.interest
+    last.principal += row.principal
+    last.balance = row.balance
+  })
+  return { months: rows, years, totalInterest: rows.reduce((sum, row) => sum + row.interest, 0), paidOffIn: rows.length }
+}
