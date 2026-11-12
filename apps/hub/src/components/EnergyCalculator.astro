@@ -94,8 +94,9 @@ const t = bg
       clear: 'Изчисти списъка',
     }
   : {
-      title: 'Appliance Energy Cost Calculator: What Does It Cost to Run? | Zyankov.eu',
-      description: 'Work out how many kWh a heater, air conditioner or water heater uses and what it costs per day, month and year at your electricity price.',
+      title: 'Electricity Cost Calculator: What Does a Heater Cost to Run? | Zyankov.eu',
+      description: 'What a space heater, air conditioner or water heater costs to run: enter the watts and your price per kWh to see the cost per hour, day, month and year.',
+      answer: 'A 1,500 W space heater uses 1.5 kWh an hour. At the US average of 18.83¢ per kWh (EIA, April 2026) that is about 28¢ an hour; a 750 W heater costs about 14¢ and a 2 kW heater about 38¢. Running 8 hours a day for 30 days, the 1,500 W heater costs about $68 a month.',
       crumbs: ['Home', 'Home & DIY'],
       kicker: 'HOME & ENERGY',
       h1: 'What does it cost to run?',
@@ -173,6 +174,7 @@ const jsonLd = {
           <p class="tool-kicker">{t.kicker}</p>
           <h1>{t.h1}</h1>
           <p class="tool-intro">{t.intro}</p>
+          {'answer' in t && t.answer && <p class="tool-answer"><strong>In short:</strong> {t.answer}</p>}
         </div>
       </header>
 

@@ -18,14 +18,14 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./pages/home').then((module) => module.HomePage),
-    title: 'Free Construction & Home Improvement Calculators | BuildCalc',
+    title: 'Building Material Estimator: Free Home Improvement Calculators | BuildCalc',
     data: { description: 'Estimate materials for home improvement, renovation, and landscaping projects with free, practical BuildCalc calculators.' },
   },
   {
     path: 'all-calculators',
     loadComponent: () => import('./pages/directory').then((module) => module.DirectoryPage),
     title: 'All Construction Material Calculators | BuildCalc',
-    data: { description: 'Browse free gravel, paint, tile, concrete, square footage, and mulch calculators for your next project.' },
+    data: { description: 'Browse 13 free material calculators: concrete, gravel, paint, tile, laminate, drywall, tile adhesive and grout, screed, insulation, bricks and more.' },
   },
   {
     // Chrome-free copy of a calculator for other sites to show in an iframe.

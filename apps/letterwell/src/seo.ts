@@ -67,8 +67,8 @@ export const seoMetadata: Record<Language, { title: string; description: string;
     ],
   },
   bg: {
-    title: 'Думи от букви: търсачка за български думи | Letterwell',
-    description: 'Намери български думи от зададени букви, използвай филтри и разбъркай произволни букви. Провери точките си в Scrabble и Boggle.',
+    title: 'Помощник за думи: думи от букви на български | Letterwell',
+    description: 'Помощник за думи: намери български думи от зададени букви, по брой букви (например всички думи със 7 букви) и по позиция. Точки за Scrabble и Boggle.',
     structuredDescription: 'Българска търсачка за думи, която съставя думи от зададени букви и изчислява точки за Scrabble и Boggle.',
     features: [
       'Българска търсачка за думи',
@@ -108,7 +108,7 @@ export const crosswordSocialDescriptions: Record<Language, string> = {
 
 export const crosswordMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
   en: {
-    title: 'Crossword Solver: Find Words by Pattern | Letterwell',
+    title: 'Crossword Solver & Helper: Word Finder by Pattern | Letterwell',
     description: 'Stuck on a crossword clue? Type the letters you know, a ? for each gap, and see every word that fits. Filter by letters to include or leave out.',
     structuredDescription: 'A crossword helper that lists every English word matching a pattern of known letters and gaps.',
     features: ['Crossword pattern search', 'Letters to include', 'Letters to leave out', 'Links to dictionary definitions'],
