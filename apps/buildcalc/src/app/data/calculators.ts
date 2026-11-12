@@ -42,6 +42,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'gravel-calculator', bg: '/bg/kalkulator-chakal/', title: 'Gravel Calculator', seoTitle: 'Gravel Calculator: Cubic Yards and Tons', shortTitle: 'Gravel', category: 'Landscaping',
     description: 'Estimate gravel volume, weight, and material cost for a driveway, path, or garden bed.',
+    answer: 'Multiply length × width × depth and divide by 27 to get cubic yards. A 20 × 10 ft area 3 in deep is 50 cu ft, or 1.85 cu yd; with 10% extra for compaction that is 2.04 cu yd. At 2,700 lb per cubic yard that weighs about 2.75 tons.',
     intro: 'Plan a gravel delivery with a practical estimate of volume and weight. Enter your project dimensions and adjust the example density to match your supplier’s material.',
     sources: src(['Aggregate Markets: loose density of gravel, sand and crushed stone, about 1.35 tons per cubic yard', 'https://aggregatemarkets.com/en/calculators']), kind: 'gravel', icon: 'gravel', keywords: ['stone', 'driveway', 'aggregate', 'rock', 'tons'],
     example: 'A 20 ft × 10 ft area at 3 in deep holds about 1.85 cubic yards before waste.',
@@ -68,6 +69,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'tile-calculator', bg: '/bg/kalkulator-plochki/', title: 'Tile Calculator', seoTitle: 'Tile Calculator: How Many Tiles and Boxes?', shortTitle: 'Tile', category: 'Flooring & Tile',
     description: 'Calculate approximate tile quantity and boxes for a rectangular floor or wall.',
+    answer: 'Divide the floor area by the area one tile covers with its grout joint, add waste and round up to whole boxes. A 10 × 12 ft room is 120 sq ft; 12 × 12 in tiles with 1/8 in joints cover about 1.02 sq ft each, so with 10% waste you need 130 tiles, or 13 boxes of 10.',
     intro: 'Estimate tiles for a simple rectangular layout, including a configurable waste allowance. Complex patterns and irregular spaces require additional planning.',
     sources: src(['Tiles UK: 10% waste for a straight layout, 15% diagonal, up to 20% herringbone', 'https://tiles.uk.com/how-many-tiles-do-i-need/'], ['Buildmat: 10% straight or brick layout, 15% diagonal or herringbone', 'https://www.buildmat.com.au/blogs/help-centre/how-to-calculate-how-many-tiles-you-need']), kind: 'tile', icon: 'tile', keywords: ['floor', 'bathroom', 'boxes', 'ceramic', 'backsplash'],
     example: 'A 10 ft × 12 ft room has 120 square feet of floor area before waste.',
@@ -80,6 +82,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'concrete-calculator', bg: '/bg/kalkulator-beton/', title: 'Concrete Calculator', seoTitle: 'Concrete Calculator: Cubic Yards for a Slab', shortTitle: 'Concrete', category: 'Concrete & Masonry',
     description: 'Estimate concrete volume for a slab and optionally calculate material cost.',
+    answer: 'Length × width × thickness in feet, divided by 27, gives cubic yards. A 10 × 10 ft slab 4 in thick is 33.3 cu ft, or 1.23 cu yd; with 10% extra, order about 1.36 cu yd.',
     intro: 'Estimate the volume of concrete for a rectangular slab. The result is a planning estimate, not a structural design or placement specification.',
     sources: src(['QUIKRETE Concrete Mix 80 lb: about 0.6 cu ft per bag', 'https://www.pacesupply.com/Product/MORCONCRETE80']), kind: 'concrete', icon: 'concrete', keywords: ['slab', 'cement', 'patio', 'cubic yards', 'foundation'],
     example: 'A 10 ft × 10 ft slab that is 4 in thick is about 1.23 cubic yards before waste.',
@@ -92,6 +95,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'square-footage-calculator', title: 'Square Footage Calculator', seoTitle: 'Square Footage Calculator: Room Area in sq ft & m²', shortTitle: 'Square footage', category: 'General Construction',
     description: 'Add multiple rectangular rooms or spaces to find their combined square footage.',
+    answer: 'Multiply length × width for each rectangle and add them up. Rooms of 12 × 10 ft and 14 × 11 ft are 120 + 154 = 274 sq ft, or about 25.46 m². One square meter is 10.764 sq ft, so a 4 × 3.5 m room is 14 m², about 150.7 sq ft.',
     intro: 'Add rectangular areas one at a time to total a home, room, or project footprint. Choose feet or inches for each measurement.',
     kind: 'area', icon: 'area', keywords: ['room', 'square feet', 'floor area', 'measurement', 'square meters'],
     example: 'A 12 ft × 10 ft room is 120 square feet.',
@@ -104,6 +108,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'mulch-calculator', title: 'Mulch Calculator', seoTitle: 'Mulch Calculator: Cubic Yards for Garden Beds', shortTitle: 'Mulch', category: 'Landscaping',
     description: 'Estimate mulch for garden beds and landscaping in cubic feet and cubic yards, with a waste allowance and an optional cost.',
+    answer: 'Area × depth, divided by 27, gives cubic yards. A 10 × 10 ft bed 3 in deep is 25 cu ft, or 0.93 cu yd; with 10% extra that is about 1.02 cu yd.',
     intro: 'Estimate mulch in cubic feet and cubic yards from the bed dimensions and planned depth. Depth recommendations vary by material and use.',
     sources: src(['Mississippi State University Extension: 2 to 3 inches of mulch for landscape beds', 'https://extension.msstate.edu/news/southern-gardening/2022/use-mulch-for-beauty-and-weed-temperature-control']), kind: 'mulch', icon: 'mulch', keywords: ['garden', 'landscape', 'cubic yards', 'bark', 'beds'],
     example: 'A 10 ft × 10 ft bed at 3 in deep holds about 0.93 cubic yards before waste.',
@@ -129,6 +134,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'drywall-calculator', bg: '/bg/kalkulator-gipsokarton/', title: 'Drywall Calculator', seoTitle: 'Drywall Calculator: Sheets for Walls and Ceiling', shortTitle: 'Drywall', category: 'General Construction',
     description: 'Estimate drywall sheets for the walls and ceiling of a room, minus doors and windows, with waste and cost.',
+    answer: 'Room perimeter × wall height, minus doors and windows, plus waste, divided by the sheet area. A 12 × 10 ft room with 8 ft walls has 352 sq ft of wall; minus 21 sq ft of openings and with 10% waste that is 364.1 sq ft, or 12 sheets of 4 × 8 ft.',
     intro: 'Enter the room size and wall height, subtract doors and windows, and choose a sheet size. The estimate adds waste and rounds up to whole sheets.',
     sources: src(['Screw spacing per IRC R702.3.5 (8 in edges, 16 in field): about 1 screw per sq ft on walls', 'https://drywallcalcs.pages.dev/how-many-screws-per-sheet-of-drywall/'], ['USG Sheetrock joint tape: about 370 ft per 1,000 sq ft of panels', 'https://images.homedepot-static.com/catalog/pdfImages/7a/7a2ad9f3-62c7-45ef-b58e-869ccdbca0c6.pdf'], ['USG: about two 4.5-gallon pails of lightweight compound per 1,000 sq ft (about 10 gallons of all-purpose)', 'https://assemblies-tools.usg.com/content/usgcom/en/resource-center/faqs/1977.html'], ['Knauf Type A 12.5 mm: sheet sizes 1.2 × 2.0 to 3.0 m', 'https://knauf.com/bg-BG/p/produkt/gipskartoneni-ploskosti-tip-a-12-5-mm-10003_0102']), kind: 'drywall', icon: 'drywall', keywords: ['plasterboard', 'gypsum board', 'sheetrock', 'walls', 'ceiling', 'sheets'],
     example: 'A 12 ft × 10 ft room with 8 ft walls has 352 square feet of wall before openings.',
@@ -155,6 +161,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'wallpaper-calculator', bg: '/bg/kalkulator-tapeti/', title: 'Wallpaper Calculator', seoTitle: 'Wallpaper Calculator: How Many Rolls?', shortTitle: 'Wallpaper', category: 'Paint & Finishes',
     description: 'Estimate rolls of wallpaper for a room from the wall size, roll size and pattern repeat, counted strip by strip.',
+    answer: 'Count strips, not area. A 12 × 10 ft room has a 44 ft perimeter; with 20.5 in wide rolls that is 25 strips once the door and window are taken out. With 8 ft walls each strip is 8.33 ft including trim, so a 33 ft roll gives 3 strips: 9 rolls, plus a spare from the same batch.',
     intro: 'Enter the room size and wall height, doors and windows, and the size of one roll. The estimate counts the strips you can cut from each roll, allowing for the pattern repeat.',
     sources: src(['Morris & Co: 10 cm (4 in) trim allowance per drop', 'https://wmorrisandco.com/uk/wallpaper-quantity-calculator'], ['Etoffe: count wallpaper in drops, height + trim + pattern repeat', 'https://www.etoffe.com/en/content/16-calculate-the-number-of-rolls-of-wallpaper']), kind: 'wallpaper', icon: 'paint', keywords: ['wall covering', 'rolls', 'pattern repeat', 'drop', 'strips', 'feature wall'],
     example: 'A 12 ft × 10 ft room with 8 ft walls needs about 25 strips of 20.5 in wallpaper, or 9 rolls of 33 ft.',
@@ -180,6 +187,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'insulation-board-calculator', bg: '/bg/kalkulator-izolatsiya/', title: 'Insulation Board Calculator', seoTitle: 'Insulation Board Calculator: Boards and EIFS', shortTitle: 'Insulation boards', category: 'General Construction',
     description: 'Estimate rigid foam or mineral wool boards for a wall, and the adhesive, base coat, mesh and anchors for exterior insulation (EIFS).',
+    answer: 'Wall area minus doors and windows, plus waste, divided by the board area. 1,000 sq ft of wall minus 150 sq ft of openings is 850 sq ft; with 5% waste and 4 × 8 ft boards that is 28 boards, about 149 cu ft of insulation at 2 in thick.',
     intro: 'Enter the wall area, subtract doors and windows, and choose a board size and thickness. Optionally add the supplies for an exterior insulation system.',
     sources: src(['Ceresit CT 85 data sheet: adhesive 5.0 kg/m², base coat 4.0 kg/m²', 'https://datasheets.tdx.henkel.com/CERESIT-CT-85-en_GB.pdf'], ['Ceresit CT 325: mesh, about 1.1 m per m²', 'https://datasheets.tdx.henkel.com/CERESIT-CT-325-mk_MK.pdf'], ['ETA 22/0366: at least 6 anchors per m², 8 on buildings over 24 m', 'https://dit.ietcc.csic.es/2022/12/03/ete-22-0366-sistema-de-aislamiento-termico-por-el-exterior-sistema-ferro-term-sistema-chem-term/?lang=en']), kind: 'insulation', icon: 'drywall', keywords: ['rigid foam', 'EPS', 'XPS', 'mineral wool', 'EIFS', 'ETICS', 'facade', 'boards'],
     example: '85 m² of wall with 1 × 0.5 m boards needs about 179 boards with 5% waste.',
