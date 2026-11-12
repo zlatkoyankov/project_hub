@@ -385,4 +385,59 @@ describe('worked examples in the "In short" answers', () => {
     expect(Math.round(masonryPerSquareFoot(MASONRY_UNITS[2]).units * 10.7639104)).toBe(51);
     for (const text of ['6.9 bricks per sq ft', '823 bricks', '51 bricks per m²']) expect(answerOf('brick-block-calculator')).toContain(text);
   });
+
+  const rowsOf = (estimate: { rows: { label: string; value: number }[] }) => (label: string) => estimate.rows.find((row) => row.label === label)!.value;
+
+  it('matches the gravel, concrete and mulch answers', () => {
+    const gravel = rowsOf(calculateGravel({ length: 20, width: 10, depth: 3, density: 2700, waste: 10, price: 0, priceUnit: 0, dimensionUnit: 0, depthUnit: 1 } as never));
+    expect(gravel('Base volume')).toBe(50);
+    expect(gravel('Volume before waste').toFixed(2)).toBe('1.85');
+    expect(gravel('Volume with waste').toFixed(2)).toBe('2.04');
+    expect(gravel('Estimated weight').toFixed(2)).toBe('2.75');
+    for (const text of ['50 cu ft', '1.85 cu yd', '2.04 cu yd', '2.75 tons']) expect(answerOf('gravel-calculator')).toContain(text);
+    const concrete = rowsOf(calculateConcrete({ length: 10, width: 10, depth: 4, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 } as never));
+    expect(concrete('Volume').toFixed(1)).toBe('33.3');
+    expect(concrete('Volume before waste').toFixed(2)).toBe('1.23');
+    expect(concrete('Volume with waste').toFixed(2)).toBe('1.36');
+    for (const text of ['33.3 cu ft', '1.23 cu yd', '1.36 cu yd']) expect(answerOf('concrete-calculator')).toContain(text);
+    const mulch = rowsOf(calculateMulch({ length: 10, width: 10, depth: 3, waste: 10, price: 0, dimensionUnit: 0, depthUnit: 1 } as never));
+    expect(mulch('Volume')).toBe(25);
+    expect(mulch('Volume before waste').toFixed(2)).toBe('0.93');
+    expect(mulch('Volume with waste').toFixed(2)).toBe('1.02');
+    for (const text of ['25 cu ft', '0.93 cu yd', '1.02 cu yd']) expect(answerOf('mulch-calculator')).toContain(text);
+  });
+
+  it('matches the tile and square footage answers', () => {
+    const tile = rowsOf(calculateTile({ length: 10, width: 12, tileLength: 12, tileWidth: 12, grout: 0.125, waste: 10, boxSize: 10, price: 0, priceUnit: 0, dimensionUnit: 0, tileUnit: 1, groutUnit: 1 } as never));
+    expect(tile('Room area')).toBe(120);
+    expect(tile('Approx. tile coverage').toFixed(2)).toBe('1.02');
+    expect(tile('Estimated tiles')).toBe(130);
+    expect(tile('Estimated boxes')).toBe(13);
+    for (const text of ['120 sq ft', '1.02 sq ft', '130 tiles', '13 boxes']) expect(answerOf('tile-calculator')).toContain(text);
+    const area = rowsOf(calculateArea([{ length: 12, width: 10, unit: 'ft' }, { length: 14, width: 11, unit: 'ft' }]));
+    expect(area('Combined area')).toBe(274);
+    expect(area('Metric equivalent').toFixed(2)).toBe('25.46');
+    expect(rowsOf(calculateArea([{ length: 4, width: 3.5, unit: 'm' }]))('Combined area').toFixed(1)).toBe('150.7');
+    for (const text of ['274 sq ft', '25.46 m²', '14 m²', '150.7 sq ft']) expect(answerOf('square-footage-calculator')).toContain(text);
+  });
+
+  it('matches the drywall, wallpaper and insulation answers', () => {
+    const drywall = rowsOf(calculateDrywall({ length: 12, width: 10, height: 8, openings: 21, includeCeiling: 0, sheetSize: 0, waste: 10, price: 0, dimensionUnit: 0, openingsUnit: 0, supplies: 1, studSpacing: 16, spacingUnit: 1, studLength: 8 } as never));
+    expect(drywall('Wall area')).toBe(352);
+    expect(drywall('Area with waste')).toBeCloseTo(364.1, 5);
+    expect(drywall('Sheets needed')).toBe(12);
+    for (const text of ['352 sq ft', '21 sq ft', '364.1 sq ft', '12 sheets']) expect(answerOf('drywall-calculator')).toContain(text);
+    const wallpaper = rowsOf(calculateWallpaper({ length: 12, width: 10, height: 8, openings: 21, rollWidth: 20.5, rollLength: 33, patternRepeat: 0, price: 0, dimensionUnit: 0, openingsUnit: 0, rollUnit: 1 } as never));
+    expect(wallpaper('Wall perimeter')).toBe(44);
+    expect(wallpaper('Strips needed')).toBe(25);
+    expect(wallpaper('Strip length').toFixed(2)).toBe('8.33');
+    expect(wallpaper('Strips per roll')).toBe(3);
+    expect(wallpaper('Rolls needed')).toBe(9);
+    for (const text of ['44 ft', '25 strips', '8.33 ft', '3 strips', '9 rolls']) expect(answerOf('wallpaper-calculator')).toContain(text);
+    const insulation = rowsOf(calculateInsulation({ surfaceArea: 1000, openings: 150, board: 0, thickness: 2, waste: 5, supplies: 0, price: 0, openingsUnit: 0, depthUnit: 1 } as never));
+    expect(insulation('Area to insulate')).toBe(850);
+    expect(insulation('Boards')).toBe(28);
+    expect(Math.round(insulation('Insulation volume'))).toBe(149);
+    for (const text of ['850 sq ft', '28 boards', '149 cu ft']) expect(answerOf('insulation-board-calculator')).toContain(text);
+  });
 });
