@@ -1,3 +1,5 @@
+import { CALCULATORS } from './calculators';
+
 export interface GuideSection {
   title: string;
   paragraphs: string[];
@@ -31,6 +33,9 @@ const NIST = {
   label: 'NIST Handbook 44, Appendix C: 27 cu ft = 1 cu yd, 144 sq in = 1 sq ft, 1 m² = 10.76391 sq ft, 1 gal = 3.785 L',
   href: 'https://www.nist.gov/document/2026-nist-handbook-44-appendix-c',
 };
+
+/** The sources listed on a calculator's page, so a guide cites exactly what its calculator uses. */
+const sourcesOf = (slug: string) => CALCULATORS.find((c) => c.slug === slug)?.sources ?? [];
 
 export const GUIDES: Guide[] = [
   {
@@ -222,5 +227,208 @@ export const GUIDES: Guide[] = [
       { label: 'Mississippi State University Extension: 2 to 3 inches of mulch for landscape beds', href: 'https://extension.msstate.edu/news/southern-gardening/2022/use-mulch-for-beauty-and-weed-temperature-control' },
       NIST,
     ],
+  },
+  {
+    slug: 'laminate-flooring-calculator-guide', calculatorSlug: 'laminate-flooring-calculator', kind: 'flooring',
+    title: 'Laminate and vinyl plank flooring guide', shortTitle: 'Flooring', kicker: 'FLOORING & TILE',
+    intro: 'Floating floors are sold by the box, and each box covers a stated area. The estimate is floor area plus a cutting allowance, rounded up to whole boxes, plus the baseboards around the room.',
+    description: 'How to estimate laminate or vinyl plank flooring in boxes, with the cutting allowance, baseboard pieces and a worked example for a 14 × 12 ft room.',
+    sections: [
+      { title: 'The formula', paragraphs: ['Boxes = floor area × (1 + allowance) ÷ coverage per box, rounded up. The coverage is printed on the box in square feet or square meters: it is the floor the laid planks cover, so the tongue and groove need no adjustment.', 'EGGER recommends ordering about 10% extra laminate for a straight layout. Diagonal or herringbone layouts and rooms with many corners and door frames need more, because more planks are cut and fewer offcuts are reused.'] },
+      { title: 'Measure the floor', paragraphs: ['Measure the room wall to wall at floor level. Include the space under doors where the floor will continue, and leave out areas covered by fixed cabinets or a bathtub. Split an L-shaped room into rectangles.', 'Do not subtract the expansion gap along the walls. It is only about the thickness of a spacer and is hidden under the baseboard; the allowance covers it.'] },
+      { title: 'Baseboards and trim', paragraphs: ['Baseboard length = the room’s perimeter minus the width of the doorways, plus the same allowance. Divide by the length of one piece and round up. Joints along long walls need connectors in some systems, and baseboards that stop at a door frame need end caps.', 'Doorways to a different floor need a transition strip. Count them separately; they are sold by the piece.'] },
+      { title: 'Before you lay it', paragraphs: ['Pergo’s installation guide asks for the planks to acclimatize in the room for 48 hours before installation, in unopened boxes. Plan the delivery with that in mind.', 'Most floating floors need an underlayment unless one is attached to the planks. Estimate it at roughly the floor area and follow the flooring manufacturer’s instructions.'] },
+    ],
+    example: {
+      title: 'Worked example: a 14 × 12 ft bedroom',
+      intro: 'Planks in boxes of 20 sq ft, a straight layout with 10% allowance, one 3 ft doorway and baseboards in 8 ft pieces.',
+      steps: [
+        'Floor area: 14 × 12 = 168 sq ft. With 10%: 184.8 sq ft.',
+        'Boxes: 184.8 ÷ 20 = 9.24, so 10 boxes (200 sq ft of flooring).',
+        'Perimeter: 2 × (14 + 12) = 52 ft. Minus the doorway and plus 10%: 53.9 ft of baseboard.',
+        'Baseboard pieces: 53.9 ÷ 8 = 6.7, so 7 pieces, plus 2 end caps at the door frame.',
+      ],
+      result: 'Buy 10 boxes and 7 baseboard pieces. Without any allowance it would be 9 boxes, which leaves no room for a damaged plank; even at 15% the room still fits in 10 boxes.',
+    },
+    mistakes: [
+      'Ordering the exact floor area. Every row ends in a cut, and the last plank of a row is rarely reusable in the next.',
+      'Buying boxes from different production batches, which can differ slightly in shade.',
+      'Forgetting the transition strips at doorways and the end caps where baseboards meet a door frame.',
+      'Using a 10% allowance for a herringbone or diagonal layout.',
+    ],
+    sources: [...sourcesOf('laminate-flooring-calculator')],
+  },
+  {
+    slug: 'drywall-calculator-guide', calculatorSlug: 'drywall-calculator', kind: 'drywall',
+    title: 'Drywall estimating guide', shortTitle: 'Drywall', kicker: 'WALLS & CEILINGS',
+    intro: 'Drywall is counted in sheets, and the supplies follow from the board area: about one screw per square foot, a known length of tape and a few boxes of compound.',
+    description: 'How to estimate drywall sheets, screws, joint tape, compound and studs for a room, with a worked example and the rates behind each number.',
+    sections: [
+      { title: 'The formula', paragraphs: ['Wall area = room perimeter × wall height. Add the ceiling (length × width) if you are boarding it, subtract doors and windows, add the waste allowance, and divide by the area of one sheet. Round up.', 'A 4 × 8 ft sheet is 32 sq ft, 4 × 10 ft is 40 and 4 × 12 ft is 48. Metric boards such as Knauf’s 1.2 m wide sheets come in lengths of 2.0 to 3.0 m.'] },
+      { title: 'Choosing the sheet size', paragraphs: ['Longer sheets mean fewer joints to tape and finish, which saves more time than material. Choose a length that matches the wall height or the room’s length, and check whether you can carry it up the stairs.', 'The count of sheets is an area estimate. Plan the actual layout so that joints are staggered and do not line up with the corners of doors and windows; the allowance pays for those cuts.'] },
+      { title: 'Screws, tape and compound', paragraphs: ['With screws every 8 in on the edges and 16 in in the field, as in IRC R702.3.5, a wall takes about one screw per square foot of board. USG puts joint tape at about 370 ft per 1,000 sq ft, and all-purpose compound at about 10 gallons per 1,000 sq ft, which is one 4.5-gallon box for every 450 sq ft.', 'These rates are for a standard finish. A higher finish level or a skim coat over the whole surface takes more compound.'] },
+      { title: 'Studs and track', paragraphs: ['For a new wall the calculator counts studs at your spacing along each wall, plus one at each end, and two runs of track (floor and ceiling) around the room. Real framing needs extra studs at door and window openings, corners and anywhere a cabinet will hang.'] },
+    ],
+    example: {
+      title: 'Worked example: walls and ceiling of a 12 × 10 ft room',
+      intro: 'Walls 8 ft high, one door and one window (36 sq ft together), the ceiling included and a 10% allowance.',
+      steps: [
+        'Walls: 2 × (12 + 10) × 8 = 352 sq ft. Ceiling: 12 × 10 = 120 sq ft.',
+        'Minus openings: 352 + 120 − 36 = 436 sq ft. With 10%: 479.6 sq ft.',
+        '4 × 8 ft sheets: 479.6 ÷ 32 = 15.0, so 15 sheets. With 4 × 12 ft sheets: 10 sheets.',
+        'Supplies: about 436 screws, 161 ft of tape and 1 box of compound.',
+      ],
+      result: 'Buy 15 sheets of 4 × 8 ft, or 10 of 4 × 12 ft, with about 436 screws, 161 ft of tape and one box of compound. Studs at 16 in for new walls: 38.',
+    },
+    mistakes: [
+      'Forgetting the ceiling, which in a small room is a third of the board.',
+      'Subtracting every small opening. Offcuts from small openings are rarely usable, so many installers subtract only large ones.',
+      'Buying sheets too long to get into the room.',
+      'Underestimating compound for a high finish level.',
+    ],
+    sources: [...sourcesOf('drywall-calculator')],
+  },
+  {
+    slug: 'tile-adhesive-grout-calculator-guide', calculatorSlug: 'tile-adhesive-grout-calculator', kind: 'adhesive',
+    title: 'Tile adhesive and grout guide', shortTitle: 'Tile adhesive and grout', kicker: 'FLOORING & TILE',
+    intro: 'Tile adhesive is used by area, and the amount depends on the trowel notch. Grout depends on the tile size, the joint width and the tile’s thickness.',
+    description: 'How much tile adhesive and grout you need: consumption by trowel notch, the grout formula and a worked example for 10 m² of 30 × 60 cm tile.',
+    sections: [
+      { title: 'Adhesive: area × consumption for the notch', paragraphs: ['A notched trowel leaves ridges of a known height, so the data sheet can give the consumption per notch. For Ceresit CM 11, a cement adhesive, it is about 2.0 kg/m² with a 4 mm notch, 2.7 with 6 mm, 3.4 with 8 mm, 4.2 with 10 mm and 4.8 with 12 mm.', 'Bigger tiles need a bigger notch to get full contact. The usual rule from the data sheets: up to 10 cm a 4 mm notch, up to 15 cm 6 mm, up to 25 cm 8 mm, up to 31 cm 10 mm and larger tiles 12 mm. The calculator picks the notch from the tile size unless you choose one.'] },
+      { title: 'Grout: the joint volume', paragraphs: ['Grout per m² = (tile length + tile width) ÷ (length × width) × joint width × tile thickness × density, with sizes in millimeters. SikaCeram gives this formula with a density of about 1.6 kg per liter.', 'Small tiles with wide joints take far more grout than large tiles with narrow ones, because there is much more joint per square meter. That is why grout can be a few hundred grams per m² or more than a kilogram.'] },
+      { title: 'Different products', paragraphs: ['Flexible and lightweight adhesives use less per notch than a standard cement adhesive. Kiesel Servoflex K SuperTec, for example, gives about 1.0, 1.6 and 2.2 kg/m² for its notch sizes. Always use your product’s data sheet; the calculator lets you choose the notch and change the bag sizes.'] },
+    ],
+    example: {
+      title: 'Worked example: 10 m² of 30 × 60 cm tile',
+      intro: 'Tiles 9 mm thick, 3 mm joints, a 10% allowance, adhesive in 25 kg bags and grout in 5 kg bags.',
+      steps: [
+        'Area with 10%: 10 × 1.1 = 11 m².',
+        'Notch: the longest side is 60 cm, so a 12 mm notch at about 4.8 kg/m².',
+        'Adhesive: 11 × 4.8 = 52.8 kg, which is 3 bags of 25 kg.',
+        'Grout: (300 + 600) ÷ (300 × 600) × 3 × 9 × 1.6 = 0.216 kg/m², and 11 × 0.216 = 2.38 kg, so 1 bag of 5 kg.',
+      ],
+      result: 'Buy 3 bags of adhesive and 1 bag of grout. The same floor in 10 × 10 cm tiles with the same joints would need four times as much grout per m²: 0.864 kg.',
+    },
+    mistakes: [
+      'Using a small notch for large tiles to save adhesive, which leaves hollow spots under the tile.',
+      'Taking the grout figure from the bag without checking the tile size and joint it assumes.',
+      'Forgetting that a wall and a floor with different tiles need separate calculations.',
+      'Mixing more adhesive than you can use within its open time, which wastes the rest of the batch.',
+    ],
+    sources: [...sourcesOf('tile-adhesive-grout-calculator')],
+  },
+  {
+    slug: 'wallpaper-calculator-guide', calculatorSlug: 'wallpaper-calculator', kind: 'wallpaper',
+    title: 'Wallpaper estimating guide', shortTitle: 'Wallpaper', kicker: 'PAINTING PROJECTS',
+    intro: 'Wallpaper is hung in full-height strips, so the number of rolls depends on how many strips you need and how many whole strips fit in one roll, not on the wall area alone.',
+    description: 'How many rolls of wallpaper you need: strips, strips per roll, pattern repeat and trim, with a worked example for a 12 × 10 ft room.',
+    sections: [
+      { title: 'Why strips, not area', paragraphs: ['A roll that is 33 ft long does not give 33 ft of wall. Each strip is cut to the wall height plus a trim allowance, and whatever is left at the end of the roll is usually too short for another strip. Etoffe and other makers count wallpaper in drops for this reason.', 'Dividing the wall area by the roll’s area therefore underestimates: for the room below it gives 6 rolls instead of 8.'] },
+      { title: 'The formula', paragraphs: ['Strips = (room perimeter − width of doors and windows) ÷ roll width, rounded up. Strip length = wall height, rounded up to whole pattern repeats, plus trim. Strips per roll = roll length ÷ strip length, rounded down. Rolls = strips ÷ strips per roll, rounded up.', 'Morris & Co recommends about 10 cm (4 in) of trim per drop for cutting at the ceiling and the skirting, which is what the calculator adds.'] },
+      { title: 'Pattern repeat', paragraphs: ['With a patterned paper each strip has to start at the same point in the pattern, so its length is rounded up to whole repeats. A large repeat can turn three strips per roll into two, which changes the order by a third.', 'Papers without a pattern, or with a random match, need no repeat: enter 0. Buy one spare roll from the same batch number, because colour can vary between batches.'] },
+    ],
+    example: {
+      title: 'Worked example: a 12 × 10 ft room',
+      intro: 'Walls 8 ft high, one door and one window (36 sq ft together), rolls 20.5 in wide and 33 ft long.',
+      steps: [
+        'Perimeter: 2 × (12 + 10) = 44 ft. The openings are about 36 ÷ 8 = 4.5 ft wide.',
+        'Strips: (44 − 4.5) × 12 ÷ 20.5 = 23.1, so 24 strips.',
+        'Strip length: 8 ft + 4 in of trim = 8.33 ft. Strips per roll: 33 ÷ 8.33 = 3.96, so 3 whole strips.',
+        'Rolls: 24 ÷ 3 = 8 rolls.',
+      ],
+      result: 'Buy 8 rolls plus one spare from the same batch. Without deducting the door and window it would be 26 strips and 9 rolls; with a 21 in pattern repeat each strip grows to 9.08 ft, but 3 still fit in a roll.',
+    },
+    mistakes: [
+      'Dividing the wall area by the roll area, which ignores the waste at the end of each roll.',
+      'Forgetting the pattern repeat on a patterned paper.',
+      'Buying rolls from different batches.',
+      'Measuring the height at one point only. Old rooms are rarely the same height all round; use the highest point.',
+    ],
+    sources: [...sourcesOf('wallpaper-calculator')],
+  },
+  {
+    slug: 'screed-plaster-calculator-guide', calculatorSlug: 'screed-plaster-calculator', kind: 'screed',
+    title: 'Screed, floor leveler and plaster guide', shortTitle: 'Screed and plaster', kicker: 'CONCRETE & MASONRY',
+    intro: 'Bagged screed, self-leveling compound and plaster are estimated the same way: area × thickness × the product’s consumption per millimeter.',
+    description: 'How many bags of screed, self-leveling compound or plaster you need: consumption per mm, a worked example and the mistakes that leave you short.',
+    sections: [
+      { title: 'The formula', paragraphs: ['Dry mix (kg) = area (m²) × thickness (mm) × consumption (kg per m² per mm). Add an allowance, divide by the bag weight and round up. In US units the calculator converts square feet and inches for you.', 'The consumption is on every data sheet. Baumit gives its Solido E225 cement screed at about 20 kg/m² per cm, which is 2.0 per mm. Ceresit CN 68 and Baumit Nivello Quattro self-leveling compounds are about 1.5 kg/m² per mm; the calculator uses 1.6 to stay on the safe side. Knauf MP 75 gypsum plaster is about 10 kg/m² at 10 mm, or 1.0 per mm.'] },
+      { title: 'Measure the real thickness', paragraphs: ['Floors are rarely flat, so the average thickness is what counts. Set a laser or a long level, measure the depth at several points across the room and take the average; the deepest point alone overestimates, the shallowest underestimates.', 'Each product has a minimum and maximum layer thickness on its data sheet. Outside that range it may crack or not cure properly, so choose the product for the thickness you have.'] },
+      { title: 'Bags and time', paragraphs: ['Self-leveling compound has to be poured in one go, so all the bags should be on site and someone should be mixing while another pours. Running out halfway leaves a visible joint.', 'Screed needs time to dry before the floor covering goes down. The data sheet says how long to wait; plan the job around it.'] },
+    ],
+    example: {
+      title: 'Worked examples: a 12 m² floor',
+      intro: 'A 12 m² room, 25 kg bags and a 5% allowance.',
+      steps: [
+        'Cement screed 50 mm thick: 12 × 50 × 2.0 = 1,200 kg, plus 5% = 1,260 kg, which is 50.4, so 51 bags.',
+        'Self-leveling compound 5 mm thick: 12 × 5 × 1.6 = 96 kg, plus 5% = 100.8 kg, so 5 bags.',
+      ],
+      result: 'Screed: 51 bags. Leveler: 5 bags. The leveler is a good example of rounding: 100.8 kg is just over 4 bags, so the fifth bag is mostly spare, which is welcome for a pour that cannot stop.',
+    },
+    mistakes: [
+      'Using the deepest point as the thickness for the whole floor.',
+      'Taking consumption for a different product. A cement screed is about twice as heavy per millimeter as gypsum plaster.',
+      'Mixing up centimeters and millimeters: 5 cm is 50 mm, which needs ten times as much as 5 mm.',
+      'Starting a self-leveling pour without all the bags on site.',
+    ],
+    sources: [...sourcesOf('screed-plaster-calculator')],
+  },
+  {
+    slug: 'insulation-board-calculator-guide', calculatorSlug: 'insulation-board-calculator', kind: 'insulation',
+    title: 'Insulation board estimating guide', shortTitle: 'Insulation boards', kicker: 'WALLS & CEILINGS',
+    intro: 'Facade insulation is counted in boards, and the system around it — adhesive, base coat, mesh and anchors — follows from the area covered.',
+    description: 'How to estimate EPS, XPS or mineral wool boards and the ETICS supplies (adhesive, base coat, mesh, anchors), with a worked example for a house facade.',
+    sections: [
+      { title: 'The formula', paragraphs: ['Boards = (wall area − doors and windows) × (1 + allowance) ÷ area of one board, rounded up. A 1 × 0.5 m EPS facade board is 0.5 m², a 1.25 × 0.6 m XPS board 0.75 m², a 1.2 × 0.6 m mineral wool slab 0.72 m².', 'Window reveals are insulated too, with thinner strips. Add their area if you are doing them, or keep a larger allowance.'] },
+      { title: 'The supplies', paragraphs: ['For an external insulation system (ETICS or EIFS) the calculator uses Ceresit’s rates: about 5.0 kg/m² of adhesive to fix the boards and 4.0 kg/m² of base coat over them (CT 85), and about 1.1 m² of reinforcing mesh per m² to allow for overlaps (CT 325).', 'European approvals for these systems, such as ETA 22/0366, require at least 6 anchors per m², and 8 on buildings over 24 m. Corners and edges usually need more; follow the system’s fixing plan.'] },
+      { title: 'Thickness is a separate decision', paragraphs: ['The calculator counts boards for a thickness you choose; it does not size the insulation. That depends on the climate, the wall and the energy rules where you live. Check the U-value you need with a designer or the local requirements, then use the calculator for the quantities.'] },
+    ],
+    example: {
+      title: 'Worked example: a house facade',
+      intro: '120 m² of wall with 18 m² of windows and doors, 1 × 0.5 m EPS boards 10 cm thick, a 5% allowance.',
+      steps: [
+        'Area to insulate: 120 − 18 = 102 m². With 5%: 107.1 m².',
+        'Boards: 107.1 ÷ 0.5 = 214.2, so 215 boards (10.75 m³ of EPS at 10 cm).',
+        'Adhesive: 102 × 5.0 = 510 kg. Base coat: 102 × 4.0 = 408 kg.',
+        'Mesh: 102 × 1.1 = 112.2 m². Anchors: 102 × 6 = 612.',
+      ],
+      result: 'Plan for 215 boards, about 510 kg of adhesive (21 bags of 25 kg), 408 kg of base coat, 113 m² of mesh and at least 612 anchors.',
+    },
+    mistakes: [
+      'Forgetting the window reveals.',
+      'Using the minimum number of anchors everywhere, including corners and tall walls where the fixing plan asks for more.',
+      'Counting the boards but not the system: adhesive and base coat weigh several times as much as the boards.',
+      'Choosing the thickness from the calculator instead of from the energy requirements.',
+    ],
+    sources: [...sourcesOf('insulation-board-calculator')],
+  },
+  {
+    slug: 'brick-block-calculator-guide', calculatorSlug: 'brick-block-calculator', kind: 'masonry',
+    title: 'Brick and block estimating guide', shortTitle: 'Bricks and blocks', kicker: 'CONCRETE & MASONRY',
+    intro: 'The number of bricks or blocks comes from the face of one unit plus its mortar joint. Mortar is harder: the theory and the bag on site rarely agree.',
+    description: 'How many bricks or blocks per square foot or m², how much mortar, and why bags run out sooner than the theory says. With a worked example.',
+    sections: [
+      { title: 'The formula', paragraphs: ['Units per area = 1 ÷ ((unit length + joint) × (unit height + joint)). A modular brick (7-5/8 × 2-1/4 in) with 3/8 in joints is about 6.9 per sq ft; the Brick Industry Association’s Technical Note 10 gives 6.75 for the same brick in its tables. An 8 × 16 in concrete block is 1.125 per sq ft.', 'In metric, a UK brick of 215 × 65 mm with 10 mm joints is about 60 per m² in a half-brick wall (Travis Perkins), and a Porotherm 25 clay block about 11 per m² (Wienerberger’s data sheet). Blocks with interlocking ends and thin-bed systems have no mortar in the vertical joints.'] },
+      { title: 'Mortar: theory and practice', paragraphs: ['The calculator works out the volume of the joints through the wall’s depth, which is the theoretical minimum. On site some mortar always falls, is scraped off or stiffens in the tub.', 'QUIKRETE rates an 80 lb bag of Mason Mix at up to 37 bricks or 13 blocks. For a few hundred bricks that is about twice the theoretical joint volume, so buy closer to the practical figure and return unopened bags.'] },
+      { title: 'Packs and openings', paragraphs: ['Bricks are sold in packs (Travis Perkins sells 500, MKM 370 for some lines). Round up to whole packs if you are buying them, and keep the spares: bricks from a later batch rarely match.', 'Subtract doors and windows from the wall area, but remember that lintels and the bricks cut around openings take extra; that is what the allowance is for.'] },
+    ],
+    example: {
+      title: 'Worked example: a garden wall',
+      intro: 'A wall 20 ft long and 6 ft high in modular brick with 3/8 in joints, a 5% allowance and mortar bags that make 0.6 cu ft each.',
+      steps: [
+        'Area: 20 × 6 = 120 sq ft.',
+        'Bricks: 120 × 6.86 = 823 before waste, and 864 with 5%.',
+        'Mortar in the joints: about 6.97 cu ft with the allowance, which is 12 bags at 0.6 cu ft.',
+        'By QUIKRETE’s practical rate of 37 bricks per bag: 864 ÷ 37 = 23.4, so 24 bags.',
+      ],
+      result: 'Buy 864 bricks and plan for 12 to 24 bags of mortar: the theoretical figure is the floor, the bag rating is closer to what a mason uses. Buy near the higher number and return the bags you do not open.',
+    },
+    mistakes: [
+      'Counting bricks from the brick size without the joint, which overestimates by about a fifth for small bricks.',
+      'Trusting the theoretical mortar volume. Real use is higher.',
+      'Using single-skin numbers for a wall two bricks thick. A one-brick wall needs twice the bricks of a half-brick wall.',
+      'Buying the exact count of a brick that may not be available in the same batch later.',
+    ],
+    sources: [...sourcesOf('brick-block-calculator')],
   },
 ];

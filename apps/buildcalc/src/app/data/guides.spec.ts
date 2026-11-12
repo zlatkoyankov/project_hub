@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { CALCULATORS } from './calculators';
 import { GUIDES } from './guides';
-import { calculateArea, calculateConcrete, calculateGravel, calculateMulch, calculatePaint, calculateTile } from '../utils/calculations';
+import {
+  calculateAdhesive, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateInsulation,
+  calculateMasonry, calculateMulch, calculatePaint, calculateScreed, calculateTile, calculateWallpaper, groutPerSquareMeter,
+  masonryPerSquareFoot, MASONRY_UNITS,
+} from '../utils/calculations';
+
+const KG_PER_LB = 0.45359237;
+const SQ_FT_PER_M2 = 10.7639104;
 
 const guide = (slug: string) => {
   const found = GUIDES.find((g) => g.slug === slug);
@@ -86,5 +93,84 @@ describe('GUIDES', () => {
     expect(text).toContain(`${fmt(row(plain, 'Volume before waste'))} cu yd`);
     expect(text).toContain(`${Math.ceil(row(plain, 'Volume') / 2)} bags`);
     expect(text).toContain(`${fmt(row(calculateMulch({ ...base, waste: 10 }).rows, 'Volume with waste'))} cu yd`);
+  });
+  it('flooring example matches calculateFlooring', () => {
+    const text = guide('laminate-flooring-calculator-guide');
+    const at = (waste: number) => calculateFlooring({ length: 14, width: 12, waste, boxArea: 20, baseboards: true, doorways: 1, doorWidth: 3, pieceLength: 8 }).rows;
+    const rows = at(10);
+    expect(text).toContain(`${row(rows, 'Floor area')} sq ft. With 10%: ${row(rows, 'Area with waste')} sq ft`);
+    expect(text).toContain(`so ${row(rows, 'Boxes needed')} boxes (${row(rows, 'Flooring in those boxes')} sq ft`);
+    expect(text).toContain(`${fmt(row(rows, 'Baseboard length'), 1)} ft of baseboard`);
+    expect(text).toContain(`so ${row(rows, 'Baseboard pieces')} pieces, plus ${row(rows, 'End caps')} end caps`);
+    expect(text).toContain(`it would be ${row(at(0), 'Boxes needed')} boxes`);
+    expect(text).toContain(`in ${row(at(15), 'Boxes needed')} boxes`);
+  });
+
+  it('drywall example matches calculateDrywall', () => {
+    const text = guide('drywall-calculator-guide');
+    const base = { length: 12, width: 10, height: 8, openings: 36, includeCeiling: true, waste: 10 };
+    const rows = calculateDrywall({ ...base, sheetSize: 0, supplies: true, studSpacing: 16, spacingUnit: 1, studLength: 8 }).rows;
+    expect(text).toContain(`${row(rows, 'Wall area')} sq ft. Ceiling: 12 × 10 = ${row(rows, 'Ceiling area')} sq ft`);
+    expect(text).toContain(`= ${row(rows, 'Area to cover')} sq ft. With 10%: ${row(rows, 'Area with waste')} sq ft`);
+    expect(text).toContain(`so ${row(rows, 'Sheets needed')} sheets. With 4 × 12 ft sheets: ${row(calculateDrywall({ ...base, sheetSize: 2 }).rows, 'Sheets needed')} sheets`);
+    expect(text).toContain(`about ${row(rows, 'Drywall screws')} screws, ${Math.round(row(rows, 'Joint tape'))} ft of tape and ${row(rows, 'Joint compound')} box of compound`);
+    expect(text).toContain(`Studs at 16 in for new walls: ${row(rows, 'Studs')}`);
+  });
+
+  it('adhesive example matches calculateAdhesive', () => {
+    const text = guide('tile-adhesive-grout-calculator-guide');
+    const rows = calculateAdhesive({ surfaceArea: 10, openingsUnit: 2, tileLength: 300, tileWidth: 600, tileThickness: 9, tileUnit: 4, grout: 3, groutUnit: 4, notch: -1, waste: 10, adhesiveBag: 25, groutBag: 5, weightUnit: 1 }).rows;
+    expect(row(rows, 'Trowel notch')).toBe(12);
+    expect(text).toContain(`= ${fmt(row(rows, 'Tile adhesive') * KG_PER_LB, 1)} kg, which is ${row(rows, 'Adhesive bags')} bags of 25 kg`);
+    expect(text).toContain(`= ${fmt(groutPerSquareMeter(300, 600, 3, 9), 3)} kg/m²`);
+    expect(text).toContain(`= ${fmt(row(rows, 'Grout') * KG_PER_LB)} kg, so ${row(rows, 'Grout bags')} bag of 5 kg`);
+    expect(groutPerSquareMeter(100, 100, 3, 9) / groutPerSquareMeter(300, 600, 3, 9)).toBeCloseTo(4);
+    expect(text).toContain(`${fmt(groutPerSquareMeter(100, 100, 3, 9), 3)} kg`);
+  });
+
+  it('wallpaper example matches calculateWallpaper', () => {
+    const text = guide('wallpaper-calculator-guide');
+    const base = { length: 12, width: 10, height: 8, rollWidth: 20.5, rollLength: 33 };
+    const rows = calculateWallpaper({ ...base, openings: 36, patternRepeat: 0 }).rows;
+    expect(text).toContain(`so ${row(rows, 'Strips needed')} strips`);
+    expect(text).toContain(`= ${fmt(row(rows, 'Strip length'))} ft. Strips per roll: 33 ÷ ${fmt(row(rows, 'Strip length'))}`);
+    expect(text).toContain(`so ${row(rows, 'Strips per roll')} whole strips`);
+    expect(text).toContain(`= ${row(rows, 'Rolls needed')} rolls`);
+    const noOpenings = calculateWallpaper({ ...base, openings: 0, patternRepeat: 0 }).rows;
+    expect(text).toContain(`${row(noOpenings, 'Strips needed')} strips and ${row(noOpenings, 'Rolls needed')} rolls`);
+    const repeat = calculateWallpaper({ ...base, openings: 36, patternRepeat: 21 }).rows;
+    expect(text).toContain(`grows to ${fmt(row(repeat, 'Strip length'))} ft, but ${row(repeat, 'Strips per roll')} still fit`);
+    const sections = GUIDES.find((g) => g.slug === 'wallpaper-calculator-guide')!.sections.flatMap((x) => x.paragraphs).join(' ');
+    const byArea = Math.ceil(((12 + 10) * 2 * 8 - 36) / (20.5 / 12 * 33));
+    expect(sections).toContain(`it gives ${byArea} rolls instead of ${row(rows, 'Rolls needed')}`);
+  });
+
+  it('screed example matches calculateScreed', () => {
+    const text = guide('screed-plaster-calculator-guide');
+    const at = (thickness: number, material: number) => calculateScreed({ surfaceArea: 12, openingsUnit: 2, thickness, depthUnit: 4, material, waste: 5, bagSize: 25, weightUnit: 1 }).rows;
+    const kg = (rows: { label: string; value: number }[]) => row(rows, 'Dry mix') * KG_PER_LB;
+    expect(text).toContain(`= ${fmt(kg(at(50, 0)) / 1.05, 0)} kg, plus 5% = ${fmt(kg(at(50, 0)), 0)} kg`);
+    expect(text).toContain(`so ${row(at(50, 0), 'Bags')} bags`);
+    expect(text).toContain(`= ${fmt(kg(at(5, 1)) / 1.05, 0)} kg, plus 5% = ${fmt(kg(at(5, 1)), 1)} kg, so ${row(at(5, 1), 'Bags')} bags`);
+  });
+
+  it('insulation example matches calculateInsulation', () => {
+    const text = guide('insulation-board-calculator-guide');
+    const rows = calculateInsulation({ surfaceArea: 120, openings: 18, openingsUnit: 2, board: 2, thickness: 10, depthUnit: 3, waste: 5, supplies: true }).rows;
+    expect(row(rows, 'Area to insulate') / SQ_FT_PER_M2).toBeCloseTo(102);
+    expect(text).toContain(`so ${row(rows, 'Boards')} boards (${fmt(row(rows, 'Insulation volume') / 35.3146667)} m³`);
+    expect(text).toContain(`= ${fmt(row(rows, 'Board adhesive') * KG_PER_LB, 0)} kg. Base coat: 102 × 4.0 = ${fmt(row(rows, 'Base coat') * KG_PER_LB, 0)} kg`);
+    expect(text).toContain(`= ${fmt(row(rows, 'Reinforcing mesh') / SQ_FT_PER_M2, 1)} m². Anchors: 102 × 6 = ${row(rows, 'Anchors')}`);
+  });
+
+  it('masonry example matches calculateMasonry', () => {
+    const text = guide('brick-block-calculator-guide');
+    const rows = calculateMasonry({ length: 20, height: 6, openings: 0, unit: 0, waste: 5, mortarYield: 0.6 }).rows;
+    const perSqFt = masonryPerSquareFoot(MASONRY_UNITS[0]).units;
+    expect(text).toContain(`120 × ${fmt(perSqFt)} = ${Math.ceil(120 * perSqFt)} before waste, and ${row(rows, 'Bricks or blocks')} with 5%`);
+    expect(text).toContain(`about ${fmt(row(rows, 'Mortar'))} cu ft with the allowance, which is ${row(rows, 'Mortar bags')} bags`);
+    expect(text).toContain(`${row(rows, 'Bricks or blocks')} ÷ 37 = ${fmt(row(rows, 'Bricks or blocks') / 37, 1)}, so ${Math.ceil(row(rows, 'Bricks or blocks') / 37)} bags`);
+    expect(fmt(perSqFt, 1)).toBe('6.9');
+    expect(masonryPerSquareFoot(MASONRY_UNITS[1]).units).toBeCloseTo(1.125, 3);
   });
 });
