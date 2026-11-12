@@ -46,6 +46,7 @@ const t = bg
   ? {
       title: 'Калкулатор за разход на ток: колко струва уредът | Zyankov.eu',
       description: 'Изчисли колко киловатчаса харчи печката, климатикът или бойлерът и колко струва на ден, месец и година при твоята цена на тока.',
+      answer: 'духалка от 2 000 W харчи 2 kWh на час. При 0,13 €/kWh това са 0,26 € на час, 1,56 € на ден при 6 часа работа и около 46,80 € на месец за 30 дни. Климатикът дава същата топлина с около три пъти по-малко ток.',
       crumbs: ['Начало', 'Дом и ремонт'],
       kicker: 'ДОМ И ЕНЕРГИЯ',
       h1: 'Колко ток харчи уредът?',
@@ -174,7 +175,7 @@ const jsonLd = {
           <p class="tool-kicker">{t.kicker}</p>
           <h1>{t.h1}</h1>
           <p class="tool-intro">{t.intro}</p>
-          {'answer' in t && t.answer && <p class="tool-answer"><strong>In short:</strong> {t.answer}</p>}
+          {'answer' in t && t.answer && <p class="tool-answer"><strong>{bg ? 'Накратко:' : 'In short:'}</strong> {t.answer}</p>}
         </div>
       </header>
 
