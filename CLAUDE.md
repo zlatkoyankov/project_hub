@@ -73,7 +73,7 @@ formula and the data are not visible and correct.
     keys, and `afterNextRender` restores query parameters and recalculates;
   - `utils/calculations.ts`: the rates.
 
-  Tests: `npm test` (69 specs).
+  Tests: `npm test` (76 specs).
 - **Letterwell daily game:**
   - `src/daily.ts`: puzzles and `hintsFor()`;
   - `src/DailyWord.tsx`: the UI, the hints panel (saved per puzzle in `${storage}-hints-v1`,
