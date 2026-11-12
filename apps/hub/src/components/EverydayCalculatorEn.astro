@@ -151,6 +151,7 @@ const CONFIGS: Record<Kind, Config> = {
       'Compare loans by APR, not just the interest rate. The APR includes the lender\'s fees.',
       'A longer term lowers the payment but raises the total interest.',
       'This is for a fixed rate. With a variable rate the payment changes with the index.',
+      'Extra payments in the first years save the most interest, because the balance is highest then. Check whether your loan has a prepayment penalty.',
     ],
     sources: [
       { label: 'Math Central (University of Regina): the amortization payment formula', href: 'https://mathcentral.uregina.ca/QandQ/topics/amortization' },
@@ -169,6 +170,7 @@ const CONFIGS: Record<Kind, Config> = {
       { name: 'principal', label: 'Loan amount', unit: '', value: 25000 },
       { name: 'rate', label: 'Annual interest rate', unit: '%', value: 7 },
       { name: 'term', label: 'Term', unit: '', value: 5, step: '1' },
+      { name: 'extra', label: 'Extra payment each month', unit: '', value: 0, hint: 'Optional: an amount on top of the payment that goes to the principal.' },
     ],
   },
 }
@@ -243,6 +245,15 @@ const jsonLd = {
         </aside>
       </section>
 
+      {kind === 'loan' && (
+        <section class="tool-schedule" data-schedule hidden aria-labelledby="schedule-title">
+          <h2 id="schedule-title">Amortization schedule</h2>
+          <p>How much of your payments goes to interest and how much to principal, and what you still owe after each year. Each month's interest is the balance × the annual rate ÷ 12.</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th data-schedule-period>Year</th><th>Paid</th><th>Interest</th><th>Principal</th><th>Balance</th></tr></thead><tbody data-schedule-body></tbody></table></div>
+          <button type="button" data-schedule-toggle data-labels="Show by month|Show by year" data-periods="Month|Year">Show by month</button>
+        </section>
+      )}
+
       <section class="tool-notes">
         <article>
           <h2>How it is calculated</h2>
@@ -285,7 +296,7 @@ const jsonLd = {
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
-  import { addDays, daysBetween, loanPayment, percent, type PercentMode } from '../lib/everyday'
+  import { addDays, daysBetween, loanPayment, loanSchedule, percent, type PercentMode, type ScheduleRow } from '../lib/everyday'
   import { addWorkdays, workdaysBetween, type HolidayCalendar } from '../lib/workdays'
 
   const root = document.querySelector<HTMLElement>('[data-everyday]')
@@ -303,6 +314,29 @@ const jsonLd = {
     const unitOut = out('bigUnit')
     const defaultUnit = unitOut.textContent ?? ''
     let tracked = false
+    // Amortization schedule: a table under the calculator, by year or by month.
+    const schedule = document.querySelector<HTMLElement>('[data-schedule]')
+    let scheduleView: 'years' | 'months' = 'years'
+    let lastPlan: { years: ScheduleRow[]; months: ScheduleRow[] } | null = null
+    const showSchedule = (rows: ScheduleRow[] | null) => {
+      if (!schedule) return
+      schedule.hidden = !rows?.length
+      if (!rows) return
+      schedule.querySelector('[data-schedule-body]')!.replaceChildren(...rows.map((row) => {
+        const tr = document.createElement('tr')
+        for (const value of [String(row.period), money(row.payment), money(row.interest), money(row.principal), money(row.balance)]) tr.append(Object.assign(document.createElement('td'), { textContent: value }))
+        return tr
+      }))
+    }
+    schedule?.querySelector<HTMLButtonElement>('[data-schedule-toggle]')?.addEventListener('click', (event) => {
+      const button = event.currentTarget as HTMLButtonElement
+      scheduleView = scheduleView === 'years' ? 'months' : 'years'
+      const [toMonths, toYears] = (button.dataset.labels ?? '').split('|')
+      const [month, year] = (button.dataset.periods ?? '').split('|')
+      button.textContent = scheduleView === 'years' ? toMonths : toYears
+      schedule.querySelector('[data-schedule-period]')!.textContent = scheduleView === 'years' ? year : month
+      if (lastPlan) showSchedule(lastPlan[scheduleView])
+    })
 
     const render = (big: string | null, rows: [string, string, string?][], unit = defaultUnit) => {
       out('big').textContent = big ?? '–'
@@ -361,12 +395,21 @@ const jsonLd = {
       } else if (kind === 'loan') {
         const months = field('termUnit')?.value === 'months' ? num('term') : num('term') * 12
         const result = loanPayment(num('principal'), num('rate'), months)
-        if (!result) return render(null, [])
-        render(money(result.payment), [
+        if (!result) { showSchedule(null); return render(null, []) }
+        const extra = num('extra')
+        const plan = loanSchedule(num('principal'), num('rate'), months, extra)
+        lastPlan = plan
+        showSchedule(plan?.[scheduleView] ?? null)
+        const rows: [string, string, string?][] = [
           ['Number of payments', `${result.months}`],
           ['Total paid', money(result.total)],
           ['Interest', money(result.interest), `${fmt((result.interest / num('principal')) * 100, 1)}% of the amount`],
-        ])
+        ]
+        if (plan && extra > 0) {
+          rows.push(['With the extra payment', `${plan.paidOffIn} months`, `${result.months - plan.paidOffIn} months sooner`])
+          rows.push(['Interest saved', money(result.interest - plan.totalInterest), `interest ${money(plan.totalInterest)}`])
+        }
+        render(money(result.payment), rows)
       }
     }
 

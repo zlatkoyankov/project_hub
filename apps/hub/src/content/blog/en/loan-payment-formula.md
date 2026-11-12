@@ -2,6 +2,7 @@
 title: 'Loan payment formula: how the monthly payment is calculated, with examples'
 description: 'The amortization formula step by step, a 25,000 loan at 7% over 5 years, how much of each payment is interest, how the term changes the cost, and why APR matters.'
 date: 2026-11-11
+updated: 2026-11-12
 lang: en
 tags: [loans, everyday-sums]
 tool: loan-calculator
@@ -60,7 +61,7 @@ The formula above uses the interest rate, so the calculator shows principal and 
 - **Looking at the rate instead of the APR.** Fees can make the lower rate the more expensive loan.
 - **Using the annual rate as r.** r is monthly: divide by 12 first.
 
-With the [loan payment calculator](/loan-calculator/) you type the amount, the rate and the term and see the payment, the total and the interest.
+With the [loan payment calculator](/loan-calculator/) you type the amount, the rate and the term and see the payment, the total, the interest and the amortization schedule by year or by month. Add an extra monthly payment to see how much sooner the loan is paid off and how much interest you save: on the 25,000 loan above, 100 extra a month pays it off in 49 months instead of 60 and saves 938.99 in interest.
 
 ## Sources
 
