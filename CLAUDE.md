@@ -165,4 +165,4 @@ dark mode and on a narrow screen.
 2. Done: the BG energy calculator embeds from `/bg/vgradi/razhod-na-tok/` (`EnergyCalculator.astro` `embed` prop).
 3. Check the Umami events for favourites, sharing and hints after a few days of traffic.
 4. Weekly Search Console check; AdSense readiness review before mid-December.
-5. Later: a separate SEO page for daily-word hints, short video clips, more everyday tools.
+5. Later: short video clips, more everyday tools. (The daily-word hints page is done: `/letterwell/daily/hints/`, `/letterwell/bg/duma-na-denya/podskazki/`.)

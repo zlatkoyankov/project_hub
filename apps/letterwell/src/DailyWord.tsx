@@ -88,7 +88,7 @@ const NOTES = {
         <h3>Как се пази серията?</h3>
         <p>Серията са дните подред, в които си познал днешната дума. Пази се в този браузър, без регистрация. Ако пропуснеш ден, започва отначало.</p>
         <h3>Има ли подсказки за думата на деня?</h3>
-        <p>Да. Натисни крушката над дъската. Подсказките се отварят една по една: колко гласни има думата, дали има повтаряща се буква, първата и последната буква. Самата дума не се показва.</p>
+        <p>Да. Натисни крушката над дъската. Подсказките се отварят една по една: колко гласни има думата, дали има повтаряща се буква, първата и последната буква. Самата дума не се показва. Има и <a href={pagePath('hints', 'bg')}>отделна страница с подсказките</a>, с вчерашната дума и съвети.</p>
         <h3>Заседнал съм.</h3>
         <p><a href={pagePath('wordle', 'bg')}>Помощникът за Wordle</a> показва кои думи още пасват на буквите ти. Ползвай го, ако искаш, но серията е по-сладка без него.</p>
       </article>
@@ -113,7 +113,7 @@ const NOTES = {
         <h3>How does the streak work?</h3>
         <p>Your streak counts the days in a row you solved today’s word. It is kept in this browser, with no sign-up. Miss a day and it starts again.</p>
         <h3>Are there hints for today’s word?</h3>
-        <p>Yes. Tap the light bulb above the board. Hints open one at a time: how many vowels the word has, whether a letter repeats, the first letter and the last letter. The word itself is never shown.</p>
+        <p>Yes. Tap the light bulb above the board. Hints open one at a time: how many vowels the word has, whether a letter repeats, the first letter and the last letter. The word itself is never shown. They also have <a href={pagePath('hints', 'en')}>a page of their own</a>, with yesterday’s word and tips.</p>
         <h3>I’m stuck.</h3>
         <p>The <a href={pagePath('finder', 'en')}>word finder</a> lists every word you can make from a set of letters. Use it if you must, but a streak tastes better without it.</p>
       </article>
