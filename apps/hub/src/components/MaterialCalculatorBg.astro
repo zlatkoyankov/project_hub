@@ -206,20 +206,21 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-dati/',
       en: '/date-calculator/',
       tool: 'date-calculator',
-      title: 'Калкулатор за дати: дни между две дати и дата след N дни | Zyankov.eu',
-      description: 'Изчисли колко дни има между две дати, колко от тях са делнични, и коя дата е след или преди определен брой дни. За срокове, отпуски и договори.',
+      title: 'Калкулатор за дати и работни дни: дни между две дати | Zyankov.eu',
+      description: 'Колко дни и колко работни дни (без официалните празници в България) има между две дати, коя дата е след N дни или след N работни дни. За срокове и отпуски.',
       h1: 'Калкулатор за дати',
       intro: 'Сметни колко дни остават до дата или колко са минали, или коя дата е след 30, 60 или 90 дни. Полезно за срокове по договори, отпуски и плащания.',
       big: 'дни',
       bigOne: 'ден',
       resultTitle: 'РЕЗУЛТАТ',
-      caveat: 'Делничните дни са от понеделник до петък. Официалните празници не са извадени.',
-      formula: 'дни = крайна дата − начална дата (крайният ден не се брои)',
+      caveat: 'Работните дни са без съботите, неделите и официалните почивни дни по чл. 154 от Кодекса на труда, плюс обявените от Министерския съвет (2 януари 2026 г.).',
+      formula: 'дни = крайна дата − начална дата (крайният ден не се брои); работни дни = делничните дни без официалните празници',
       how: 'Разликата между две дати се брои в цели дни, като началният ден се брои, а крайният не: от понеделник до следващия понеделник са 7 дни. Делничните дни са тези от понеделник до петък в този период. За дата след N дни към началната дата се добавят N дни, като се отчитат различните дължини на месеците и високосните години.',
       tips: [
         'Ако срокът е „в 14-дневен срок от получаването“, денят на получаване обикновено не се брои. За точния срок виж договора или закона.',
         'Ако трябва да броиш и двата крайни дни (например дни отпуск), добави 1.',
-        'Официалните празници в България не са извадени от делничните дни. Провери ги в календара за годината.',
+        'Работните дни вадят официалните празници в България, сметнати по Кодекса на труда за всяка година (виж почивните дни за 2027 г.). Допълнителни почивни дни на Министерския съвет се добавят, когато бъдат обявени.',
+        'При „след N работни дни“ началният ден не се брои: 3 работни дни след сряда 28 април 2027 г. е петък 7 май, заради Великден, 1 май и Гергьовден.',
       ],
       jsonName: 'Калкулатор за дати',
       kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
@@ -228,12 +229,13 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     formTitle: 'Датите',
     formHint: 'Празното поле за дата се попълва с днешната.',
     selects: [
-      { name: 'mode', label: 'Сметка', options: [{ value: 'between', label: 'Дни между две дати' }, { value: 'add', label: 'Дата след (или преди) N дни' }] },
+      { name: 'mode', label: 'Сметка', options: [{ value: 'between', label: 'Дни между две дати' }, { value: 'add', label: 'Дата след (или преди) N дни' }, { value: 'addwork', label: 'Дата след (или преди) N работни дни' }] },
     ],
     fields: [
       { name: 'from', label: 'Начална дата', unit: '', value: '', type: 'date' },
       { name: 'to', label: 'Крайна дата', unit: '', value: '', type: 'date', show: 'mode:between' },
       { name: 'days', label: 'Брой дни', unit: 'дни', value: 30, step: '1', signed: true, show: 'mode:add', hint: 'С минус за дата назад, например −14.' },
+      { name: 'workdays', label: 'Брой работни дни', unit: 'дни', value: 10, step: '1', signed: true, show: 'mode:addwork', hint: 'Без събота, неделя и официалните празници. С минус за назад.' },
     ],
   },
   loan: {
@@ -1133,6 +1135,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
+  import { addWorkdays, workdaysBetween } from '../lib/workdays'
   import { addDays, convertEuro, daysBetween, loanPayment, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
@@ -1210,8 +1213,9 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         ])
       } else if (kind === 'dates') {
         const from = field('from')?.value ?? ''
-        if (field('mode')?.value === 'add') {
-          const date = addDays(from, Math.round(signed('days')))
+        if (field('mode')?.value === 'add' || field('mode')?.value === 'addwork') {
+          const work = field('mode')?.value === 'addwork'
+          const date = work ? addWorkdays(from, Math.round(signed('workdays')), 'bg') : addDays(from, Math.round(signed('days')))
           if (!date) return render(null, [])
           const shown = new Date(`${date}T12:00:00`)
           render(null, [
@@ -1223,9 +1227,11 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           return
         }
         const span = daysBetween(from, field('to')?.value ?? '')
-        if (!span) return render(null, [])
+        const work = workdaysBetween(from, field('to')?.value ?? '', 'bg')
+        if (!span || !work) return render(null, [])
         render(span.days, [
-          ['Делнични дни', `${span.weekdays}`, 'понеделник – петък, без празниците'],
+          ['Работни дни', `${work.workdays}`, `без събота, неделя и ${work.holidays} ${work.holidays === 1 ? 'празник' : 'празника'} в делничен ден`],
+          ['Делнични дни', `${span.weekdays}`, 'понеделник – петък, с празниците'],
           ['Седмици', `${span.weeks} седм. и ${Math.abs(span.restDays)} дни`],
           ['С двата крайни дни', `${span.days + Math.sign(span.days || 1)}`, 'ако броиш и последния ден'],
         ])

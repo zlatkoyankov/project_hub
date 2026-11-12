@@ -102,31 +102,34 @@ const CONFIGS: Record<Kind, Config> = {
     bg: '/bg/kalkulator-dati/',
     tool: 'date-calculator',
     catalogId: 'dates',
-    title: 'Date Calculator: Days Between Dates and Date After N Days | Zyankov.eu',
-    description: 'Count the days between two dates, how many of them are weekdays, and find the date a number of days after or before another. For deadlines, notice periods and trips.',
+    title: 'Date & Business Days Calculator: Days Between Dates | Zyankov.eu',
+    description: 'Count the days and business days between two dates, without US federal or UK bank holidays, and find the date N days or N business days from another date.',
     h1: 'Date calculator',
     intro: 'Count how many days are left until a date or have passed since one, or find the date 30, 60 or 90 days from now. Handy for deadlines, notice periods and payment terms.',
     answer: 'From 1 January to 31 December 2027 there are 364 days (the end date is not counted, so add 1 to include both), of which 260 are Monday to Friday. 90 days after 1 March 2027 is 30 May 2027.',
     resultTitle: 'RESULT',
     big: 'days',
-    caveat: 'Weekdays are Monday to Friday. Public holidays are not taken out.',
-    formula: 'days = end date − start date (the end date is not counted)',
-    how: 'The difference between two dates is counted in whole days: the start day counts and the end day does not, so Monday to the next Monday is 7 days. Weekdays are the Mondays to Fridays in that span. For a date N days later, N days are added to the start date, taking the different month lengths and leap years into account.',
+    caveat: 'Business days skip weekends and, if you pick a calendar, the US federal holidays or the UK bank holidays of that region (observed dates).',
+    formula: 'days = end date − start date (the end date is not counted); business days = weekdays − holidays on weekdays',
+    how: 'The difference between two dates is counted in whole days: the start day counts and the end day does not, so Monday to the next Monday is 7 days. Weekdays are the Mondays to Fridays in that span. For a date N days later, N days are added to the start date, taking the different month lengths and leap years into account. Business days are the weekdays left after the holidays of the calendar you pick; for N business days later the start day is not counted and each following working day is.',
     tips: [
       'If a term says "within 14 days of receipt", the day of receipt usually does not count. Check the contract or the law for the exact rule.',
       'To count both end days (for example days of leave), add 1.',
-      'Public holidays are not subtracted from the weekdays. See the US or UK holiday list for the year.',
+      'Pick a holiday calendar to take out the US federal holidays or the UK bank holidays. They are worked out by the published rules for every year; one-off days (such as a state funeral) are not included.',
+      'For "N business days after", the start day does not count: 3 business days after Wednesday 22 December 2027 is Tuesday 28 December in the US, because Christmas is observed on Friday 24 December.',
     ],
     jsonName: 'Date calculator',
     formTitle: 'The dates',
     formHint: 'An empty date is filled in with today.',
     selects: [
-      { name: 'mode', label: 'Calculation', options: [{ value: 'between', label: 'Days between two dates' }, { value: 'add', label: 'Date after (or before) N days' }] },
+      { name: 'mode', label: 'Calculation', options: [{ value: 'between', label: 'Days between two dates' }, { value: 'add', label: 'Date after (or before) N days' }, { value: 'addwork', label: 'Date after (or before) N business days' }] },
+      { name: 'calendar', label: 'Holidays to skip', options: [{ value: 'none', label: 'None (weekends only)' }, { value: 'us', label: 'US federal holidays' }, { value: 'england-and-wales', label: 'UK: England and Wales' }, { value: 'scotland', label: 'UK: Scotland' }, { value: 'northern-ireland', label: 'UK: Northern Ireland' }] },
     ],
     fields: [
       { name: 'from', label: 'Start date', unit: '', value: '', type: 'date' },
       { name: 'to', label: 'End date', unit: '', value: '', type: 'date', show: 'mode:between' },
       { name: 'days', label: 'Number of days', unit: 'days', value: 30, step: '1', signed: true, show: 'mode:add', hint: 'Use a minus sign for a date in the past, for example −14.' },
+      { name: 'workdays', label: 'Number of business days', unit: 'days', value: 10, step: '1', signed: true, show: 'mode:addwork', hint: 'Use a minus sign to count back.' },
     ],
   },
   loan: {
@@ -283,6 +286,7 @@ const jsonLd = {
 <script>
   import { track } from '@zyankov/design-system/analytics'
   import { addDays, daysBetween, loanPayment, percent, type PercentMode } from '../lib/everyday'
+  import { addWorkdays, workdaysBetween, type HolidayCalendar } from '../lib/workdays'
 
   const root = document.querySelector<HTMLElement>('[data-everyday]')
   if (root) {
@@ -333,8 +337,10 @@ const jsonLd = {
         render(fmt(Math.round(result.value * 100) / 100), rows, unit)
       } else if (kind === 'dates') {
         const from = field('from')?.value ?? ''
-        if (field('mode')?.value === 'add') {
-          const date = addDays(from, Math.round(signed('days')))
+        const calendar = (field('calendar')?.value ?? 'none') as HolidayCalendar
+        if (field('mode')?.value === 'add' || field('mode')?.value === 'addwork') {
+          const work = field('mode')?.value === 'addwork'
+          const date = work ? addWorkdays(from, Math.round(signed('workdays')), calendar) : addDays(from, Math.round(signed('days')))
           if (!date) return render(null, [])
           const shown = new Date(`${date}T12:00:00`)
           render(shown.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }), [
@@ -344,9 +350,11 @@ const jsonLd = {
           return
         }
         const span = daysBetween(from, field('to')?.value ?? '')
-        if (!span) return render(null, [])
+        const work = workdaysBetween(from, field('to')?.value ?? '', calendar)
+        if (!span || !work) return render(null, [])
         render(span.days.toLocaleString('en-US'), [
-          ['Weekdays', `${span.weekdays}`, 'Monday – Friday, holidays not removed'],
+          ['Business days', `${work.workdays}`, calendar === 'none' ? 'Monday – Friday; pick a calendar to skip holidays' : `without weekends and ${work.holidays} holiday${work.holidays === 1 ? '' : 's'} on a weekday`],
+          ['Weekdays', `${span.weekdays}`, 'Monday – Friday, holidays included'],
           ['Weeks', `${span.weeks} wk and ${Math.abs(span.restDays)} days`],
           ['Counting both end dates', `${span.days + Math.sign(span.days || 1)}`, 'if you count the last day too'],
         ], Math.abs(span.days) === 1 ? 'day' : 'days')
