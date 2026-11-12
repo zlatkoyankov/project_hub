@@ -62,4 +62,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/daily/" />
     <changefreq>daily</changefreq>
   </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/daily/hints/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zyankov.eu/letterwell/daily/hints/" />
+    <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/duma-na-denya/podskazki/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/daily/hints/" />
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/bg/duma-na-denya/podskazki/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zyankov.eu/letterwell/daily/hints/" />
+    <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/duma-na-denya/podskazki/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/daily/hints/" />
+    <changefreq>daily</changefreq>
+  </url>
 </urlset>

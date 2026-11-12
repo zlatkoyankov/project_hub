@@ -15,6 +15,7 @@ There is one React app. `src/seo.ts` works out the language from the path (anyth
 | Crossword helper | `/letterwell/crossword-solver/` | `/letterwell/bg/krastoslovitsi/` |
 | Spelling Bee helper | `/letterwell/spelling-bee-solver/` | `/letterwell/bg/spelling-bee/` |
 | Daily word game | `/letterwell/daily/` | `/letterwell/bg/duma-na-denya/` |
+| Daily word hints | `/letterwell/daily/hints/` | `/letterwell/bg/duma-na-denya/podskazki/` |
 
 `scripts/prerender.mjs` writes one HTML file per page and language listed in `seo.ts` with its own title, meta,
 canonical, hreflang and OG image key. The design-system shell is injected afterwards. A new page
@@ -32,7 +33,9 @@ needs:
   - the day changes at midnight Sofia time (`sofiaToday`);
   - the list repeats after its length, so append words only at the end; changing the order
     changes past and future answers.
-- **Hints:** `hintsFor()` builds them; they are shown in `src/DailyWord.tsx`.
+- **Hints:** `hintsFor()` builds them; they are shown in `src/DailyWord.tsx` and on their own
+  page, `src/DailyHints.tsx` (today's hints, the word on request, yesterday's word). Both use the
+  same `${storage}-hints-v1` key, so hints opened on one show on the other.
 - **Saved state:** game state and stats in `localStorage` `zy-daily` (BG) and `zy-daily-en`
   (EN); hints per puzzle in `${storage}-hints-v1`; `#hints` opens the hints panel.
 - **Share text** comes from `shareText()`, with the short links `zyankov.eu/duma` and

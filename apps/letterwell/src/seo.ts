@@ -15,9 +15,9 @@ export function languageFromPath(path: string): Language {
 }
 
 // Letterwell pages: the word finder and the Wordle, crossword and Spelling Bee helpers, each in both languages.
-export type Page = 'finder' | 'wordle' | 'crossword' | 'bee' | 'daily'
+export type Page = 'finder' | 'wordle' | 'crossword' | 'bee' | 'daily' | 'hints'
 
-export const pages: Page[] = ['finder', 'wordle', 'crossword', 'bee', 'daily']
+export const pages: Page[] = ['finder', 'wordle', 'crossword', 'bee', 'daily', 'hints']
 
 /** Languages a page exists in (all of them, for now). */
 export function pageLanguages(page: Page): Language[] {
@@ -29,6 +29,7 @@ export function pageLanguages(page: Page): Language[] {
 export function pagePath(page: Page, language: Language): string {
   if (page === 'finder') return languagePath(language)
   if (page === 'daily') return language === 'bg' ? '/letterwell/bg/duma-na-denya/' : '/letterwell/daily/'
+  if (page === 'hints') return language === 'bg' ? '/letterwell/bg/duma-na-denya/podskazki/' : '/letterwell/daily/hints/'
   if (page === 'bee') return language === 'bg' ? '/letterwell/bg/spelling-bee/' : '/letterwell/spelling-bee-solver/'
   if (page === 'crossword') return language === 'bg' ? '/letterwell/bg/krastoslovitsi/' : '/letterwell/crossword-solver/'
   return language === 'bg' ? '/letterwell/bg/wordle/' : '/letterwell/wordle-solver/'
@@ -36,6 +37,7 @@ export function pagePath(page: Page, language: Language): string {
 
 /** Page from a URL path. */
 export function pageFromPath(path: string): Page {
+  if (/\/(duma-na-denya\/podskazki|daily\/hints)\/?$/.test(path)) return 'hints'
   if (/\/(duma-na-denya|daily)\/?$/.test(path)) return 'daily'
   if (/\/(spelling-bee-solver|spelling-bee)\/?$/.test(path)) return 'bee'
   if (/\/(crossword-solver|krastoslovitsi)\/?$/.test(path)) return 'crossword'
@@ -143,6 +145,7 @@ export const beeMetadata: Record<Language, { title: string; description: string;
 
 /** Head metadata of any Letterwell page. */
 export function pageMeta(page: Page, language: Language) {
+  if (page === 'hints') return { meta: hintsMetadata[language], social: hintsSocialDescriptions[language] }
   if (page === 'daily') return { meta: dailyMetadata[language], social: dailySocialDescriptions[language] }
   if (page === 'bee') return { meta: beeMetadata[language], social: beeSocialDescriptions[language] }
   if (page === 'crossword') return { meta: crosswordMetadata[language], social: crosswordSocialDescriptions[language] }
@@ -168,5 +171,25 @@ export const dailyMetadata: Record<Language, { title: string; description: strin
     description: 'Find the five-letter word in six tries. A new word every day, an unlimited mode for more games, streaks and statistics, and a spoiler-free result to share.',
     structuredDescription: 'A daily five-letter word game with an unlimited mode, streaks and shareable results.',
     features: ['A new word every day', 'Unlimited mode', 'Streaks and statistics', 'Spoiler-free sharing'],
+  },
+}
+
+export const hintsSocialDescriptions: Record<Language, string> = {
+  bg: 'Подсказки за днешната Дума на деня, една по една: гласни, повтаряща се буква, първа и последна буква. Думата само ако я поискаш.',
+  en: 'Hints for today’s Letterwell Daily, one at a time: vowels, a repeated letter, the first and last letter. The word only if you ask.',
+}
+
+export const hintsMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
+  bg: {
+    title: 'Дума на деня: подсказки за днешната дума | Letterwell',
+    description: 'Подсказки за днешната Дума на деня от 5 букви, една по една и без спойлери: брой гласни, повтаряща се буква, първа и последна буква. Плюс вчерашната дума.',
+    structuredDescription: 'Подсказки без спойлери за ежедневната българска игра на думи от пет букви.',
+    features: ['Четири подсказки една по една', 'Думата само при поискване', 'Вчерашната дума с речник', 'Съвети за по-бързо познаване'],
+  },
+  en: {
+    title: 'Letterwell Daily hints: clues for today’s word | Letterwell',
+    description: 'Spoiler-free hints for today’s five-letter Letterwell Daily word, one at a time: vowels, a repeated letter, the first and last letter. Plus yesterday’s word.',
+    structuredDescription: 'Spoiler-free hints for the Letterwell Daily five-letter word game.',
+    features: ['Four hints, one at a time', 'The word only on request', 'Yesterday’s word with dictionary links', 'Tips to solve faster'],
   },
 }
