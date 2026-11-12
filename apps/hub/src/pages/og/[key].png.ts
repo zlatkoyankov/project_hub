@@ -28,6 +28,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-kalkulator-kredit': { kicker: 'Всекидневни сметки · калкулатор', title: 'Каква ще е месечната вноска по кредита?', footer: 'zyankov.eu/bg/kalkulator-kredit' },
     'us-federal-holidays-2027': { kicker: 'Everyday sums · calendar', title: 'Which days are federal holidays in 2027?', footer: 'zyankov.eu/us-federal-holidays-2027' },
     'uk-bank-holidays-2027': { kicker: 'Everyday sums · calendar', title: 'When are the bank holidays in 2027?', footer: 'zyankov.eu/uk-bank-holidays-2027' },
+    'compound-interest-calculator': { kicker: 'Everyday sums · calculator', title: 'How much will my savings grow?', footer: 'zyankov.eu/compound-interest-calculator' },
     'percentage-calculator': { kicker: 'Everyday sums · calculator', title: 'What is X% of a number?', footer: 'zyankov.eu/percentage-calculator' },
     'date-calculator': { kicker: 'Everyday sums · calculator', title: 'How many days until that date?', footer: 'zyankov.eu/date-calculator' },
     'loan-calculator': { kicker: 'Everyday sums · calculator', title: 'What will the monthly loan payment be?', footer: 'zyankov.eu/loan-calculator' },
