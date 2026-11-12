@@ -10,6 +10,11 @@ AddCharset UTF-8 .txt .xml .json .svg
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # A folder asked for without its trailing slash (/calculators/tile-calculator): add the slash and switch to
+  # https://zyankov.eu in one 301, instead of one redirect for HTTPS and a second one from DirectorySlash.
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^(.+[^/])$ https://zyankov.eu/$1/ [R=301,L]
+
   # Force HTTPS and the bare domain: http:// and www. answer with one 301 to https://zyankov.eu.
   # The hosting panel does not do this (checked November 2026). If it ever loops behind a proxy,
   # comment these three lines out again.
