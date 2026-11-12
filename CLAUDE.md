@@ -162,7 +162,7 @@ dark mode and on a narrow screen.
 ## Backlog (as of 9 November 2026)
 
 1. EN everyday tools (November 2026): percentage, date and loan calculators (`EverydayCalculatorEn.astro`), US/UK holidays 2027 (`HolidaysEn.astro`, `lib/holidays-en.ts`) and four EN articles. VAT, euro and salary stay BG-only. Holiday pages are per year: add 2028 in late 2027.
-2. An embed version of the BG energy calculator (the EN one has one).
+2. Done: the BG energy calculator embeds from `/bg/vgradi/razhod-na-tok/` (`EnergyCalculator.astro` `embed` prop).
 3. Check the Umami events for favourites, sharing and hints after a few days of traffic.
 4. Weekly Search Console check; AdSense readiness review before mid-December.
 5. Later: a separate SEO page for daily-word hints, short video clips, more everyday tools.

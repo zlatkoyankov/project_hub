@@ -1,6 +1,7 @@
 ---
 // Appliance energy cost calculator, English (/energy-cost-calculator/) and Bulgarian (/bg/razhod-na-tok/).
 import BaseLayout from '../layouts/BaseLayout.astro'
+import EmbedLayout from '../layouts/EmbedLayout.astro'
 import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { AUTHOR, formatDate, getPosts, ogKey, postPath, readingMinutes, type Lang } from '../lib/site'
@@ -8,9 +9,11 @@ import '../styles/tool.css'
 
 interface Props {
   lang: Lang
+  /** The version for other sites' iframes (BG only): /bg/vgradi/razhod-na-tok/. */
+  embed?: boolean
 }
 
-const { lang } = Astro.props
+const { lang, embed = false } = Astro.props
 const bg = lang === 'bg'
 const path = bg ? '/bg/razhod-na-tok/' : '/energy-cost-calculator/'
 const alternates = { en: '/energy-cost-calculator/', bg: '/bg/razhod-na-tok/' }
@@ -163,19 +166,26 @@ const jsonLd = {
   publisher: AUTHOR,
   dateModified: CHECKED,
 }
+const Layout = embed ? EmbedLayout : BaseLayout
+const layoutProps: Record<string, unknown> = embed
+  ? { title: t.title, description: t.description, canonical: path, lang }
+  : { title: t.title, description: t.description, path, lang, alternates, project: 'buildcalc', jsonLd, breadcrumbs: [{ name: t.crumbs[0], path: bg ? '/bg/' : '/' }, { name: jsonLd.name, path }] }
+const embedPathBg = '/bg/vgradi/razhod-na-tok/'
+const embedCode = `<iframe src="https://zyankov.eu${embedPathBg}" title="Калкулатор за разход на ток – zyankov.eu" width="100%" height="760" style="border:0;max-width:820px" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+const embedResize = `<script>addEventListener('message',function(e){if(e.origin!=='https://zyankov.eu'||!e.data||e.data.type!=='zyankov-height')return;document.querySelectorAll('iframe').forEach(function(f){if(f.contentWindow===e.source)f.style.height=e.data.height+'px'})})</script>`
 ---
 
-<BaseLayout title={t.title} description={t.description} path={path} lang={lang} alternates={alternates} project="buildcalc" jsonLd={jsonLd} breadcrumbs={[{ name: t.crumbs[0], path: bg ? '/bg/' : '/' }, { name: jsonLd.name, path }]}>
-  <div class="tool-page zy-board" data-board={'blueprint'}>
+<Layout {...layoutProps}>
+  <div class:list={['tool-page', { 'zy-board': !embed, 'is-embed': embed }]} data-board={'blueprint'}>
     <main id="top">
-      <nav class="tool-crumbs" aria-label="Breadcrumb"><a href={bg ? '/bg/' : '/'}>{t.crumbs[0]}</a><span aria-hidden="true">/</span><a href={bg ? '/bg/#home-diy' : '/#home-diy'}>{t.crumbs[1]}</a></nav>
+      {!embed && <nav class="tool-crumbs" aria-label="Breadcrumb"><a href={bg ? '/bg/' : '/'}>{t.crumbs[0]}</a><span aria-hidden="true">/</span><a href={bg ? '/bg/#home-diy' : '/#home-diy'}>{t.crumbs[1]}</a></nav>}
       <header class="tool-head">
         <span class="tool-head__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z" /></svg></span>
         <div>
           <p class="tool-kicker">{t.kicker}</p>
           <h1>{t.h1}</h1>
-          <p class="tool-intro">{t.intro}</p>
-          {'answer' in t && t.answer && <p class="tool-answer"><strong>{bg ? 'Накратко:' : 'In short:'}</strong> {t.answer}</p>}
+          {!embed && <p class="tool-intro">{t.intro}</p>}
+          {!embed && 'answer' in t && t.answer && <p class="tool-answer"><strong>{bg ? 'Накратко:' : 'In short:'}</strong> {t.answer}</p>}
         </div>
       </header>
 
@@ -243,12 +253,12 @@ const jsonLd = {
             <div><dt>{t.rows[4]}</dt><dd data-out="kwhMonth">–</dd></div>
             <div><dt>{t.rows[5]}</dt><dd data-out="kwhYear">–</dd></div>
           </dl>
-          <button class="zy-cta energy-add" type="button" data-energy-add data-added={t.added}>+ {t.add}</button>
+          {!embed && <button class="zy-cta energy-add" type="button" data-energy-add data-added={t.added}>+ {t.add}</button>}
           <p class="tool-result__caveat">{t.caveat}</p>
         </aside>
       </section>
 
-      <section class="energy-list" aria-labelledby="energy-list-title" data-energy-list
+      <section class="energy-list" aria-labelledby="energy-list-title" hidden={embed} data-energy-list
         data-include={t.include} data-remove={t.remove} data-bill-under={t.billCompare('{share}')} data-bill-over={t.billOver('{share}')} data-per-year={t.perYear}>
         <div class="energy-list__head">
           <div>
@@ -277,6 +287,7 @@ const jsonLd = {
         </div>
       </section>
 
+      {!embed && (<>
       <section class="tool-notes">
         <article>
           <h2>{t.howTitle}</h2>
@@ -293,6 +304,24 @@ const jsonLd = {
           <ul>{t.tips.map((tip) => <li>{tip}</li>)}</ul>
         </article>
       </section>
+
+      {bg && (
+        <section class="tool-embed" aria-labelledby="tool-embed-title">
+          <h2 id="tool-embed-title">Вгради калкулатора на твоя сайт</h2>
+          <p>Безплатно за блогове, форуми и сайтове на фирми. Постави кода в страницата си и калкулаторът ще работи при теб, с връзка към нас.</p>
+          <label class="tool-embed__label" for="embed-code">Код за вграждане</label>
+          <textarea id="embed-code" class="tool-embed__code" readonly rows="4" data-embed-code>{embedCode}</textarea>
+          <details class="tool-embed__more">
+            <summary>Височината да се нагажда сама (по желание)</summary>
+            <p>Добави и този ред веднъж в страницата. Тогава рамката става точно колкото калкулатора.</p>
+            <textarea class="tool-embed__code" readonly rows="3" aria-label="Скрипт за автоматична височина">{embedResize}</textarea>
+          </details>
+          <p class="tool-embed__actions">
+            <button type="button" class="tool-embed__copy" data-embed-copy>Копирай кода</button>
+            <a href={embedPathBg} target="_blank" rel="noopener">Виж как изглежда ↗</a>
+          </p>
+        </section>
+      )}
 
       <RelatedTools lang={lang} id="energy" />
 
@@ -311,9 +340,10 @@ const jsonLd = {
           </ul>
         </section>
       )}
+      </>)}
     </main>
   </div>
-</BaseLayout>
+</Layout>
 
 <script>
   import { track } from '@zyankov/design-system/analytics'
@@ -447,9 +477,9 @@ const jsonLd = {
       }
     }
 
-    const addButton = root.querySelector<HTMLButtonElement>('[data-energy-add]')!
-    const addLabel = addButton.textContent
-    addButton.addEventListener('click', () => {
+    const addButton = root.querySelector<HTMLButtonElement>('[data-energy-add]')
+    const addLabel = addButton?.textContent ?? ''
+    addButton?.addEventListener('click', () => {
       const qty = Math.min(99, Math.max(1, Math.round(number('qty')) || 1))
       const watts = number('watts')
       const hours = Math.min(24, number('hours'))
@@ -461,8 +491,8 @@ const jsonLd = {
       items.push({ id: `${Date.now()}-${items.length}`, name, qty, watts, hours, load: loadPct, kwhMonth, costMonth: kwhMonth * number('price'), include: true })
       save()
       renderList()
-      addButton.textContent = addButton.dataset.added ?? addLabel
-      window.setTimeout(() => { addButton.textContent = addLabel }, 1400)
+      addButton!.textContent = addButton!.dataset.added ?? addLabel
+      window.setTimeout(() => { addButton!.textContent = addLabel }, 1400)
       track('energy_list_add', { language: lang, items: items.length })
     })
     list.querySelector('[data-energy-clear]')!.addEventListener('click', () => { items = []; save(); renderList() })
@@ -470,6 +500,29 @@ const jsonLd = {
     billInput.addEventListener('input', () => {
       try { localStorage.setItem(`${STORE}-bill`, billInput.value) } catch { /* storage unavailable */ }
       renderList()
+    })
+
+    // Embedded on another site: which site, and whether it is actually used (never the values).
+    const embedded = document.documentElement.dataset.embed === '1'
+    let host = 'unknown'
+    try { host = document.referrer ? new URL(document.referrer).hostname || 'unknown' : 'unknown' } catch { /* keep unknown */ }
+    if (embedded) {
+      track('embed_view', { calculator: 'energy', host, language: lang })
+      root.querySelector('form')!.addEventListener('input', () => track('embed_use', { calculator: 'energy', host, language: lang }), { once: true })
+    }
+    const copyButton = document.querySelector<HTMLButtonElement>('[data-embed-copy]')
+    const codeBox = document.querySelector<HTMLTextAreaElement>('[data-embed-code]')
+    copyButton?.addEventListener('click', async () => {
+      if (!codeBox) return
+      try {
+        await navigator.clipboard.writeText(codeBox.value)
+      } catch {
+        codeBox.select()
+        document.execCommand('copy')
+      }
+      copyButton.textContent = 'Копирано ✓'
+      window.setTimeout(() => { copyButton.textContent = 'Копирай кода' }, 2500)
+      track('embed_copy', { calculator: 'energy', language: lang })
     })
 
     update()
