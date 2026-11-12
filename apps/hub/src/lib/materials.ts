@@ -858,3 +858,74 @@ export function estimateAircon(input: AirconInput): AirconEstimate | null {
     size: AIRCON_SIZES.find((size) => size.kw >= needKw * 0.9) ?? null,
   }
 }
+
+// ---- Fence: welded 3D panels or woven wire mesh on posts ----
+/** 3D welded panels are 2.5 m wide (Betafence Nylofor 3D; Bulgarian sellers list the same width). Square posts sit
+ *  2.53 m apart centre to centre (Betafence Nylofor installation manual). Post lengths for concreting and fixing clips
+ *  per post by panel height are from the same Betafence documents. */
+export const FENCE_PANELS = [
+  { height: 1.03, postLength: 1.5, clips: 3 },
+  { height: 1.23, postLength: 1.8, clips: 4 },
+  { height: 1.53, postLength: 2.1, clips: 4 },
+  { height: 1.73, postLength: 2.4, clips: 5 },
+  { height: 2.03, postLength: 2.7, clips: 6 },
+]
+export const PANEL_POST_SPACING = 2.53
+/** Woven wire mesh: three horizontal tension wires (Fenceshop chain-link kit: 100 m of line wire for 3 lines on a
+ *  25 m roll). Our estimate: posts are set about 0.6 m into concrete, similar to Betafence panel posts. */
+export const MESH_TENSION_LINES = 3
+export const POST_DEPTH_ESTIMATE = 0.6
+/** A 25 kg bag of dry concrete makes about 12–14 L (weber beton data sheet); the lower figure is used. */
+export const DRY_CONCRETE_LITRES_PER_BAG = 12
+
+export interface FenceInput {
+  type: 'panels' | 'mesh'
+  length: number
+  /** Index into FENCE_PANELS for panels. */
+  panel: number
+  /** Mesh height in metres. */
+  meshHeight: number
+  rollLength: number
+  spacing: number
+  /** Concrete hole: side in cm and depth in m. */
+  holeSide: number
+  holeDepth: number
+}
+
+export interface FenceEstimate {
+  posts: number
+  panels: number
+  clips: number
+  postLength: number
+  rolls: number
+  tensionWire: number
+  concreteM3: number
+  concreteBags: number
+}
+
+export function estimateFence(input: FenceInput): FenceEstimate | null {
+  if (!(input.length > 0 && input.holeSide >= 0 && input.holeDepth >= 0)) return null
+  let posts = 0
+  let panels = 0
+  let clips = 0
+  let postLength = 0
+  let rolls = 0
+  let tensionWire = 0
+  if (input.type === 'panels') {
+    const panel = FENCE_PANELS[input.panel]
+    if (!panel) return null
+    panels = wholeUp(input.length / PANEL_POST_SPACING)
+    posts = panels + 1
+    clips = posts * panel.clips
+    postLength = panel.postLength
+  } else {
+    if (!(input.meshHeight > 0 && input.rollLength > 0 && input.spacing > 0)) return null
+    posts = wholeUp(input.length / input.spacing) + 1
+    rolls = wholeUp(input.length / input.rollLength)
+    tensionWire = input.length * MESH_TENSION_LINES
+    postLength = input.meshHeight + POST_DEPTH_ESTIMATE
+  }
+  const side = input.holeSide / 100
+  const concreteM3 = posts * side * side * input.holeDepth
+  return { posts, panels, clips, postLength, rolls, tensionWire, concreteM3, concreteBags: wholeUp((concreteM3 * 1000) / DRY_CONCRETE_LITRES_PER_BAG) }
+}

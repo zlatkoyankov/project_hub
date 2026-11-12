@@ -8,11 +8,11 @@ import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { AUTHOR, getPosts, isoFromBgDate, ogKey, postPath } from '../lib/site'
-import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
+import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, FENCE_PANELS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence'
 
 interface Props {
   kind: Kind
@@ -317,6 +317,54 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     ],
     fields: [
       { name: 'amount', label: 'Сума', unit: '€', value: 1500, step: 'any' },
+    ],
+  },
+  fence: {
+    page: {
+      path: '/bg/kalkulator-ograda/',
+      tool: 'fence-calculator',
+      title: 'Калкулатор за ограда: пана, колове, мрежа и бетон | Zyankov.eu',
+      description: 'Колко оградни пана (3D) или ролки мрежа, колове, скоби и бетон за коловете трябват за ограда с дадена дължина. По данните на производителите.',
+      h1: 'Калкулатор за ограда',
+      intro: 'Въведи дължината на оградата и избери пана или плетена мрежа. Виж колко пана или ролки, колове, скоби или обтегателна тел и бетон за коловете да купиш.',
+      answer: 'Оградните 3D пана са широки 2,5 м, а коловете се слагат през 2,53 м. За 30 м ограда с пана 1,53 м трябват 12 пана, 13 кола по 2,1 м и 52 скоби (по 4 на кол). Ако всеки кол е в дупка 30 × 30 см, дълбока 60 см, бетонът е около 0,7 м³.',
+      big: 'кола',
+      bigOne: 'кол',
+      resultTitle: 'КОЛОВЕ',
+      caveat: 'За права ограда без врати. Ъглите, портите и наклонът на терена добавят колове. Дупката за кола е наша ориентировъчна стойност.',
+      formula: 'пана = дължина ÷ 2,53 (нагоре), колове = пана + 1; при мрежа колове = дължина ÷ разстояние + 1, ролки = дължина ÷ дължина на ролката; бетон = колове × страна² × дълбочина на дупката',
+      how: 'Паната са 2,5 м широки, а с кола между тях стъпката е 2,53 м, затова броят пана е дължината, разделена на 2,53, закръглен нагоре, а коловете са с един повече. Скобите за закрепване са по 3 до 6 на кол според височината на паното, а дължината на кола за бетониране е по таблицата на производителя. При плетена мрежа коловете се слагат през 2–2,5 м, мрежата се купува на ролки, а по нея се опъват три реда обтегателна тел. Бетонът е обемът на дупките: страна × страна × дълбочина за всеки кол.',
+      tips: [
+        'На ъгъл слагай отделен кол за всяка страна или ъглов кол, според системата. Броят тук е за права линия: добави колове за ъглите и за двете страни на всяка врата.',
+        'Купи няколко скоби повече. Губят се лесно и рядко се продават поотделно в магазина.',
+        'За 0,5 м³ и повече бетон е по-евтино да го забъркаш сам или да го поръчаш. Сметни колко цимент, пясък и чакъл трябват в калкулатора за бетон.',
+        'Преди да копаеш, провери къде минават подземни кабели и тръби и къде е точната граница на имота.',
+      ],
+      jsonName: 'Калкулатор за ограда',
+      checked: '12 ноември 2026',
+      sources: [
+        { label: 'Betafence Nylofor 3D: пана 2500 мм широки, височини 630–2430 мм и дължина на кола за бетониране', href: 'https://www.betafence.com/sites/default/files/media_root/en-2023-06-nylofor-3d_0.pdf' },
+        { label: 'Betafence Nylofor (инструкция за монтаж): разстояние между квадратни колове 2530 мм и брой скоби на кол по височина', href: 'https://manuals.online/betafence/fencing-%26-gate/nylofor-square-post/user-manual/1g7qg' },
+        { label: 'Оградни пана в България: ширина винаги 250 см, височини 75–200 см (обява на производител)', href: 'https://www.olx.bg/d/ad/ogradni-pana-i-portali-s-50-god-garantsiya-top-tseni-CID262-ID9FQPF.html' },
+        { label: 'Плетена мрежа на ролки по 10 м, височини 1,5–2 м (обява на търговец)', href: 'https://bazar.bg/obiava-41964266/burgas-pletena-mrezha-1-5m-wisochina-f2-2mm' },
+        { label: 'Wirefence: колове за плетена мрежа през 2–2,5 м', href: 'https://www.wirefence.co.uk/chain-link-fence-installation' },
+        { label: 'Fenceshop: комплект мрежа 25 м с колове през 2,5 м и 3 реда обтегателна тел', href: 'https://fenceshop.eu/en/product/fencing-kits/ground-mounted-25-mt-chain-link-mesh-fence-kit/391' },
+        { label: 'weber бетон: 12–14 л от торба 25 кг сух бетон (технически лист, БГ)', href: 'https://bauhaus.bg/upload/files/120048/2608_TDS_weber_Beton.pdf' },
+      ],
+    },
+    formTitle: 'Оградата',
+    formHint: 'Дължината е по линията на оградата, в метри.',
+    selects: [
+      { name: 'type', label: 'Вид ограда', options: [{ value: 'panels', label: 'Оградни пана (3D, 2,5 м)' }, { value: 'mesh', label: 'Плетена мрежа на ролки' }] },
+      { name: 'panel', label: 'Височина на паното', options: FENCE_PANELS.map((panel, index) => ({ value: index, label: `${panel.height.toFixed(2).replace('.', ',')} м`, selected: index === 2 })) },
+    ],
+    fields: [
+      { name: 'length', label: 'Дължина на оградата', unit: 'м', value: 30, step: '0.1' },
+      { name: 'meshHeight', label: 'Височина на мрежата', unit: 'м', value: 1.5, step: '0.05', show: 'type:mesh' },
+      { name: 'rollLength', label: 'Дължина на ролката', unit: 'м', value: 10, step: '1', show: 'type:mesh', hint: 'Обикновено 10 м, понякога 5 или 25 м.' },
+      { name: 'spacing', label: 'Разстояние между коловете', unit: 'м', value: 2.5, step: '0.1', show: 'type:mesh', hint: 'Обикновено 2–2,5 м.' },
+      { name: 'holeSide', label: 'Страна на дупката за кола', unit: 'см', value: 30, step: '1', hint: 'Наша ориентировъчна стойност. 0, ако коловете не се бетонират.' },
+      { name: 'holeDepth', label: 'Дълбочина на дупката', unit: 'м', value: 0.6, step: '0.05', hint: 'Около 0,6 м: толкова от кола влиза в земята по таблицата на Betafence.' },
     ],
   },
   aircon: {
@@ -1134,6 +1182,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 <script>
   import { track } from '@zyankov/design-system/analytics'
   import { addDays, convertEuro, daysBetween, loanPayment, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
+  import { estimateFence, FENCE_PANELS as PANELS } from '../lib/materials'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
@@ -1261,6 +1310,29 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         ]
         if (result.gross < MIN_WAGE_EUR) rows.push(['Внимание', 'под минималната', `МРЗ е ${fmt(MIN_WAGE_EUR)} € за пълен месец`])
         render(fromNet ? result.gross : result.net, rows)
+      } else if (kind === 'fence') {
+        const type = field('type')?.value === 'mesh' ? 'mesh' : 'panels'
+        const panelField = field('panel')?.closest<HTMLElement>('.tool-field')
+        if (panelField) panelField.hidden = type !== 'panels'
+        const result = estimateFence({ type, length: num('length'), panel: Number(field('panel')?.value ?? 2), meshHeight: num('meshHeight'), rollLength: num('rollLength'), spacing: num('spacing'), holeSide: num('holeSide'), holeDepth: num('holeDepth') })
+        if (!result) return render(null, [])
+        const panel = PANELS[Number(field('panel')?.value ?? 2)]
+        const rows: [string, string, string?][] = type === 'panels'
+          ? [
+              ['Оградни пана', `${result.panels} бр.`, '2,5 м широки, стъпка 2,53 м'],
+              ['Колове', `${result.posts} бр. по ${fmt(result.postLength, 1)} м`, 'дължина за бетониране по Betafence'],
+              ['Скоби', `${result.clips} бр.`, `по ${panel?.clips ?? 0} на кол`],
+            ]
+          : [
+              ['Ролки мрежа', `${result.rolls} бр.`, `по ${fmt(num('rollLength'), 1)} м`],
+              ['Колове', `${result.posts} бр. по около ${fmt(result.postLength, 1)} м`, 'височината плюс около 0,6 м в земята'],
+              ['Обтегателна тел', `${fmt(result.tensionWire, 0)} м`, '3 реда по дължината, плюс малко за връзване'],
+            ]
+        if (result.concreteM3 > 0) {
+          rows.push(['Бетон за коловете', `${fmt(result.concreteM3, 2)} м³`, `${fmt(num('holeSide'), 0)} × ${fmt(num('holeSide'), 0)} см, ${fmt(num('holeDepth'), 2)} м дълбочина`])
+          rows.push(['Или сух бетон', `${result.concreteBags} торби по 25 кг`, 'около 12 л от торба'])
+        }
+        render(result.posts, rows)
       } else if (kind === 'aircon') {
         const result = estimateAircon({
           area: num('area'), height: num('height'), insulation: Number(field('insulation')?.value ?? 1), climate: Number(field('climate')?.value ?? 1),

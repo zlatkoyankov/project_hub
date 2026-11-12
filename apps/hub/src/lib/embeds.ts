@@ -2,6 +2,7 @@
 // /bg/kalkulator-beton/ is embedded from /bg/vgradi/kalkulator-beton/.
 export const EMBED_SLUGS = {
   'kalkulator-beton': 'concrete',
+  'kalkulator-ograda': 'fence',
   'kalkulator-chakal': 'gravel',
   'kalkulator-boya': 'paint',
   'kalkulator-plochki': 'tile',

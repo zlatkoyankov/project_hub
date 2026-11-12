@@ -38,6 +38,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-kalkulator-gipsokarton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко плоскости гипсокартон ми трябват?', footer: 'zyankov.eu/bg/kalkulator-gipsokarton' },
     'bg-kalkulator-boya': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко литра боя ми трябват?', footer: 'zyankov.eu/bg/kalkulator-boya' },
     'bg-kalkulator-plochki': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко плочки и кашони ми трябват?', footer: 'zyankov.eu/bg/kalkulator-plochki' },
+    'bg-kalkulator-ograda': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко пана, колове и бетон за оградата?', footer: 'zyankov.eu/bg/kalkulator-ograda' },
     'bg-kalkulator-beton': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко бетон, цимент и пясък ми трябват?', footer: 'zyankov.eu/bg/kalkulator-beton' },
     'bg-kalkulator-chakal': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко чакъл или пясък ми трябва?', footer: 'zyankov.eu/bg/kalkulator-chakal' },
     'bg-kalkulator-tuhli': { kicker: 'Дом и ремонт · калкулатор', title: 'Колко тухли и разтвор ми трябват?', footer: 'zyankov.eu/bg/kalkulator-tuhli' },

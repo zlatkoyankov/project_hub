@@ -37,6 +37,7 @@ export async function GET() {
     { path: '/bg/kalkulator-boya/', alternates: pair('/calculators/paint-calculator/', '/bg/kalkulator-boya/') },
     { path: '/bg/kalkulator-plochki/', alternates: pair('/calculators/tile-calculator/', '/bg/kalkulator-plochki/') },
     { path: '/bg/kalkulator-beton/', alternates: pair('/calculators/concrete-calculator/', '/bg/kalkulator-beton/') },
+    { path: '/bg/kalkulator-ograda/' },
     { path: '/bg/kalkulator-chakal/', alternates: pair('/calculators/gravel-calculator/', '/bg/kalkulator-chakal/') },
     { path: '/bg/kalkulator-tuhli/', alternates: pair('/calculators/brick-block-calculator/', '/bg/kalkulator-tuhli/') },
     { path: '/bg/kalkulator-izolatsiya/', alternates: pair('/calculators/insulation-board-calculator/', '/bg/kalkulator-izolatsiya/') },
