@@ -89,7 +89,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'square-footage-calculator', title: 'Square Footage Calculator', seoTitle: 'Square Footage Calculator: Add Up Several Rooms', shortTitle: 'Square footage', category: 'General Construction',
+    slug: 'square-footage-calculator', title: 'Square Footage Calculator', seoTitle: 'Square Footage Calculator: Room Area in sq ft & m²', shortTitle: 'Square footage', category: 'General Construction',
     description: 'Add multiple rectangular rooms or spaces to find their combined square footage.',
     intro: 'Add rectangular areas one at a time to total a home, room, or project footprint. Choose feet or inches for each measurement.',
     kind: 'area', icon: 'area', keywords: ['room', 'square feet', 'floor area', 'measurement', 'square meters'],
@@ -113,8 +113,9 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'laminate-flooring-calculator', bg: '/bg/kalkulator-laminat/', title: 'Laminate Flooring Calculator', seoTitle: 'Laminate Flooring Calculator: Boxes and Waste', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
+    slug: 'laminate-flooring-calculator', bg: '/bg/kalkulator-laminat/', title: 'Laminate Flooring Calculator', seoTitle: 'Laminate Flooring Calculator: How Many Boxes?', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
     description: 'Work out how many boxes of laminate or vinyl plank flooring you need for a room, with waste and cost.',
+    answer: 'Floor area plus about 10% for cuts, divided by the coverage printed on the box, rounded up. A 14 × 12 ft room is 168 sq ft; with 10% waste that is 184.8 sq ft, so with 20 sq ft boxes you need 10 boxes.',
     intro: 'Enter the room size and the coverage printed on the box. The estimate adds a waste allowance for cuts and rounds up to whole boxes.',
     sources: src(['EGGER: order about 10% extra laminate', 'https://www.egger.com/en/blog/how-much-laminate-flooring-do-i-need?country=GB'], ['Pergo installation guide: acclimatize planks for 48 hours', 'https://cdn2.pergo.com/-/media/imported%20assets/flooring/5/b/b/pginstallationlmpherringboneenpdf288141.ashx']), kind: 'flooring', icon: 'flooring', keywords: ['laminate', 'vinyl plank', 'LVP', 'floor', 'boxes', 'hardwood', 'underlayment'],
     example: 'A 14 ft × 12 ft room is 168 square feet of floor before waste.',
@@ -137,8 +138,9 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'tile-adhesive-grout-calculator', bg: '/bg/lepilo-i-fuga/', title: 'Tile Adhesive & Grout Calculator', seoTitle: 'Tile Adhesive & Grout Calculator: Bags Needed', shortTitle: 'Tile adhesive & grout', category: 'Flooring & Tile',
+    slug: 'tile-adhesive-grout-calculator', bg: '/bg/lepilo-i-fuga/', title: 'Tile Adhesive & Grout Calculator', seoTitle: 'Tile Adhesive & Grout Calculator: kg per m²', shortTitle: 'Tile adhesive & grout', category: 'Flooring & Tile',
     description: 'Estimate bags of tile adhesive (thinset) and grout from the area, tile size, joint width and trowel notch.',
+    answer: 'With a 10 mm (3/8 in) notched trowel, tile adhesive takes about 4.2 kg per m² (0.86 lb per sq ft); a 6 mm notch about 2.7 kg per m². Grout depends on the tile and the joint: 30 × 30 cm tiles 8 mm thick with 3 mm joints take about 0.26 kg per m². So 10 m² of 30 × 30 cm tile needs about 42 kg of adhesive (2 bags of 25 kg) and 2.6 kg of grout.',
     intro: 'Enter the area to tile, the tile size and thickness and the joint width. The estimate picks a trowel notch for the tile size, adds waste and rounds up to whole bags.',
     sources: src(['Ceresit CM 11 PLUS data sheet: adhesive per trowel notch, 4 to 12 mm', 'https://datasheets.tdx.henkel.com/CERESIT-CM-11-PLUS-sk_SK.pdf'], ['SikaCeram Tile Grout data sheet: grout density about 1.6 kg/L and coverage formula', 'https://twn.sika.com/dam/dms/tw01/d/sikaceram_tile_groutf1t.pdf']), kind: 'adhesive', icon: 'tile', keywords: ['thinset', 'mortar', 'grout', 'tile adhesive', 'trowel', 'bags'],
     example: 'Grout for 12 × 12 in tiles with 1/8 in joints, 3/8 in thick, is about 0.32 kg per m² (0.065 lb per sq ft).',
@@ -161,8 +163,9 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'screed-plaster-calculator', bg: '/bg/zamazka-i-mazilka/', title: 'Screed & Plaster Calculator', seoTitle: 'Screed & Plaster Calculator: Bags Needed', shortTitle: 'Screed & plaster', category: 'Concrete & Masonry',
+    slug: 'screed-plaster-calculator', bg: '/bg/zamazka-i-mazilka/', title: 'Screed & Plaster Calculator', seoTitle: 'Self-Leveling Concrete & Screed Calculator', shortTitle: 'Screed & plaster', category: 'Concrete & Masonry',
     description: 'Estimate bags of floor screed, self-leveling compound or gypsum plaster from the area, thickness and the mix’s consumption.',
+    answer: 'Self-leveling compound (concrete leveler) takes about 1.5 to 1.6 kg per m² for every millimeter of thickness. 10 m² at 5 mm with 1.6 kg/m² per mm is 80 kg of dry mix, or 4 bags of 25 kg. In US units, 100 sq ft at 1/4 in is about 208 lb, or 5 bags of 50 lb.',
     intro: 'Enter the area and the average thickness, and choose the material. The estimate multiplies by the consumption per millimeter from manufacturers’ data sheets, adds waste and rounds up to whole bags.',
     sources: src(['Baumit Solido E225: cement screed, about 20 kg/m² per cm', 'https://baumit.pl/files/pl/pdf_files/pds_solido___5___estrich_e___5_bpl_pl_13262.pdf'], ['Ceresit CN 68: self-leveling, about 1.5 kg/m² per mm', 'https://datasheets.tdx.henkel.com/CERESIT-CN-68-bg_BG.pdf'], ['Baumit Nivello Quattro: self-leveling, about 1.5 kg/m² per mm', 'https://media.hornbach.at/hb/technicaldatasheet/as.187261153.pdf'], ['Knauf MP 75: gypsum plaster, 10 kg/m² at 10 mm', 'https://bauhaus.bg/upload/files/120030/2605_MP%2075_2020.pdf']), kind: 'screed', icon: 'concrete', keywords: ['floor leveler', 'self-leveling', 'underlayment', 'screed', 'plaster', 'bags', 'thickness'],
     example: 'A 15 m² floor with 40 mm of cement screed takes about 1,200 kg of dry mix before waste.',
@@ -185,8 +188,9 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'brick-block-calculator', bg: '/bg/kalkulator-tuhli/', title: 'Brick & Block Calculator', seoTitle: 'Brick & Block Calculator: Units and Mortar', shortTitle: 'Bricks & blocks', category: 'Concrete & Masonry',
+    slug: 'brick-block-calculator', bg: '/bg/kalkulator-tuhli/', title: 'Brick & Block Calculator', seoTitle: 'Brick Calculator: How Many Bricks and Blocks?', shortTitle: 'Bricks & blocks', category: 'Concrete & Masonry',
     description: 'Estimate bricks or blocks for a wall, and the mortar and mortar bags, from the wall size and the unit you build with.',
+    answer: 'Divide the wall area by the face of one brick plus its mortar joint. Modular brick with 3/8 in joints is about 6.9 bricks per sq ft, so a 20 × 6 ft wall takes 823 bricks before waste. A 25 × 12 × 6.5 cm brick in a 12 cm wall is about 51 bricks per m².',
     intro: 'Enter the wall length and height, subtract doors and windows, and choose the brick or block. The estimate counts units per square foot with their joints and works out the mortar in the joints.',
     sources: src(['BIA Technical Note 10: modular brick about 6.75 per sq ft, mortar per 1,000 brick', 'https://gobrick.com/media/file/10-dimensioning-and-estimating-brick-masonry.pdf'], ['Titan America block guide: 1.125 block per sq ft for 8 × 16 in CMU', 'https://titanamerica.com/wp-content/uploads/2025/01/Titan-America-Block-Estimating-Guide.pdf'], ['QUIKRETE Mason Mix: an 80 lb bag lays up to 37 bricks or 13 blocks', 'https://www.Quikrete.com/PDFs/DATA_SHEET-Mason%20Mix%201136.pdf'], ['Wienerberger Porotherm 25: 375 × 250 × 238 mm, 11 per m² (data sheet)', 'https://www.masterhaus.bg/files/pdf-docs/11/03/01/1103010048-tuhla-poroterm-25-light-plus-375h250h238mm.pdf'], ['Ytong 625 × 250 mm: 6.4 per m², thin-bed joint (data sheet)', 'https://www.baubook.info/m/Daten/Infos/SI2142723510/AT87/ID147470/2023_Ytong_Planstein_gelb_PP2_050_250.pdf']), kind: 'masonry', icon: 'concrete', keywords: ['bricks', 'blocks', 'CMU', 'mortar', 'wall', 'masonry', 'Porotherm', 'aerated concrete'],
     example: 'A wall of modular brick with 3/8 in joints takes about 6.9 bricks per sq ft; 8 × 16 in concrete blocks about 1.125 per sq ft.',
