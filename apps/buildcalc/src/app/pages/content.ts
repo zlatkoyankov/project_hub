@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { GUIDES, Guide } from '../data/guides';
 import { MaterialArtComponent } from '../shared/material-art.component';
+import { SOURCES_CHECKED } from '../data/calculators';
 
 interface ContentSection {
   title: string;
@@ -37,6 +38,7 @@ export class ContentPage {
   private readonly route = inject(ActivatedRoute);
   protected readonly pageKey = this.route.snapshot.paramMap.get('slug') ?? this.route.snapshot.data['contentKey'] as string;
   protected readonly guides = GUIDES;
+  protected readonly sourcesChecked = SOURCES_CHECKED;
   protected readonly isGuideIndex = this.pageKey === 'guides';
   protected readonly guide: Guide | undefined = GUIDES.find((item) => item.slug === this.pageKey);
   protected readonly page: PageContent = this.guide

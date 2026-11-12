@@ -17,6 +17,14 @@
       }
     }
     @if (guide) {
+      <section class="guide-example"><h2>{{ guide.example.title }}</h2><p>{{ guide.example.intro }}</p>
+        <ol>@for (step of guide.example.steps; track step) {<li>{{ step }}</li>}</ol>
+        <p class="guide-result">{{ guide.example.result }}</p>
+      </section>
+      <section><h2>Common mistakes</h2><ul>@for (mistake of guide.mistakes; track mistake) {<li>{{ mistake }}</li>}</ul></section>
+      <div class="calc-sources"><h3>Sources <span>· checked {{ sourcesChecked }}</span></h3>
+        <ul>@for (source of guide.sources; track source.href) {<li><a [href]="source.href" target="_blank" rel="noopener">{{ source.label }}</a></li>}</ul>
+      </div>
       <a class="button" [routerLink]="['/', guide.calculatorSlug]">Open the {{ guide.shortTitle.toLowerCase() }} calculator <span aria-hidden="true">→</span></a>
     }
   </div>

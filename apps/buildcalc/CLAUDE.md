@@ -23,7 +23,8 @@ CLAUDE.md rules apply, above all the rule for numbers.
   - `afterNextRender` restores query parameters and recalculates;
   - the sources list is `.calc-sources`.
 - `src/app/data/guides.ts` has the `/calculators/guides/<slug>/` guides; `pages/content.*`
-  renders guides and info pages.
+  renders guides and info pages. Each guide has sections, a worked `example`, `mistakes` and
+  `sources`; `guides.spec.ts` recomputes every number in the example with `calculations.ts`.
 - `src/app/core/seo.service.ts` sets titles, meta, canonical and JSON-LD per route.
   `unit-preference.service.ts` stores US/metric in `localStorage` `buildcalc-units`.
 - `src/app/app.routes.server.ts` lists what gets prerendered. It covers the home and directory
