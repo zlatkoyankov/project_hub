@@ -1,0 +1,177 @@
+---
+// "Колко дни до…": countdowns to Christmas, New Year, Easter and the other holidays, plus any date.
+// The page is built with the build date and the script recounts from the visitor's own date.
+import PageLayout from '../../../layouts/PageLayout.astro'
+import RelatedTools from '../../../components/RelatedTools.astro'
+import { AUTHOR } from '../../../lib/site'
+import { OCCASIONS, countdown, dayWord, nextDate } from '../../../lib/countdown'
+import { orthodoxEaster } from '../../../lib/holidays'
+import '../../../styles/tool.css'
+
+const CHECKED = '13 ноември 2026'
+const CHECKED_ISO = '2026-11-13'
+const path = '/bg/kolko-dni-do/'
+const today = new Date().toISOString().slice(0, 10)
+const longDate = (date: string) => new Date(`${date}T12:00:00Z`).toLocaleDateString('bg-BG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+const cards = OCCASIONS.map((occasion) => {
+  const date = nextDate(occasion, today)
+  return { ...occasion, date, count: countdown(today, date)! }
+})
+const weeksText = (c: { weeks: number; restDays: number }) => (c.weeks ? `${c.weeks} седм.${c.restDays ? ` и ${dayWord(c.restDays)}` : ''}` : dayWord(c.restDays))
+const koleda = cards.find((card) => card.id === 'koleda')!
+const easterYear = Number(today.slice(0, 4)) + (orthodoxEaster(Number(today.slice(0, 4))) < today ? 1 : 0)
+
+const title = 'Колко дни до Коледа, Нова година и Великден | Zyankov.eu'
+const description = 'Колко дни остават до Коледа, Нова година, Великден, Баба Марта и официалните празници, колко са работните дни дотогава и брояч до всяка дата.'
+const faq = [
+  { q: `Кога е Великден ${easterYear}?`, a: `Православният Великден е на ${longDate(orthodoxEaster(easterYear))}. Датата се сменя всяка година, защото се определя по пролетното равноденствие и пълнолунието.` },
+  { q: 'Как се броят дните?', a: 'Днешният ден се брои, а самият празник не. Затова на 24 декември до Коледа остава 1 ден, а на 25 декември броячът показва 0.' },
+  { q: 'Кои дни са работни?', a: 'Работните дни са от понеделник до петък без официалните празници по чл. 154 от Кодекса на труда. Ако празник се падне в събота или неделя, почивен е първият работен ден след него.' },
+  { q: 'Мога ли да броя до своя дата?', a: 'Да. Въведи датата в полето „Своя дата“: рожден ден, сватба, отпуска или изпит. Калкулаторът показва дните, седмиците и работните дни дотогава.' },
+]
+const jsonLd = [
+  { '@type': 'WebApplication', name: 'Колко дни до…', description, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', inLanguage: 'bg', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, dateModified: CHECKED_ISO, author: AUTHOR },
+  { '@type': 'FAQPage', mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })) },
+]
+---
+
+<PageLayout title={title} description={description} path={path} lang="bg" jsonLd={jsonLd} breadcrumbs={[{ name: 'Начало', path: '/bg/' }, { name: 'Колко дни до…', path }]}>
+  <nav class="crumbs" aria-label="Навигация"><a href="/bg/">Начало</a> / <a href="/bg/#everyday">Всекидневни сметки</a></nav>
+  <p class="eyebrow">Всекидневни сметки · дати</p>
+  <h1>Колко дни до Коледа, Нова година и Великден</h1>
+  <p class="updated">Броят се от днес, <span data-today>{longDate(today)}</span></p>
+  <p class="tool-answer"><strong>Накратко:</strong> до Коледа остават <strong data-answer-days>{dayWord(koleda.count.days)}</strong>, от които <span data-answer-work>{koleda.count.workdays}</span> работни, като се брои и днес. Под всеки празник е датата му и колко работни дни има дотогава, а най-долу можеш да броиш до своя дата.</p>
+
+  <ul class="countdowns">
+    {cards.map((card) => (
+      <li id={card.id} data-occasion={card.id}>
+        <h2>Колко дни {card.until}</h2>
+        <p class="countdown-date" data-date>{longDate(card.date)}</p>
+        <p class="countdown-days"><strong data-days>{card.count.days}</strong> <span data-unit>{card.count.days === 1 ? 'ден' : 'дни'}</span></p>
+        <p class="countdown-meta" data-meta>{weeksText(card.count)} · {card.count.workdays} работни дни</p>
+        <p class="note">{card.note}</p>
+      </li>
+    ))}
+  </ul>
+
+  <section class="own-date">
+    <h2>Своя дата</h2>
+    <form data-own-form>
+      <label>Дата <input type="date" name="d" data-own-date /></label>
+      <label>Какво е <input type="text" name="n" maxlength="40" placeholder="напр. отпуската" data-own-name /></label>
+    </form>
+    <p class="own-result" data-own-result aria-live="polite">Избери дата.</p>
+    <p><button type="button" class="button button--ghost" data-own-share>Копирай връзка</button> <span class="note" data-own-status></span></p>
+  </section>
+
+  <section>
+    <h2>Как се броят дните</h2>
+    <ul>
+      <li><strong>Дни:</strong> датата на празника минус днешната дата. Днес се брои, празникът не, затова в самия ден броячът е 0.</li>
+      <li><strong>Работни дни:</strong> от понеделник до петък от днес до деня преди празника, без официалните почивни дни по Кодекса на труда, включително дните, които се отместват, когато празник падне в събота или неделя.</li>
+      <li><strong>Великден:</strong> православният Великден, сметнат по алгоритъма на Меус за Юлианския календар и преведен в Григориански. За 2027 г. това е 2 май, както е и в календара на почивните дни.</li>
+      <li>Допълнителни почивни дни, които Министерският съвет обявява отделно, се добавят, когато бъдат решени. Пълният списък за 2027 г. е в <a href="/bg/pochivni-dni-2027/">Почивни дни 2027</a>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Въпроси</h2>
+    {faq.map((item) => (<><h3>{item.q}</h3><p>{item.a}</p></>))}
+  </section>
+
+  <section class="sources">
+    <h2>Източници</h2>
+    <ul>
+      <li><a href="https://www.lex.bg/laws/ldoc/1594373121">Кодекс на труда, чл. 154: официалните празници и отместването им (lex.bg)</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Date_of_Easter#Meeus's_Julian_algorithm">Алгоритъм на Меус за православния Великден (Wikipedia)</a></li>
+      <li><a href="https://kik-info.com/spravochnik/calendar/2027/05/">kik-info: календар за май 2027 (Великден на 2 май)</a></li>
+    </ul>
+    <p class="note">Проверено на {CHECKED}.</p>
+  </section>
+
+  <RelatedTools lang="bg" id="countdown" />
+</PageLayout>
+
+<script>
+  import { OCCASIONS, countdown, dayWord, nextDate } from '../../../lib/countdown'
+  import { track } from '@zyankov/design-system/analytics'
+
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const now = new Date()
+  const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  const longDate = (date: string) => new Date(`${date}T12:00:00Z`).toLocaleDateString('bg-BG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+  const weeksText = (c: { weeks: number; restDays: number }) => (c.weeks ? `${c.weeks} седм.${c.restDays ? ` и ${dayWord(c.restDays)}` : ''}` : dayWord(c.restDays))
+  const meta = (c: { weeks: number; restDays: number; workdays: number }) => `${weeksText(c)} · ${c.workdays} работни дни`
+
+  // Recount every card from the visitor's date (the HTML was built on the build date).
+  document.querySelector('[data-today]')!.textContent = longDate(today)
+  for (const occasion of OCCASIONS) {
+    const card = document.querySelector<HTMLElement>(`[data-occasion="${occasion.id}"]`)
+    const count = countdown(today, nextDate(occasion, today))
+    if (!card || !count) continue
+    card.querySelector('[data-date]')!.textContent = longDate(count.date)
+    card.querySelector('[data-days]')!.textContent = String(count.days)
+    card.querySelector('[data-unit]')!.textContent = count.days === 1 ? 'ден' : 'дни'
+    card.querySelector('[data-meta]')!.textContent = count.days === 0 ? 'Днес е!' : meta(count)
+    if (occasion.id === 'koleda') {
+      document.querySelector('[data-answer-days]')!.textContent = dayWord(count.days)
+      document.querySelector('[data-answer-work]')!.textContent = String(count.workdays)
+    }
+  }
+
+  // Own date, restored from ?d=2027-07-15&n=отпуската
+  const dateInput = document.querySelector<HTMLInputElement>('[data-own-date]')!
+  const nameInput = document.querySelector<HTMLInputElement>('[data-own-name]')!
+  const result = document.querySelector<HTMLElement>('[data-own-result]')!
+  const status = document.querySelector<HTMLElement>('[data-own-status]')!
+  const params = new URLSearchParams(location.search)
+  dateInput.min = today
+  if (params.get('d')) dateInput.value = params.get('d')!
+  if (params.get('n')) nameInput.value = params.get('n')!.slice(0, 40)
+
+  function updateOwn() {
+    const count = dateInput.value ? countdown(today, dateInput.value) : null
+    const what = nameInput.value.trim() ? `до ${nameInput.value.trim()}` : `до ${dateInput.value ? longDate(dateInput.value) : 'датата'}`
+    if (!dateInput.value) result.textContent = 'Избери дата.'
+    else if (!count) result.textContent = 'Датата е минала. Избери дата от днес нататък.'
+    else if (count.days === 0) result.textContent = `Днес е денят${nameInput.value.trim() ? `: ${nameInput.value.trim()}` : ''}!`
+    else result.textContent = `${dayWord(count.days)} ${what} (${meta(count)}).`
+  }
+  document.querySelector('[data-own-form]')!.addEventListener('input', updateOwn)
+  document.querySelector('[data-own-form]')!.addEventListener('submit', (event) => event.preventDefault())
+  document.querySelector('[data-own-share]')!.addEventListener('click', async () => {
+    const query = new URLSearchParams()
+    if (dateInput.value) query.set('d', dateInput.value)
+    if (nameInput.value.trim()) query.set('n', nameInput.value.trim())
+    try {
+      await navigator.clipboard.writeText(`${location.origin}${location.pathname}?${query}`)
+      status.textContent = 'Връзката е копирана.'
+    } catch {
+      status.textContent = 'Копирай адреса от лентата на браузъра.'
+    }
+    track('share', { tool: 'countdown' })
+  })
+  updateOwn()
+</script>
+
+<style>
+  .crumbs { margin: 0 0 18px; color: var(--text-muted); font-size: var(--text-sm); }
+  section { margin: 0 0 40px; }
+  .countdowns { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; margin: 24px 0 40px; padding: 0; list-style: none; }
+  .countdowns li { padding: 18px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); scroll-margin-top: 80px; }
+  .countdowns li:target { border-color: var(--accent); }
+  .countdowns h2 { margin: 0 0 4px; font-size: var(--text-lg); }
+  .countdown-date { margin: 0 0 8px; color: var(--text-muted); font-size: var(--text-sm); }
+  .countdown-days { margin: 0; color: var(--text); }
+  .countdown-days strong { font-family: var(--font-display); font-size: 2.6rem; line-height: 1; }
+  .countdown-meta { margin: 6px 0 10px; color: var(--text); font-size: var(--text-sm); }
+  .note { margin: 0; color: var(--text-muted); font-size: var(--text-sm); }
+  .own-date { padding: 20px; border-radius: var(--radius-lg); background: var(--surface-soft); }
+  .own-date h2 { margin-top: 0; }
+  .own-date form { display: flex; flex-wrap: wrap; gap: 14px; }
+  .own-date label { display: grid; gap: 6px; font-weight: 600; color: var(--text); }
+  .own-date input { padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--bg); color: var(--text); font: inherit; font-weight: 400; }
+  .own-result { margin: 16px 0 10px; color: var(--text); font-size: var(--text-lg); font-weight: 600; }
+  .button { display: inline-block; padding: 10px 16px; border-radius: var(--radius-md); font: inherit; font-weight: 700; cursor: pointer; }
+  .button--ghost { border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); }
+</style>
