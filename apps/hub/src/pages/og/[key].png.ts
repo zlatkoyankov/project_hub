@@ -58,6 +58,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'letterwell-bg-krastoslovitsi': { kicker: 'Letterwell · кръстословици', title: 'Думи по шаблон за кръстословици', footer: 'zyankov.eu/letterwell/bg/krastoslovitsi' },
     'letterwell-daily': { kicker: 'Letterwell · word game', title: 'Letterwell Daily: find the five-letter word', footer: 'zyankov.eu/daily' },
     'letterwell-bg-duma-na-denya': { kicker: 'Letterwell · игра', title: 'Дума на деня: познай думата от 5 букви', footer: 'zyankov.eu/duma' },
+    'letterwell-anagram': { kicker: 'Letterwell · game', title: 'Six letters, one word. A new anagram every day', footer: 'zyankov.eu/letterwell/anagram' },
+    'letterwell-bg-anagrama-na-denya': { kicker: 'Letterwell · игра', title: 'Шест букви, една дума: анаграма на деня', footer: 'zyankov.eu/letterwell/bg/anagrama-na-denya' },
     'letterwell-daily-hints': { kicker: 'Letterwell · hints', title: 'Stuck on today’s word? One hint at a time', footer: 'zyankov.eu/letterwell/daily/hints' },
     'letterwell-bg-duma-na-denya-podskazki': { kicker: 'Letterwell · подсказки', title: 'Заседна на думата на деня? Подсказка по подсказка', footer: 'zyankov.eu/letterwell/bg/duma-na-denya/podskazki' },
     'letterwell-bg-wordle': { kicker: 'Letterwell · помощник за Wordle', title: 'Wordle на български: стесни възможните думи', footer: 'zyankov.eu/letterwell/bg/wordle' },

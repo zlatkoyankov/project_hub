@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings' | 'words' | 'fuel' | 'countdown'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings' | 'words' | 'fuel' | 'countdown' | 'anagram'
 
 export interface Tool {
   id: string
@@ -33,6 +33,19 @@ export const TOOL_CATALOG: Tool[] = [
       bg: 'Познай думата от 5 букви с 6 опита. Нова всеки ден, за цяла България.',
     },
     keywords: 'daily word game five letters puzzle unlimited дума на деня игра думи пет букви всеки ден',
+    isNew: true,
+  },
+  {
+    id: 'anagram',
+    category: 'words',
+    icon: 'anagram',
+    href: { en: '/letterwell/anagram/', bg: '/letterwell/bg/anagrama-na-denya/' },
+    name: { en: 'Letterwell Anagram', bg: 'Анаграма на деня' },
+    description: {
+      en: 'Six shuffled letters, one word. A new anagram every day.',
+      bg: 'Шест разбъркани букви, една дума. Нова анаграма всеки ден.',
+    },
+    keywords: 'daily anagram word scramble unscramble game анаграма на деня разбъркани букви игра думи',
     isNew: true,
   },
   {
@@ -444,6 +457,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   insulation: '<path d="M4 4h6v16H4z"/><path d="M10 7h10M10 12h10M10 17h10"/><path d="M14 4v16"/>',
   screed: '<path d="M3 17h18v3H3z"/><path d="M5 17l3-5h8l3 5"/><path d="M10 12V5h6"/><path d="M14 3l2 2-2 2"/>',
   wallpaper: '<path d="M5 3h10v18H5z"/><path d="M15 5h3a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-3"/><path d="M8 7l2 2-2 2M12 13l-2 2 2 2"/>',
+  anagram: '<rect x="3" y="14" width="5" height="6" rx="1"/><rect x="9.5" y="14" width="5" height="6" rx="1"/><rect x="16" y="14" width="5" height="6" rx="1"/><path d="M6 10c1-4 11-4 12 0M16 8l2 2-2 2"/>',
   wordle: '<rect x="2.5" y="8" width="5.5" height="8" rx="1"/><rect x="9.25" y="8" width="5.5" height="8" rx="1"/><rect x="16" y="8" width="5.5" height="8" rx="1"/>',
   finder: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/><path d="M8 13l2.5-6 2.5 6M8.9 11h3.2"/>',
   adhesive: '<path d="M4 20h10l6-6V4H4z"/><path d="M4 14h4v6M10 14h4v6M16 14h4"/><path d="M8 4v4M12 4v4M16 4v4"/>',
@@ -473,6 +487,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
 export const RELATED_TOOLS: Record<string, string[]> = {
   'wordle-solver': ['word-finder', 'spelling-bee', 'crossword-solver'],
+  anagram: ['daily-word', 'word-finder', 'spelling-bee'],
   'word-finder': ['wordle-solver', 'crossword-solver', 'spelling-bee'],
   'crossword-solver': ['word-finder', 'spelling-bee', 'wordle-solver'],
   'spelling-bee': ['word-finder', 'wordle-solver', 'crossword-solver'],

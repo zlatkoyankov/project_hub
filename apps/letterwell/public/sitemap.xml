@@ -76,4 +76,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/daily/hints/" />
     <changefreq>daily</changefreq>
   </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/anagram/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zyankov.eu/letterwell/anagram/" />
+    <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/anagrama-na-denya/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/anagram/" />
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://zyankov.eu/letterwell/bg/anagrama-na-denya/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zyankov.eu/letterwell/anagram/" />
+    <xhtml:link rel="alternate" hreflang="bg" href="https://zyankov.eu/letterwell/bg/anagrama-na-denya/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://zyankov.eu/letterwell/anagram/" />
+    <changefreq>daily</changefreq>
+  </url>
 </urlset>
