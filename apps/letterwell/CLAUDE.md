@@ -16,6 +16,7 @@ There is one React app. `src/seo.ts` works out the language from the path (anyth
 | Spelling Bee helper | `/letterwell/spelling-bee-solver/` | `/letterwell/bg/spelling-bee/` |
 | Daily word game | `/letterwell/daily/` | `/letterwell/bg/duma-na-denya/` |
 | Daily word hints | `/letterwell/daily/hints/` | `/letterwell/bg/duma-na-denya/podskazki/` |
+| Daily anagram | `/letterwell/anagram/` | `/letterwell/bg/anagrama-na-denya/` |
 
 `scripts/prerender.mjs` writes one HTML file per page and language listed in `seo.ts` with its own title, meta,
 canonical, hreflang and OG image key. The design-system shell is injected afterwards. A new page
@@ -42,6 +43,16 @@ needs:
   `zyankov.eu/daily`.
 - **Branding:** the English and Bulgarian games use their own names and look, not Wordle's.
   Do not copy NYT branding or wording.
+
+## Daily anagram
+
+- `src/anagram.ts`: six-letter word lists (`ANAGRAM_WORDS_BG`, `ANAGRAM_WORDS_EN`), the seeded daily
+  shuffle, guess checking (any dictionary word from the same letters is reported, only the word of
+  the day solves it), three hints and stats. Puzzle numbers follow the daily word game.
+- Append new words at the end only. `anagram.spec.ts` checks every word is six letters, in the
+  dictionary and never a daily answer; `npm run test:letterwell` runs it.
+- `src/AnagramGame.tsx`: the UI; saved in `localStorage` `zy-anagram-today-v1` / `zy-anagram-stats-v1`
+  (EN `zy-anagram-en-…`). It shows the daily-word streak from `zy-daily-stats-v1` next to its link.
 
 ## Word lists and meanings
 

@@ -69,9 +69,10 @@ try {
   const { default: BeeSolver } = await vite.ssrLoadModule('/src/BeeSolver.tsx')
   const { default: DailyWord } = await vite.ssrLoadModule('/src/DailyWord.tsx')
   const { default: DailyHints } = await vite.ssrLoadModule('/src/DailyHints.tsx')
+  const { default: AnagramGame } = await vite.ssrLoadModule('/src/AnagramGame.tsx')
   const { pageLanguages, pages, pagePath, pageMeta, pageOgKey } = await vite.ssrLoadModule('/src/seo.ts')
-  const components = { finder: App, wordle: WordleSolver, crossword: CrosswordSolver, bee: BeeSolver, daily: DailyWord, hints: DailyHints }
-  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper', crossword: 'Letterwell crossword helper', bee: 'Letterwell Spelling Bee helper', daily: 'Letterwell Daily', hints: 'Letterwell Daily hints' }
+  const components = { finder: App, wordle: WordleSolver, crossword: CrosswordSolver, bee: BeeSolver, daily: DailyWord, hints: DailyHints, anagram: AnagramGame }
+  const names = { finder: 'Letterwell', wordle: 'Letterwell Wordle helper', crossword: 'Letterwell crossword helper', bee: 'Letterwell Spelling Bee helper', daily: 'Letterwell Daily', hints: 'Letterwell Daily hints', anagram: 'Letterwell Anagram' }
   const template = await readFile(resolve('dist/index.html'), 'utf8')
   if (!template.includes(placeholder)) throw new Error('Could not find the Letterwell root element to prerender.')
 
@@ -87,7 +88,7 @@ try {
         ? { en: `${site}${pagePath(page, 'en')}`, bg: `${site}${pagePath(page, 'bg')}`, 'x-default': `${site}${pagePath(page, 'en')}` }
         : { en: null, bg: null, 'x-default': null },
       ogKey: pageOgKey(page, language),
-      name: language === 'bg' && page === 'daily' ? 'Дума на деня' : language === 'bg' && page === 'hints' ? 'Подсказки за Дума на деня' : names[page],
+      name: language === 'bg' && page === 'daily' ? 'Дума на деня' : language === 'bg' && page === 'hints' ? 'Подсказки за Дума на деня' : language === 'bg' && page === 'anagram' ? 'Анаграма на деня' : names[page],
     })
     const file = resolve('dist', path.replace(/^\/letterwell\//, ''), 'index.html')
     await mkdir(dirname(file), { recursive: true })

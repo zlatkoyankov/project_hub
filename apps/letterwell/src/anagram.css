@@ -1,0 +1,107 @@
+/* Letterwell Anagram: the answer row and the pool of letters, on top of the daily game's styles. */
+.anagram-answer {
+  display: grid;
+  grid-template-columns: repeat(6, 50px);
+  gap: 6px;
+}
+
+.anagram-answer .daily-tile {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+}
+
+.anagram-pool {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.anagram-letter {
+  flex: 0 0 48px;
+  max-width: 48px;
+  height: 52px;
+  font-size: 22px;
+}
+
+.anagram-letter:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.anagram-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.anagram-actions .daily-share:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.anagram-hints {
+  width: 100%;
+  text-align: center;
+}
+
+.anagram-hints ol {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.anagram-hints li {
+  padding: 8px 12px;
+  background: var(--surface-soft);
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.anagram-hints p,
+.anagram-cross {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+}
+
+.anagram-meaning,
+.anagram-next {
+  color: var(--text-muted);
+  font-size: 15px !important;
+  font-weight: 400 !important;
+}
+
+.anagram-meaning a {
+  color: var(--coral-strong);
+}
+
+.anagram-yesterday {
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.anagram-yesterday h2 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.anagram-yesterday p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+@media (max-width: 380px) {
+  .anagram-answer { grid-template-columns: repeat(6, 44px); gap: 5px; }
+  .anagram-answer .daily-tile { width: 44px; height: 44px; font-size: 21px; }
+  .anagram-letter { flex-basis: 42px; max-width: 42px; }
+}

@@ -10,6 +10,7 @@ import CrosswordSolver from './CrosswordSolver.tsx'
 import BeeSolver from './BeeSolver.tsx'
 import DailyWord from './DailyWord.tsx'
 import DailyHints from './DailyHints.tsx'
+import AnagramGame from './AnagramGame.tsx'
 import { languageFromPath, pageFromPath } from './seo'
 
 hydrateRoot(
@@ -20,6 +21,7 @@ hydrateRoot(
       crossword: <CrosswordSolver language={languageFromPath(window.location.pathname)} />,
       daily: <DailyWord language={languageFromPath(window.location.pathname)} />,
       hints: <DailyHints language={languageFromPath(window.location.pathname)} />,
+      anagram: <AnagramGame language={languageFromPath(window.location.pathname)} />,
       bee: <BeeSolver language={languageFromPath(window.location.pathname)} />,
       finder: <App language={languageFromPath(window.location.pathname)} />,
     }[pageFromPath(window.location.pathname)]}

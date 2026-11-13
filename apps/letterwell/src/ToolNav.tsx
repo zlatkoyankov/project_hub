@@ -10,6 +10,12 @@ const TOOLS: { page: Page; name: Record<Language, string>; short: Record<Languag
     description: { en: 'Find the five-letter word. A new one every day, or unlimited.', bg: 'Познай думата от 5 букви. Нова всеки ден или неограничено.' },
   },
   {
+    page: 'anagram',
+    name: { en: 'Letterwell Anagram', bg: 'Анаграма на деня' },
+    short: { en: 'Anagram', bg: 'Анаграма' },
+    description: { en: 'Six shuffled letters, one word. A new one every day.', bg: 'Шест разбъркани букви, една дума. Нова всеки ден.' },
+  },
+  {
     page: 'finder',
     name: { en: 'Word finder', bg: 'Търсачка за думи' },
     short: { en: 'Word finder', bg: 'Търсачка' },

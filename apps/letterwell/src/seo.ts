@@ -15,9 +15,9 @@ export function languageFromPath(path: string): Language {
 }
 
 // Letterwell pages: the word finder and the Wordle, crossword and Spelling Bee helpers, each in both languages.
-export type Page = 'finder' | 'wordle' | 'crossword' | 'bee' | 'daily' | 'hints'
+export type Page = 'finder' | 'wordle' | 'crossword' | 'bee' | 'daily' | 'hints' | 'anagram'
 
-export const pages: Page[] = ['finder', 'wordle', 'crossword', 'bee', 'daily', 'hints']
+export const pages: Page[] = ['finder', 'wordle', 'crossword', 'bee', 'daily', 'hints', 'anagram']
 
 /** Languages a page exists in (all of them, for now). */
 export function pageLanguages(page: Page): Language[] {
@@ -30,6 +30,7 @@ export function pagePath(page: Page, language: Language): string {
   if (page === 'finder') return languagePath(language)
   if (page === 'daily') return language === 'bg' ? '/letterwell/bg/duma-na-denya/' : '/letterwell/daily/'
   if (page === 'hints') return language === 'bg' ? '/letterwell/bg/duma-na-denya/podskazki/' : '/letterwell/daily/hints/'
+  if (page === 'anagram') return language === 'bg' ? '/letterwell/bg/anagrama-na-denya/' : '/letterwell/anagram/'
   if (page === 'bee') return language === 'bg' ? '/letterwell/bg/spelling-bee/' : '/letterwell/spelling-bee-solver/'
   if (page === 'crossword') return language === 'bg' ? '/letterwell/bg/krastoslovitsi/' : '/letterwell/crossword-solver/'
   return language === 'bg' ? '/letterwell/bg/wordle/' : '/letterwell/wordle-solver/'
@@ -38,6 +39,7 @@ export function pagePath(page: Page, language: Language): string {
 /** Page from a URL path. */
 export function pageFromPath(path: string): Page {
   if (/\/(duma-na-denya\/podskazki|daily\/hints)\/?$/.test(path)) return 'hints'
+  if (/\/(anagrama-na-denya|anagram)\/?$/.test(path)) return 'anagram'
   if (/\/(duma-na-denya|daily)\/?$/.test(path)) return 'daily'
   if (/\/(spelling-bee-solver|spelling-bee)\/?$/.test(path)) return 'bee'
   if (/\/(crossword-solver|krastoslovitsi)\/?$/.test(path)) return 'crossword'
@@ -146,6 +148,7 @@ export const beeMetadata: Record<Language, { title: string; description: string;
 /** Head metadata of any Letterwell page. */
 export function pageMeta(page: Page, language: Language) {
   if (page === 'hints') return { meta: hintsMetadata[language], social: hintsSocialDescriptions[language] }
+  if (page === 'anagram') return { meta: anagramMetadata[language], social: anagramSocialDescriptions[language] }
   if (page === 'daily') return { meta: dailyMetadata[language], social: dailySocialDescriptions[language] }
   if (page === 'bee') return { meta: beeMetadata[language], social: beeSocialDescriptions[language] }
   if (page === 'crossword') return { meta: crosswordMetadata[language], social: crosswordSocialDescriptions[language] }
@@ -191,5 +194,25 @@ export const hintsMetadata: Record<Language, { title: string; description: strin
     description: 'Spoiler-free hints for today’s five-letter Letterwell Daily word, one at a time: vowels, a repeated letter, the first and last letter. Plus yesterday’s word.',
     structuredDescription: 'Spoiler-free hints for the Letterwell Daily five-letter word game.',
     features: ['Four hints, one at a time', 'The word only on request', 'Yesterday’s word with dictionary links', 'Tips to solve faster'],
+  },
+}
+
+export const anagramSocialDescriptions: Record<Language, string> = {
+  bg: 'Шест разбъркани букви, една дума. Нова анаграма всеки ден, с подсказки по желание и серия.',
+  en: 'Six shuffled letters, one word. A new anagram every day, with optional hints and a streak.',
+}
+
+export const anagramMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
+  bg: {
+    title: 'Анаграма на деня: подреди буквите и познай думата | Letterwell',
+    description: 'Безплатна игра на думи на български: всеки ден шест разбъркани букви и една дума. Подсказки по желание, серия и вчерашната дума с речник.',
+    structuredDescription: 'Ежедневна игра с анаграми на български: подреди шест букви в дума.',
+    features: ['Нова дума от 6 букви всеки ден', 'Три подсказки по желание', 'Серия и статистика', 'Вчерашната дума с речник'],
+  },
+  en: {
+    title: 'Letterwell Anagram: daily word scramble | Letterwell',
+    description: 'A free daily anagram game: six shuffled letters, one word. Optional hints, a streak, and yesterday’s word with a dictionary link.',
+    structuredDescription: 'A daily anagram game: put six letters in order to make the word.',
+    features: ['A new six-letter word every day', 'Three optional hints', 'Streak and stats', 'Yesterday’s word with a dictionary link'],
   },
 }
