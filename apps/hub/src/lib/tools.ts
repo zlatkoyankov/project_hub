@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings' | 'words' | 'fuel'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings' | 'words' | 'fuel' | 'countdown'
 
 export interface Tool {
   id: string
@@ -401,6 +401,17 @@ export const TOOL_CATALOG: Tool[] = [
     isNew: true,
     only: 'bg',
   },
+  {
+    id: 'countdown',
+    category: 'home',
+    icon: 'countdown',
+    href: { en: '/bg/kolko-dni-do/', bg: '/bg/kolko-dni-do/' },
+    name: { en: 'Days until Christmas, Easter… (Bulgarian)', bg: 'Колко дни до…' },
+    description: { en: 'Countdowns to Bulgarian holidays and any date.', bg: 'Колко дни остават до Коледа, Великден и празниците.' },
+    keywords: 'countdown days until christmas easter колко дни до коледа нова година великден баба марта празници брояч',
+    isNew: true,
+    only: 'bg',
+  },
 ]
 
 /** Inline stroke icons (24×24) for the calculator tiles. */
@@ -414,6 +425,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   fence: '<path d="M5 21V6l2-3 2 3v15M15 21V6l2-3 2 3v15"/><path d="M3 10h18M3 16h18"/>',
   salary: '<path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/><path d="M9 13h6M12 10v6"/>',
   words: '<path d="M4 5h16v14H4z"/><path d="M7 9h10M7 12h10M7 15h6"/>',
+  countdown: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>',
   fuel: '<path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M4 21h12M8 8h4"/><path d="M15 10h2a2 2 0 0 1 2 2v5a1 1 0 0 0 2 0V9l-3-3"/>',
   loan: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5h.01M17.5 14.5h.01"/>',
   concrete: '<path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>',
@@ -455,7 +467,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
   { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
   { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'fence', 'gravel', 'mulch', 'area'] },
   { id: 'energy', name: { en: 'Energy', bg: 'Енергия и отопление' }, tools: ['heating', 'firewood', 'aircon', 'energy'] },
-  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'sick', 'savings', 'percent', 'vat', 'words', 'fuel', 'euro', 'loan', 'dates', 'holidays-2027', 'us-holidays-2027', 'uk-holidays-2027'] },
+  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'sick', 'savings', 'percent', 'vat', 'words', 'fuel', 'countdown', 'euro', 'loan', 'dates', 'holidays-2027', 'us-holidays-2027', 'uk-holidays-2027'] },
 ]
 
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
@@ -485,16 +497,17 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   percent: ['vat', 'euro', 'loan', 'dates'],
   vat: ['percent', 'euro', 'words', 'loan'],
   euro: ['vat', 'percent', 'loan'],
-  dates: ['holidays-2027', 'us-holidays-2027', 'uk-holidays-2027', 'loan', 'percent'],
+  dates: ['holidays-2027', 'countdown', 'us-holidays-2027', 'uk-holidays-2027', 'loan', 'percent'],
   'us-holidays-2027': ['uk-holidays-2027', 'dates', 'loan'],
   'uk-holidays-2027': ['us-holidays-2027', 'dates', 'percent'],
-  'holidays-2027': ['dates', 'salary', 'loan'],
+  'holidays-2027': ['dates', 'countdown', 'salary', 'loan'],
   loan: ['percent', 'dates', 'vat', 'salary', 'savings'],
   savings: ['loan', 'percent', 'dates'],
   salary: ['sick', 'loan', 'percent', 'dates'],
   sick: ['salary', 'dates', 'holidays-2027'],
   words: ['vat', 'euro', 'percent', 'salary'],
   fuel: ['percent', 'euro', 'dates', 'energy'],
+  countdown: ['holidays-2027', 'dates', 'sick'],
 }
 
 /** Catalogue id of the tool a blog post links to (the post's `tool` field). */

@@ -30,6 +30,7 @@ export async function GET() {
     { path: '/bg/kalkulator-zaplata/' },
     { path: '/bg/suma-slovom/' },
     { path: '/bg/razhod-na-gorivo/' },
+    { path: '/bg/kolko-dni-do/' },
     { path: '/bg/kalkulator-bolnichni/' },
     { path: '/bg/pochivni-dni-2027/' },
     { path: '/compound-interest-calculator/' },
