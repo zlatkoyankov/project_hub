@@ -334,6 +334,8 @@ export function sickPay(input: SickPayInput, countWorkdays: (from: string, to: s
 // and the user types the price at their own station.
 export const FUEL_PRICES_EUR = { petrol: 1.605, diesel: 1.893, lpg: 0.641 } as const
 export const FUEL_PRICES_CHECKED = '13 ноември 2026'
+/** The week the prices are for. Re-check monthly (next: 13 December 2026) and update both dates. */
+export const FUEL_PRICES_WEEK = '2026-11-02'
 
 export interface TripFuelInput {
   /** One way, in km. */
