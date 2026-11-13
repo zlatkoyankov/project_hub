@@ -29,6 +29,7 @@ export async function GET() {
     { path: '/loan-calculator/', alternates: pair('/loan-calculator/', '/bg/kalkulator-kredit/') },
     { path: '/bg/kalkulator-zaplata/' },
     { path: '/bg/suma-slovom/' },
+    { path: '/bg/razhod-na-gorivo/' },
     { path: '/bg/kalkulator-bolnichni/' },
     { path: '/bg/pochivni-dni-2027/' },
     { path: '/compound-interest-calculator/' },
