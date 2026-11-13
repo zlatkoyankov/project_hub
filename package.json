@@ -22,7 +22,8 @@
     "deploy": "node scripts/deploy.mjs",
     "indexnow": "node scripts/indexnow.mjs",
     "preview": "vite preview --outDir dist --port 4173",
-    "test": "npm run test -w buildcalc -- --watch=false",
+    "test": "npm run test -w buildcalc -- --watch=false && npm run test:hub",
+    "test:hub": "vitest run --root apps/hub",
     "lint": "npm run lint -w hub -w letterwell",
     "lint:colors": "node scripts/lint-colors.mjs",
     "preview:design": "npm run preview -w @zyankov/design-system"

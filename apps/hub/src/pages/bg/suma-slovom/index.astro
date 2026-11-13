@@ -1,0 +1,206 @@
+---
+// Amount in words ("сума словом") for invoices and contracts. The words come from lib/words-bg.ts,
+// which has the rules and their sources; words-bg.spec.ts checks every example on this page.
+import PageLayout from '../../../layouts/PageLayout.astro'
+import RelatedTools from '../../../components/RelatedTools.astro'
+import { AUTHOR } from '../../../lib/site'
+import { amountToWords } from '../../../lib/words-bg'
+import '../../../styles/tool.css'
+
+const CHECKED = '13 ноември 2026'
+const CHECKED_ISO = '2026-11-13'
+const path = '/bg/suma-slovom/'
+const title = 'Сума словом: превръщане на сума в думи за фактура | Zyankov.eu'
+const description = 'Напиши сума словом за фактура, договор или разписка: евро и центове, с думи или с цифри за центовете, и в лева за стари документи. Безплатно, без регистрация.'
+
+const examples = [5, 21, 105, 150, 1200, 1234.56, 2025.05, 21000, 1300000].map((amount) => ({
+  amount: amount.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  words: amountToWords(amount),
+  digits: amountToWords(amount, { cents: 'digits', zeroCents: true }),
+}))
+const sample = amountToWords(1234.56)
+
+const faq = [
+  { q: 'Как се пише сума словом във фактура?', a: `С думи за целите евро и с думи или цифри за центовете, например „${amountToWords(1234.56, { cents: 'digits' })}“. Двата начина се срещат в практиката; важното е сумата словом да съвпада с тази в цифри.` },
+  { q: 'Пише ли се „евро“ в множествено число?', a: 'Не. Според Института за български език „евро“ няма форма за множествено число: едно евро, две евро, двайсет евро. Формата „евра“ е разговорна.' },
+  { q: 'Цент или евроцент?', a: 'И двете думи се използват в нормативните документи, заедно с „стотинка“ за монетите под 1 евро. Калкулаторът пише „цента“ по подразбиране, а с отметка пише „евроцента“.' },
+  { q: 'Къде се слага „и“ в числото?', a: 'Пред последната съставка: сто и петдесет, хиляда и двеста, хиляда двеста тридесет и четири. Ако последната група вече има свое „и“, второ не се слага.' },
+  { q: 'Как е „един“ или „едно“, „два“ или „две“?', a: 'Според рода на думата след числото: едно евро, две евро (среден род), един цент, два цента (мъжки род), една хиляда е просто „хиляда“, а две хиляди.' },
+]
+const jsonLd = [
+  { '@type': 'WebApplication', name: 'Сума словом', description, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any', inLanguage: 'bg', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' }, dateModified: CHECKED_ISO, author: AUTHOR },
+  { '@type': 'FAQPage', mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })) },
+]
+---
+
+<PageLayout title={title} description={description} path={path} lang="bg" jsonLd={jsonLd} breadcrumbs={[{ name: 'Начало', path: '/bg/' }, { name: 'Сума словом', path }]}>
+  <nav class="crumbs" aria-label="Навигация"><a href="/bg/">Начало</a> / <a href="/bg/#everyday">Всекидневни сметки</a></nav>
+  <p class="eyebrow">Всекидневни сметки · фактури</p>
+  <h1>Сума словом</h1>
+  <p class="updated">Проверено на {CHECKED}</p>
+  <p class="intro">Напиши сумата и копирай текста за фактура, договор или разписка. Пример: 1 234,56 € е „{sample}“.</p>
+  <p class="tool-answer"><strong>Накратко:</strong> целите евро се пишат с думи, „евро“ не се променя в множествено число, а „и“ стои пред последната част на числото: сто и петдесет, хиляда и двеста.</p>
+
+  <form class="words-form" data-words-form>
+    <label class="words-field">
+      <span>Сума</span>
+      <input id="words-amount" name="s" inputmode="decimal" autocomplete="off" value="1234,56" aria-describedby="words-hint" />
+      <small id="words-hint">До 999 999 999 999,99. Запетая или точка за центовете.</small>
+    </label>
+    <label class="words-field">
+      <span>Валута</span>
+      <select id="words-currency" name="v">
+        <option value="eur">Евро и центове</option>
+        <option value="bgn">Лева и стотинки (стари документи)</option>
+      </select>
+    </label>
+    <label class="words-field">
+      <span>Центовете</span>
+      <select id="words-cents" name="c">
+        <option value="words">С думи</option>
+        <option value="digits">С цифри (56 цента)</option>
+      </select>
+    </label>
+    <label class="words-check"><input type="checkbox" id="words-eurocent" name="ec" /> „евроцента“ вместо „цента“</label>
+    <label class="words-check"><input type="checkbox" id="words-zero" name="z" /> Пиши и нулевите центове („и 00 цента“)</label>
+  </form>
+
+  <section class="words-result" aria-live="polite">
+    <h2>Словом</h2>
+    <p class="words-output" data-words-output>{sample}</p>
+    <p class="words-actions">
+      <button type="button" class="button" data-words-copy>Копирай</button>
+      <button type="button" class="button button--ghost" data-words-share>Копирай връзка</button>
+      <span class="note" data-words-status></span>
+    </p>
+  </section>
+
+  <section>
+    <h2>Примери</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Сума</th><th>Словом (центове с думи)</th><th>За фактура (центове с цифри)</th></tr></thead>
+        <tbody>{examples.map((row) => <tr><td>{row.amount} €</td><td>{row.words}</td><td>{row.digits}</td></tr>)}</tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Правилата</h2>
+    <ul>
+      <li><strong>„И“ пред последната част.</strong> Числото се строи от най-голямата единица надолу, а „и“ се слага пред последната съставка: тридесет и пет, сто и петдесет, хиляда и двеста. При 1 234 „и“ е само в края: хиляда двеста тридесет и четири.</li>
+      <li><strong>„Евро“ не се изменя.</strong> Едно евро, две евро, хиляда евро. „Евра“ е разговорна форма.</li>
+      <li><strong>Родът решава „един“ или „едно“.</strong> Евро е от среден род (едно, две), цент, евроцент и лев са от мъжки (един, два), стотинка и хиляда от женски (една, две).</li>
+      <li><strong>Бройна форма след число.</strong> Два цента, двадесет и един цента, два лева, два милиона.</li>
+      <li><strong>Пълни форми.</strong> Калкулаторът пише „двадесет“, „единадесет“. Кратките „двайсет“, „единайсет“ също са правилни, но във финансови документи обикновено се ползват пълните.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Въпроси</h2>
+    {faq.map((item) => (<><h3>{item.q}</h3><p>{item.a}</p></>))}
+  </section>
+
+  <section class="sources">
+    <h2>Източници</h2>
+    <ul>
+      <li><a href="https://pleven.bg/bg/novini/za-izpisvaneto-na-evro-i-evrotsent-ukazaniya-na-ekspertite-ot-instituta-za-balgarski-ezik">Институт за български език при БАН (публикувано от Община Плевен, януари 2026): „евро“, „цент“, „евроцент“, „стотинка“; „евро“ няма множествено число</a></li>
+      <li><a href="https://commission.europa.eu/document/download/468ff0a1-eb68-4d61-8bc1-c40bdff61ade_bg?filename=Bulgarian+Style+guide_0.pdf">Европейска комисия, стилистични указания за български: „тридесет и пет“, „сто и петдесет“, „хиляда и двеста“</a></li>
+      <li><a href="https://www.ezik.bg/mod/page/view.php?id=726">ezik.bg, „Числително име“: съставните числителни се образуват чрез прибавяне, последната категория се прибавя със съюза „и“</a></li>
+      <li><a href="https://ibl.bas.bg/ezikovi_spravki/za-edna-osobenost-v-upotrebata-na-tchislitelnite-imena/">Институт за български език: бройна форма след съставни числителни („двайсет и един апарата“)</a></li>
+    </ul>
+    <p class="note">Проверено на {CHECKED}. Калкулаторът е проверен с автоматични тестове за всички примери на тази страница.</p>
+  </section>
+
+  <RelatedTools lang="bg" id="words" />
+</PageLayout>
+
+<script>
+  import { amountToWords, type CentsStyle, type Currency } from '../../../lib/words-bg'
+  import { track } from '@zyankov/design-system/analytics'
+
+  const form = document.querySelector<HTMLFormElement>('[data-words-form]')!
+  const amount = document.querySelector<HTMLInputElement>('#words-amount')!
+  const currency = document.querySelector<HTMLSelectElement>('#words-currency')!
+  const cents = document.querySelector<HTMLSelectElement>('#words-cents')!
+  const euroCent = document.querySelector<HTMLInputElement>('#words-eurocent')!
+  const zero = document.querySelector<HTMLInputElement>('#words-zero')!
+  const output = document.querySelector<HTMLElement>('[data-words-output]')!
+  const status = document.querySelector<HTMLElement>('[data-words-status]')!
+
+  const parse = (text: string) => {
+    const clean = text.replace(/[\s €]/g, '').replace(/лв\.?$/i, '').replace(',', '.')
+    return /^\d+(\.\d{0,2})?$/.test(clean) ? Number(clean) : NaN
+  }
+
+  function update() {
+    const value = parse(amount.value)
+    euroCent.disabled = currency.value !== 'eur'
+    if (Number.isNaN(value) || value >= 1e12) {
+      output.textContent = 'Въведи сума с цифри, например 1234,56.'
+      output.classList.add('is-error')
+      return
+    }
+    output.classList.remove('is-error')
+    output.textContent = amountToWords(value, { currency: currency.value as Currency, cents: cents.value as CentsStyle, euroCent: euroCent.checked, zeroCents: zero.checked })
+  }
+
+  async function copy(text: string, done: string) {
+    try {
+      await navigator.clipboard.writeText(text)
+      status.textContent = done
+    } catch {
+      status.textContent = 'Маркирай текста и го копирай ръчно.'
+    }
+  }
+
+  // Restore the form from the URL (?s=1234.56&v=bgn&c=digits&ec=1&z=1).
+  const params = new URLSearchParams(location.search)
+  if (params.get('s')) amount.value = params.get('s')!.replace('.', ',')
+  if (params.get('v') === 'bgn') currency.value = 'bgn'
+  if (params.get('c') === 'digits') cents.value = 'digits'
+  euroCent.checked = params.get('ec') === '1'
+  zero.checked = params.get('z') === '1'
+
+  form.addEventListener('input', update)
+  form.addEventListener('submit', (event) => event.preventDefault())
+  document.querySelector('[data-words-copy]')!.addEventListener('click', () => {
+    copy(output.textContent ?? '', 'Копирано.')
+    track('words_copy', { currency: currency.value, cents: cents.value })
+  })
+  document.querySelector('[data-words-share]')!.addEventListener('click', () => {
+    const query = new URLSearchParams({ s: String(parse(amount.value) || '') })
+    if (currency.value === 'bgn') query.set('v', 'bgn')
+    if (cents.value === 'digits') query.set('c', 'digits')
+    if (euroCent.checked) query.set('ec', '1')
+    if (zero.checked) query.set('z', '1')
+    copy(`${location.origin}${location.pathname}?${query}`, 'Връзката е копирана.')
+    track('share', { tool: 'words' })
+  })
+  update()
+</script>
+
+<style>
+  .crumbs { margin: 0 0 18px; color: var(--text-muted); font-size: var(--text-sm); }
+  section { margin: 0 0 40px; }
+  .words-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 18px; margin: 18px 0 22px; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+  .words-field { display: grid; align-content: start; gap: 6px; font-weight: 600; color: var(--text); }
+  .words-field input, .words-field select { width: 100%; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--bg); color: var(--text); font: inherit; font-weight: 400; }
+  .words-field input { font-size: var(--text-lg); }
+  .words-field small { color: var(--text-muted); font-weight: 400; font-size: var(--text-sm); }
+  .words-check { display: flex; align-items: center; gap: 8px; color: var(--text); }
+  .words-result { padding: 20px; border-radius: var(--radius-lg); background: var(--surface-soft); }
+  .words-result h2 { margin-top: 0; }
+  .words-output { margin: 0 0 14px; color: var(--text); font-size: var(--text-xl); font-weight: 600; line-height: 1.4; }
+  .words-output.is-error { color: var(--text-muted); font-weight: 400; }
+  .words-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; }
+  .button { display: inline-block; padding: 10px 16px; border: 0; border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent); font: inherit; font-weight: 700; cursor: pointer; }
+  .button--ghost { border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); }
+  .note { color: var(--text-muted); font-size: var(--text-sm); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 14px; border-top: 1px solid var(--border); color: var(--text); text-align: left; vertical-align: top; }
+  th { border-top: 0; background: var(--surface-soft); }
+  td:first-child { white-space: nowrap; }
+  @media (max-width: 640px) { th:nth-child(3), td:nth-child(3) { display: none; } }
+</style>
