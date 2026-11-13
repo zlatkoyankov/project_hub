@@ -6,6 +6,8 @@ import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { AUTHOR, getPosts, ogKey, postPath } from '../lib/site'
+import { postsForTool } from '../lib/related-posts'
+import { POST_TOOL_IDS } from '../lib/tools'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
@@ -216,7 +218,7 @@ const CONFIGS: Record<Kind, Config> = {
 
 const { kind } = Astro.props
 const page = CONFIGS[kind]
-const posts = (await getPosts('en')).filter((post) => post.data.tool === page.tool)
+const posts = postsForTool(POST_TOOL_IDS[page.tool], await getPosts('en'))
 const jsonLd = {
   '@type': 'WebApplication',
   name: page.jsonName,
