@@ -31,6 +31,8 @@ AddCharset UTF-8 .txt .xml .json .svg
   # Short link for sharing the daily word game.
   RewriteRule ^duma/?$ /letterwell/bg/duma-na-denya/ [R=302,L]
   RewriteRule ^daily/?$ /letterwell/daily/ [R=302,L]
+  RewriteRule ^anagrama/?$ /letterwell/bg/anagrama-na-denya/ [R=302,L]
+  RewriteRule ^anagram/?$ /letterwell/anagram/ [R=302,L]
 </IfModule>
 
 <IfModule mod_headers.c>
