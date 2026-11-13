@@ -5,6 +5,7 @@ import EmbedLayout from '../layouts/EmbedLayout.astro'
 import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { AUTHOR, formatDate, getPosts, ogKey, postPath, readingMinutes, type Lang } from '../lib/site'
+import { postsForTool } from '../lib/related-posts'
 import '../styles/tool.css'
 
 interface Props {
@@ -149,7 +150,7 @@ const t = bg
       clear: 'Clear the list',
     }
 
-const posts = (await getPosts(lang)).filter((post) => post.data.tool === 'energy-cost-calculator')
+const posts = postsForTool('energy', await getPosts(lang))
 // When the presets, prices and sources were last checked: shown on the page and in dateModified.
 const CHECKED = '2026-11-07'
 const checkedText = formatDate(new Date(CHECKED), lang)

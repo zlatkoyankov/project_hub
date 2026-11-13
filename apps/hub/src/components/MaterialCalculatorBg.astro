@@ -8,6 +8,7 @@ import RelatedTools from './RelatedTools.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { AUTHOR, getPosts, isoFromBgDate, ogKey, postPath } from '../lib/site'
+import { postsForTool } from '../lib/related-posts'
 import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, FENCE_PANELS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
@@ -1036,7 +1037,7 @@ const extra = config || adhesive || wallpaper || screed || masonry ? null : insu
   ? { name: 'trim', legend: 'Первази и лайсни', label: 'Первази', on: 'Включи первази и лайсни', off: 'Само ламинат' }
   : { name: 'supplies', legend: 'Профили и консумативи', label: 'Консумативи', on: 'Включи профили, винтове, лента и шпакловка', off: 'Само плоскости' }
 
-const posts = (await getPosts('bg')).filter((post) => post.data.tool === page.tool)
+const posts = postsForTool(kind, await getPosts('bg'))
 const jsonLd = {
   '@type': 'WebApplication',
   name: page.jsonName,

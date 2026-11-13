@@ -3,7 +3,8 @@
 // The dates come from src/lib/holidays-en.ts; the long weekends are worked out from them here.
 import PageLayout from '../layouts/PageLayout.astro'
 import RelatedTools from './RelatedTools.astro'
-import { AUTHOR } from '../lib/site'
+import { AUTHOR, getPosts, postPath } from '../lib/site'
+import { postsForTool } from '../lib/related-posts'
 import { UK_REGIONS, ukBankHolidays, usFederalHolidays, westernEaster, workdays, type Holiday } from '../lib/holidays-en'
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 
 const { country, year } = Astro.props
 const CHECKED = '11 November 2026'
+const posts = postsForTool(country === 'us' ? 'us-holidays-2027' : 'uk-holidays-2027', await getPosts('en'))
 const CHECKED_ISO = '2026-11-11'
 const DAY = 86_400_000
 const time = (date: string) => Date.parse(`${date}T00:00:00Z`)
@@ -159,6 +161,13 @@ const tables = us ? [{ id: 'us', name: 'Federal holidays', list: usList }] : ukL
     <p class="note">Checked {CHECKED}.</p>
   </section>
 
+  {posts.length > 0 && (
+    <section aria-labelledby="articles-title">
+      <h2 id="articles-title">Articles on this</h2>
+      <ul class="articles">{posts.map((post) => <li><a href={postPath(post)}>{post.data.title}</a> <span class="note">{post.data.description}</span></li>)}</ul>
+    </section>
+  )}
+
   <RelatedTools lang="en" id={us ? 'us-holidays-2027' : 'uk-holidays-2027'} />
 </PageLayout>
 
@@ -179,4 +188,7 @@ const tables = us ? [{ id: 'us', name: 'Federal holidays', list: usList }] : ukL
   .note { color: var(--text-muted); font-size: var(--text-sm); }
   .bridges li { margin: 0 0 10px; }
   h3 { margin: 22px 0 6px; font-size: var(--text-lg); }
+  .articles { padding-left: 1.2rem; }
+  .articles li { margin: 0 0 12px; }
+  .articles .note { display: block; }
 </style>
