@@ -326,3 +326,45 @@ export function sickPay(input: SickPayInput, countWorkdays: (from: string, to: s
     total: cents(employer + noi), usualNet: cents((net / monthWorkdays) * workdays), periodWorkdays,
   }
 }
+
+// Fuel for a trip (/bg/razhod-na-gorivo/).
+// Average pump prices in Bulgaria, all taxes included, for the week to 2 November 2026, from the
+// European Commission's Weekly Oil Bulletin (petrol and diesel, as reported by fuel-prices.eu) and
+// the bulletin's LPG figure (as reported by fuelwide.com). They are defaults: the form shows them
+// and the user types the price at their own station.
+export const FUEL_PRICES_EUR = { petrol: 1.605, diesel: 1.893, lpg: 0.641 } as const
+export const FUEL_PRICES_CHECKED = '13 ноември 2026'
+
+export interface TripFuelInput {
+  /** One way, in km. */
+  distance: number
+  roundTrip: boolean
+  /** Litres per 100 km. */
+  consumption: number
+  /** € per litre. */
+  price: number
+  people: number
+  /** Tolls, vignette, parking: added to the total before splitting. */
+  extra?: number
+}
+
+export interface TripFuelResult {
+  km: number
+  litres: number
+  fuel: number
+  total: number
+  perPerson: number
+  per100km: number
+  perKm: number
+}
+
+export function tripFuelCost(input: TripFuelInput): TripFuelResult | null {
+  const { distance, consumption, price } = input
+  if (!(distance > 0 && consumption > 0 && price > 0)) return null
+  const people = Math.max(1, Math.floor(input.people || 1))
+  const km = distance * (input.roundTrip ? 2 : 1)
+  const litres = (km * consumption) / 100
+  const fuel = cents(litres * price)
+  const total = cents(fuel + Math.max(0, input.extra ?? 0))
+  return { km, litres, fuel, total, perPerson: cents(total / people), per100km: cents(consumption * price), perKm: (consumption * price) / 100 }
+}

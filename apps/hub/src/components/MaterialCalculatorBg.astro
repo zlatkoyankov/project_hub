@@ -12,7 +12,7 @@ import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES
 import { TOOL_ICONS } from '../lib/tools'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'fuel'
 
 interface Props {
   kind: Kind
@@ -418,6 +418,54 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       { name: 'from', label: 'Първи ден', unit: '', value: '2026-11-16', type: 'date' },
       { name: 'to', label: 'Последен ден', unit: '', value: '2026-11-20', type: 'date' },
       { name: 'monthGross', label: 'Бруто за месеца на болничния', unit: '€', value: 0, step: 'any', optional: true, hint: 'Само ако е различно от средното. Ползва се за двата дни от работодателя.' },
+    ],
+  },
+  fuel: {
+    page: {
+      path: '/bg/razhod-na-gorivo/',
+      tool: 'fuel-cost-calculator',
+      title: 'Калкулатор за разход на гориво: колко струва пътуването | Zyankov.eu',
+      description: 'Колко литра и колко евро струва пътуването с кола: разход на 100 км, цена на бензин, дизел или газ, отиване и връщане и колко се пада на човек.',
+      h1: 'Разход на гориво за пътуване',
+      intro: 'Въведи разстоянието, разхода на колата и цената на горивото. Калкулаторът показва литрите, сумата за горивото и колко се пада на всеки в колата, с винетка и паркинг, ако искаш.',
+      answer: 'Литрите са километрите × разхода на 100 км ÷ 100, а сумата е литрите × цената на литър. За 200 км в едната посока, отиване и връщане (400 км), при 7 л/100 км и бензин по 1,605 € трябват 28 литра за 44,94 €, по 22,47 € на човек, ако сте двама. Всеки 100 км излизат 11,24 €.',
+      big: '€ общо',
+      bigOne: '€ общо',
+      resultTitle: 'ПЪТУВАНЕТО СТРУВА',
+      caveat: 'Реалният разход зависи от скоростта, товара, климатика и пътя. По магистрала и в града колата харчи различно, затова ползвай средния разход от бордовия компютър.',
+      formula: 'литри = км × разход на 100 км ÷ 100; сума = литри × цена на литър + други разходи; на човек = сума ÷ хората в колата',
+      how: 'Разходът на гориво се дава в литри на 100 км, затова километрите се делят на 100 и се умножават по него. При отиване и връщане километрите се удвояват. Цените по подразбиране са средните за България от седмичния бюлетин на Европейската комисия; смени цената с тази на твоята бензиностанция. Винетка, тол такса и паркинг се добавят към сумата, преди да се раздели на хората в колата.',
+      tips: [
+        'Най-точният разход е средният от бордовия компютър или от последните няколко зареждания: литри ÷ изминати км × 100.',
+        'Разходът от каталога на колата (WLTP) е от изпитване в лаборатория и обикновено е по-нисък от реалния.',
+        'За газ (LPG) разходът в литри на 100 км е по-голям, отколкото с бензин. Въведи този, който показва колата ти на газ.',
+        'Ако делите пътя, сметнете и винетката и паркинга в „Други разходи“, за да се разделят по равно.',
+      ],
+      jsonName: 'Калкулатор за разход на гориво',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: '13 ноември 2026',
+      sources: [
+        { label: 'Европейска комисия: седмичен бюлетин за цените на горивата (Weekly Oil Bulletin), с данъците', href: 'https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en' },
+        { label: 'fuel-prices.eu: бюлетинът на ЕК за седмицата до 2 ноември 2026, бензин 1,605 € и дизел 1,893 € за литър', href: 'https://www.fuel-prices.eu/Bulgaria/' },
+        { label: 'fuelwide.com: средна цена на LPG в България 0,641 € за литър към 2 ноември 2026', href: 'https://fuelwide.com/bg/fuel-prices/bulgaria' },
+        { label: 'Fuelo: средни цени по бензиностанциите в България по дни', href: 'https://fuelo.net/calendar' },
+      ],
+    },
+    formTitle: 'Пътуването',
+    formHint: 'Цените са средни за страната. Смени ги с цената на твоята бензиностанция.',
+    selects: [
+      { name: 'trip', label: 'Пътят', options: [{ value: 'round', label: 'Отиване и връщане' }, { value: 'one', label: 'Само в едната посока' }] },
+      { name: 'fuelType', label: 'Гориво', options: [{ value: 'petrol', label: 'Бензин А95' }, { value: 'diesel', label: 'Дизел' }, { value: 'lpg', label: 'Газ (LPG)' }] },
+    ],
+    fields: [
+      { name: 'distance', label: 'Разстояние в едната посока', unit: 'км', value: 200, step: 'any' },
+      { name: 'consumption', label: 'Разход на колата', unit: 'л/100 км', value: 7, step: 'any', hint: '7 е примерна стойност. Сложи разхода на твоята кола.' },
+      { name: 'pricePetrol', label: 'Цена на бензина', unit: '€/л', value: 1.605, step: 'any', show: 'fuelType:petrol' },
+      { name: 'priceDiesel', label: 'Цена на дизела', unit: '€/л', value: 1.893, step: 'any', show: 'fuelType:diesel' },
+      { name: 'priceLpg', label: 'Цена на газта', unit: '€/л', value: 0.641, step: 'any', show: 'fuelType:lpg' },
+      { name: 'people', label: 'Хора в колата', unit: '', value: 2, step: '1' },
+      { name: 'extra', label: 'Други разходи', unit: '€', value: 0, step: 'any', optional: true, hint: 'Винетка, тол такса, паркинг.' },
     ],
   },
   aircon: {
@@ -1256,7 +1304,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 <script>
   import { track } from '@zyankov/design-system/analytics'
   import { addWorkdays, workdaysBetween } from '../lib/workdays'
-  import { addDays, convertEuro, daysBetween, loanPayment, loanSchedule, sickPay, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
+  import { addDays, convertEuro, daysBetween, tripFuelCost, loanPayment, loanSchedule, sickPay, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateFence, FENCE_PANELS as PANELS } from '../lib/materials'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
@@ -1462,6 +1510,20 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           ['Таван: среднодневна нетна заплата', money(result.noiNetCap)],
           ['Нетна заплата за същите дни', money(result.usualNet), 'за сравнение'],
         ]
+        render(result.total, rows)
+      } else if (kind === 'fuel') {
+        const type = field('fuelType')?.value ?? 'petrol'
+        const price = num(type === 'diesel' ? 'priceDiesel' : type === 'lpg' ? 'priceLpg' : 'pricePetrol')
+        const result = tripFuelCost({ distance: num('distance'), roundTrip: field('trip')?.value !== 'one', consumption: num('consumption'), price, people: num('people'), extra: num('extra') })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Изминати км', `${fmt(result.km, 1)} км`, field('trip')?.value !== 'one' ? 'отиване и връщане' : 'в едната посока'],
+          ['Гориво', `${fmt(result.litres, 1)} л`, `${fmt(result.km, 1)} км × ${fmt(num('consumption'), 1)} л ÷ 100`],
+          ['За горивото', money(result.fuel), `${fmt(result.litres, 1)} л × ${fmt(price, 3)} €/л`],
+        ]
+        if (num('extra') > 0) rows.push(['Общо с други разходи', money(result.total)])
+        if (num('people') > 1) rows.push(['На човек', money(result.perPerson), `${fmt(Math.max(1, Math.floor(num('people'))), 0)} души`])
+        rows.push(['На 100 км', money(result.per100km)], ['На километър', `${fmt(result.perKm * 100, 1)} цента`])
         render(result.total, rows)
       } else if (kind === 'aircon') {
         const result = estimateAircon({
