@@ -3,7 +3,8 @@
 // which has the rules and their sources; words-bg.spec.ts checks every example on this page.
 import PageLayout from '../../../layouts/PageLayout.astro'
 import RelatedTools from '../../../components/RelatedTools.astro'
-import { AUTHOR } from '../../../lib/site'
+import { AUTHOR, getPosts, ogKey, postPath } from '../../../lib/site'
+import { postsForTool } from '../../../lib/related-posts'
 import { amountToWords } from '../../../lib/words-bg'
 import '../../../styles/tool.css'
 
@@ -19,6 +20,7 @@ const examples = [5, 21, 105, 150, 1200, 1234.56, 2025.05, 21000, 1300000].map((
   digits: amountToWords(amount, { cents: 'digits', zeroCents: true }),
 }))
 const sample = amountToWords(1234.56)
+const posts = postsForTool('words', await getPosts('bg'))
 
 const faq = [
   { q: 'Как се пише сума словом във фактура?', a: `С думи за целите евро и с думи или цифри за центовете, например „${amountToWords(1234.56, { cents: 'digits' })}“. Двата начина се срещат в практиката; важното е сумата словом да съвпада с тази в цифри.` },
@@ -113,6 +115,22 @@ const jsonLd = [
   </section>
 
   <RelatedTools lang="bg" id="words" />
+
+  {posts.length > 0 && (
+    <section class="tool-articles" aria-labelledby="tool-articles-title">
+      <h2 id="tool-articles-title">Статии по темата</h2>
+      <ul>
+        {posts.map((post) => (
+          <li>
+            <a href={postPath(post)}>
+              <img src={`/og/${ogKey(postPath(post))}.png`} alt={post.data.title} width="1200" height="630" loading="lazy" decoding="async" />
+              <span><strong>{post.data.title}</strong></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
 </PageLayout>
 
 <script>
