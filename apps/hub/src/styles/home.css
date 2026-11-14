@@ -1,5 +1,5 @@
 /* Homepage (/ and /bg/): question, search and a quick estimate; colour-coded topics; every tool in one list;
-   a seasonal pick; the latest answers and the daily word; about and FAQ. Colours come from tokens only:
+   a seasonal pick; the latest answers and today's games; about and FAQ. Colours come from tokens only:
    each topic has --topic-<name> (card), --topic-<name>-soft (chip) and --topic-<name>-dot (marker). */
 :root {
   color: var(--text);
@@ -711,7 +711,7 @@ input {
   font-weight: 700;
 }
 
-/* Answers from the blog + the daily word */
+/* Answers from the blog + today's games */
 .home-split {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
@@ -764,32 +764,102 @@ input {
 .answers__category--everyday { color: var(--blue-ink); }
 .answers__category--general { color: var(--text-muted); }
 
-.daily-card {
+/* Today's games: the two Letterwell daily puzzles, on the words topic colour */
+.games {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 24px;
-  background: var(--surface);
+  padding: 20px;
+  background: var(--topic-words-soft);
   border: 1px solid var(--border);
   border-radius: 20px;
 }
 
-.daily-card h2 {
+.games__head h2 {
   margin: 0;
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 600;
 }
 
-.daily-card p {
-  margin: 0;
+.games__head p {
+  margin: 4px 0 0;
   color: var(--text-muted);
-  line-height: 1.5;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
-.daily-card__tiles {
+.game-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.game-card h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.game-card__number {
+  margin-left: 4px;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.game-card p {
+  margin: 0;
+}
+
+.game-card__text {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.game-card__tiles {
   display: flex;
-  gap: 6px;
+  gap: 5px;
+}
+
+.game-card .daily-tile {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 17px;
+}
+
+.daily-tile--letter {
+  color: var(--topic-ink);
+  background: var(--topic-words);
+  box-shadow: inset 0 -2px 0 var(--topic-words-dot);
+}
+
+.game-card__state {
+  justify-self: start;
+  padding: 3px 10px;
+  color: var(--text);
+  background: var(--surface-soft);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.game-card__cta {
+  justify-self: start;
+  min-height: 44px;
+  margin-top: 4px;
+  padding: 0 20px;
+  text-decoration: none;
 }
 
 .daily-tile {
@@ -805,13 +875,6 @@ input {
 .daily-tile--hit { color: var(--game-ink); background: var(--daily-hit); }
 .daily-tile--near { color: var(--game-ink); background: var(--daily-near); }
 .daily-tile--miss { color: var(--daily-miss-ink); background: var(--daily-miss); }
-
-.daily-card__cta {
-  align-self: flex-start;
-  min-height: 46px;
-  padding: 0 20px;
-  text-decoration: none;
-}
 
 /* Trust line */
 .trust-line {
