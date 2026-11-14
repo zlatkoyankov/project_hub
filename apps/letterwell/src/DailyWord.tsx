@@ -5,6 +5,7 @@ import { BarChart3, CircleHelp, Delete, Lightbulb, RefreshCw, Share2, Sparkles, 
 import { track } from '@zyankov/design-system/analytics'
 import { HeroDecor } from './Playful'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { TryNext } from './TryNext'
 import { pagePath, type Language } from './seo'
 import { loadWordleList, WORD_LENGTH } from './wordle'
 import { dictionaryLinks } from './meanings'
@@ -429,6 +430,7 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
                   ? <button type="button" className="daily-link-button" onClick={() => startMode('unlimited', true)}><RefreshCw size={16} /> {t.newWord}</button>
                   : <button type="button" className="daily-link-button" onClick={() => setModal('stats')}>{t.stats}</button>}
               </div>
+              {mode !== 'unlimited' && <TryNext language={language} current="daily" />}
             </div>
           )}
 

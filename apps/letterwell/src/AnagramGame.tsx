@@ -7,6 +7,7 @@ import { ArrowRight, Delete, Eye, Lightbulb, Shuffle, Sparkles } from 'lucide-re
 import { track } from '@zyankov/design-system/analytics'
 import { HeroDecor } from './Playful'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { TryNext } from './TryNext'
 import { pagePath, type Language } from './seo'
 import { dictionaryLinks } from './meanings'
 import { getDictionary } from './dictionary'
@@ -20,7 +21,7 @@ const TEXT = {
   bg: {
     titleFirst: 'Анаграма', titleEmphasis: 'на деня', note: 'Нова всеки ден в полунощ', eyebrow: 'Игра',
     intro: 'Шест разбъркани букви, една дума. Подреди ги и познай думата на деня. Подсказките са по желание.',
-    storage: 'zy-anagram', dailyStorage: 'zy-daily', locale: 'bg-BG', share: 'zyankov.eu/letterwell/bg/anagrama-na-denya/',
+    storage: 'zy-anagram', dailyStorage: 'zy-daily', locale: 'bg-BG', share: 'zyankov.eu/anagrama',
     heading: (n: number) => `Анаграма на деня № ${n}`,
     loading: 'Зареждаме днешните букви…', check: 'Провери', shuffle: 'Разбъркай', clear: 'Изтрий',
     solved: 'Позна! Думата е', otherWord: (w: string) => `„${w}“ също е дума от тези букви, но днешната е друга. Опитай пак.`,
@@ -33,7 +34,7 @@ const TEXT = {
   en: {
     titleFirst: 'Letterwell', titleEmphasis: 'Anagram', note: 'New every day', eyebrow: 'Game',
     intro: 'Six shuffled letters, one word. Put them in order and find today’s word. Hints are there if you want them.',
-    storage: 'zy-anagram-en', dailyStorage: 'zy-daily-en', locale: 'en-GB', share: 'zyankov.eu/letterwell/anagram/',
+    storage: 'zy-anagram-en', dailyStorage: 'zy-daily-en', locale: 'en-GB', share: 'zyankov.eu/anagram',
     heading: (n: number) => `Letterwell Anagram #${n}`,
     loading: 'Loading today’s letters…', check: 'Check', shuffle: 'Shuffle', clear: 'Clear',
     solved: 'You got it! The word is', otherWord: (w: string) => `“${w}” is also a word from these letters, but today’s is another. Try again.`,
@@ -316,11 +317,14 @@ export default function AnagramGame({ language = 'bg' }: { language?: Language }
                     {[stats.solved, streak, stats.maxStreak, stats.clean].map((value, i) => <div key={t.stats[i]}><dt>{t.stats[i]}</dt><dd>{value}</dd></div>)}
                   </dl>
                   <p className="anagram-next">{t.next(countdown)}</p>
+                  <TryNext language={language} current="anagram" />
                 </div>
               )}
-              <p className="anagram-cross">
-                <a className="daily-link-button" href={pagePath('daily', language)}>{t.daily}{dailyStreak > 0 ? ` (${t.dailyStreak(dailyStreak)})` : ''} <ArrowRight size={16} /></a>
-              </p>
+              {!done && (
+                <p className="anagram-cross">
+                  <a className="daily-link-button" href={pagePath('daily', language)}>{t.daily}{dailyStreak > 0 ? ` (${t.dailyStreak(dailyStreak)})` : ''} <ArrowRight size={16} /></a>
+                </p>
+              )}
               {yesterday && (
                 <div className="anagram-yesterday">
                   <h2>{t.yesterday(puzzle - 1)}</h2>

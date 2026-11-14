@@ -613,3 +613,57 @@
 .hints-yesterday a {
   color: var(--coral-strong);
 }
+
+/* "Something else for today" under a finished daily game (TryNext.tsx). */
+.try-next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.daily-after .try-next__game,
+.daily-after .try-next__game:visited,
+.daily-after .try-next__game:hover {
+  color: var(--cta-ink);
+  text-decoration: none;
+}
+
+.try-next__title {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 13px !important;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.try-next ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.try-next li a {
+  display: inline-block;
+  padding: 8px 12px;
+  color: var(--text);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.try-next li a:hover {
+  border-color: var(--border-strong);
+}
