@@ -1,7 +1,7 @@
 ---
 // Topic ids are also link targets elsewhere (/bg/#everyday, /bg/#home-diy, /#home-diy), so keep them stable.
 // The homepage in English (/) and Bulgarian (/bg/): a question, search and a quick estimate first, then the tools
-// by colour-coded topic, every tool in one list, a seasonal pick, the latest answers and the daily word game.
+// by colour-coded topic, every tool in one list, a seasonal pick, the latest answers and today's two daily games.
 import { analyticsEnabled } from '@zyankov/design-system/render'
 import { TOOL_CATALOG, TOOL_ICONS, postCategory, type Tool } from '../lib/tools'
 import { postPath, type Lang, type Post } from '../lib/site'
@@ -101,10 +101,17 @@ const t = bg
       answers: 'Отговори с пример',
       allPosts: 'Всички статии',
       categories: { words: 'Думи и игри', home: 'Дом и ремонт', everyday: 'Всекидневни сметки', general: 'За сайта' },
-      dailyTitle: 'Дума на деня',
-      dailyText: 'Една дума от 5 букви за цяла България, нова в полунощ. 6 опита, подсказки без спойлери.',
-      dailyCta: 'Играй днешната',
-      dailyWord: 'КАРТА',
+      games: {
+        title: 'Игри на деня',
+        note: 'Нови в полунощ, еднакви за всички.',
+        number: '№',
+        daily: { text: 'Познай думата от 5 букви с 6 опита.', tiles: 'ТОПКА' },
+        anagram: { text: 'Подреди 6 разбъркани букви в една дума.', tiles: 'БУЕСРИ' },
+        fallback: 'Нов пъзел всеки ден',
+        status: { new: 'Още не си играл днес', started: 'Започната днес', won: 'Днес: решена ✓', lost: 'Днес: не позна', gaveUp: 'Днес: думата е показана' },
+        streak: 'Серия',
+        cta: { new: 'Играй', started: 'Продължи', won: 'Виж резултата', lost: 'Виж резултата' },
+      },
       trust: [
         ['Формулата е на страницата.', 'Виждаш как е сметнато, не само резултата.'],
         ['Всяко число има източник.', 'НАП, БНБ, ЕЦБ, производители и стандарти, с дата на проверка.'],
@@ -147,10 +154,17 @@ const t = bg
       answers: 'Answers with a worked example',
       allPosts: 'All articles',
       categories: { words: 'Word games', home: 'Home & DIY', everyday: 'Everyday sums', general: 'About the site' },
-      dailyTitle: 'Letterwell Daily',
-      dailyText: 'One five-letter word for everyone, new at midnight. Six tries, spoiler-free hints.',
-      dailyCta: 'Play today’s word',
-      dailyWord: 'CRANE',
+      games: {
+        title: 'Today’s games',
+        note: 'New at midnight (Sofia time), the same for everyone.',
+        number: 'No.',
+        daily: { text: 'Find the five-letter word in six tries.', tiles: 'SHINE' },
+        anagram: { text: 'Unscramble six letters into one word.', tiles: 'DLERID' },
+        fallback: 'A new puzzle every day',
+        status: { new: 'Not played yet today', started: 'Started today', won: 'Solved today ✓', lost: 'Not solved today', gaveUp: 'Word revealed today' },
+        streak: 'Streak',
+        cta: { new: 'Play', started: 'Continue', won: 'See your result', lost: 'See your result' },
+      },
       trust: [
         ['The formula is on the page.', 'You see how the number is worked out, not just the result.'],
         ['Every rate has a source.', 'Manufacturer datasheets, standards and extension services, with a checked date.'],
@@ -169,6 +183,11 @@ const t = bg
     }
 
 const dailyClues = ['hit', 'miss', 'near', 'miss', 'miss']
+/** The two Letterwell daily games; storage is the localStorage prefix each game writes (see lib/daily-games.ts). */
+const games = [
+  { kind: 'daily', id: 'daily-word', storage: bg ? 'zy-daily' : 'zy-daily-en', tiles: t.games.daily.tiles, text: t.games.daily.text },
+  { kind: 'anagram', id: 'anagram', storage: bg ? 'zy-anagram' : 'zy-anagram-en', tiles: t.games.anagram.tiles, text: t.games.anagram.text },
+].map((game) => ({ ...game, name: byId(game.id)?.name[lang] ?? '', href: href(game.id) }))
 const searchText = (tool: Tool) => `${tool.name.en} ${tool.name.bg} ${tool.keywords}`.toLowerCase()
 /** Tools shown in this language, for "Your tools": both language paths match the recently opened pages. */
 const mineCatalog = shown.map((tool) => ({
@@ -283,11 +302,23 @@ const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2
           ))}
         </ul>
       </div>
-      <div class="daily-card">
-        <h2>{t.dailyTitle}</h2>
-        <p class="daily-card__tiles" aria-hidden="true">{[...t.dailyWord].map((letter, index) => <span class={`daily-tile daily-tile--${dailyClues[index]}`}>{letter}</span>)}</p>
-        <p>{t.dailyText}</p>
-        <a class="zy-cta daily-card__cta" href={href('daily-word')}>{t.dailyCta}</a>
+      <div class="games" id="games" aria-labelledby="games-title" data-games={lang}>
+        <div class="games__head">
+          <h2 id="games-title">{t.games.title}</h2>
+          <p>{t.games.note}</p>
+        </div>
+        {games.map((game) => (
+          <article class="game-card" data-game={game.kind} data-storage={game.storage}>
+            <p class={`game-card__tiles game-card__tiles--${game.kind}`} aria-hidden="true">
+              {[...game.tiles].map((letter, index) => <span class={`daily-tile ${game.kind === 'daily' ? `daily-tile--${dailyClues[index]}` : 'daily-tile--letter'}`}>{letter}</span>)}
+            </p>
+            <h3>{game.name} <span class="game-card__number" data-game-number hidden></span></h3>
+            <p class="game-card__text">{game.text}</p>
+            <p class="game-card__state" data-game-state aria-live="polite">{t.games.fallback}</p>
+            <a class="zy-cta game-card__cta" href={game.href} data-game-link><span data-game-cta>{t.games.cta.new}</span><span class="sr-only">: {game.name}</span></a>
+          </article>
+        ))}
+        <script is:inline type="application/json" data-games-strings set:html={JSON.stringify(t.games).replace(/</g, '\\u003c')} />
       </div>
     </section>
 
@@ -317,6 +348,7 @@ const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2
 <script>
   import { track } from '@zyankov/design-system/analytics'
   import { convertEuro, vat } from '../lib/everyday'
+  import { anagramState, dailyWordState, puzzleNumber, type GameState } from '../lib/daily-games'
 
   // Quick estimate. BG: leva and euro (the fixed rate) and 20% VAT, with the same functions as the calculators.
   // EN: paint at 350 sq ft per gallon and two coats (Sherwin-Williams: 350 to 400, the BuildCalc paint default),
@@ -444,6 +476,58 @@ const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2
     if (event.key === FAV_KEY || event.key === RECENT_KEY) renderMine()
   })
   renderMine()
+
+  // Today's games: the puzzle number and the player's state come from this browser (the page is prerendered
+  // without a date). Only the state is read, never an answer.
+  const gamesBlock = document.querySelector<HTMLElement>('[data-games]')
+  if (gamesBlock) {
+    const gameStrings = JSON.parse(gamesBlock.querySelector('[data-games-strings]')?.textContent || '{}')
+    const readJson = (key: string): unknown => {
+      try {
+        return JSON.parse(localStorage.getItem(key) || 'null')
+      } catch {
+        return null
+      }
+    }
+    const renderGames = () => {
+      const puzzle = puzzleNumber()
+      for (const card of gamesBlock.querySelectorAll<HTMLElement>('[data-game]')) {
+        const storage = card.dataset.storage!
+        const anagram = card.dataset.game === 'anagram'
+        const state: GameState = anagram
+          ? anagramState(readJson(`${storage}-stats-v1`), readJson(`${storage}-today-v1`), puzzle)
+          : dailyWordState(readJson(`${storage}-stats-v1`), readJson(`${storage}-game-v1`), puzzle)
+        const number = card.querySelector<HTMLElement>('[data-game-number]')
+        if (number) {
+          number.textContent = `${gameStrings.number} ${puzzle}`
+          number.hidden = false
+        }
+        const status = state.status === 'lost' && anagram ? gameStrings.status.gaveUp : gameStrings.status[state.status]
+        const line = card.querySelector<HTMLElement>('[data-game-state]')
+        if (line) {
+          line.textContent = state.streak > 0 ? `${status} · ${gameStrings.streak} ${state.streak}` : status
+          line.dataset.status = state.status
+        }
+        const cta = card.querySelector<HTMLElement>('[data-game-cta]')
+        if (cta) cta.textContent = gameStrings.cta[state.status]
+        card.dataset.status = state.status
+      }
+    }
+    gamesBlock.addEventListener('click', (event) => {
+      const link = (event.target as Element | null)?.closest<HTMLElement>('[data-game-link]')
+      const card = link?.closest<HTMLElement>('[data-game]')
+      if (card) track('home_game', { game: card.dataset.game!, status: card.dataset.status ?? 'unknown' })
+    })
+    // Coming back with the back button (bfcache) or after midnight: read the state again.
+    window.addEventListener('pageshow', renderGames)
+    window.addEventListener('storage', (event) => {
+      if (!event.key || event.key.startsWith('zy-daily') || event.key.startsWith('zy-anagram')) renderGames()
+    })
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') renderGames()
+    })
+    renderGames()
+  }
 
   // Tool search: filters the full list as you type (and opens it); Enter opens the first match.
   const form = document.querySelector<HTMLFormElement>('[data-tool-search]')
