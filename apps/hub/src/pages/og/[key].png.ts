@@ -34,6 +34,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'loan-calculator': { kicker: 'Everyday sums · calculator', title: 'What will the monthly loan payment be?', footer: 'zyankov.eu/loan-calculator' },
     'bg-kalkulator-bolnichni': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко ще получа за болничния?', footer: 'zyankov.eu/bg/kalkulator-bolnichni' },
     'bg-kolko-dni-do': { kicker: 'Всекидневни сметки · дати', title: 'Колко дни до Коледа, Нова година и Великден?', footer: 'zyankov.eu/bg/kolko-dni-do' },
+    'bg-zakonna-lihva': { kicker: 'Всекидневни сметки · калкулатор', title: 'Каква е законната лихва за забава?', footer: 'zyankov.eu/bg/zakonna-lihva' },
     'bg-razhod-na-gorivo': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко струва горивото за пътуването?', footer: 'zyankov.eu/bg/razhod-na-gorivo' },
     'bg-suma-slovom': { kicker: 'Всекидневни сметки · фактури', title: 'Сума словом за фактура и договор', footer: 'zyankov.eu/bg/suma-slovom' },
     'bg-kalkulator-zaplata': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко е заплатата ми на ръка?', footer: 'zyankov.eu/bg/kalkulator-zaplata' },

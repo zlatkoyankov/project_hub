@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings' | 'words' | 'fuel' | 'countdown' | 'anagram'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings' | 'words' | 'fuel' | 'interest' | 'countdown' | 'anagram'
 
 export interface Tool {
   id: string
@@ -415,6 +415,17 @@ export const TOOL_CATALOG: Tool[] = [
     only: 'bg',
   },
   {
+    id: 'interest',
+    category: 'home',
+    icon: 'interest',
+    href: { en: '/bg/zakonna-lihva/', bg: '/bg/zakonna-lihva/' },
+    name: { en: 'Statutory late-payment interest (Bulgarian)', bg: 'Законна лихва за забава' },
+    description: { en: 'Bulgarian legal interest on a late payment, per half-year.', bg: 'Лихва за забава по полугодия: ЕЦБ + 8 пункта от 2026 г.' },
+    keywords: 'legal interest late payment bulgaria законна лихва забава просрочие лихва за забава олп бнб ецб полугодие 1/360 неплатена фактура дълг',
+    isNew: true,
+    only: 'bg',
+  },
+  {
     id: 'countdown',
     category: 'home',
     icon: 'countdown',
@@ -439,6 +450,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   salary: '<path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/><path d="M9 13h6M12 10v6"/>',
   words: '<path d="M4 5h16v14H4z"/><path d="M7 9h10M7 12h10M7 15h6"/>',
   countdown: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>',
+  interest: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 18l6-7"/><circle cx="9.5" cy="11.5" r="1"/><circle cx="14.5" cy="17.5" r="1"/>',
   fuel: '<path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M4 21h12M8 8h4"/><path d="M15 10h2a2 2 0 0 1 2 2v5a1 1 0 0 0 2 0V9l-3-3"/>',
   loan: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5h.01M17.5 14.5h.01"/>',
   concrete: '<path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>',
@@ -481,7 +493,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
   { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
   { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'fence', 'gravel', 'mulch', 'area'] },
   { id: 'energy', name: { en: 'Energy', bg: 'Енергия и отопление' }, tools: ['heating', 'firewood', 'aircon', 'energy'] },
-  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'sick', 'savings', 'percent', 'vat', 'words', 'fuel', 'countdown', 'euro', 'loan', 'dates', 'holidays-2027', 'us-holidays-2027', 'uk-holidays-2027'] },
+  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'sick', 'savings', 'percent', 'vat', 'words', 'interest', 'fuel', 'countdown', 'euro', 'loan', 'dates', 'holidays-2027', 'us-holidays-2027', 'uk-holidays-2027'] },
 ]
 
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
@@ -523,6 +535,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   words: ['vat', 'euro', 'percent', 'salary'],
   fuel: ['percent', 'euro', 'dates', 'energy'],
   countdown: ['holidays-2027', 'dates', 'sick'],
+  interest: ['dates', 'euro', 'loan', 'words'],
 }
 
 /** Catalogue id of the tool a blog post links to (the post's `tool` field). */

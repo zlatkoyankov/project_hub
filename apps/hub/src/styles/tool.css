@@ -914,4 +914,15 @@ select {
   .tool-schedule td:nth-child(2) {
     display: none;
   }
+
+  /* The legal interest rate table needs every column: let the period and reference rate wrap instead. */
+  .tool-schedule--rates th:nth-child(2),
+  .tool-schedule--rates td:nth-child(2) {
+    display: table-cell;
+  }
+
+  .tool-schedule--rates th,
+  .tool-schedule--rates td {
+    white-space: normal;
+  }
 }
