@@ -24,6 +24,7 @@ export const EMBED_SLUGS = {
   'kalkulator-zaplata': 'salary',
   'kalkulator-bolnichni': 'sick',
   'razhod-na-gorivo': 'fuel',
+  'zakonna-lihva': 'interest',
 } as const
 
 export type EmbedKind = (typeof EMBED_SLUGS)[keyof typeof EMBED_SLUGS]

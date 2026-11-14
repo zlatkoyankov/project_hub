@@ -11,9 +11,10 @@ import { AUTHOR, getPosts, isoFromBgDate, ogKey, postPath } from '../lib/site'
 import { postsForTool } from '../lib/related-posts'
 import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, FENCE_PANELS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
+import { LEGAL_INTEREST_RATES } from '../lib/everyday'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'fuel'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'fuel' | 'interest'
 
 interface Props {
   kind: Kind
@@ -467,6 +468,57 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       { name: 'priceLpg', label: 'Цена на газта', unit: '€/л', value: 0.641, step: 'any', show: 'fuelType:lpg', hint: 'Средна към 2.11.2026 г.' },
       { name: 'people', label: 'Хора в колата', unit: '', value: 2, step: '1' },
       { name: 'extra', label: 'Други разходи', unit: '€', value: 0, step: 'any', optional: true, hint: 'Винетка, тол такса, паркинг.' },
+    ],
+  },
+  interest: {
+    page: {
+      path: '/bg/zakonna-lihva/',
+      tool: 'legal-interest-calculator',
+      title: 'Калкулатор за законна лихва за забава 2026 | Zyankov.eu',
+      description: 'Законна лихва за забава по полугодия: лихвата на ЕЦБ + 8 пункта от 2026 г. (10,15% и 10,40%), ОЛП на БНБ + 10 пункта до 2025 г., 1/360 на ден.',
+      h1: 'Калкулатор за законна лихва',
+      intro: 'Въведи главницата и периода на забавата. Калкулаторът разделя периода на полугодия, смята всяко с процента, който важи за него, и показва лихвата общо и по периоди.',
+      answer: 'От 1 януари 2026 г. законната лихва е лихвата на ЕЦБ по основните операции по рефинансиране плюс 8 пункта: 10,15% годишно за първото и 10,40% за второто полугодие на 2026 г. До края на 2025 г. беше основният лихвен процент на БНБ плюс 10 пункта. На ден се дължи 1/360 от годишния процент. За 1 000 € от 1 ноември 2025 г. до 31 август 2026 г. (304 дни) лихвата е 20,18 € + 51,03 € + 17,91 € = 89,12 €.',
+      big: '€ лихва',
+      bigOne: '€ лихва',
+      resultTitle: 'ЗАКОННАТА ЛИХВА Е',
+      caveat: 'Това не е правен съвет. Ако договорът определя друга лихва за забава или неустойка, важи договорът. Лихвата за просрочени данъци и осигуровки се урежда от отделен закон и може да е различна.',
+      formula: 'лихва = главница × годишен процент ÷ 100 × дни ÷ 360, за всяко полугодие отделно; годишен процент = ОЛП на БНБ + 10 (до 31.12.2025 г.) или лихва на ЕЦБ по основните операции по рефинансиране + 8 (от 1.1.2026 г.)',
+      how: 'Законната лихва е годишен процент, а за всеки ден забава се дължи 1/360 от него. Процентът се сменя на шест месеца: за първото полугодие важи референтният процент към 1 януари, за второто – към 1 юли. До 31.12.2025 г. това беше основният лихвен процент (ОЛП) на БНБ плюс 10 процентни пункта. След въвеждането на еврото, от 1.1.2026 г., е лихвеният процент на Европейската централна банка по основните операции по рефинансиране плюс 8 пункта (ПМС № 347 от 29.12.2025 г., с което е изменено ПМС № 426 от 2014 г.). Калкулаторът разделя забавата на полугодия, смята всяко с неговия процент върху главницата и събира сумите.',
+      tips: [
+        'Калкулаторът брои дните от първия ден на забавата до последния, двата включително. Ако падежът е 10 март, първият ден на забава е 11 март.',
+        'Лихвата се смята само върху главницата, без да се добавя към нея за следващите периоди.',
+        'Ако сумата е в лева, раздели я на 1,95583 (фиксирания курс), за да я въведеш в евро.',
+        'При частично плащане сметни поотделно: до датата на плащането с цялата главница, а след нея с остатъка.',
+        'Таблицата покрива 1.1.2022 – 31.12.2026 г. Процентът за първото полугодие на 2027 г. ще е ясен на 1 януари 2027 г.',
+      ],
+      jsonName: 'Калкулатор за законна лихва',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: '14 ноември 2026',
+      sources: [
+        { label: 'kik-info: ПМС № 426 от 18.12.2014 г. за законната лихва, актуална редакция (изм. ДВ, бр. 115 от 2025 г., в сила от 1.1.2026 г.: лихва на ЕЦБ + 8 пункта, 1/360 на ден, полугодия)', href: 'https://kik-info.com/normativna-baza/postanovlenia/p-426/' },
+        { label: 'kik-info: от 1.1.2026 г. законната лихва е лихвата на ЕЦБ (MRO) + 8 пункта, по ПМС № 347 от 29.12.2025 г.', href: 'https://kik-info.com/spravochnik/ecb-mro.php' },
+        { label: 'Европейски портал за електронно правосъдие: законната лихва до 2025 г., ОЛП + 10 пункта, 1/360 на ден', href: 'https://e-justice.europa.eu/pdf-export/1947_bg' },
+        { label: 'БТА: последният ОЛП на БНБ (1,81% за декември 2025 г.) и преминаването към лихвата на ЕЦБ + 8 пункта', href: 'https://www.bta.bg/en/news/1018091-central-bank-sets-base-interest-rate-at-1-81-from-december-1-in-final-adjustmen' },
+        { label: 'ЕЦБ, 18.12.2025 г.: лихвата по основните операции по рефинансиране остава 2,15% (важи на 1.1.2026 г.)', href: 'https://www.ecb.europa.eu/press/pr/date/2025/html/ecb.mp251218~58b0e415a6.bg.html' },
+        { label: 'ЕЦБ, 11.6.2026 г.: лихвата по основните операции по рефинансиране става 2,40% от 17.6.2026 г.', href: 'https://ecb.europa.eu/press/pr/date/2026/html/ecb.mp260611~4d41bd5e83.en.html' },
+        { label: 'ЕЦБ, 23.7.2026 г.: лихвите остават непроменени, 2,40% по основните операции', href: 'https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260723~29f24d99bc.bg.html' },
+        { label: 'БНБ, Годишен отчет 2022, табл. 1.13: ОЛП 0,00% през януари и юли 2022 г.', href: 'https://bnb.bg/bnbweb/groups/public/documents/bnb_publication/anual_report_2022_a1_pdf_bg.pdf' },
+        { label: 'БНБ, Годишен отчет 2023, табл. 1.13: ОЛП 1,42% за януари и 3,12% за юли 2023 г.', href: 'https://www.bnb.bg/bnbweb/groups/public/documents/bnb_publication/anual_report_2023_a1_pdf_bg.pdf' },
+        { label: 'БНР: ОЛП 3,79% от 1 януари 2024 г.', href: 'https://bnrnews.bg/en/post/99931/bnb-starts-the-new-year-by-lowering-the-main-interest-rate' },
+        { label: 'БНБ, лихвена статистика за юли 2024 г.: ОЛП 3,63% за юли 2024 г.', href: 'https://bnb.bg/bnbweb/groups/public/documents/bnb_download/202407_s_irs_press_a1_bg.pdf' },
+        { label: 'ФФБХ: ОЛП 2,95% за януари 2025 г. (2,82% от 1 февруари 2025 г.)', href: 'https://www.ffbh.bg/en/post/bnb-lowered-the-base-interest-rate-to-2-82--173865971175609' },
+        { label: 'БНБ, лихвена статистика за юли 2025 г.: ОЛП 1,91% за юли 2025 г.', href: 'https://bnb.bg/bnbweb/groups/public/documents/bnb_download/202507_s_irs_press_a1_bg.pdf' },
+      ],
+    },
+    formTitle: 'Задължението',
+    formHint: 'Сумата е в евро. Двете дати се включват.',
+    selects: [],
+    fields: [
+      { name: 'principal', label: 'Главница', unit: '€', value: 1000, step: 'any' },
+      { name: 'from', label: 'Първи ден на забавата', unit: '', value: '2025-11-01', type: 'date', hint: 'Денят след падежа.' },
+      { name: 'to', label: 'Последен ден', unit: '', value: '2026-08-31', type: 'date', hint: 'Например денят на плащането.' },
     ],
   },
   aircon: {
@@ -1235,6 +1287,18 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         </aside>
       </section>
 
+      {kind === 'interest' && !embed && (
+        <section class="tool-schedule tool-schedule--rates" aria-labelledby="rates-title">
+          <h2 id="rates-title">Законна лихва по полугодия</h2>
+          <p>Годишният процент за всяко полугодие: референтният процент в сила на 1 януари или 1 юли плюс надбавката. Дневната лихва е 1/360 от него.</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th>Период</th><th>Референтен процент</th><th>Надбавка</th><th>Законна лихва</th></tr></thead><tbody>
+            {LEGAL_INTEREST_RATES.map((rate) => (
+              <tr><td>{rate.from.split('-').reverse().join('.')} – {rate.to.split('-').reverse().join('.')}</td><td>{rate.referenceName === 'ОЛП' ? 'ОЛП на БНБ' : 'ЕЦБ, основни операции'} {rate.reference.toFixed(2).replace('.', ',')}%</td><td>+{rate.margin}</td><td>{rate.rate.toFixed(2).replace('.', ',')}%</td></tr>
+            ))}
+          </tbody></table></div>
+        </section>
+      )}
+
       {kind === 'loan' && (
         <section class="tool-schedule" data-schedule hidden aria-labelledby="schedule-title">
           <h2 id="schedule-title">Погасителен план</h2>
@@ -1305,7 +1369,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
 <script>
   import { track } from '@zyankov/design-system/analytics'
   import { addWorkdays, workdaysBetween } from '../lib/workdays'
-  import { addDays, convertEuro, daysBetween, tripFuelCost, loanPayment, loanSchedule, sickPay, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
+  import { addDays, convertEuro, daysBetween, tripFuelCost, legalInterest, LEGAL_INTEREST_FIRST, LEGAL_INTEREST_LAST, loanPayment, loanSchedule, sickPay, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateFence, FENCE_PANELS as PANELS } from '../lib/materials'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
@@ -1512,6 +1576,21 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           ['Нетна заплата за същите дни', money(result.usualNet), 'за сравнение'],
         ]
         render(result.total, rows)
+      } else if (kind === 'interest') {
+        const result = legalInterest(num('principal'), field('from')?.value ?? '', field('to')?.value ?? '')
+        const shortDate = (iso: string) => iso.split('-').reverse().map((part, index) => index < 2 ? String(Number(part)) : part).join('.')
+        if (result === 'input') return render(null, [])
+        if (result === 'order') return render(null, [['Датите', 'разменени', 'последният ден е преди първия']])
+        if (result === 'range') return render(null, [['Периодът', 'извън таблицата', `от ${shortDate(LEGAL_INTEREST_FIRST)} до ${shortDate(LEGAL_INTEREST_LAST)} г.`]])
+        const two = (value: number) => value.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        const pct = (value: number) => `${two(value)}%`
+        const rows: [string, string, string?][] = result.periods.map((period) => [
+          `${shortDate(period.start)} – ${shortDate(period.end)}`,
+          money(period.interest),
+          `${period.days} дни × ${pct(period.rate)} (${period.referenceName} ${two(period.reference)} + ${period.margin}) ÷ 360`,
+        ])
+        rows.push(['Дни забава', `${result.days}`], ['Главница', money(num('principal'))], ['Главница и лихва', money(result.total)])
+        render(result.interest, rows)
       } else if (kind === 'fuel') {
         const type = field('fuelType')?.value ?? 'petrol'
         const price = num(type === 'diesel' ? 'priceDiesel' : type === 'lpg' ? 'priceLpg' : 'pricePetrol')

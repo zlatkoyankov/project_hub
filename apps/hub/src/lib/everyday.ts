@@ -370,3 +370,108 @@ export function tripFuelCost(input: TripFuelInput): TripFuelResult | null {
   const total = cents(fuel + Math.max(0, input.extra ?? 0))
   return { km, litres, fuel, total, perPerson: cents(total / people), per100km: cents(consumption * price), perKm: (consumption * price) / 100 }
 }
+
+// Statutory late-payment interest, законна лихва за забава (/bg/zakonna-lihva/).
+// ЗЗД art. 86(2): the Council of Ministers sets the rate. ПМС № 426 of 18.12.2014 (ДВ 106/2014), as amended by
+// ПМС № 347 of 29.12.2025 (ДВ 115/2025, in force 1.1.2026):
+// - until 31.12.2025: the BNB base rate (ОЛП) + 10 percentage points;
+// - from 1.1.2026: the ECB main refinancing operations (MRO) rate + 8 percentage points;
+// - the reference rate in force on 1 January applies to the first half-year, the one on 1 July to the second;
+// - the daily interest is 1/360 of the annual rate.
+// Sources: consolidated text on kik-info.com/normativna-baza/postanovlenia/p-426/; the pre-2026 text on
+// e-justice.europa.eu (Interest rates, Bulgaria). Checked 14 November 2026.
+
+/** Earliest date the table covers. */
+export const LEGAL_INTEREST_FIRST = '2022-01-01'
+/** Last date the table covers. Add the next half-year when its reference rate is known (1 January / 1 July). */
+export const LEGAL_INTEREST_LAST = '2026-12-31'
+export const LEGAL_INTEREST_CHECKED = '14 ноември 2026'
+
+export interface LegalInterestRate {
+  /** First day of the half-year, yyyy-mm-dd. */
+  from: string
+  /** Last day of the half-year, yyyy-mm-dd. */
+  to: string
+  /** Reference rate in force on the first day, %. */
+  reference: number
+  referenceName: 'ОЛП' | 'ЕЦБ'
+  /** Margin in percentage points. */
+  margin: number
+  /** Annual legal interest, %. */
+  rate: number
+}
+
+const half = (year: number, second: boolean, reference: number, referenceName: 'ОЛП' | 'ЕЦБ'): LegalInterestRate => {
+  const margin = referenceName === 'ОЛП' ? 10 : 8
+  return {
+    from: `${year}-${second ? '07-01' : '01-01'}`, to: `${year}-${second ? '12-31' : '06-30'}`,
+    reference, referenceName, margin, rate: cents(reference + margin),
+  }
+}
+
+/** Legal interest per half-year. Reference rates on 1 January / 1 July. */
+export const LEGAL_INTEREST_RATES: readonly LegalInterestRate[] = [
+  // ОЛП 0.00% in January and July 2022: BNB Annual report 2022, table 1.13 (ОЛП, ЛЕОНИА Плюс).
+  half(2022, false, 0, 'ОЛП'),
+  half(2022, true, 0, 'ОЛП'),
+  // ОЛП 1.42% (January) and 3.12% (July) 2023: BNB Annual report 2023, table 1.13; July also in the BNB
+  // interest rate statistics press release for July 2024 (202407_s_irs_press_a1_bg.pdf).
+  half(2023, false, 1.42, 'ОЛП'),
+  half(2023, true, 3.12, 'ОЛП'),
+  // ОЛП 3.79% from 1 January 2024: BNR, "BNB starts the new year by lowering the main interest rate"
+  // (matches the December 2023 LEONIA Plus average in BNB Annual report 2023, table 1.13).
+  half(2024, false, 3.79, 'ОЛП'),
+  // ОЛП 3.63% in July 2024: BNB interest rate statistics press releases for July 2024 and July 2025.
+  half(2024, true, 3.63, 'ОЛП'),
+  // ОЛП 2.95% in January 2025: FFBH, "BNB lowered the base interest rate to 2.82%" (from 1 February 2025;
+  // the January 2025 value was 2.95%).
+  half(2025, false, 2.95, 'ОЛП'),
+  // ОЛП 1.91% in July 2025: BNB interest rate statistics press release for July 2025 (202507_s_irs_press_a1_bg.pdf).
+  half(2025, true, 1.91, 'ОЛП'),
+  // ECB MRO 2.15% on 1 January 2026: unchanged by the ECB decision of 18 December 2025 (ecb.mp251218).
+  half(2026, false, 2.15, 'ЕЦБ'),
+  // ECB MRO 2.40% on 1 July 2026: raised from 17 June 2026 (ecb.mp260611), unchanged on 23 July 2026 (ecb.mp260723).
+  half(2026, true, 2.4, 'ЕЦБ'),
+]
+
+export interface LegalInterestPeriod extends LegalInterestRate {
+  /** Part of the half-year inside the delay, yyyy-mm-dd, both days included. */
+  start: string
+  end: string
+  days: number
+  /** Interest for this part, rounded to cents. */
+  interest: number
+}
+
+export interface LegalInterestResult {
+  periods: LegalInterestPeriod[]
+  days: number
+  /** Sum of the rounded period amounts, so the rows add up. */
+  interest: number
+  total: number
+}
+
+export type LegalInterestError = 'input' | 'order' | 'range'
+
+/**
+ * Simple statutory interest on a principal for the days of delay from `from` to `to`, both days included,
+ * split at each half-year: principal × annual rate × days ÷ 360 per half-year. No interest on interest (ЗЗД art. 10(3)).
+ */
+export function legalInterest(principal: number, from: string, to: string): LegalInterestResult | LegalInterestError {
+  const start = parseDate(from)
+  const end = parseDate(to)
+  if (!(principal > 0) || start === null || end === null) return 'input'
+  if (end < start) return 'order'
+  if (start < parseDate(LEGAL_INTEREST_FIRST)! || end > parseDate(LEGAL_INTEREST_LAST)!) return 'range'
+  const periods: LegalInterestPeriod[] = []
+  for (const rate of LEGAL_INTEREST_RATES) {
+    const a = Math.max(start, parseDate(rate.from)!)
+    const b = Math.min(end, parseDate(rate.to)!)
+    if (b < a) continue
+    const days = Math.round((b - a) / DAY) + 1
+    const iso = (time: number) => new Date(time).toISOString().slice(0, 10)
+    periods.push({ ...rate, start: iso(a), end: iso(b), days, interest: cents((principal * rate.rate * days) / 100 / 360) })
+  }
+  const interest = cents(periods.reduce((sum, period) => sum + period.interest, 0))
+  return { periods, days: periods.reduce((sum, period) => sum + period.days, 0), interest, total: cents(principal + interest) }
+}
