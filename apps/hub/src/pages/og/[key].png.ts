@@ -41,6 +41,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'bg-koga-e-velikden': { kicker: 'Всекидневни сметки · календар', title: `Кога е Великден ${upcomingEasterYear(new Date().toISOString().slice(0, 10))}? Православен и католически`, footer: 'zyankov.eu/bg/koga-e-velikden' },
     'bg-zakonna-lihva': { kicker: 'Всекидневни сметки · калкулатор', title: 'Каква е законната лихва за забава?', footer: 'zyankov.eu/bg/zakonna-lihva' },
     'bg-razhod-na-gorivo': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко струва горивото за пътуването?', footer: 'zyankov.eu/bg/razhod-na-gorivo' },
+    'bg-kuhnenski-merki': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко грама е една чаша брашно?', footer: 'zyankov.eu/bg/kuhnenski-merki' },
     'bg-suma-slovom': { kicker: 'Всекидневни сметки · фактури', title: 'Сума словом за фактура и договор', footer: 'zyankov.eu/bg/suma-slovom' },
     'bg-kalkulator-zaplata': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко е заплатата ми на ръка?', footer: 'zyankov.eu/bg/kalkulator-zaplata' },
     'bg-pochivni-dni-2027': { kicker: 'Всекидневни сметки · календар', title: 'Кои са почивните дни през 2027 г.?', footer: 'zyankov.eu/bg/pochivni-dni-2027' },
