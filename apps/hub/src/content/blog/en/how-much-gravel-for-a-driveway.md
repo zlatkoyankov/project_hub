@@ -1,5 +1,5 @@
 ---
-title: 'How much gravel do I need for a driveway or path?'
+title: 'How much gravel do I need for a driveway?'
 description: 'Work out gravel volume and weight for a driveway or garden path, with depth guidance, compaction and worked examples in cubic yards, tons and tonnes.'
 date: 2026-11-04
 updated: 2026-11-12

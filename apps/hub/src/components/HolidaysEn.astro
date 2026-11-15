@@ -60,8 +60,8 @@ const usWorkdays = us ? workdays(year, usList) : 0
 const ewWorkdays = us ? 0 : workdays(year, ewList)
 
 const title = us
-  ? `US Federal Holidays ${year}: Dates, Observed Days and Long Weekends | Zyankov.eu`
-  : `UK Bank Holidays ${year}: England, Scotland, Wales and Northern Ireland | Zyankov.eu`
+  ? `US Federal Holidays ${year}: Dates and Observed Days | Zyankov.eu`
+  : `UK Bank Holidays ${year}: England, Scotland, Wales, NI | Zyankov.eu`
 const description = us
   ? `All ${usList.length} federal holidays observed in ${year}, including the days moved off weekends, ${usWorkdays} federal working days, long weekends and a calendar file.`
   : `Bank holidays in ${year} for England and Wales (${ukLists[0]?.list.length}), Scotland (${ukLists[1]?.list.length}) and Northern Ireland (${ukLists[2]?.list.length}), substitute days, long weekends and calendar files.`

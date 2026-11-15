@@ -1,6 +1,6 @@
 ---
-title: 'Loan payment formula: how the monthly payment is calculated, with examples'
-description: 'The amortization formula step by step, a 25,000 loan at 7% over 5 years, how much of each payment is interest, how the term changes the cost, and why APR matters.'
+title: 'Loan payment formula, with worked examples'
+description: 'The amortization formula step by step, a 25,000 loan at 7% over 5 years, the interest in each payment, how the term changes the cost and why APR matters.'
 date: 2026-11-11
 updated: 2026-11-12
 lang: en

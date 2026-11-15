@@ -1,5 +1,5 @@
 ---
-title: 'Spelling Bee tips: how to find more words and the pangram'
+title: 'Spelling Bee tips: more words and the pangram'
 description: 'Practical ways to score more in the Spelling Bee: look for endings and prefixes, hunt the pangram, use the hint grid, and know when to stop.'
 date: 2026-11-05
 lang: en

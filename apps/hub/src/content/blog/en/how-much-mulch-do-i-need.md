@@ -1,5 +1,5 @@
 ---
-title: 'How much mulch do I need? Beds, borders and trees'
+title: 'How much mulch do I need? Beds and borders'
 description: 'Calculate mulch for rectangular beds, curved borders and tree rings, choose a sensible depth, and convert cubic feet to bags or bulk cubic yards.'
 date: 2026-11-04
 lang: en

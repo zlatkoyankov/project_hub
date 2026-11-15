@@ -1,6 +1,6 @@
 ---
-title: 'How to solve crosswords faster: 8 tips for when you are stuck'
-description: 'Practical ways to get unstuck on a crossword: start with the easy clues, read the clue type, use crossings and letter patterns, and know when to look a word up.'
+title: 'How to solve crosswords faster: 8 tips'
+description: 'Practical ways to get unstuck on a crossword: start with the easy clues, read the clue type, use crossings and letter patterns, and know when to look up.'
 date: 2026-11-05
 lang: en
 tags: [word games, crosswords]

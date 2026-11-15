@@ -1,6 +1,6 @@
 ---
-title: 'Long weekends in 2027: US federal holidays and UK bank holidays'
-description: 'Every three-day weekend in 2027 in the US and the UK, the days of leave that turn them into longer breaks, and why 24 and 31 December and 27–28 December are days off.'
+title: 'Long weekends in 2027: US and UK holidays'
+description: 'Every three-day weekend in 2027 in the US and the UK, the days of leave that turn them into longer breaks, and why 24 and 31 December are days off.'
 date: 2026-11-11
 lang: en
 tags: [holidays, calendar, everyday-sums]

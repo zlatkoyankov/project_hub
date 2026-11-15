@@ -926,3 +926,26 @@ select {
     white-space: normal;
   }
 }
+
+.tool-quick {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+}
+
+.tool-quick dt {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.tool-quick dd {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.tool-schedule > p a {
+  color: var(--text);
+  text-decoration: underline;
+}

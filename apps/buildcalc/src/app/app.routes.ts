@@ -18,8 +18,8 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./pages/home').then((module) => module.HomePage),
-    title: 'Building Material Estimator: Free Home Improvement Calculators | BuildCalc',
-    data: { description: 'Estimate materials for home improvement, renovation, and landscaping projects with free, practical BuildCalc calculators.' },
+    title: 'Free Building Material Calculators | BuildCalc',
+    data: { description: 'Free calculators for concrete, gravel, paint, tiles, laminate, drywall, bricks and more, with the formula and the sources shown on every page.' },
   },
   {
     path: 'all-calculators',
@@ -60,7 +60,7 @@ export const routes: Routes = [
     resolve: { description: guideDescriptionResolver },
   },
   ...[
-    { path: 'about', key: 'about', title: 'About BuildCalc: Where the Numbers Come From', description: 'Learn about BuildCalc’s browser-based planning tools and transparent material estimate assumptions.' },
+    { path: 'about', key: 'about', title: 'About BuildCalc: Where the Numbers Come From', description: 'Where the numbers in BuildCalc come from: the formulas, the sources of the coverage rates and waste allowances, and the limits of the estimates.' },
   ].map((page) => ({
     path: page.path,
     loadComponent: () => import('./pages/content').then((module) => module.ContentPage),

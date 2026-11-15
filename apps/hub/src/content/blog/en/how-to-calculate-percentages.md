@@ -1,6 +1,6 @@
 ---
-title: 'How to calculate percentages: of a number, percent change, discounts and percentage points'
-description: 'The four percentage sums with worked examples: X% of a number, what percent A is of B, percent change and a price after a discount, plus the mistakes everyone makes.'
+title: 'How to calculate percentages: 4 sums, examples'
+description: 'The four percentage sums with worked examples: X% of a number, what percent A is of B, percent change and a price after a discount, plus common mistakes.'
 date: 2026-11-11
 lang: en
 tags: [percentages, everyday-sums]

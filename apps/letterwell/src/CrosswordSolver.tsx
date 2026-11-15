@@ -48,7 +48,7 @@ const copy = {
       'The dictionary has about 274,000 English words, so you will also see rare words and plurals. Crossword answers can be phrases or names that are not in it.',
     ],
     readMore: 'Read more',
-    article: { href: '/blog/how-to-solve-crosswords-faster/', label: 'How to solve crosswords faster: 8 tips for when you are stuck' },
+    article: { href: '/blog/how-to-solve-crosswords-faster/', label: 'How to solve crosswords faster: 8 tips' },
   },
   bg: {
     tagline: 'Помощник за кръстословици',

@@ -1,5 +1,5 @@
 ---
-title: 'How compound interest works, with monthly deposits and real numbers'
+title: 'How compound interest works, with monthly deposits'
 description: 'The compound interest formula with monthly deposits, worked examples at 4% and 7%, why starting early beats saving more later, the rule of 72 and APY.'
 date: 2026-11-12
 lang: en
