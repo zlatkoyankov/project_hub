@@ -26,6 +26,11 @@
         <ul>@for (source of guide.sources; track source.href) {<li><a [href]="source.href" target="_blank" rel="noopener">{{ source.label }}</a></li>}</ul>
       </div>
       <a class="button" [routerLink]="['/', guide.calculatorSlug]">Open the {{ guide.shortTitle.toLowerCase() }} calculator <span aria-hidden="true">→</span></a>
+      @if (relatedGuides.length) {
+        <section><h2>Related guides</h2><p>Jobs like this one usually need a second estimate. These guides explain the next one.</p>
+          <ul>@for (item of relatedGuides; track item.slug) {<li><a [routerLink]="['/guides', item.slug]">{{ item.title }}</a></li>}</ul>
+        </section>
+      }
     }
   </div>
 </div></section>

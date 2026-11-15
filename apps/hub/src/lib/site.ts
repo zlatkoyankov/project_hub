@@ -92,3 +92,20 @@ export const TOOLS = {
 } as const
 
 export type ToolKey = keyof typeof TOOLS
+
+/** BuildCalc worked-example guide for a post's tool (English only): linked under the tool card in English posts. */
+export const TOOL_GUIDES: Partial<Record<ToolKey, string>> = {
+  'concrete-calculator': 'concrete-calculator-guide',
+  'tile-calculator': 'tile-calculator-guide',
+  'paint-calculator': 'paint-calculator-guide',
+  'gravel-calculator': 'gravel-calculator-guide',
+  'mulch-calculator': 'mulch-calculator-guide',
+  'square-footage-calculator': 'square-footage-calculator-guide',
+  'laminate-flooring-calculator': 'laminate-flooring-calculator-guide',
+  'drywall-calculator': 'drywall-calculator-guide',
+  'tile-adhesive-grout-calculator': 'tile-adhesive-grout-calculator-guide',
+  'wallpaper-calculator': 'wallpaper-calculator-guide',
+  'screed-plaster-calculator': 'screed-plaster-calculator-guide',
+  'insulation-board-calculator': 'insulation-board-calculator-guide',
+  'brick-block-calculator': 'brick-block-calculator-guide',
+}

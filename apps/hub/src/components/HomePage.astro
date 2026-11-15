@@ -343,6 +343,7 @@ const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2
       <div class="home-about__text">
         <h2 id="about-title">{t.aboutTitle}</h2>
         <p>{t.aboutText}</p>
+        {!bg && <p>Wondering why each tool is so small? Read <a href="/blog/why-small-browser-tools/">why I build small browser tools</a>.</p>}
         <a href={bg ? '/bg/za-saita/' : '/about/'}>{t.aboutLink} <span aria-hidden="true">→</span></a>
       </div>
       <div class="home-about__faq" id="faq">

@@ -65,6 +65,8 @@ If you are stuck with only a few letters confirmed, consider whether one of them
 
 The fastest way to improve is to look back at games that took five or six guesses and ask which guess wasted the most information. Enter your guesses into the [Wordle helper](/letterwell/wordle-solver/), tap the tiles to match the colours, and you can see how many words were still possible after each step and what a stronger next guess would have been.
 
+If you play Letterwell Daily and want a nudge rather than the answer, its [spoiler-free hints](/letterwell/daily/hints/) open one at a time: how many vowels the word has, whether a letter repeats, and its first and last letter. Try them before you reach for a solver.
+
 ## A note on Hard Mode
 
 In Hard Mode, any revealed hint must be used in later guesses, so probe words with fresh letters are not allowed. Habits 1, 2, 5 and 6 still apply. Trap words like _IGHT are much harder in Hard Mode, which is why many experienced players prefer the normal mode.

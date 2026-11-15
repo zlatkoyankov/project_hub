@@ -77,7 +77,7 @@ Interestingly, RAISE leads after one guess, but SLATE and CRANE edge it over com
 
 ## Try it on today's puzzle
 
-If you are stuck partway through, type your guesses into the [Wordle helper](/letterwell/wordle-solver/), tap the tiles to match your colours, and it lists every word that still fits, with the best next guess. It runs in your browser and works for Bulgarian Wordle too.
+If you are stuck partway through, type your guesses into the [Wordle helper](/letterwell/wordle-solver/), tap the tiles to match your colours, and it lists every word that still fits, with the best next guess. It runs in your browser and works for Bulgarian Wordle too. If you would rather not see any answers, [Letterwell Daily hints](/letterwell/daily/hints/) give small clues for the daily five-letter word without revealing it.
 
 *A note on the numbers: our answer pool is an approximation of the real one, built from common English words. Exact figures would shift with the official list, so read the table as a comparison between openers, not as a promise of how many answers you will have left. When we recomputed the one-guess averages on 15 November 2026 with a slightly different rule for removing plurals, RAISE stayed first, SLATE and CRANE stayed in the top 30 and AUDIO and ADIEU stayed far down the list, with the averages within a few answers of the table (for example RAISE 63.5 and AUDIO 174.2).*
 
