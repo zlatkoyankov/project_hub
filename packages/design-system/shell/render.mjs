@@ -48,11 +48,17 @@ export function renderHead({ ads = true } = {}) {
   return [`<script>${shellScript}</script>`, adsense, analyticsTag()].filter(Boolean).join('\n')
 }
 
-/** Privacy-policy paragraph that matches the analytics configuration at build time. */
-export function renderPrivacyAnalytics() {
-  if (!analyticsEnabled) return '<p>Zyankov.eu does not use an analytics service.</p>'
+/** Privacy-policy paragraphs that match the analytics configuration at build time (lang: 'en' | 'bg'). */
+export function renderPrivacyAnalytics(lang = 'en') {
+  const bg = lang === 'bg'
+  if (!analyticsEnabled) return bg ? '<p>Zyankov.eu не използва услуга за статистика.</p>' : '<p>Zyankov.eu does not use an analytics service.</p>'
   const name = analytics.provider === 'umami' ? 'Umami Cloud' : 'Plausible Analytics'
-  return `<p>Zyankov.eu uses ${name} to count page views and a few anonymous events (for example, that a calculation or a word search happened, without its contents). The service does not use cookies or local storage and does not build a profile of you. It processes technical request data such as your IP address, which it uses only to derive aggregate statistics such as country and device type.</p>`
+  // data-exclude-search is set for Umami only (see analyticsTag).
+  const exclude = analytics.provider === 'umami'
+  if (bg) {
+    return `<p>Zyankov.eu използва ${name}, за да брои разглежданията на страници и няколко анонимни събития (например че е направено изчисление или търсене на дума, без съдържанието му). Според описанието на услугата тя не използва бисквитки и не записва данни в локалното хранилище на браузъра, и не изгражда профил за теб. Обработва технически данни от заявката, например IP адрес, които използва само за обобщена статистика като държава и тип устройство.</p>${exclude ? '<p>Скриптът работи с настройката <code>data-exclude-search</code>: частта от адреса след „?“ (параметрите, в които са въведените стойности във връзките за споделяне) не се изпраща към статистиката, а се записва само пътят на страницата. Събитията се записват само на домейните zyankov.eu и www.zyankov.eu.</p>' : ''}`
+  }
+  return `<p>Zyankov.eu uses ${name} to count page views and a few anonymous events (for example, that a calculation or a word search happened, without its contents). According to the service's description, it does not use cookies or local storage and does not build a profile of you. It processes technical request data such as your IP address, which it uses only to derive aggregate statistics such as country and device type.</p>${exclude ? '<p>The script runs with <code>data-exclude-search</code>: the part of the address after the "?" (the parameters that carry the entered values in share links) is not sent to analytics, and only the page path is recorded. Events are recorded only on the zyankov.eu and www.zyankov.eu domains.</p>' : ''}`
 }
 
 const STRINGS = {
@@ -100,8 +106,8 @@ const t = (lang) => STRINGS[lang] ?? STRINGS.en
 /** Site links in the page language: the Bulgarian homepage and blog live under /bg/. */
 const links = (lang) =>
   lang === 'bg'
-    ? { home: '/bg/', blog: '/bg/blog/', faq: '/bg/#faq', about: '/bg/za-saita/', contact: '/bg/za-saita/#kontakt' }
-    : { home: '/', blog: '/blog/', faq: '/#faq', about: '/about/', contact: '/about/#contact' }
+    ? { home: '/bg/', blog: '/bg/blog/', faq: '/bg/#faq', about: '/bg/za-saita/', contact: '/bg/za-saita/#kontakt', privacy: '/bg/poveritelnost/', terms: '/bg/usloviya/', disclaimer: '/bg/otkaz-ot-otgovornost/' }
+    : { home: '/', blog: '/blog/', faq: '/#faq', about: '/about/', contact: '/about/#contact', privacy: '/privacy/', terms: '/terms/', disclaimer: '/disclaimer/' }
 const projectTagline = (p, lang) => (lang === 'bg' && p.tagline_bg) || p.tagline
 /** Site-bar label and link of a project: its section name ("Word games") rather than the product name. */
 const navLabel = (p, lang) => (lang === 'bg' && p.nav_bg) || p.nav || p.name
@@ -151,7 +157,7 @@ export function renderFooter({ project = 'hub', lang = 'en', year = new Date().g
     </div>
     <nav class="zy-footer__col" aria-label="${s.tools}"><h2>${s.tools}</h2><ul>${tools}</ul></nav>
     <nav class="zy-footer__col" aria-label="${s.site}"><h2>${s.site}</h2><ul><li><a href="${l.home}">${s.home}</a></li><li><a href="${l.blog}">${s.blog}</a></li><li><a href="${l.about}">${s.about}</a></li><li><a href="${l.faq}">${s.faq}</a></li></ul></nav>
-    <nav class="zy-footer__col" aria-label="${s.legal}"><h2>${s.legal}</h2><ul><li><a href="/privacy/">${s.privacy}</a></li><li><a href="/terms/">${s.terms}</a></li><li><a href="/disclaimer/">${s.disclaimer}</a></li><li><a href="${l.contact}">${s.contact}</a></li><li><button class="zy-footer__button" type="button" data-zy-consent>${s.consent}</button></li></ul></nav>
+    <nav class="zy-footer__col" aria-label="${s.legal}"><h2>${s.legal}</h2><ul><li><a href="${l.privacy}">${s.privacy}</a></li><li><a href="${l.terms}">${s.terms}</a></li><li><a href="${l.disclaimer}">${s.disclaimer}</a></li><li><a href="${l.contact}">${s.contact}</a></li><li><button class="zy-footer__button" type="button" data-zy-consent>${s.consent}</button></li></ul></nav>
   </div>
   <div class="zy-footer__bottom"><span>© ${escape(year)} Zlatko Yankov · zyankov.eu</span><span>${s.local}</span></div>
 </footer>`
