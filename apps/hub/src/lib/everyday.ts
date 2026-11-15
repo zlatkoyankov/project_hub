@@ -423,8 +423,8 @@ export const LEGAL_INTEREST_RATES: readonly LegalInterestRate[] = [
   half(2024, false, 3.79, 'ОЛП'),
   // ОЛП 3.63% in July 2024: BNB interest rate statistics press releases for July 2024 and July 2025.
   half(2024, true, 3.63, 'ОЛП'),
-  // ОЛП 2.95% in January 2025: FFBH, "BNB lowered the base interest rate to 2.82%" (from 1 February 2025;
-  // the January 2025 value was 2.95%).
+  // ОЛП 2.95% from 1 January 2025: BNB press release of 31 December 2024, "основен лихвен процент (проста годишна
+  // лихва) в размер на 2.95 на сто" (bnb.bg/AboutUs/PressOffice/POPressReleases/POPRDate/PR_20241231_BIR_BG).
   half(2025, false, 2.95, 'ОЛП'),
   // ОЛП 1.91% in July 2025: BNB interest rate statistics press release for July 2025 (202507_s_irs_press_a1_bg.pdf).
   half(2025, true, 1.91, 'ОЛП'),
