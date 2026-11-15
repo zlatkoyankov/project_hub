@@ -37,7 +37,7 @@ With 8 × 16 in concrete blocks the same wall needs 139 × 1.125 = 157 blocks, o
 
 The mortar fills the bed joints (the horizontal ones) and the head joints (between units in a course) through the depth of the wall. For modular brick with 3/8 in joints that is about 0.055 cu ft per sq ft of wall, roughly 8 cu ft per 1,000 bricks. That is close to the figure the Brick Industry Association gives.
 
-Bag charts are more generous: an 80 lb bag of premixed mortar makes about 0.6 to 0.7 cu ft but is usually quoted as laying 35 to 40 bricks. The difference is mortar lost while working, droppings and fuller joints. Treat the joint volume as the minimum and buy extra bags, especially if you are new to bricklaying.
+Bag charts are more generous: an 80 lb bag of premixed mortar makes about 0.6 to 0.7 cu ft but is quoted as laying up to about 37 bricks (QUIKRETE Mason Mix). The difference is mortar lost while working, droppings and fuller joints. Treat the joint volume as the minimum and buy extra bags, especially if you are new to bricklaying.
 
 ## Blocks without vertical joints
 

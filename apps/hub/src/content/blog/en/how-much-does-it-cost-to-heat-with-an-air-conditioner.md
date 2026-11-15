@@ -36,7 +36,7 @@ The calculator's air conditioner preset is 1,000 W for 8 hours. It is based on a
 | Space heater, 1,500 W, 8 h, per day | 12 kWh | $2.26 |
 | Space heater, 30 days | 360 kWh | $67.79 |
 
-Now compare the heat. In the best case of three units of heat per unit of electricity, 8 kWh of electricity gives 24 kWh of heat. Making the same 24 kWh with a resistance heater costs 24 × $0.1883 = **$4.52 a day**, three times as much. In a colder spell, when the ratio drops to 2, the heat pump delivers 16 kWh from the same 8 kWh and the heater would cost $3.01 for that heat: still a third less electricity. The ratios 2 and 3 are illustrations, not measurements of any particular unit.
+Now compare the heat. In the best case of three units of heat per unit of electricity, 8 kWh of electricity gives 24 kWh of heat. Making the same 24 kWh with a resistance heater costs 24 × $0.1883 = **$4.52 a day**, three times as much. In a colder spell, when the ratio drops to 2, the heat pump delivers 16 kWh from the same 8 kWh and the heater would cost $3.01 for that heat: still half the electricity. The ratios 2 and 3 are illustrations, not measurements of any particular unit.
 
 ## Ways to spend less
 

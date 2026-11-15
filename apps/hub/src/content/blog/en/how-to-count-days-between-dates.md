@@ -23,9 +23,9 @@ Example: 11 November to 25 December 2027 is **44 days**. Counting both days it i
 
 ## Weekdays only
 
-Count the Mondays to Fridays in the span. 1 January to 31 December 2027 has **260 weekdays** (the 31st not counted).
+Count the Mondays to Fridays in the span. 1 January to 31 December 2027 has **260 weekdays** (the 31st not counted; the whole calendar year has 261).
 
-Public holidays come out on top of that. In 2027 US federal offices have [12 days off](/us-federal-holidays-2027/), which leaves 249 federal working days. England and Wales have [8 bank holidays](/uk-bank-holidays-2027/), which leaves 253.
+Public holidays come out on top of that. In 2027 US federal offices have [12 days off](/us-federal-holidays-2027/), which leaves 249 federal working days out of the year's 261 weekdays. England and Wales have [8 bank holidays](/uk-bank-holidays-2027/), which leaves 253.
 
 ## A date 30, 60 or 90 days later
 
