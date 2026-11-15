@@ -1,5 +1,5 @@
 ---
-title: 'How much self-leveling compound or screed do I need?'
+title: 'How much self-leveling compound or screed?'
 description: 'Work out bags of floor leveler, screed or plaster from the area, the average thickness and the consumption on the bag, with worked examples.'
 date: 2026-11-05
 lang: en

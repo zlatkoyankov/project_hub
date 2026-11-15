@@ -11,7 +11,10 @@ import { AUTHOR, getPosts, isoFromBgDate, ogKey, postPath } from '../lib/site'
 import { postsForTool } from '../lib/related-posts'
 import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, FENCE_PANELS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
-import { LEGAL_INTEREST_RATES } from '../lib/everyday'
+import { LEGAL_INTEREST_RATES, daysBetween, percent } from '../lib/everyday'
+import { AIRCON_SIZES, estimateAircon } from '../lib/materials'
+import { daysOff } from '../lib/holidays'
+import { workdaysBetween } from '../lib/workdays'
 import '../styles/tool.css'
 
 type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'fuel' | 'interest'
@@ -92,8 +95,8 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-protsenti/',
       en: '/percentage-calculator/',
       tool: 'percent-calculator',
-      title: 'Калкулатор за проценти: процент от число, отстъпка, промяна | Zyankov.eu',
-      description: 'Изчисли колко е X% от число, какъв процент е едно число от друго, с колко процента се е променила цена и цена след отстъпка или надценка.',
+      title: 'Калкулатор за проценти и отстъпка | Zyankov.eu',
+      description: 'Колко е X% от число, какъв процент е едно число от друго, с колко процента се е променила цена и каква е цената след отстъпка или надценка.',
       h1: 'Калкулатор за проценти',
       answer: '15% от 200 е 200 × 15 ÷ 100 = 30. От 80 на 100 е увеличение с 25%, защото разликата 20 се дели на старата стойност 80. Цена 50 € с 20% отстъпка е 40 €.',
       intro: 'Избери какво искаш да сметнеш и въведи двете числа. Резултатът се обновява веднага, без бутони.',
@@ -132,8 +135,8 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     page: {
       path: '/bg/kalkulator-dds/',
       tool: 'vat-calculator',
-      title: 'Калкулатор за ДДС: начисли или извади 20% ДДС | Zyankov.eu',
-      description: 'Начисли ДДС върху сума без ДДС или извади ДДС от крайна цена, със ставка 20% или 9% по ЗДДС. Цена без ДДС, ДДС и общо.',
+      title: 'Калкулатор за ДДС: начисли или извади 20% | Zyankov.eu',
+      description: 'Начисли ДДС върху сума без ДДС или извади ДДС от крайна цена със ставка 20% или 9% по ЗДДС. Показва цената без ДДС, ДДС и общата сума.',
       h1: 'Калкулатор за ДДС',
       intro: 'Въведи сумата и избери дали е без ДДС или вече с ДДС. Калкулаторът показва цената без ДДС, самия данък и крайната цена.',
       answer: 'при ставка 20% сумата без ДДС се умножава по 1,20, а крайната цена се дели на 1,20. Така 100 € без ДДС стават 120 € с ДДС. От 250 € с ДДС цената без данъка е 208,33 €, а ДДС е 41,67 € — една шеста от крайната цена, не 20%.',
@@ -171,11 +174,11 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     page: {
       path: '/bg/leva-v-evro/',
       tool: 'euro-converter',
-      title: 'Лева в евро и евро в лева по фиксирания курс 1,95583 | Zyankov.eu',
-      description: 'Превърни лева в евро или евро в лева по официалния фиксиран курс 1,95583 лв. за 1 евро. Точно до стотинката, за стари цени, заплати и договори.',
+      title: 'Лева в евро: 1 евро = 1,95583 лв. | Zyankov.eu',
+      description: 'Превърни лева в евро и евро в лева по официалния фиксиран курс: 1 евро = 1,95583 лв. Точно до цент, за стари цени, заплати и договори.',
       h1: 'Лева в евро и обратно',
       answer: 'курсът е фиксиран: 1 € = 1,95583 лв. Левовете се делят на 1,95583, а еврото се умножава по него. Така 100 лв. са 51,13 € (51,12919 € без закръгляне), а 100 € са 195,58 лв.',
-      intro: 'От 1 януари 2026 г. официалната валута е еврото, а старите суми в лева се превалутират по фиксиран курс. Въведи сумата и избери посоката.',
+      intro: 'Фиксираният курс е 1 евро = 1,95583 лв. (определен от Съвета на ЕС на 8 юли 2025 г., вж. ЕЦБ и регламента в източниците по-долу). От 1 януари 2026 г. официалната валута е еврото, а старите суми в лева се превалутират по този курс. Въведи сумата и избери посоката.',
       big: '€',
       bigOne: '€',
       resultTitle: 'РАВНО НА',
@@ -210,8 +213,8 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-dati/',
       en: '/date-calculator/',
       tool: 'date-calculator',
-      title: 'Калкулатор за дати и работни дни: дни между две дати | Zyankov.eu',
-      description: 'Колко дни и колко работни дни (без официалните празници в България) има между две дати, коя дата е след N дни или след N работни дни. За срокове и отпуски.',
+      title: 'Калкулатор за дати и работни дни | Zyankov.eu',
+      description: 'Колко дни и колко работни (делнични) дни без официалните празници в България има между две дати. Коя дата е след N дни или N работни дни.',
       h1: 'Калкулатор за дати',
       answer: 'от 1 януари до 31 декември 2027 г. има 364 дни (крайният ден не се брои), от тях 260 делнични и 248 работни, защото 12 празника се падат в делничен ден. 90 дни след 1 март 2027 г. е 30 май, а 10 работни дни след 28 април 2027 г. е 18 май.',
       intro: 'Сметни колко дни остават до дата или колко са минали, или коя дата е след 30, 60 или 90 дни. Полезно за срокове по договори, отпуски и плащания.',
@@ -289,7 +292,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     page: {
       path: '/bg/kalkulator-zaplata/',
       tool: 'salary-calculator',
-      title: 'Калкулатор за заплата 2026: от бруто към нето и обратно | Zyankov.eu',
+      title: 'Калкулатор за заплата 2026: бруто към нето | Zyankov.eu',
       description: 'Сметни нетната заплата от брутната (и обратно) по трудов договор: осигуровки 13,78%, данък 10%, разход за работодателя. Ставки от 1 август 2026 г.',
       h1: 'Калкулатор за заплата: бруто и нето',
       intro: 'Въведи брутната заплата, за да видиш колко ще получиш на ръка, или нетната, за да видиш каква брутна заплата ѝ отговаря. Показва и всички осигуровки и колко струва заплатата на работодателя.',
@@ -333,7 +336,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     page: {
       path: '/bg/kalkulator-ograda/',
       tool: 'fence-calculator',
-      title: 'Калкулатор за ограда: пана, колове, мрежа и бетон | Zyankov.eu',
+      title: 'Калкулатор за ограда: пана, колове и бетон | Zyankov.eu',
       description: 'Колко оградни пана (3D) или ролки мрежа, колове, скоби и бетон за коловете трябват за ограда с дадена дължина. По данните на производителите.',
       h1: 'Калкулатор за ограда',
       intro: 'Въведи дължината на оградата и избери пана или плетена мрежа. Виж колко пана или ролки, колове, скоби или обтегателна тел и бетон за коловете да купиш.',
@@ -426,7 +429,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     page: {
       path: '/bg/razhod-na-gorivo/',
       tool: 'fuel-cost-calculator',
-      title: 'Калкулатор за разход на гориво: колко струва пътуването | Zyankov.eu',
+      title: 'Калкулатор за разход на гориво и пътуване | Zyankov.eu',
       description: 'Колко литра и колко евро струва пътуването с кола: разход на 100 км, цена на бензин, дизел или газ, отиване и връщане и колко се пада на човек.',
       h1: 'Разход на гориво за пътуване',
       intro: 'Въведи разстоянието, разхода на колата и цената на горивото. Калкулаторът показва литрите, сумата за горивото и колко се пада на всеки в колата, с винетка и паркинг, ако искаш.',
@@ -526,8 +529,8 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     page: {
       path: '/bg/kalkulator-klimatik/',
       tool: 'aircon-calculator',
-      title: 'Колко BTU климатик ми трябва: калкулатор по квадратура | Zyankov.eu',
-      description: 'Изчисли каква мощност климатик трябва за стаята: 9000, 12000, 18000 или 24000 BTU, по квадратурата, височината, изолацията и дали ще отопляваш с него.',
+      title: 'Колко BTU климатик ми трябва: по квадратура | Zyankov.eu',
+      description: 'Каква мощност климатик ти трябва: 9000, 12000, 18000 или 24000 BTU според квадратурата, височината и изолацията. С таблица BTU по квадратура.',
       h1: 'Колко BTU климатик ми трябва?',
       answer: 'за стая 20 м² с височина 2,6 м, само с нова дограма, в София трябват около 7 500 BTU, или 2,2 kW. Най-близкият стандартен климатик над това е 9 000 BTU (2,6 kW номинално).',
       intro: 'Въведи размера на стаята, колко е изолирана и дали ще отопляваш с климатика или само ще охлаждаш. Калкулаторът смята нужната мощност и предлага стандартен размер.',
@@ -568,7 +571,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-darva/',
       tool: 'firewood-calculator',
       title: 'Колко дърва или пелети за зимата: калкулатор | Zyankov.eu',
-      description: 'Изчисли колко пространствени кубика дърва или колко тона пелети трябват за отоплителния сезон, по квадратурата, изолацията и вида дърва. С плътни и насипни кубици.',
+      description: 'Колко пространствени кубика дърва или тона пелети трябват за сезона, по квадратурата, изолацията и вида дърва. С плътни и насипни кубици.',
       h1: 'Колко дърва ми трябват за зимата?',
       answer: 'къща 80 м² само с нова дограма в София иска около 11 200 kWh топлина за сезона. С буковите дърва и печка със 70% ефективност това са около 8,4 пространствени кубика (5,9 плътни), около 547 € при 65 € за кубик.',
       intro: 'Въведи жилището и избери дърва или пелети. Калкулаторът смята кубиците за целия сезон: пространствени, плътни и насипни, или тоновете и торбите пелети.',
@@ -620,7 +623,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     page: {
       path: '/bg/razhod-za-otoplenie/',
       tool: 'heating-cost-calculator',
-      title: 'Разход за отопление: дърва, пелети, климатик или ток | Zyankov.eu',
+      title: 'Разход за отопление: дърва, пелети, ток | Zyankov.eu',
       description: 'Сравни колко струва зимата с дърва, пелети, климатик, ток, газ или парно за твоето жилище. По квадратурата, изолацията и района, с твоите цени.',
       h1: 'Кое отопление е най-евтино за мен?',
       answer: 'апартамент 90 м² на среден етаж в София, само с нова дограма, иска около 8 820 kWh топлина за сезона. С климатик (термопомпа) това са 2 756 kWh ток, около 358 € при 0,13 €/kWh. С дърва са около 443 €, с пелети около 883 €, а с ток директно около 1 147 €.',
@@ -671,7 +674,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-boya/',
       en: '/calculators/paint-calculator/',
       tool: 'paint-calculator',
-      title: 'Калкулатор за боя: колко литра и кофи за стаята | Zyankov.eu',
+      title: 'Калкулатор за боя: литри и кофи за стая | Zyankov.eu',
       description: 'Изчисли колко литра латекс или боя трябват за стените и тавана, по слоеве и разход, и кои кофи да купиш с най-малко остатък. С грунда.',
       h1: 'Колко боя ми трябва?',
       answer: 'стая 4 × 3,5 м с височина 2,6 м има 39 м² стени, без вратата и прозореца 35,4 м². Два слоя боя при 10 м² на литър са 7,1 л: най-малко остатък дават кофа от 5 л и кофа от 2,5 л. Грундът за един слой е около 5,1 л.',
@@ -716,8 +719,8 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-plochki/',
       en: '/calculators/tile-calculator/',
       tool: 'tile-calculator',
-      title: 'Калкулатор за плочки: брой, кашони и м² за под и баня | Zyankov.eu',
-      description: 'Изчисли колко плочки, теракот или фаянс трябват за пода или стените на банята, с фугата и фирата, и колко цели кашона да купиш.',
+      title: 'Калкулатор за плочки: брой и кашони | Zyankov.eu',
+      description: 'Колко плочки, теракот или фаянс за пода или стените на банята, с фугата и фирата, и колко цели кашона да купиш. Безплатно, без регистрация.',
       h1: 'Колко плочки ми трябват?',
       answer: 'под 3 × 2 м е 6 м², с 10% фира 6,6 м². С плочки 60 × 60 см и кашони по 1,44 м² трябват 5 кашона, или 7,2 м².',
       intro: 'Избери под или стени, въведи размерите и плочката. Калкулаторът добавя фира, брои плочките с фугата и закръгля до цели кашони, както се продават в магазина.',
@@ -761,8 +764,8 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-beton/',
       en: '/calculators/concrete-calculator/',
       tool: 'concrete-calculator',
-      title: 'Калкулатор за бетон: кубици, цимент, пясък и чакъл | Zyankov.eu',
-      description: 'Изчисли колко кубика бетон трябват за плоча, основа или колона и колко цимент, пясък, чакъл и вода, ако бъркаш сам. Или колко торби сух бетон.',
+      title: 'Калкулатор за бетон: кубици, цимент, пясък | Zyankov.eu',
+      description: 'Колко кубика бетон трябват за плоча, основа или колона и колко цимент, пясък, чакъл и вода, ако го бъркаш сам. Или колко торби сух бетон.',
       h1: 'Колко бетон ми трябва?',
       intro: 'Въведи размерите на плочата, основата или дупките за колони. Виж колко кубика да поръчаш от бетоновоз, колко торби сух бетон трябват или колко цимент, пясък и чакъл, ако бъркаш сам.',
       answer: 'дължина × ширина × дебелина в метри дава кубиците, после се добавят 5–10% фира. Плоча 5 × 4 м с дебелина 10 см е 2 м³, с 5% фира 2,1 м³, а от бетоновоз се поръчват 2,5 м³, защото възлите обикновено продават през 0,5 м³. Ако бъркаш сам C16/20 по нашата средна рецепта, това са около 670 кг цимент (27 торби по 25 кг).',
@@ -809,8 +812,8 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       path: '/bg/kalkulator-chakal/',
       en: '/calculators/gravel-calculator/',
       tool: 'gravel-calculator',
-      title: 'Калкулатор за чакъл, пясък и баластра: кубици и тонове | Zyankov.eu',
-      description: 'Изчисли колко кубика и тона чакъл, пясък, баластра, тампон или пръст трябват за алея, площадка или основа. По размерите и дебелината на слоя.',
+      title: 'Калкулатор за чакъл, пясък и баластра | Zyankov.eu',
+      description: 'Колко кубика и тона чакъл, пясък, баластра, тампон или пръст трябват за алея, площадка или основа, по размерите и дебелината на слоя.',
       h1: 'Колко чакъл ми трябва?',
       answer: 'пътека 10 × 1,2 м с 8 см чакъл е 0,96 м³, а с 10% за уплътняване и фира 1,06 м³. При около 1,6 т/м³ това са около 1,69 т чакъл.',
       intro: 'Въведи размерите на алеята или площадката, дебелината на слоя и материала. Калкулаторът смята кубиците и тоновете, а доставчиците обикновено продават на тон.',
@@ -859,7 +862,7 @@ const masonryPage = {
   path: '/bg/kalkulator-tuhli/',
   en: '/calculators/brick-block-calculator/',
   tool: 'brick-block-calculator',
-  title: 'Калкулатор за тухли и блокчета: брой и разтвор | Zyankov.eu',
+  title: 'Калкулатор за тухли и блокчета | Zyankov.eu',
   description: 'Изчисли колко тухли, керамични блокове или газобетон трябват за стена и колко разтвор и торби да купиш. С фугите, по размерите на стената.',
   h1: 'Колко тухли ми трябват?',
   answer: 'стена 10 × 2,8 м без 4 м² врати и прозорци е 24 м². С плътни тухли 25 × 12 × 6,5 см в стена 12 см са 51,3 тухли на м², или 1 293 тухли с 5% фира, и около 504 л разтвор (32 торби по 16 л).',
@@ -888,8 +891,8 @@ const insulationPage = {
   path: '/bg/kalkulator-izolatsiya/',
   en: '/calculators/insulation-board-calculator/',
   tool: 'insulation-board-calculator',
-  title: 'Калкулатор за топлоизолация: стиропор, лепило, мрежа и дюбели | Zyankov.eu',
-  description: 'Изчисли колко плочи EPS, XPS или минерална вата трябват за фасадата и колко лепило, шпакловка, мрежа и дюбели да купиш. В м² и м³.',
+  title: 'Калкулатор за стиропор и топлоизолация | Zyankov.eu',
+  description: 'Колко плочи EPS, XPS или минерална вата за фасадата и колко лепило, шпакловка, мрежа и дюбели да купиш. Сметка в м² и м³, с източници.',
   h1: 'Колко стиропор и лепило ми трябват?',
   answer: '85 м² стени (100 м² без 15 м² отвори) с плочи EPS 1 × 0,5 м и 5% фира са 179 плочи, или 8,95 м³ при 10 см дебелина. За цялата топлоизолационна система трябват още около 425 кг лепило, 340 кг шпакловка, 94 м² мрежа и 510 дюбела.',
   intro: 'Въведи площта на стените, извади вратите и прозорците и избери плочата и дебелината. По желание добави лепилото, шпакловката, мрежата и дюбелите за топлоизолационна система.',
@@ -916,7 +919,7 @@ const screedPage = {
   path: '/bg/zamazka-i-mazilka/',
   en: '/calculators/screed-plaster-calculator/',
   tool: 'screed-plaster-calculator',
-  title: 'Замазка и мазилка: разходна норма и колко торби | Zyankov.eu',
+  title: 'Калкулатор за замазка и мазилка: колко торби | Zyankov.eu',
   description: 'Разходна норма на саморазливна и циментова замазка и гипсова мазилка (кг/м² на мм) и колко торби трябват по площ и дебелина, по техническите листове.',
   h1: 'Колко замазка или мазилка ми трябва?',
   answer: 'Разходната норма на саморазливната замазка е около 1,5–1,6 кг/м² за всеки милиметър дебелина, на циментовата замазка около 2 кг/м² на мм, а на гипсовата мазилка около 1 кг/м² на мм. 10 м² саморазливна замазка с дебелина 5 мм при 1,6 кг/м² на мм са 80 кг суха смес, тоест 4 торби по 25 кг.',
@@ -944,7 +947,7 @@ const wallpaperPage = {
   path: '/bg/kalkulator-tapeti/',
   en: '/calculators/wallpaper-calculator/',
   tool: 'wallpaper-calculator',
-  title: 'Калкулатор за тапети: колко ролки ми трябват | Zyankov.eu',
+  title: 'Калкулатор за тапети: колко ролки | Zyankov.eu',
   description: 'Изчисли колко ролки тапет трябват за стаята по размерите, височината, ролката и раппорта на десена. Брои цели ивици, както го прави майсторът.',
   h1: 'Колко ролки тапет ми трябват?',
   answer: 'в стая 4 × 3,5 м (периметър 15 м) с височина 2,6 м ивицата е 2,7 м с подрязването. От ролка 10,05 м излизат 3 ивици, а трябват 27 ивици по 53 см, тоест 9 ролки, плюс една резервна от същата партида.',
@@ -971,7 +974,7 @@ const adhesivePage = {
       path: '/bg/lepilo-i-fuga/',
       en: '/calculators/tile-adhesive-grout-calculator/',
       tool: 'tile-adhesive-grout-calculator',
-      title: 'Калкулатор за лепило и фуга за плочки: колко торби | Zyankov.eu',
+      title: 'Калкулатор за лепило и фуга за плочки | Zyankov.eu',
       description: 'Изчисли колко лепило и фугираща смес трябват за плочките по площ, размер на плочката, фуга и зъб на маламашката. В кг, торби и евро.',
       h1: 'Колко лепило и фуга ми трябват?',
       answer: 'за 12 м² плочки 60 × 60 см с 10% фира (13,2 м²) и маламашка с 12 мм зъби трябват около 63,4 кг лепило, тоест 3 торби по 25 кг. При фуга 3 мм фугиращата смес е около 2,1 кг.',
@@ -1000,8 +1003,8 @@ const page: Page = config ? config.page : masonry ? masonryPage : insulation ? i
       path: '/bg/kalkulator-laminat/',
       en: '/calculators/laminate-flooring-calculator/',
       tool: 'laminate-flooring-calculator',
-      title: 'Калкулатор за ламинат: колко кутии и первази ми трябват | Zyankov.eu',
-      description: 'Изчисли колко кутии ламинат или винил трябват за стаята, с фира, первази, ъгли, капачки и прагове. В метри и евро, безплатно.',
+      title: 'Калкулатор за ламинат: кутии и первази | Zyankov.eu',
+      description: 'Колко кутии ламинат или винил трябват за стаята, с фира, первази, ъгли, капачки и прагове. Сметка в метри и евро, безплатно и без регистрация.',
       h1: 'Колко ламинат ми трябва?',
       intro: 'Въведи размерите на стаята и колко м² има в една кутия. Калкулаторът добавя фира, закръгля до цели кутии и брои первазите, ъглите и праговете.',
       answer: 'площта на пода плюс 10% фира, делено на квадратурата в една кутия и закръглено нагоре. Стая 5 × 4 м е 20 м², с фирата 22 м². При кутии по 2,22 м² трябват 10 кутии, тоест 22,2 м² ламинат.',
@@ -1027,8 +1030,8 @@ const page: Page = config ? config.page : masonry ? masonryPage : insulation ? i
       path: '/bg/kalkulator-gipsokarton/',
       en: '/calculators/drywall-calculator/',
       tool: 'drywall-calculator',
-      title: 'Калкулатор за гипсокартон: колко плоскости ми трябват | Zyankov.eu',
-      description: 'Изчисли плоскостите гипсокартон за стените и тавана, CW и UW профилите, винтовете, лентата и шпакловката за фугите. В метри и евро.',
+      title: 'Калкулатор за гипсокартон: колко плоскости | Zyankov.eu',
+      description: 'Колко плоскости гипсокартон за стените и тавана, колко CW и UW профили, винтове, лента и шпакловка за фугите. В метри и евро.',
       h1: 'Колко гипсокартон ми трябва?',
       answer: 'стените на стая 4 × 3,5 м с височина 2,6 м са 39 м², без 1,8 м² отвори 37,2 м², а с 10% фира 40,92 м². С плоскости 1,2 × 2,5 м (3 м²) това са 14 плоскости, плюс около 558 винта, 38 м лента и 18,6 кг шпакловка за фугите.',
       intro: 'Въведи размерите на стаята, височината на стените и отворите. Виж колко цели плоскости трябват за стените и тавана, и колко профили, винтове, лента и шпакловка да купиш.',
@@ -1138,6 +1141,42 @@ const extra = config || adhesive || wallpaper || screed || masonry ? null : insu
   ? { name: 'trim', legend: 'Первази и лайсни', label: 'Первази', on: 'Включи первази и лайсни', off: 'Само ламинат' }
   : { name: 'supplies', legend: 'Профили и консумативи', label: 'Консумативи', on: 'Включи профили, винтове, лента и шпакловка', off: 'Само плоскости' }
 
+// Static blocks under the calculators, computed at build time with the same functions the calculator uses.
+const fmtNumber = (value: number) => value.toLocaleString('bg-BG', { maximumFractionDigits: 2 })
+const quickPercent = kind === 'percent'
+  ? [
+      { question: 'Колко е 15% от 200?', answer: `15% от 200 е 200 × 15 ÷ 100 = ${fmtNumber(percent('of', 15, 200)!.value)}.` },
+      { question: 'Колко процента е 45 от 180?', answer: `45 ÷ 180 × 100 = ${fmtNumber(percent('share', 45, 180)!.value)}%, тоест 45 е една четвърт от 180.` },
+      { question: 'Как се смята отстъпка?', answer: `Цена 50 € с 20% отстъпка е 50 × (1 − 20 ÷ 100) = ${fmtNumber(percent('add', -20, 50)!.value)} €. Отстъпката е ${fmtNumber(-percent('add', -20, 50)!.extra!)} €.` },
+    ]
+  : []
+// Working days: the example is the Easter week of 2027, where the holidays fall on weekdays.
+const WORKDAYS_FROM = '2027-04-26'
+const WORKDAYS_TO = '2027-05-10'
+const workdaysExample = kind === 'dates'
+  ? (() => {
+      const span = daysBetween(WORKDAYS_FROM, WORKDAYS_TO)!
+      const work = workdaysBetween(WORKDAYS_FROM, WORKDAYS_TO, 'bg')!
+      const weekdayHolidays = daysOff(2027).filter((day) => day.date >= WORKDAYS_FROM && day.date < WORKDAYS_TO && ![0, 6].includes(new Date(`${day.date}T12:00:00Z`).getUTCDay()))
+      return { days: span.days, weekdays: span.weekdays, workdays: work.workdays, holidays: work.holidays, names: weekdayHolidays.map((day) => `${new Date(`${day.date}T12:00:00Z`).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', timeZone: 'UTC' })} (${day.name})`) }
+    })()
+  : null
+// BTU by area: the largest whole number of m² for which the calculator still picks that size or a smaller one
+// (ceiling 2.6 m, average winter like Sofia, heating and cooling, not under the roof).
+const airconAreas = kind === 'aircon'
+  ? AIRCON_SIZES.map((size) => ({
+      btu: size.btu,
+      kw: size.kw,
+      areas: [0, 1, 2].map((insulation) => {
+        let best = 0
+        for (let area = 1; area <= 150; area += 0.5) {
+          const estimate = estimateAircon({ area, height: 2.6, insulation, climate: 1, use: 'both', sunny: false, topFloor: false })
+          if (estimate?.size && estimate.size.btu <= size.btu) best = area
+        }
+        return Math.floor(best)
+      }),
+    }))
+  : []
 const posts = postsForTool(kind, await getPosts('bg'))
 const jsonLd = {
   '@type': 'WebApplication',
@@ -1295,6 +1334,37 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           <div class="tool-schedule__wrap"><table><thead><tr><th>Период</th><th>Референтен процент</th><th>Надбавка</th><th>Законна лихва</th></tr></thead><tbody>
             {LEGAL_INTEREST_RATES.map((rate) => (
               <tr><td>{rate.from.split('-').reverse().join('.')} – {rate.to.split('-').reverse().join('.')}</td><td>{rate.referenceName === 'ОЛП' ? 'ОЛП на БНБ' : 'ЕЦБ, основни операции'} {rate.reference.toFixed(2).replace('.', ',')}%</td><td>+{rate.margin}</td><td>{rate.rate.toFixed(2).replace('.', ',')}%</td></tr>
+            ))}
+          </tbody></table></div>
+        </section>
+      )}
+
+      {kind === 'percent' && !embed && (
+        <section class="tool-schedule" aria-labelledby="quick-title">
+          <h2 id="quick-title">Колко процента? Трите най-чести въпроса</h2>
+          <p>Кратки отговори с формулата на калкулатора по-горе.</p>
+          <dl class="tool-quick">
+            {quickPercent.map((item) => <div><dt>{item.question}</dt><dd>{item.answer}</dd></div>)}
+          </dl>
+        </section>
+      )}
+
+      {kind === 'dates' && !embed && workdaysExample && (
+        <section class="tool-schedule" aria-labelledby="workdays-title">
+          <h2 id="workdays-title">Работни (делнични) дни между две дати</h2>
+          <p>Калкулаторът брои делничните дни от понеделник до петък, като началният ден се брои, а крайният не. От тях вади официалните почивни дни в България, ако се падат в делничен ден. Събота и неделя не са работни дни.</p>
+          <p>Пример: от {new Date(`${WORKDAYS_FROM}T12:00:00Z`).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })} до {new Date(`${WORKDAYS_TO}T12:00:00Z`).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })} има {workdaysExample.days} дни, от тях {workdaysExample.weekdays} делнични и {workdaysExample.workdays} работни, защото {workdaysExample.holidays} от делничните са почивни: {workdaysExample.names.join(', ')}.</p>
+          <p>Всички почивни дни по месеци и дългите уикенди са на страницата <a href="/bg/pochivni-dni-2027/">Почивни дни 2027</a>.</p>
+        </section>
+      )}
+
+      {kind === 'aircon' && !embed && (
+        <section class="tool-schedule tool-schedule--rates" aria-labelledby="btu-area-title">
+          <h2 id="btu-area-title">BTU по квадратура: за колко м² стига 12000 BTU и другите размери</h2>
+          <p>Климатик 12000 BTU (около 3,5 kW) стига за стая до {airconAreas[1].areas[1]} м² с нова дограма, до {airconAreas[1].areas[0]} м² в стара сграда без изолация и до {airconAreas[1].areas[2]} м² при изолирана фасада. Таблицата е по формулата на калкулатора: таван 2,6 м, район със средна зима (като София), климатик за отопление и охлаждане, не на последен етаж. W/м² е наша оценка, виж „Как се изчислява“ по-долу.</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th>Климатик</th>{[0, 1, 2].map((index) => <th>{HOME_INSULATION[index].label}</th>)}</tr></thead><tbody>
+            {airconAreas.map((row) => (
+              <tr><td>{row.btu.toLocaleString('bg-BG')} BTU ({row.kw.toLocaleString('bg-BG')} kW)</td>{row.areas.map((area) => <td>до {area} м²</td>)}</tr>
             ))}
           </tbody></table></div>
         </section>

@@ -1,5 +1,5 @@
 ---
-title: 'How much concrete do I need for a slab? Worked examples'
+title: 'How much concrete do I need for a slab?'
 description: 'Calculate concrete for a slab in cubic yards, cubic metres and bags, with worked examples for a 10×10 patio, a metric slab and round footings.'
 date: 2026-11-04
 lang: en

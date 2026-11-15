@@ -1,6 +1,6 @@
 ---
-title: 'How to count days between two dates (and why you get an off-by-one)'
-description: 'Counting days between dates, inclusive or not, weekdays only, 30/60/90 days from a date, leap years, and how deadlines are counted, with worked 2027 examples.'
+title: 'How to count days between two dates'
+description: 'Counting days between dates, inclusive or not, weekdays only, 30/60/90 days from a date, leap years and how deadlines are counted, with 2027 examples.'
 date: 2026-11-11
 updated: 2026-11-12
 lang: en

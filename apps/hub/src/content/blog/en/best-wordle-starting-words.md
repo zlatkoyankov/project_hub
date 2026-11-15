@@ -1,5 +1,5 @@
 ---
-title: 'The best Wordle starting words, tested on 2,315 answers'
+title: 'Best Wordle starting words, tested on 2,315 answers'
 description: 'We scored about 4,000 five-letter words as Wordle openers. RAISE, SLATE and CRANE come out on top; AUDIO and ADIEU do surprisingly badly. Here is why.'
 date: 2026-11-04
 lang: en

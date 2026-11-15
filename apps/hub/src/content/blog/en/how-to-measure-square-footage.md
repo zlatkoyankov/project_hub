@@ -1,5 +1,5 @@
 ---
-title: 'How to measure square footage of a room (even an L-shaped one)'
+title: 'How to measure square footage of a room'
 description: 'Measure floor area for flooring, paint or heating: rectangles, L-shaped rooms, triangles, circles and bay windows, plus converting between ft² and m².'
 date: 2026-11-04
 lang: en

@@ -41,7 +41,7 @@ const src = (...items: [string, string][]) => items.map(([label, href]) => ({ la
 export const CALCULATORS: CalculatorInfo[] = [
   {
     slug: 'gravel-calculator', bg: '/bg/kalkulator-chakal/', title: 'Gravel Calculator', seoTitle: 'Gravel Calculator: Cubic Yards and Tons', shortTitle: 'Gravel', category: 'Landscaping',
-    description: 'Estimate gravel volume, weight, and material cost for a driveway, path, or garden bed.',
+    description: 'Estimate gravel volume in cubic yards, weight in tons and material cost for a driveway, path or garden bed, with compaction and your own density.',
     answer: 'Multiply length × width × depth and divide by 27 to get cubic yards. A 20 × 10 ft area 3 in deep is 50 cu ft, or 1.85 cu yd; with 10% extra for compaction that is 2.04 cu yd. At 2,700 lb per cubic yard that weighs about 2.75 tons.',
     intro: 'Plan a gravel delivery with a practical estimate of volume and weight. Enter your project dimensions and adjust the example density to match your supplier’s material.',
     sources: src(['Aggregate Markets: loose density of gravel, sand and crushed stone, about 1.35 tons per cubic yard', 'https://aggregatemarkets.com/en/calculators']), kind: 'gravel', icon: 'gravel', keywords: ['stone', 'driveway', 'aggregate', 'rock', 'tons'],
@@ -55,7 +55,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   },
   {
     slug: 'paint-calculator', bg: '/bg/kalkulator-boya/', title: 'Paint Calculator', seoTitle: 'Paint Calculator: How Many Gallons Do I Need?', shortTitle: 'Paint', category: 'Painting',
-    description: 'Estimate paint coverage and the number of gallons needed for your walls.',
+    description: 'Estimate gallons of paint for a room: wall area minus doors and windows, number of coats and the coverage on the label. With a worked example.',
     intro: 'Estimate paint for rectangular walls, subtract doors and windows, and plan for multiple coats. Check the label for the coverage of your exact paint.',
     answer: 'Net wall area × coats ÷ the coverage on the label, rounded up to whole gallons. A 12 × 10 ft room with 8 ft walls has 352 sq ft of wall; minus 32 sq ft for a door and a window, that is 320 sq ft. Two coats at 350 sq ft per gallon need 1.83 gallons, so buy 2.',
     sources: src(['Sherwin-Williams: a gallon covers about 350 to 400 sq ft', 'https://www.sherwin-williams.com/en-us/color/color-tools/paint-calculator']), kind: 'paint', icon: 'paint', keywords: ['walls', 'gallons', 'coverage', 'painting', 'coats'],
@@ -68,7 +68,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   },
   {
     slug: 'tile-calculator', bg: '/bg/kalkulator-plochki/', title: 'Tile Calculator', seoTitle: 'Tile Calculator: How Many Tiles and Boxes?', shortTitle: 'Tile', category: 'Flooring & Tile',
-    description: 'Calculate approximate tile quantity and boxes for a rectangular floor or wall.',
+    description: 'Estimate how many tiles and boxes a rectangular floor or wall needs, with the grout joint and a waste allowance for your layout. Worked example.',
     answer: 'Divide the floor area by the area one tile covers with its grout joint, add waste and round up to whole boxes. A 10 × 12 ft room is 120 sq ft; 12 × 12 in tiles with 1/8 in joints cover about 1.02 sq ft each, so with 10% waste you need 130 tiles, or 13 boxes of 10.',
     intro: 'Estimate tiles for a simple rectangular layout, including a configurable waste allowance. Complex patterns and irregular spaces require additional planning.',
     sources: src(['Tiles UK: 10% waste for a straight layout, 15% diagonal, up to 20% herringbone', 'https://tiles.uk.com/how-many-tiles-do-i-need/'], ['Buildmat: 10% straight or brick layout, 15% diagonal or herringbone', 'https://www.buildmat.com.au/blogs/help-centre/how-to-calculate-how-many-tiles-you-need']), kind: 'tile', icon: 'tile', keywords: ['floor', 'bathroom', 'boxes', 'ceramic', 'backsplash'],
@@ -81,7 +81,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   },
   {
     slug: 'concrete-calculator', bg: '/bg/kalkulator-beton/', title: 'Concrete Calculator', seoTitle: 'Concrete Calculator: Cubic Yards for a Slab', shortTitle: 'Concrete', category: 'Concrete & Masonry',
-    description: 'Estimate concrete volume for a slab and optionally calculate material cost.',
+    description: 'Estimate concrete for a slab in cubic yards from length, width and thickness, add a waste allowance and optionally the cost. With a worked example.',
     answer: 'Length × width × thickness in feet, divided by 27, gives cubic yards. A 10 × 10 ft slab 4 in thick is 33.3 cu ft, or 1.23 cu yd; with 10% extra, order about 1.36 cu yd.',
     intro: 'Estimate the volume of concrete for a rectangular slab. The result is a planning estimate, not a structural design or placement specification.',
     sources: src(['QUIKRETE Concrete Mix 80 lb: about 0.6 cu ft per bag', 'https://www.pacesupply.com/Product/MORCONCRETE80']), kind: 'concrete', icon: 'concrete', keywords: ['slab', 'cement', 'patio', 'cubic yards', 'foundation'],
@@ -93,8 +93,8 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'square-footage-calculator', title: 'Square Footage Calculator', seoTitle: 'Square Footage Calculator: Room Area in sq ft & m²', shortTitle: 'Square footage', category: 'General Construction',
-    description: 'Add multiple rectangular rooms or spaces to find their combined square footage.',
+    slug: 'square-footage-calculator', title: 'Square Footage Calculator', seoTitle: 'Square Footage Calculator: sq ft and m²', shortTitle: 'Square footage', category: 'General Construction',
+    description: 'Add rectangular rooms or spaces one by one to find their combined square footage, in feet or inches, with the total in square metres too.',
     answer: 'Multiply length × width for each rectangle and add them up. Rooms of 12 × 10 ft and 14 × 11 ft are 120 + 154 = 274 sq ft, or about 25.46 m². One square meter is 10.764 sq ft, so a 4 × 3.5 m room is 14 m², about 150.7 sq ft.',
     intro: 'Add rectangular areas one at a time to total a home, room, or project footprint. Choose feet or inches for each measurement.',
     kind: 'area', icon: 'area', keywords: ['room', 'square feet', 'floor area', 'measurement', 'square meters'],
@@ -119,8 +119,8 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'laminate-flooring-calculator', bg: '/bg/kalkulator-laminat/', title: 'Laminate Flooring Calculator', seoTitle: 'Laminate Flooring Calculator: How Many Boxes?', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
-    description: 'Work out how many boxes of laminate or vinyl plank flooring you need for a room, with waste and cost.',
+    slug: 'laminate-flooring-calculator', bg: '/bg/kalkulator-laminat/', title: 'Laminate Flooring Calculator', seoTitle: 'Laminate Flooring Calculator: Boxes Needed', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
+    description: 'Work out how many boxes of laminate or vinyl plank flooring a room needs: floor area, waste allowance for cuts and the coverage printed on the box.',
     answer: 'Floor area plus about 10% for cuts, divided by the coverage printed on the box, rounded up. A 14 × 12 ft room is 168 sq ft; with 10% waste that is 184.8 sq ft, so with 20 sq ft boxes you need 10 boxes.',
     intro: 'Enter the room size and the coverage printed on the box. The estimate adds a waste allowance for cuts and rounds up to whole boxes.',
     sources: src(['EGGER: order about 10% extra laminate', 'https://www.egger.com/en/blog/how-much-laminate-flooring-do-i-need?country=GB'], ['Pergo installation guide: acclimatize planks for 48 hours', 'https://cdn2.pergo.com/-/media/imported%20assets/flooring/5/b/b/pginstallationlmpherringboneenpdf288141.ashx']), kind: 'flooring', icon: 'flooring', keywords: ['laminate', 'vinyl plank', 'LVP', 'floor', 'boxes', 'hardwood', 'underlayment'],
@@ -133,7 +133,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   },
   {
     slug: 'drywall-calculator', bg: '/bg/kalkulator-gipsokarton/', title: 'Drywall Calculator', seoTitle: 'Drywall Calculator: Sheets for Walls and Ceiling', shortTitle: 'Drywall', category: 'General Construction',
-    description: 'Estimate drywall sheets for the walls and ceiling of a room, minus doors and windows, with waste and cost.',
+    description: 'Estimate drywall sheets for the walls and ceiling of a room, minus doors and windows, with a waste allowance and an optional cost. Worked example.',
     answer: 'Room perimeter × wall height, minus doors and windows, plus waste, divided by the sheet area. A 12 × 10 ft room with 8 ft walls has 352 sq ft of wall; minus 21 sq ft of openings and with 10% waste that is 364.1 sq ft, or 12 sheets of 4 × 8 ft.',
     intro: 'Enter the room size and wall height, subtract doors and windows, and choose a sheet size. The estimate adds waste and rounds up to whole sheets.',
     sources: src(['Screw spacing per IRC R702.3.5 (8 in edges, 16 in field): about 1 screw per sq ft on walls', 'https://drywallcalcs.pages.dev/how-many-screws-per-sheet-of-drywall/'], ['USG Sheetrock joint tape: about 370 ft per 1,000 sq ft of panels', 'https://images.homedepot-static.com/catalog/pdfImages/7a/7a2ad9f3-62c7-45ef-b58e-869ccdbca0c6.pdf'], ['USG: about two 4.5-gallon pails of lightweight compound per 1,000 sq ft (about 10 gallons of all-purpose)', 'https://assemblies-tools.usg.com/content/usgcom/en/resource-center/faqs/1977.html'], ['Knauf Type A 12.5 mm: sheet sizes 1.2 × 2.0 to 3.0 m', 'https://knauf.com/bg-BG/p/produkt/gipskartoneni-ploskosti-tip-a-12-5-mm-10003_0102']), kind: 'drywall', icon: 'drywall', keywords: ['plasterboard', 'gypsum board', 'sheetrock', 'walls', 'ceiling', 'sheets'],
@@ -145,8 +145,8 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'tile-adhesive-grout-calculator', bg: '/bg/lepilo-i-fuga/', title: 'Tile Adhesive & Grout Calculator', seoTitle: 'Tile Adhesive & Grout Calculator: kg per m²', shortTitle: 'Tile adhesive & grout', category: 'Flooring & Tile',
-    description: 'Estimate bags of tile adhesive (thinset) and grout from the area, tile size, joint width and trowel notch.',
+    slug: 'tile-adhesive-grout-calculator', bg: '/bg/lepilo-i-fuga/', title: 'Tile Adhesive & Grout Calculator', seoTitle: 'Tile Adhesive and Grout Calculator', shortTitle: 'Tile adhesive & grout', category: 'Flooring & Tile',
+    description: 'Estimate bags of tile adhesive (thinset) and grout from the area, tile size, joint width and trowel notch, with kg per m² rates from datasheets.',
     answer: 'With a 10 mm (3/8 in) notched trowel, tile adhesive takes about 4.2 kg per m² (0.86 lb per sq ft); a 6 mm notch about 2.7 kg per m². Grout depends on the tile and the joint: 30 × 30 cm tiles 8 mm thick with 3 mm joints take about 0.26 kg per m². So 10 m² of 30 × 30 cm tile needs about 42 kg of adhesive (2 bags of 25 kg) and 2.6 kg of grout.',
     intro: 'Enter the area to tile, the tile size and thickness and the joint width. The estimate picks a trowel notch for the tile size, adds waste and rounds up to whole bags.',
     sources: src(['Kiesel Servoflex K-Plus SuperTec data sheet: about 1.0, 1.6 and 2.2 kg/m² by notch', 'https://mosafil.com/media/8d/e6/29/1721730157/datenblatt_servoflex-k-plus-supertec_en.pdf'], ['Kiesel Servoflex F data sheet (DE): grout about 0.5 kg/m² for 30 × 30 cm tiles', 'https://www.fliesengigant.de/out/media/datenblatt_servoflex-f_de(1).pdf'], ['Ceresit CM 11 PLUS data sheet: adhesive per trowel notch, 4 to 12 mm', 'https://datasheets.tdx.henkel.com/CERESIT-CM-11-PLUS-sk_SK.pdf'], ['SikaCeram Tile Grout data sheet: grout density about 1.6 kg/L and coverage formula', 'https://twn.sika.com/dam/dms/tw01/d/sikaceram_tile_groutf1t.pdf']), kind: 'adhesive', icon: 'tile', keywords: ['thinset', 'mortar', 'grout', 'tile adhesive', 'trowel', 'bags'],
@@ -160,7 +160,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   },
   {
     slug: 'wallpaper-calculator', bg: '/bg/kalkulator-tapeti/', title: 'Wallpaper Calculator', seoTitle: 'Wallpaper Calculator: How Many Rolls?', shortTitle: 'Wallpaper', category: 'Paint & Finishes',
-    description: 'Estimate rolls of wallpaper for a room from the wall size, roll size and pattern repeat, counted strip by strip.',
+    description: 'Estimate rolls of wallpaper for a room from the wall size, roll width and length and the pattern repeat, counted strip by strip, not by area.',
     answer: 'Count strips, not area. A 12 × 10 ft room has a 44 ft perimeter; with 20.5 in wide rolls that is 25 strips once the door and window are taken out. With 8 ft walls each strip is 8.33 ft including trim, so a 33 ft roll gives 3 strips: 9 rolls, plus a spare from the same batch.',
     intro: 'Enter the room size and wall height, doors and windows, and the size of one roll. The estimate counts the strips you can cut from each roll, allowing for the pattern repeat.',
     sources: src(['Morris & Co: 10 cm (4 in) trim allowance per drop', 'https://wmorrisandco.com/uk/wallpaper-quantity-calculator'], ['Etoffe: count wallpaper in drops, height + trim + pattern repeat', 'https://www.etoffe.com/en/content/16-calculate-the-number-of-rolls-of-wallpaper']), kind: 'wallpaper', icon: 'paint', keywords: ['wall covering', 'rolls', 'pattern repeat', 'drop', 'strips', 'feature wall'],
@@ -199,7 +199,7 @@ export const CALCULATORS: CalculatorInfo[] = [
   },
   {
     slug: 'brick-block-calculator', bg: '/bg/kalkulator-tuhli/', title: 'Brick & Block Calculator', seoTitle: 'Brick Calculator: How Many Bricks and Blocks?', shortTitle: 'Bricks & blocks', category: 'Concrete & Masonry',
-    description: 'Estimate bricks or blocks for a wall, and the mortar and mortar bags, from the wall size and the unit you build with.',
+    description: 'Estimate how many bricks or blocks a wall needs, plus the mortar and the mortar bags, from the wall size and the unit you build with. With sources.',
     answer: 'Divide the wall area by the face of one brick plus its mortar joint. Modular brick with 3/8 in joints is about 6.9 bricks per sq ft, so a 20 × 6 ft wall takes 823 bricks before waste. A 25 × 12 × 6.5 cm brick in a 12 cm wall is about 51 bricks per m².',
     intro: 'Enter the wall length and height, subtract doors and windows, and choose the brick or block. The estimate counts units per square foot with their joints and works out the mortar in the joints.',
     sources: src(['Travis Perkins brick guide: about 60 UK bricks per m² for a half-brick wall, 120 for one brick', 'https://www.travisperkins.co.uk/content/brick-calculator'], ['Designing Buildings: UK brick 215 × 102.5 × 65 mm, co-ordinating size 225 × 112.5 × 75 mm', 'https://www.designingbuildings.co.uk/wiki/Brick_sizes'], ['Travis Perkins: Ibstock 65 mm brick, pack of 500', 'https://www.travisperkins.co.uk/ibstock-chesterton-tradesman-heather-mixture-65mm-brick-pack-of-500/p/790777'], ['MKM: Ibstock 65 mm common brick, pack of 370', 'https://mkm.com/product/65mm-chailey-stock-common-brick-370-pack-b116140'], ['BIA Technical Note 10: modular brick about 6.75 per sq ft, mortar per 1,000 brick', 'https://gobrick.com/media/file/10-dimensioning-and-estimating-brick-masonry.pdf'], ['Titan America block guide: 1.125 block per sq ft for 8 × 16 in CMU', 'https://titanamerica.com/wp-content/uploads/2025/01/Titan-America-Block-Estimating-Guide.pdf'], ['QUIKRETE Mason Mix: an 80 lb bag lays up to 37 bricks or 13 blocks', 'https://www.Quikrete.com/PDFs/DATA_SHEET-Mason%20Mix%201136.pdf'], ['Wienerberger Porotherm 25: 375 × 250 × 238 mm, 11 per m² (data sheet)', 'https://www.masterhaus.bg/files/pdf-docs/11/03/01/1103010048-tuhla-poroterm-25-light-plus-375h250h238mm.pdf'], ['Ytong 625 × 250 mm: 6.4 per m², thin-bed joint (data sheet)', 'https://www.baubook.info/m/Daten/Infos/SI2142723510/AT87/ID147470/2023_Ytong_Planstein_gelb_PP2_050_250.pdf']), kind: 'masonry', icon: 'concrete', keywords: ['bricks', 'blocks', 'CMU', 'mortar', 'wall', 'masonry', 'Porotherm', 'aerated concrete'],
@@ -243,7 +243,7 @@ export const ARTICLES: Record<string, { href: string; title: string }> = {
   'drywall-calculator': { href: '/blog/how-many-drywall-sheets-do-i-need/', title: 'How many drywall sheets do I need?' },
   'tile-adhesive-grout-calculator': { href: '/blog/how-much-tile-adhesive-and-grout-do-i-need/', title: 'How much tile adhesive and grout do I need?' },
   'wallpaper-calculator': { href: '/blog/how-much-wallpaper-do-i-need/', title: 'How much wallpaper do I need?' },
-  'screed-plaster-calculator': { href: '/blog/how-much-self-leveling-compound-do-i-need/', title: 'How much self-leveling compound or screed do I need?' },
+  'screed-plaster-calculator': { href: '/blog/how-much-self-leveling-compound-do-i-need/', title: 'How much self-leveling compound or screed?' },
   'insulation-board-calculator': { href: '/blog/how-many-insulation-boards-do-i-need/', title: 'How many insulation boards do I need for a wall?' },
   'brick-block-calculator': { href: '/blog/how-many-bricks-do-i-need/', title: 'How many bricks or blocks do I need for a wall?' },
 };

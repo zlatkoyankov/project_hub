@@ -71,7 +71,7 @@ export const seoMetadata: Record<Language, { title: string; description: string;
     ],
   },
   bg: {
-    title: 'Помощник за думи: думи от букви на български | Letterwell',
+    title: 'Помощник за думи: думи от букви | Letterwell',
     description: 'Помощник за думи: намери български думи от зададени букви, по брой букви (например всички думи със 7 букви) и по позиция. Точки за Scrabble и Boggle.',
     structuredDescription: 'Българска търсачка за думи, която съставя думи от зададени букви и изчислява точки за Scrabble и Boggle.',
     features: [
@@ -112,7 +112,7 @@ export const crosswordSocialDescriptions: Record<Language, string> = {
 
 export const crosswordMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
   en: {
-    title: 'Crossword Solver & Helper: Word Finder by Pattern | Letterwell',
+    title: 'Crossword Solver: Word Finder by Pattern | Letterwell',
     description: 'Stuck on a crossword clue? Type the letters you know, a ? for each gap, and see every word that fits. Filter by letters to include or leave out.',
     structuredDescription: 'A crossword helper that lists every English word matching a pattern of known letters and gaps.',
     features: ['Crossword pattern search', 'Letters to include', 'Letters to leave out', 'Links to dictionary definitions'],
@@ -138,7 +138,7 @@ export const beeMetadata: Record<Language, { title: string; description: string;
     features: ['Spoiler-free hint grid', 'Two-letter starts', 'Pangram finder', 'Points total'],
   },
   bg: {
-    title: 'Помощник за Spelling Bee: подсказки, думи и панграми | Letterwell',
+    title: 'Помощник за Spelling Bee: подсказки и думи | Letterwell',
     description: 'Въведи централната буква и шестте около нея. Виж подсказки по първа буква и дължина, а после думите и панграмите, когато поискаш. На английски и български.',
     structuredDescription: 'Помощник за Spelling Bee, който показва думите от седем букви с централната буква, с подсказки без спойлери и панграми.',
     features: ['Таблица с подсказки', 'Първи две букви', 'Панграми', 'Точки'],
@@ -164,7 +164,7 @@ export const dailySocialDescriptions: Record<Language, string> = {
 
 export const dailyMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
   bg: {
-    title: 'Дума на деня: българска игра на думи от 5 букви | Letterwell',
+    title: 'Дума на деня: игра на думи от 5 букви | Letterwell',
     description: 'Познай думата на деня от 5 букви с 6 опита. Нова дума всеки ден в полунощ, подсказки без спойлери, режим „Неограничено“, статистика и серия.',
     structuredDescription: 'Ежедневна игра на думи на български: познай думата от пет букви с шест опита.',
     features: ['Нова дума всеки ден', 'Подсказки без спойлери', 'Режим „Неограничено“', 'Български фонетичен клавиатурен ред', 'Статистика и серия', 'Споделяне без спойлери'],
@@ -191,7 +191,7 @@ export const hintsMetadata: Record<Language, { title: string; description: strin
   },
   en: {
     title: 'Letterwell Daily hints: clues for today’s word | Letterwell',
-    description: 'Spoiler-free hints for today’s five-letter Letterwell Daily word, one at a time: vowels, a repeated letter, the first and last letter. Plus yesterday’s word.',
+    description: 'Spoiler-free hints for today’s five-letter Letterwell Daily word, one at a time: vowels, a repeated letter, first and last letter. Plus yesterday’s word.',
     structuredDescription: 'Spoiler-free hints for the Letterwell Daily five-letter word game.',
     features: ['Four hints, one at a time', 'The word only on request', 'Yesterday’s word with dictionary links', 'Tips to solve faster'],
   },
@@ -204,7 +204,7 @@ export const anagramSocialDescriptions: Record<Language, string> = {
 
 export const anagramMetadata: Record<Language, { title: string; description: string; structuredDescription: string; features: string[] }> = {
   bg: {
-    title: 'Анаграма на деня: подреди буквите и познай думата | Letterwell',
+    title: 'Анаграма на деня: подреди буквите | Letterwell',
     description: 'Безплатна игра на думи на български: всеки ден шест разбъркани букви и една дума. Подсказки по желание, серия и вчерашната дума с речник.',
     structuredDescription: 'Ежедневна игра с анаграми на български: подреди шест букви в дума.',
     features: ['Нова дума от 6 букви всеки ден', 'Три подсказки по желание', 'Серия и статистика', 'Вчерашната дума с речник'],

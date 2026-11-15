@@ -30,9 +30,11 @@ interface Props {
 }
 
 const { title: fullTitle, description, path, lang = 'en', alternates = {}, noAds = false, project = 'hub', ogType = 'website', jsonLd, rss, breadcrumbs = [] } = Astro.props
-// Search engines cut titles at about 70 characters, and they show the site name on their own. A long title drops the
-// " | Zyankov.eu" suffix instead of being cut in the middle of the words that matter.
-const title = fullTitle.length > 70 ? fullTitle.replace(/ \| Zyankov\.eu$/, '') : fullTitle
+// Search engines cut titles at about 60 characters (Cyrillic is wider, so about 55), and they show the site name on
+// their own. A title that would not fit drops the " | Zyankov.eu" suffix instead of being cut in the middle of the words
+// that matter. The words before the suffix must fit on their own.
+const titleLimit = lang === 'bg' ? 55 : 60
+const title = fullTitle.length > titleLimit ? fullTitle.replace(/ \| Zyankov\.eu$/, '') : fullTitle
 const url = absolute(path)
 const ogImage = absolute(`/og/${ogKey(path)}.png`)
 const alternateUrls = Object.fromEntries(Object.entries(alternates).map(([key, value]) => [key, absolute(value as string)]))
