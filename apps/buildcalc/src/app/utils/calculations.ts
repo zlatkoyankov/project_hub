@@ -181,6 +181,11 @@ export function calculatePaint(values: PaintInput): Estimate {
   };
 }
 
+// Sources for the tile defaults (page defaults live in pages/calculator.ts; list on the calculator page):
+// - waste 10% straight layout, 15% diagonal/herringbone: Tiles UK, Buildmat, CLE Tile. Artistic Tile gives 20% straight
+//   and 25-30% diagonal, so 10% is the common middle figure, not a ceiling: the user can raise it.
+// - grout 1/8 in: minimum average joint for rectified tile, ANSI A108.02 (quoted by the Ceramic Tile Foundation).
+// - tiles per box (10): our illustrative example only; the real count is printed on the box.
 export function calculateTile(values: TileInput): Estimate {
   positive(values.length, 'Room length');
   positive(values.width, 'Room width');
@@ -330,6 +335,14 @@ export function estimateTrim(length: number, width: number, doorways: number, do
   return { perimeter, baseboardLength, pieces, connectors, endCaps: 2 * Math.round(doorways) };
 }
 
+// Sources for the flooring defaults (list on the calculator page):
+// - waste 10%: EGGER (10%, 15% for beginners or patterned boards), Lowe's laminate instructions (+10% for cuts).
+//   Pergo's help centre says 5% is enough in a standard room, so 10% is the cautious end for a simple room.
+// - the expansion gap (8 mm minimum, 1 mm per metre of width: Pergo; 3/8 in: Lowe's) is NOT subtracted from the area:
+//   EGGER says it needs no allowance in the area calculation.
+// - 20 sq ft per box: our example; EGGER packs run from 1.39 to 2.54 m², so use the coverage printed on the box.
+// - baseboard piece 8 ft, doorway 3 ft, one connector per wall joint: our estimates (store and door dependent);
+//   the user can change them, and no standard sets them.
 export function calculateFlooring(values: FlooringInput): Estimate {
   positive(values.length, 'Room length');
   positive(values.width, 'Room width');
@@ -607,7 +620,12 @@ export interface WallpaperInput {
   rollUnit?: number;
 }
 
-/** Extra length per strip for trimming at the ceiling and the floor: about 4 in (10 cm). */
+/** Extra length per strip for trimming at the ceiling and the floor: about 4 in (10 cm).
+ *  Sources: Morris & Co (10 cm per drop), Screwfix (10 cm), Bricoflor (5 cm at the top and at the bottom).
+ *  Other wallpaper inputs: US rolls 20.5 or 27 in wide, double roll 27 or 33 ft (Wallpaper Boulevard); Euro roll
+ *  53 cm × 10.05 m (Bricoflor; Farrow & Ball sells 10 m rolls); the repeat is rounded up per strip (Screwfix, Etoffe);
+ *  the spare roll from the same batch is Sherwin-Williams and Farrow & Ball advice. The 21 sq ft default for doors and
+ *  windows is our own example. */
 export const WALLPAPER_TRIM_FT = 1 / 3;
 
 /** Wallpaper by strips: each strip is the wall height (rounded up to whole pattern repeats) plus trim;
