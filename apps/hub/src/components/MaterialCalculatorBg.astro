@@ -13,11 +13,12 @@ import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES
 import { TOOL_ICONS } from '../lib/tools'
 import { LEGAL_INTEREST_RATES, daysBetween, percent } from '../lib/everyday'
 import { AIRCON_SIZES, estimateAircon } from '../lib/materials'
+import { INGREDIENTS, KITCHEN_CHECKED, KITCHEN_SOURCES, KITCHEN_UNITS, UNIT_ORDER, convertKitchen, roundKitchen } from '../lib/kitchen'
 import { daysOff } from '../lib/holidays'
 import { workdaysBetween } from '../lib/workdays'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'fuel' | 'interest'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'fuel' | 'interest' | 'kitchen'
 
 interface Props {
   kind: Kind
@@ -88,6 +89,14 @@ interface Config {
   selects: Select[]
   fields: Field[]
 }
+
+// Kitchen measures: the example in the intro is computed with the same functions as the calculator.
+const kitchenFmt = (value: number) => value.toLocaleString('bg-BG', { maximumFractionDigits: 2 })
+const kitchenGrams = (amount: number, from: 'water-cup' | 'tea-cup' | 'tbsp') => {
+  const result = convertKitchen({ amount, from, to: 'g', ingredient: 'flour' })!
+  return { ml: kitchenFmt(roundKitchen('ml', result.ml)), g: kitchenFmt(roundKitchen('g', result.grams)) }
+}
+const kitchenExample = { cups: kitchenGrams(1.5, 'water-cup'), tea: kitchenGrams(1, 'tea-cup'), spoon: kitchenGrams(1, 'tbsp') }
 
 const CONFIGS: Partial<Record<Kind, Config>> = {
   percent: {
@@ -486,6 +495,52 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
       { name: 'priceLpg', label: 'Цена на газта', unit: '€/л', value: 0.641, step: 'any', show: 'fuelType:lpg', hint: 'Средна към 2.11.2026 г.' },
       { name: 'people', label: 'Хора в колата', unit: '', value: 2, step: '1' },
       { name: 'extra', label: 'Други разходи', unit: '€', value: 0, step: 'any', optional: true, hint: 'Винетка, тол такса, паркинг.' },
+    ],
+  },
+  kitchen: {
+    page: {
+      path: '/bg/kuhnenski-merki/',
+      tool: 'kitchen-measures',
+      title: 'Кухненски мерки: чаши, лъжици, мл и грамове | Zyankov.eu',
+      description: 'Колко грама е една чаша брашно, захар или ориз? Превърни чаени и водни чаши, лъжици, милилитри и грамове за 15 продукта, с формула и източници.',
+      h1: 'Кухненски мерки',
+      intro: 'Избери продукт, въведи колко имаш и в какво го мериш, и виж колко е в грамове, милилитри, чаши и лъжици. Резултатът се обновява веднага, без бутони.',
+      answer: `Обемът се превръща в грамове с плътността на продукта: грамове = мл × плътност. Мерките са чаена чаша 200 мл, водна чаша 250 мл, супена лъжица 15 мл и чаена лъжичка 5 мл. 1,5 водна чаша брашно са ${kitchenExample.cups.ml} мл и тежат около ${kitchenExample.cups.g} г. Една чаена чаша брашно е около ${kitchenExample.tea.g} г, а една супена лъжица е около ${kitchenExample.spoon.g} г.`,
+      big: 'грама',
+      bigOne: 'грам',
+      resultTitle: 'ТОВА Е',
+      caveat: 'Приблизителна сметка. Теглото на чаша зависи от продукта, от начина на загребване и трамбоване и от размера на твоята чаша. За тесто и сладкарски изделия претегляй на кухненска везна.',
+      formula: 'мл = брой × обем на мярката · грамове = мл × плътност (г/мл) · брой мерки = мл ÷ обем на мярката',
+      how: 'Всяка мярка има обем в милилитри: чаена чаша 200, водна чаша 250, супена лъжица 15, чаена лъжичка 5 (стандартът, който ползваме тук; реалните чаши и лъжици се различават малко). Продуктът има плътност в грамове на милилитър. Взехме я от публикувани тегла на американска чаша или супена лъжица, разделени на обема им (чаша 236,588 мл, лъжица 14,787 мл), а за водата, млякото и олиото директно от измерена плътност. Грамовете се получават като милилитри по плътност. Закръгляваме по наши правила: грамове и милилитри до цяло число от 10 нагоре и до една десета под 10, чаши и лъжици до две цифри след запетаята. Редът „на око“ е най-близката четвъртинка, например 1½.',
+      tips: [
+        'Брашното е най-капризно: чаша, загребана направо от торбата, тежи повече от пресята и леко изсипана. Затова сладкарските рецепти са в грамове.',
+        'Една и съща чаша дава различни грамове за различните продукти: чаена чаша (200 мл) захар е около 167 г, а брашно около 101 г.',
+        'Рецептите от САЩ ползват чаша от 236,6 мл. Тя е с около 18% по-голяма от чаена чаша (200 мл) и с около 5% по-малка от водна чаша (250 мл). Избери „US чаша“, за да не сгрешиш.',
+        'Лъжицата е изравнена (на ръба), не купчина. Купчината супена лъжица е повече от 15 мл и тегло от таблицата няма да излезе.',
+      ],
+      jsonName: 'Кухненски мерки: чаши, лъжици, мл и грамове',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: KITCHEN_CHECKED,
+      sources: [
+        ...Object.values(KITCHEN_SOURCES).map((source) => ({ label: source.label, href: source.href })),
+        { label: 'NIST Handbook 44 (2026), Appendix C: US чаша = 8 течни унции, US супена лъжица = ½ течна унция, галон = 231 куб. инча = 3 785,411784 мл', href: 'https://www.nist.gov/document/2026-nist-handbook-44-appendix-c' },
+        { label: 'NIST, Metric Kitchen: метрична лъжица 15 мл и лъжичка 5 мл', href: 'https://www.nist.gov/pml/owm/cooking-measurement-equivalencies' },
+        { label: 'presmetka.bg, кухненски мерки: чаена чаша 200 мл, водна чаша 250 мл, супена лъжица 15 мл, чаена лъжичка 5 мл', href: 'https://presmetka.bg/kuhnya/kuhnenski-merki/' },
+        { label: 'forlife.bg: чаена чаша 200 мл, супена лъжица 15 мл, чаена лъжичка 5 мл', href: 'https://www.forlife.bg/preobrazuvane-na-merni-edinici-v-kuhnqta' },
+        { label: 'Вкусни рецепти: чаена чаша 200 мл, супена лъжица 15 мл, чаена лъжичка 5 мл', href: 'https://vkusnirecepti.com/kuhnenski-merki-i-teglilki/' },
+        { label: 'Gotvach.bg, „Практични кухненски мерки“ (2016): чаена чаша с вместимост 190–200 мл', href: 'https://gotvach.bg/n-70485-%D0%9F%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D1%87%D0%BD%D0%B8_%D0%BA%D1%83%D1%85%D0%BD%D0%B5%D0%BD%D1%81%D0%BA%D0%B8_%D0%BC%D0%B5%D1%80%D0%BA%D0%B8' },
+      ],
+    },
+    formTitle: 'Какво мериш',
+    formHint: 'Мерките са чаена чаша 200 мл, водна чаша 250 мл, супена лъжица 15 мл и чаена лъжичка 5 мл. Грамовете са за избрания продукт.',
+    selects: [
+      { name: 'ingredient', label: 'Продукт', options: INGREDIENTS.map((item) => ({ value: item.id, label: item.label })) },
+      { name: 'from', label: 'Имам', options: UNIT_ORDER.map((unit) => ({ value: unit, label: KITCHEN_UNITS[unit].label, selected: unit === 'water-cup' })) },
+      { name: 'to', label: 'Искам да знам', options: UNIT_ORDER.map((unit) => ({ value: unit, label: KITCHEN_UNITS[unit].label, selected: unit === 'g' })) },
+    ],
+    fields: [
+      { name: 'amount', label: 'Количество', unit: '', value: 1.5, step: 'any', hint: 'Може и десетично, например 0,5 за половин чаша.' },
     ],
   },
   interest: {
@@ -1384,6 +1439,29 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         </section>
       )}
 
+      {kind === 'kitchen' && !embed && (
+        <section class="tool-schedule tool-schedule--rates" aria-labelledby="kitchen-table-title">
+          <h2 id="kitchen-table-title">Колко грама са чашата и лъжицата: таблица по продукти</h2>
+          <p>Теглото на една мярка е плътността на продукта по обема на мярката. Всяка плътност има източник: така е смятана и калкулаторът по-горе. Грамовете са закръглени по нашите правила (цяло число от 10 г нагоре, една десета под 10 г).</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th>Продукт</th><th>Опорна стойност от източника</th><th>г/мл</th><th>Чаена чаша 200 мл</th><th>Водна чаша 250 мл</th><th>Супена лъжица 15 мл</th><th>Чаена лъжичка 5 мл</th><th>Източник</th></tr></thead><tbody>
+            {INGREDIENTS.map((item) => (
+              <tr>
+                <td>{item.label}</td>
+                <td>{item.basis}</td>
+                <td>{item.density.toLocaleString('bg-BG', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</td>
+                {(['tea-cup', 'water-cup', 'tbsp', 'tsp'] as const).map((unit) => <td>{roundKitchen('g', item.density * KITCHEN_UNITS[unit].ml!).toLocaleString('bg-BG')} г</td>)}
+                <td><a href={KITCHEN_SOURCES[item.source].href} target="_blank" rel="noopener">{KITCHEN_SOURCES[item.source].short}</a></td>
+              </tr>
+            ))}
+          </tbody></table></div>
+          <h3>Бележки към продуктите</h3>
+          <ul>
+            {INGREDIENTS.filter((item) => item.note).map((item) => <li><strong>{item.label}.</strong> {item.note}</li>)}
+          </ul>
+          <p>Пример: 1,5 водна чаша брашно са 1,5 × 250 = 375 мл. Брашното е 120 г на американска чаша (236,588 мл), тоест 0,5072 г/мл, затова 375 × 0,5072 = {kitchenExample.cups.g} г. С чаена чаша от 200 мл същото количество е 1,5 × 200 × 0,5072 = 152 г.</p>
+        </section>
+      )}
+
       {kind === 'loan' && (
         <section class="tool-schedule" data-schedule hidden aria-labelledby="schedule-title">
           <h2 id="schedule-title">Погасителен план</h2>
@@ -1456,6 +1534,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
   import { addWorkdays, workdaysBetween } from '../lib/workdays'
   import { addDays, convertEuro, daysBetween, tripFuelCost, legalInterest, LEGAL_INTEREST_FIRST, LEGAL_INTEREST_LAST, loanPayment, loanSchedule, sickPay, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateFence, FENCE_PANELS as PANELS } from '../lib/materials'
+  import { KITCHEN_UNITS, UNIT_ORDER, convertKitchen, ingredientById, nearestQuarter, roundKitchen, type KitchenUnit } from '../lib/kitchen'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
@@ -1676,6 +1755,28 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         ])
         rows.push(['Дни забава', `${result.days}`], ['Главница', money(num('principal'))], ['Главница и лихва', money(result.total)])
         render(result.interest, rows)
+      } else if (kind === 'kitchen') {
+        const unitOf = (name: string) => (UNIT_ORDER.includes(field(name)?.value as KitchenUnit) ? (field(name)!.value as KitchenUnit) : 'g')
+        const from = unitOf('from')
+        const to = unitOf('to')
+        const ingredient = ingredientById(field('ingredient')?.value ?? '')
+        const result = convertKitchen({ amount: num('amount'), from, to, ingredient: ingredient?.id ?? '' })
+        if (!result || !ingredient) { unitOut.textContent = ''; return render(null, []) }
+        const shown = roundKitchen(to, result.value)
+        const isVolumeMeasure = (unit: KitchenUnit) => unit !== 'g' && unit !== 'ml'
+        const rows: [string, string, string?][] = [
+          ['Продукт', ingredient.label, ingredient.basis],
+          ['Обем', `${fmt(roundKitchen('ml', result.ml))} мл`, from === 'g' ? `${fmt(num('amount'))} г ÷ ${fmt(result.density, 3)} г/мл` : `${fmt(num('amount'))} × ${fmt(KITCHEN_UNITS[from].ml!, 1)} мл`],
+          ['Тегло', `${fmt(roundKitchen('g', result.grams))} г`, `${fmt(roundKitchen('ml', result.ml))} мл × ${fmt(result.density, 3)} г/мл`],
+        ]
+        for (const unit of UNIT_ORDER) {
+          if (unit === to || unit === 'g' || unit === 'ml') continue
+          const value = result.all[unit]
+          rows.push([KITCHEN_UNITS[unit].label, `${fmt(roundKitchen(unit, value))}`, `на око ≈ ${nearestQuarter(value)}`])
+        }
+        if (isVolumeMeasure(to)) rows.splice(1, 0, ['На око', nearestQuarter(result.value), 'най-близката четвъртинка'])
+        render(shown, rows)
+        unitOut.textContent = shown === 1 ? KITCHEN_UNITS[to].one : KITCHEN_UNITS[to].many
       } else if (kind === 'fuel') {
         const type = field('fuelType')?.value ?? 'petrol'
         const price = num(type === 'diesel' ? 'priceDiesel' : type === 'lpg' ? 'priceLpg' : 'pricePetrol')
