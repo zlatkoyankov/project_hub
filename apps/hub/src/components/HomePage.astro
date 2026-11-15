@@ -260,7 +260,7 @@ const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2
         <summary><h2 id="all-title">{t.all(toolCount)}</h2><span class="all-tools__toggle" aria-hidden="true"><span class="all-tools__hide">{t.hide}</span><span class="all-tools__show">{t.show}</span></span></summary>
         <div class="all-tools__grid">
           {topics.map((topic) => (
-            <div class="all-tools__group" data-tool-group>
+            <div class="all-tools__group" data-tool-group id={topic.door ? undefined : topic.id}>
               <h3><span class={`topic-dot topic-dot--${topic.colour}`} aria-hidden="true"></span>{topic.name}</h3>
               <ul>
                 {topic.tools.map((tool) => (
