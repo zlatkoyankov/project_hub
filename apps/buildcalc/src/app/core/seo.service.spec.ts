@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { SOURCES_CHECKED, SOURCES_CHECKED_ISO } from '../data/calculators';
+import { CALCULATORS, checkedIsoFor, formatChecked, SOURCES_CHECKED, SOURCES_CHECKED_ISO } from '../data/calculators';
 import { SeoService, SITE_BASE_URL } from './seo.service';
 
 function snapshot(segments: string[], data: Record<string, unknown>, title: string): ActivatedRouteSnapshot {
@@ -34,8 +34,15 @@ describe('SeoService', () => {
       author?: { name: string };
     }[];
     expect(json.map((item) => item['@type'])).toEqual(['WebApplication', 'FAQPage', 'BreadcrumbList']);
-    expect(json[0].dateModified).toBe(SOURCES_CHECKED_ISO);
+    expect(json[0].dateModified).toBe(checkedIsoFor(CALCULATORS.find((item) => item.slug === 'gravel-calculator')!));
     expect(json[0].author?.name).toBe('Zlatko Yankov');
+  });
+
+  it('uses a calculator\'s own checked date when it has one, and shows it in words', () => {
+    const gravel = CALCULATORS.find((item) => item.slug === 'gravel-calculator')!;
+    expect(checkedIsoFor({ ...gravel, checkedIso: undefined })).toBe(SOURCES_CHECKED_ISO);
+    expect(checkedIsoFor({ ...gravel, checkedIso: '2026-11-15' })).toBe('2026-11-15');
+    expect(formatChecked('2026-11-15')).toBe('15 November 2026');
   });
 
   it('shows the checked date in words', () => {

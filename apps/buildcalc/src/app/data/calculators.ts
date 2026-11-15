@@ -20,6 +20,8 @@ export interface CalculatorInfo {
   bg?: string;
   /** Where the default figures come from, shown under the calculation. */
   sources?: { label: string; href: string }[];
+  /** ISO date this calculator's formula and sources were last checked, when it differs from SOURCES_CHECKED_ISO. */
+  checkedIso?: string;
   /** The answer in two or three sentences with one worked example, shown under the intro. Search engines and AI
    *  assistants quote this paragraph, so every number in it must come from utils/calculations.ts (see the spec). */
   answer?: string;
@@ -27,13 +29,17 @@ export interface CalculatorInfo {
 
 /** Date the sources and figures were last checked (ISO). Used in dateModified. */
 export const SOURCES_CHECKED_ISO = '2026-11-12';
-/** The same date as shown on the page, e.g. "7 November 2026". */
-export const SOURCES_CHECKED = new Date(SOURCES_CHECKED_ISO).toLocaleDateString('en-GB', {
+/** An ISO date as shown on the page, e.g. "7 November 2026". */
+export const formatChecked = (iso: string): string => new Date(iso).toLocaleDateString('en-GB', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
   timeZone: 'UTC',
 });
+/** The same date as shown on the page, e.g. "7 November 2026". */
+export const SOURCES_CHECKED = formatChecked(SOURCES_CHECKED_ISO);
+/** When this calculator's sources were last checked (ISO): its own date, or the site-wide one. */
+export const checkedIsoFor = (calculator: CalculatorInfo): string => calculator.checkedIso ?? SOURCES_CHECKED_ISO;
 
 const src = (...items: [string, string][]) => items.map(([label, href]) => ({ label, href }));
 
@@ -44,7 +50,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     description: 'Estimate gravel volume in cubic yards, weight in tons and material cost for a driveway, path or garden bed, with compaction and your own density.',
     answer: 'Multiply length × width × depth and divide by 27 to get cubic yards. A 20 × 10 ft area 3 in deep is 50 cu ft, or 1.85 cu yd; with 10% extra for compaction that is 2.04 cu yd. At 2,700 lb per cubic yard that weighs about 2.75 tons.',
     intro: 'Plan a gravel delivery with a practical estimate of volume and weight. Enter your project dimensions and adjust the example density to match your supplier’s material.',
-    sources: src(['Aggregate Markets: loose density of gravel, sand and crushed stone, about 1.35 tons per cubic yard', 'https://aggregatemarkets.com/en/calculators']), kind: 'gravel', icon: 'gravel', keywords: ['stone', 'driveway', 'aggregate', 'rock', 'tons'],
+    sources: src(['Aggregate Markets: loose density of gravel, sand and crushed stone, about 1.35 tons per cubic yard', 'https://aggregatemarkets.com/en/calculators'], ['Designing Buildings: indicative loose bulk densities of 1.48 to 1.60 tonnes per cubic metre for crushed stone and pea gravel (1.6 t/m³ is about 2,700 lb per cubic yard; the page says these are not universal values)', 'https://www.designingbuildings.co.uk/wiki/Converting between weight and volume for bulk construction materials']), checkedIso: '2026-11-15', kind: 'gravel', icon: 'gravel', keywords: ['stone', 'driveway', 'aggregate', 'rock', 'tons'],
     example: 'A 20 ft × 10 ft area at 3 in deep holds about 1.85 cubic yards before waste.',
     formula: 'Length × width gives area. Area × depth in feet gives cubic feet; divide by 27 for cubic yards. Weight uses your entered density, and waste is added to volume.',
     faqs: [
@@ -58,7 +64,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     description: 'Estimate gallons of paint for a room: wall area minus doors and windows, number of coats and the coverage on the label. With a worked example.',
     intro: 'Estimate paint for rectangular walls, subtract doors and windows, and plan for multiple coats. Check the label for the coverage of your exact paint.',
     answer: 'Net wall area × coats ÷ the coverage on the label, rounded up to whole gallons. A 12 × 10 ft room with 8 ft walls has 352 sq ft of wall; minus 32 sq ft for a door and a window, that is 320 sq ft. Two coats at 350 sq ft per gallon need 1.83 gallons, so buy 2.',
-    sources: src(['Sherwin-Williams: a gallon covers about 350 to 400 sq ft', 'https://www.sherwin-williams.com/en-us/color/color-tools/paint-calculator']), kind: 'paint', icon: 'paint', keywords: ['walls', 'gallons', 'coverage', 'painting', 'coats'],
+    sources: src(['Sherwin-Williams: a gallon covers about 350 to 400 sq ft', 'https://www.sherwin-williams.com/en-us/color/color-tools/paint-calculator'], ['Valspar: many latex paints cover about 400 sq ft per gallon, depending on the surface and product (our default of 350 is the cautious end)', 'https://www.valspar.com/en/tips-resources/how-to/tips-for-success/get-the-best-paint-coverage']), checkedIso: '2026-11-15', kind: 'paint', icon: 'paint', keywords: ['walls', 'gallons', 'coverage', 'painting', 'coats'],
     example: 'A 12 ft × 8 ft wall is 96 square feet before subtracting openings.',
     formula: 'Net wall area × coats ÷ coverage per gallon = estimated gallons. Whole-gallon purchasing rounds that quantity up.',
     faqs: [
@@ -84,7 +90,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     description: 'Estimate concrete for a slab in cubic yards from length, width and thickness, add a waste allowance and optionally the cost. With a worked example.',
     answer: 'Length × width × thickness in feet, divided by 27, gives cubic yards. A 10 × 10 ft slab 4 in thick is 33.3 cu ft, or 1.23 cu yd; with 10% extra, order about 1.36 cu yd.',
     intro: 'Estimate the volume of concrete for a rectangular slab. The result is a planning estimate, not a structural design or placement specification.',
-    sources: src(['QUIKRETE Concrete Mix 80 lb: about 0.6 cu ft per bag', 'https://www.pacesupply.com/Product/MORCONCRETE80']), kind: 'concrete', icon: 'concrete', keywords: ['slab', 'cement', 'patio', 'cubic yards', 'foundation'],
+    sources: src(['QUIKRETE Concrete Mix 80 lb: about 0.6 cu ft per bag (retailer listing)', 'https://www.pacesupply.com/Product/MORCONCRETE80'], ['QUIKRETE Concrete Mix 1101 data sheet: an 80 lb bag yields approximately 0.60 cu ft, a 60 lb bag 0.45 cu ft, a 40 lb bag 0.30 cu ft', 'https://www.quikrete.com/pdfs/data_sheet-concrete%20mix%201101.pdf']), checkedIso: '2026-11-15', kind: 'concrete', icon: 'concrete', keywords: ['slab', 'cement', 'patio', 'cubic yards', 'foundation'],
     example: 'A 10 ft × 10 ft slab that is 4 in thick is about 1.23 cubic yards before waste.',
     formula: 'Length × width × thickness in feet gives cubic feet; divide by 27 to convert to cubic yards. Apply waste to the volume.',
     faqs: [
@@ -97,9 +103,12 @@ export const CALCULATORS: CalculatorInfo[] = [
     description: 'Add rectangular rooms or spaces one by one to find their combined square footage, in feet or inches, with the total in square metres too.',
     answer: 'Multiply length × width for each rectangle and add them up. Rooms of 12 × 10 ft and 14 × 11 ft are 120 + 154 = 274 sq ft, or about 25.46 m². One square meter is 10.764 sq ft, so a 4 × 3.5 m room is 14 m², about 150.7 sq ft.',
     intro: 'Add rectangular areas one at a time to total a home, room, or project footprint. Choose feet or inches for each measurement.',
-    kind: 'area', icon: 'area', keywords: ['room', 'square feet', 'floor area', 'measurement', 'square meters'],
+    sources: src(
+      ['NIST SP 811, Appendix B.9: 1 foot = 0.3048 m and 1 square foot = 0.09290304 m², both exact (boldface factors in the Length and Area tables)', 'https://www.nist.gov/node/777661'],
+      ['LibreTexts, Technical Mathematics: area of a rectangle (length × width), a triangle (½ × base × height) and a circle (π × r²)', 'https://math.libretexts.org/Bookshelves/Applied_Mathematics/Technical_Mathematics_(Chase)/01:_Modules/1.19:_Area_of_Polygons_and_Circles'],
+    ), checkedIso: '2026-11-15', kind: 'area', icon: 'area', keywords: ['room', 'square feet', 'floor area', 'measurement', 'square meters'],
     example: 'A 12 ft × 10 ft room is 120 square feet.',
-    formula: 'For each rectangle, multiply length by width. Convert inch measurements to feet first, then add each area.',
+    formula: 'For each rectangle, multiply length by width. Convert inch measurements to feet first, then add each area. Metric results use 1 ft = 0.3048 m exactly, so 1 m² = 10.7639 sq ft.',
     faqs: [
       { question: 'Can I combine several rooms?', answer: 'Yes. Add a separate row for each rectangular space; the total is the sum of all room areas.' },
       { question: 'Does this handle L-shaped rooms?', answer: 'Not directly. Divide an irregular room into non-overlapping rectangles and add each section as a separate area.' },
@@ -110,7 +119,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     description: 'Estimate mulch for garden beds and landscaping in cubic feet and cubic yards, with a waste allowance and an optional cost.',
     answer: 'Area × depth, divided by 27, gives cubic yards. A 10 × 10 ft bed 3 in deep is 25 cu ft, or 0.93 cu yd; with 10% extra that is about 1.02 cu yd.',
     intro: 'Estimate mulch in cubic feet and cubic yards from the bed dimensions and planned depth. Depth recommendations vary by material and use.',
-    sources: src(['Mississippi State University Extension: 2 to 3 inches of mulch for landscape beds', 'https://extension.msstate.edu/news/southern-gardening/2022/use-mulch-for-beauty-and-weed-temperature-control']), kind: 'mulch', icon: 'mulch', keywords: ['garden', 'landscape', 'cubic yards', 'bark', 'beds'],
+    sources: src(['Mississippi State University Extension: 2 to 3 inches of mulch for landscape beds', 'https://extension.msstate.edu/news/southern-gardening/2022/use-mulch-for-beauty-and-weed-temperature-control'], ['UF/IFAS Extension (Alachua County), Using Mulch Effectively: apply mulch 3 to 4 inches deep at the base of plants; its volume examples use 3 in', 'https://sfyl.ifas.ufl.edu/media/sfylifasufledu/alachua/images/pdf/Using-Mulch-Effectively.pdf']), checkedIso: '2026-11-15', kind: 'mulch', icon: 'mulch', keywords: ['garden', 'landscape', 'cubic yards', 'bark', 'beds'],
     example: 'A 10 ft × 10 ft bed at 3 in deep holds about 0.93 cubic yards before waste.',
     formula: 'Length × width gives area. Multiply by depth in feet for cubic feet, divide by 27 for cubic yards, then apply waste.',
     faqs: [

@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { CALCULATORS, SOURCES_CHECKED_ISO } from '../data/calculators';
+import { CALCULATORS, SOURCES_CHECKED_ISO, checkedIsoFor } from '../data/calculators';
 import { GUIDES } from '../data/guides';
 
 // Public origin plus the sub-path the app is deployed under.
@@ -87,7 +87,7 @@ export class SeoService {
         author: AUTHOR,
         publisher: AUTHOR,
         // When the formula, rates and sources were last checked (shown on the page).
-        dateModified: SOURCES_CHECKED_ISO,
+        dateModified: checkedIsoFor(calculator),
         ...(url && { url }),
       });
       data.push({

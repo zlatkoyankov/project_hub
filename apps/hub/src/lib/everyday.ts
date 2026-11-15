@@ -14,7 +14,9 @@ export interface PercentResult {
   extra?: number
 }
 
-/** of: a% of b · share: a is what % of b · change: % change from a to b · add: b plus/minus a%. */
+/** of: a% of b · share: a is what % of b · change: % change from a to b · add: b plus/minus a%.
+ *  Sources (checked 15 Nov 2026): mathsisfun.com/percentage.html and /numbers/percentage-change.html; Eurostat glossary
+ *  "Percentage change" ([(later ÷ earlier) − 1] × 100). The add mode is our own use of the same formula. */
 export function percent(mode: PercentMode, a: number, b: number): PercentResult | null {
   if (!Number.isFinite(a) || !Number.isFinite(b)) return null
   if (mode === 'of') return { value: (a / 100) * b }
@@ -59,6 +61,8 @@ export interface DateSpan {
   restDays: number
 }
 
+// Day counting is our own convention (the start day counts, the end day does not). Dates are written as ISO 8601 YYYY-MM-DD.
+// Official days off come from the Labour Code art. 154 (see lib/holidays.ts); US/UK calendars from lib/holidays-en.ts.
 /** Days from one date to another (the end date not counted, like "in 10 days"), and how many are Monday–Friday. */
 export function daysBetween(from: string, to: string): DateSpan | null {
   const start = parseDate(from)

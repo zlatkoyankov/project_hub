@@ -78,6 +78,8 @@ export interface MulchInput {
   metricPrice?: boolean;
 }
 
+// 1 ft = 0.3048 m exactly and 1 ft² = 0.09290304 m² exactly (NIST SP 811, Appendix B.9; checked 15 Nov 2026), so
+// 1 m = 1 / 0.3048 = 3.280839895 ft and 1 m² = 1 / 0.09290304 = 10.7639104 ft².
 const FEET_PER_UNIT = [1, 1 / 12, 3.280839895, 1 / 30.48, 1 / 304.8];
 const INCHES_PER_UNIT = [12, 1, 39.37007874, 1 / 2.54, 1 / 25.4];
 const SQUARE_FEET_PER_UNIT = [1, 1 / 144, 10.7639104, 1 / 929.0304];
