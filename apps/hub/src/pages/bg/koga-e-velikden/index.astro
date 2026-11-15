@@ -1,0 +1,221 @@
+---
+// "Кога е Великден": the Orthodox and the Western (Catholic) Easter for the next Easter year, the days around
+// the Orthodox one in Bulgaria and a ten-year table. Built from the build date; the script recounts the days
+// left from the visitor's own date.
+import PageLayout from '../../../layouts/PageLayout.astro'
+import RelatedTools from '../../../components/RelatedTools.astro'
+import { AUTHOR } from '../../../lib/site'
+import { daysBetweenDates, dayWord } from '../../../lib/countdown'
+import { easterDays, easterYear, easterYears, movedAfterEaster, upcomingEasterYear } from '../../../lib/easter'
+
+const CHECKED = '14 ноември 2026'
+const CHECKED_ISO = '2026-11-14'
+const TABLE_FROM = 2026
+const TABLE_TO = 2035
+const path = '/bg/koga-e-velikden/'
+const today = new Date().toISOString().slice(0, 10)
+const year = upcomingEasterYear(today)
+const easter = easterYear(year)
+const days = easterDays(year)
+const moved = movedAfterEaster(year)
+const rows = easterYears(TABLE_FROM, TABLE_TO)
+const same = rows.filter((row) => row.weeksApart === 0).map((row) => row.year)
+const gaps = [...new Set(rows.map((row) => row.weeksApart).filter(Boolean))].sort((a, b) => a - b)
+
+const show = (date: string, options: Intl.DateTimeFormatOptions) => new Date(`${date}T12:00:00Z`).toLocaleDateString('bg-BG', { ...options, timeZone: 'UTC' })
+const dayMonth = (date: string) => show(date, { day: 'numeric', month: 'long' })
+const weekday = (date: string) => show(date, { weekday: 'long' })
+const list = (items: (string | number)[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} и ${items.at(-1)}` : String(items[0] ?? ''))
+const weeksWord = (n: number) => (n === 0 ? 'същия ден' : n === 1 ? '1 седмица' : `${n} седмици`)
+const left = (date: string) => {
+  const n = daysBetweenDates(today, date)
+  return n < 0 ? `мина на ${dayMonth(date)}` : n === 0 ? 'днес е' : `след ${dayWord(n)}`
+}
+const official = days.filter((day) => day.official)
+const offText = `${official.map((day) => `${day.name.replace(/ \(.*\)$/, '').replace('Великден, втори ден', 'вторият ден на Великден')} (${dayMonth(day.date)})`).join(', ')}`
+const apart = easter.weeksApart === 0 ? 'Тази година двата празника са в един и същи ден.' : `Православният е ${weeksWord(easter.weeksApart)} след католическия.`
+
+const title = `Кога е Великден ${year}: православен и католически | Zyankov.eu`
+const description = `Православният Великден ${year} е на ${dayMonth(easter.orthodox)}, католическият на ${dayMonth(easter.western)}. Кои дни са почивни, датите за ${TABLE_FROM}–${TABLE_TO} г. и как се определят.`
+const faq = [
+  { q: `Кога е православният Великден ${year}?`, a: `Православният Великден през ${year} г. е на ${dayMonth(easter.orthodox)}, неделя. Велики петък е на ${dayMonth(days[1].date)}, а Цветница на ${dayMonth(days[0].date)}.` },
+  { q: `Кога е католическият Великден ${year}?`, a: `Католическият (западният) Великден през ${year} г. е на ${dayMonth(easter.western)}, неделя. ${apart}` },
+  { q: `Кои дни са почивни за Великден ${year}?`, a: `Официални празници по чл. 154 от Кодекса на труда са ${offText}.${moved.length ? ` Почивен е и ${weekday(moved[0].date)}, ${dayMonth(moved[0].date)}, вместо празник, паднал се в почивните дни.` : ''}` },
+  { q: 'Кога православният и католическият Великден съвпадат?', a: same.length ? `В периода ${TABLE_FROM}–${TABLE_TO} г. двата празника са на една дата през ${list(same)} г. През останалите години в този период православният е с ${gaps.join(' или ')} седмици по-късно.` : `В периода ${TABLE_FROM}–${TABLE_TO} г. двата празника не съвпадат.` },
+  { q: 'Почивен ли е католическият Великден в България?', a: 'Не. В списъка на официалните празници по чл. 154 от Кодекса на труда са само дните около православния Великден: Велики петък, Велика събота, неделя и понеделник.' },
+]
+const jsonLd = [
+  { '@type': 'WebPage', inLanguage: 'bg', dateModified: CHECKED_ISO, author: AUTHOR },
+  { '@type': 'FAQPage', mainEntity: faq.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })) },
+]
+---
+
+<PageLayout title={title} description={description} path={path} lang="bg" jsonLd={jsonLd} breadcrumbs={[{ name: 'Начало', path: '/bg/' }, { name: 'Кога е Великден', path }]}>
+  <nav class="crumbs" aria-label="Навигация"><a href="/bg/">Начало</a> / <a href="/bg/#everyday">Всекидневни сметки</a></nav>
+  <p class="eyebrow">Всекидневни сметки · календар</p>
+  <h1>Кога е Великден {year}</h1>
+  <p class="updated">Проверено на {CHECKED}</p>
+
+  <div class="answers">
+    <div class="answer" data-easter={easter.orthodox} data-kind="orthodox">
+      <h2>Православен Великден {year}</h2>
+      <p class="answer-date">{dayMonth(easter.orthodox)}</p>
+      <p class="answer-day">{weekday(easter.orthodox)}, {show(easter.orthodox, { day: 'numeric', month: 'numeric', year: 'numeric' })}</p>
+      <p class="answer-left" data-left>{left(easter.orthodox)}</p>
+    </div>
+    <div class="answer" data-easter={easter.western} data-kind="western">
+      <h2>Католически Великден {year}</h2>
+      <p class="answer-date">{dayMonth(easter.western)}</p>
+      <p class="answer-day">{weekday(easter.western)}, {show(easter.western, { day: 'numeric', month: 'numeric', year: 'numeric' })}</p>
+      <p class="answer-left" data-left>{left(easter.western)}</p>
+    </div>
+  </div>
+  <p class="note" data-next hidden></p>
+  <p class="intro">
+    През {year} г. православният Великден е на <strong>{dayMonth(easter.orthodox)}</strong>, а католическият (западният) на <strong>{dayMonth(easter.western)}</strong>. {apart} В България почивни са {offText}.
+  </p>
+  <p class="actions">
+    <a class="button" href="/bg/kolko-dni-do/#velikden">Колко дни до Великден</a>
+    <a class="button button--ghost" href="/bg/pochivni-dni-2027/">Почивни дни 2027</a>
+  </p>
+
+  <section>
+    <h2>Дните около Великден {year} в България</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Дата</th><th>Ден</th><th>Почивен ли е</th></tr></thead>
+        <tbody>
+          {days.map((day) => (
+            <tr class:list={{ off: day.official }}>
+              <td>{dayMonth(day.date)}<small class="weekday">{weekday(day.date)}</small></td>
+              <td>{day.name}{day.also && <small class="weekday">същия ден е и {day.also}</small>}</td>
+              <td>{day.official ? 'Да, официален празник' : 'Не е официален празник (неделя)'}</td>
+            </tr>
+          ))}
+          {moved.map((day) => (
+            <tr class="off">
+              <td>{dayMonth(day.date)}<small class="weekday">{weekday(day.date)}</small></td>
+              <td>{day.name}</td>
+              <td>Да, по чл. 154, ал. 2</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      Официалните празници са по чл. 154, ал. 1 от Кодекса на труда: Велики петък, Велика събота и Великден, неделя и понеделник. Цветница е неделята една седмица преди Великден и не е в този списък. Правилото за почивен ден след празник, паднал се в събота или неделя (чл. 154, ал. 2), не важи за Великденските празници.
+      {moved.length > 0 && ` През ${year} г. обаче то важи за друг празник в същите дни, затова почивен е и ${weekday(moved[0].date)}, ${dayMonth(moved[0].date)}.`}{' '}
+      Всички почивни дни за годината са в <a href="/bg/pochivni-dni-2027/">Почивни дни 2027</a>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Великден по години: {TABLE_FROM}–{TABLE_TO}</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Година</th><th>Православен</th><th>Католически</th><th>Разлика</th></tr></thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr class:list={{ current: row.year === year }}>
+              <td>{row.year}</td>
+              <td>{dayMonth(row.orthodox)}</td>
+              <td>{dayMonth(row.western)}</td>
+              <td>{weeksWord(row.weeksApart)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Всички дати са по Григорианския календар (този, по който живеем) и са неделя. Таблицата е сметната от същите формули, които сайтът ползва за почивните дни, и е сверена с публикуваните дати в източниците по-долу.</p>
+  </section>
+
+  <section>
+    <h2>Как се определя датата на Великден</h2>
+    <p>Великден е в първата неделя след първото пълнолуние, което е на пролетното равноденствие или след него. Църквите не гледат истинското небе, а смятат по правило: равноденствието винаги се приема за 21 март, а пълнолунието се взима от таблици с 19-годишен цикъл на лунните фази. Ако това пълнолуние се падне в неделя, Великден е следващата неделя.</p>
+    <p>Разликата между двата празника идва от календара. Католическата и протестантските църкви смятат по Григорианския календар, а православните по Юлианския. През периода 1900–2099 г. Юлианският календар е с 13 дни назад, така че „21 март“ по него е 3 април по нашия календар. Затова двете дати често се разминават: по данни на Royal Museums Greenwich датите на източните църкви могат да са с една, четири или пет седмици по-късно.</p>
+    <p>
+      {same.length > 0 ? `В периода ${TABLE_FROM}–${TABLE_TO} г. двата празника съвпадат през ${list(same)} г.` : `В периода ${TABLE_FROM}–${TABLE_TO} г. двата празника не съвпадат.`}
+      {gaps.length > 0 && ` В останалите години от таблицата православният е с ${gaps.join(' или ')} седмици след католическия.`}
+    </p>
+    <h3>Как го смята сайтът</h3>
+    <ul>
+      <li><strong>Православен Великден:</strong> алгоритъмът на Жан Меус за Юлианския календар. Резултатът е юлианска дата, към която се добавят 13 дни, за да стане григорианска. Тази добавка е вярна за годините от 1900 до 2099.</li>
+      <li><strong>Католически Великден:</strong> т.нар. анонимен григориански алгоритъм (Меус/Джоунс/Бъчър), който дава датата направо по Григорианския календар.</li>
+      <li><strong>Дните около празника:</strong> Цветница е 7 дни преди Великден, Велики петък 2 дни преди, Велика събота 1 ден преди, а вторият ден е понеделникът след него.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Въпроси</h2>
+    {faq.map((item) => (<><h3>{item.q}</h3><p>{item.a}</p></>))}
+  </section>
+
+  <section class="sources">
+    <h2>Източници</h2>
+    <ul>
+      <li><a href="https://www.lex.bg/laws/ldoc/1594373121">Кодекс на труда, чл. 154: официалните празници (lex.bg)</a></li>
+      <li><a href="https://www.rmg.co.uk/discover/explore/when-easter">Royal Museums Greenwich: как се определя датата на Великден и датите на западния Великден</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/List_of_dates_for_Easter">Wikipedia: таблица с датите на западния и православния Великден по години</a></li>
+      <li><a href="https://trudipravo.bg/znanie-za-vas/ofitsialni-praznitsi-prez-2023-godina/">trudipravo.bg: официалните празници и Великденските дни (позовава се на чл. 154, ал. 1 КТ)</a></li>
+      <li><a href="https://www.calendardate.com/orthodox_easter_2027.htm">calendardate.com: православен Великден 2025–2030</a></li>
+      <li><a href="https://leancrew.com/all-this/2025/03/aligned-easters/">leancrew.com: годините, в които двата празника съвпадат (2001–2050)</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Date_of_Easter#Meeus's_Julian_algorithm">Wikipedia: алгоритъм на Меус за Юлианския календар</a> и <a href="https://en.wikipedia.org/wiki/Date_of_Easter#Anonymous_Gregorian_algorithm">анонимен григориански алгоритъм</a></li>
+    </ul>
+    <p class="note">Проверено на {CHECKED}. Датите за {TABLE_FROM}–{TABLE_TO} г. са сверени една по една с публикуваните таблици.</p>
+  </section>
+
+  <RelatedTools lang="bg" id="easter" />
+</PageLayout>
+
+<script>
+  import { daysBetweenDates, dayWord } from '../../../lib/countdown'
+  import { easterYear, upcomingEasterYear } from '../../../lib/easter'
+
+  // The page was built on the build date: recount the days left from the visitor's own date.
+  const pad = (n: number) => String(n).padStart(2, '0')
+  const now = new Date()
+  const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  const dayMonth = (date: string, year = false) => new Date(`${date}T12:00:00Z`).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: year ? 'numeric' : undefined, timeZone: 'UTC' })
+
+  let passed = true
+  for (const card of document.querySelectorAll<HTMLElement>('[data-easter]')) {
+    const date = card.dataset.easter!
+    const days = daysBetweenDates(today, date)
+    if (days >= 0) passed = false
+    card.querySelector('[data-left]')!.textContent = days < 0 ? `мина на ${dayMonth(date)}` : days === 0 ? 'днес е' : `след ${dayWord(days)}`
+  }
+  // Both dates are behind us and the site has not been rebuilt yet: point to the next Easter.
+  if (passed) {
+    const next = easterYear(upcomingEasterYear(today))
+    const note = document.querySelector<HTMLElement>('[data-next]')!
+    note.textContent = `Следващият православен Великден е на ${dayMonth(next.orthodox, true)}, а католическият на ${dayMonth(next.western, true)}`
+    note.hidden = false
+  }
+</script>
+
+<style>
+  .crumbs { margin: 0 0 18px; color: var(--text-muted); font-size: var(--text-sm); }
+  .answers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 0 0 18px; }
+  .answer { padding: 20px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+  .answer[data-kind='orthodox'] { border-color: var(--accent); background: var(--accent-soft); }
+  .answer h2 { margin: 0 0 8px; font-family: var(--font-body); font-size: var(--text-sm); font-weight: 700; letter-spacing: 0; color: var(--text); }
+  .answer-date { margin: 0; color: var(--text); font-family: var(--font-display); font-size: clamp(2.2rem, 7vw, 3rem); line-height: 1.1; }
+  .answer-day { margin: 6px 0 0; color: var(--text); font-size: var(--text-sm); }
+  .answer-left { margin: 10px 0 0; color: var(--text); font-weight: 700; }
+  .intro strong { color: var(--text); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 36px; }
+  .button { display: inline-block; padding: 11px 18px; border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent); font-weight: 700; text-decoration: none; }
+  .button--ghost { border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); }
+  section { margin: 0 0 40px; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: var(--text-base); }
+  th, td { padding: 10px 14px; border-top: 1px solid var(--border); color: var(--text); text-align: left; vertical-align: top; }
+  th { border-top: 0; background: var(--surface-soft); }
+  td:first-child { white-space: nowrap; }
+  td small { color: var(--text-muted); }
+  .weekday { display: block; font-weight: 400; }
+  tr.off td:last-child, tr.current td { font-weight: 700; }
+  tr.current td { background: var(--accent-soft); }
+  .note { color: var(--text-muted); font-size: var(--text-sm); }
+  h3 { margin: 22px 0 6px; font-size: var(--text-lg); }
+</style>
