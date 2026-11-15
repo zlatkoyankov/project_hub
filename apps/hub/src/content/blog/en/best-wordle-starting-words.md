@@ -7,7 +7,7 @@ tags: [words, word-games, wordle]
 tool: wordle-solver
 ---
 
-Everyone has a favourite first word in Wordle. Some people swear by AUDIO because it clears four vowels at once, and others use the same lucky word every morning. Rather than trust habit, we tested every candidate: about 4,000 everyday five-letter words, each tried as the opening guess against 2,315 possible answers.
+Everyone has a favourite first word in Wordle. Some people swear by AUDIO because it clears four vowels at once, and others use the same lucky word every morning. Rather than trust habit, we tested every candidate: 3,994 everyday five-letter words, each tried as the opening guess against 2,315 possible answers. This is our own analysis, not published research; the method and word lists are under [Sources](#sources).
 
 The short version: **RAISE, ARISE, IRATE, AROSE and LATER** leave the fewest answers after one guess, and **SLATE and CRANE** win slightly over whole games. The vowel-heavy favourites, AUDIO and ADIEU, are among the weakest common choices.
 
@@ -15,14 +15,14 @@ The short version: **RAISE, ARISE, IRATE, AROSE and LATER** leave the fewest ans
 
 Wordle gives you six guesses to find a five-letter word. After each guess, every letter turns green (right letter, right place), yellow (in the word, wrong place) or grey (not in the word). A good opener is one whose colours split the possible answers into as many small groups as possible, so that whatever you see, few words are left.
 
-For the test we needed a realistic pool of answers. The official answer list is not public in a form we can reuse, so we built our own:
+For the test we needed a realistic pool of answers. We did not use the official Wordle answer list, so we built our own from public word lists:
 
 - We took the five-letter words from Letterwell's English dictionary.
 - We kept the ones that appear in a large frequency list built from film and TV subtitles, which removes obscure words most people would never guess.
 - We removed plurals such as RATES and TALES, because Wordle rarely uses them as answers.
-- That left 2,315 everyday words, the same size as the original Wordle answer list.
+- We kept the 2,315 most frequent of the rest, to match the size of the original Wordle answer list.
 
-For each possible opener we calculated how many answers would remain **on average** after seeing its colours. Then, for the most popular openers, we played all 2,315 games to the end with the same follow-up strategy the [Wordle helper](/letterwell/wordle-solver/) uses.
+For each possible opener (all 3,994 words) we calculated how many answers would remain **on average** after seeing its colours. Then, for the most popular openers, we played all 2,315 games to the end with the same follow-up strategy the [Wordle helper](/letterwell/wordle-solver/) uses.
 
 ## The results after one guess
 
@@ -46,15 +46,15 @@ Starting with RAISE cuts 2,315 possible answers to about 63 on average. AUDIO le
 
 ## Why AUDIO and ADIEU disappoint
 
-Vowel-heavy openers feel efficient, but they spend letters on information you get anyway. Almost every five-letter word contains A, E or O. Finding out that the answer has an A and an O tells you less than you might think.
+Vowel-heavy openers feel efficient, but they spend letters on information you get anyway. About 85% of the words in our pool contain at least one of A, E or O. Finding out that the answer has an A and an O tells you less than you might think.
 
-Consonants are where answers differ. R, S, T, L and N appear in a large share of everyday words, and they sit in many different positions. A word like RAISE checks two of the most common vowels (A and E), one more vowel (I) and two of the most useful consonants (R and S). Each letter does real work.
+Consonants are where answers differ. In our pool R, S, T, L and N each appear in roughly a quarter to a third of the words, and they sit in many different positions. A word like RAISE checks two of the most common vowels (A and E), one more vowel (I) and two of the most useful consonants (R and S). Each letter does real work.
 
-There is also a position effect. Green tiles are worth much more than yellow ones, and an opener whose letters often land in their usual spots (S at the start, E at the end, R in second place) produces more greens.
+There is also a position effect. A green tile pins a letter to a place, so it narrows the list more than a yellow one, and an opener whose letters often land in their usual spots produces more greens. In our pool S is the most common first letter and E the most common last letter.
 
 ## Over a whole game the differences shrink
 
-We then played every one of the 2,315 games to the finish with five openers, always choosing the next guess that leaves the fewest answers on average:
+We then simulated every one of the 2,315 games to the finish with five openers, always choosing the next guess that leaves the fewest answers on average (this table comes from our earlier simulation and was not re-run for the sources check, so treat it as approximate):
 
 | Opener | Average guesses | Solved in 4 or fewer |
 | --- | --- | --- |
@@ -66,7 +66,7 @@ We then played every one of the 2,315 games to the finish with five openers, alw
 
 Every game was solved within six guesses whatever the opener. The best openers save you about a fifth of a guess per game compared with AUDIO. That sounds small, but over a year it is the difference between a lot of fours and a lot of threes.
 
-Interestingly, RAISE leads after one guess, but SLATE and CRANE edge it over complete games. Their letters combine better with the second guesses that follow. Any word from the top of the table is an excellent choice; the gap between them is a few hundredths of a guess.
+Interestingly, RAISE leads after one guess, but SLATE and CRANE edge it over complete games. A likely reason is that their letters combine better with the second guesses that follow, but we have not tested that. Any word from the top of the table is an excellent choice; the gap between them is a few hundredths of a guess.
 
 ## Practical advice
 
@@ -79,4 +79,13 @@ Interestingly, RAISE leads after one guess, but SLATE and CRANE edge it over com
 
 If you are stuck partway through, type your guesses into the [Wordle helper](/letterwell/wordle-solver/), tap the tiles to match your colours, and it lists every word that still fits, with the best next guess. It runs in your browser and works for Bulgarian Wordle too.
 
-*A note on the numbers: our answer pool is an approximation of the real one, built from common English words. Exact figures would shift slightly with the official list, but the ranking of strong and weak openers is robust.*
+*A note on the numbers: our answer pool is an approximation of the real one, built from common English words. Exact figures would shift with the official list, so read the table as a comparison between openers, not as a promise of how many answers you will have left. When we recomputed the one-guess averages on 15 November 2026 with a slightly different rule for removing plurals, RAISE stayed first, SLATE and CRANE stayed in the top 30 and AUDIO and ADIEU stayed far down the list, with the averages within a few answers of the table (for example RAISE 63.5 and AUDIO 174.2).*
+
+## Sources
+
+Checked 15 November 2026.
+
+- **Our own analysis.** The tables are our calculation, not published research. The score of an opener is the average number of answers left after its colours, which is the sum of (group size)² divided by the number of answers, where each group is a set of answers that give the same colours.
+- **Word list.** Five-letter words from Letterwell's English word list (MIT licence), ordered by frequency with [FrequencyWords by Hermit Dave](https://github.com/hermitdave/FrequencyWords), which is built from OpenSubtitles film and TV subtitles and licensed CC BY-SA 4.0. 3,994 five-letter words appear in it: all were tested as openers, and the 2,315 most frequent non-plurals were the answer pool. The list may include names and rare forms that Wordle never uses.
+- [Tom's Guide: what Wordle is and how it works](https://www.tomsguide.com/uk/news/what-is-wordle): five-letter word, six guesses, green, yellow and grey tiles.
+- The [Wordle helper](/letterwell/wordle-solver/) on this site uses the same word list.
