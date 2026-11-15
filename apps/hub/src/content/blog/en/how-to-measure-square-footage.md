@@ -65,8 +65,8 @@ A three-sided bay window is easier to treat as a rectangle plus two small triang
 
 ## Converting between square feet and square metres
 
-- 1 m² = 10.764 ft²
-- 1 ft² = 0.0929 m²
+- 1 m² = 10.764 ft² (10.7639 rounded)
+- 1 ft² = 0.0929 m² (0.09290304 exactly, because 1 ft = 0.3048 m exactly)
 
 So 192 ft² is 192 × 0.0929 = **17.8 m²**, and a 20 m² room is 20 × 10.764 = **215 ft²**.
 
@@ -78,7 +78,7 @@ It depends on the job:
 
 - **Flooring:** include everything the floor will cover, including under removable furniture. Leave out fitted kitchen units and built-in wardrobes if the floor stops at their base. Then add a waste allowance; see [how much extra tile to buy](/blog/tile-waste-percentage/) for typical percentages.
 - **Ceiling paint:** the floor area is the ceiling area, unless the ceiling slopes.
-- **Heating:** use the full floor area and the ceiling height, because heaters are sized by volume and insulation.
+- **Heating:** use the full floor area, and note the ceiling height and the insulation too: tall ceilings and poor insulation raise the heat a room needs. This article only measures the area; it does not size a heater.
 
 ## A quick routine
 
@@ -89,3 +89,11 @@ It depends on the job:
 5. Measure once more anything that seems odd.
 
 The [BuildCalc square footage calculator](/calculators/square-footage-calculator/) adds up several rectangular areas for you and shows the result in square feet and square metres.
+
+## Sources
+
+Checked 15 November 2026.
+
+- [NIST SP 811, Appendix B.9](https://www.nist.gov/node/777661): the foot is exactly 0.3048 m and the square foot exactly 0.09290304 m² (the boldface factors in the Length and Area tables are exact).
+- [LibreTexts, Technical Mathematics: area of polygons and circles](https://math.libretexts.org/Bookshelves/Applied_Mathematics/Technical_Mathematics_(Chase)/01:_Modules/1.19:_Area_of_Polygons_and_Circles): rectangle length × width, triangle ½ × base × height, circle π × r².
+- The worked examples (154, 192, 12, 14.1 and 17.8 ft², 14.28 m², 215 ft²) are our own arithmetic with the formulas above. The advice on what to include for flooring and paint is general practice, not a standard.
