@@ -2,7 +2,7 @@
 import type { Lang } from './site'
 
 export type ToolCategory = 'words' | 'home'
-export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings' | 'words' | 'fuel' | 'interest' | 'countdown' | 'anagram' | 'easter' | 'kitchen'
+export type ToolIcon = 'concrete' | 'paint' | 'tile' | 'gravel' | 'mulch' | 'area' | 'energy' | 'flooring' | 'drywall' | 'crossword' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'bee' | 'wordle' | 'finder' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'savings' | 'words' | 'fuel' | 'interest' | 'countdown' | 'anagram' | 'easter' | 'kitchen' | 'leave'
 
 export interface Tool {
   id: string
@@ -415,6 +415,17 @@ export const TOOL_CATALOG: Tool[] = [
     only: 'bg',
   },
   {
+    id: 'leave',
+    category: 'home',
+    icon: 'leave',
+    href: { en: '/bg/obezshtetenie-neizpolzvan-otpusk/', bg: '/bg/obezshtetenie-neizpolzvan-otpusk/' },
+    name: { en: 'Unused leave compensation (Bulgarian)', bg: 'Обезщетение за неизползван отпуск' },
+    description: { en: 'Gross compensation for unused paid leave when a contract ends (Art. 224 Labour Code).', bg: 'Брутно обезщетение за неизползван платен отпуск при прекратяване на договора (чл. 224 КТ).' },
+    keywords: 'unused leave compensation bulgaria labour code обезщетение неизползван отпуск платен годишен отпуск чл. 224 кт прекратяване трудов договор напускане уволнение среднодневно брутно',
+    isNew: true,
+    only: 'bg',
+  },
+  {
     id: 'kitchen',
     category: 'home',
     icon: 'kitchen',
@@ -474,6 +485,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
   countdown: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>',
   easter: '<path d="M12 3c-3.4 0-6.5 5.4-6.5 10a6.5 6.5 0 0 0 13 0c0-4.6-3.1-10-6.5-10z"/><path d="M5.8 12.5 8.5 15l3.5-3 3.5 3 2.7-2.5"/>',
   interest: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 18l6-7"/><circle cx="9.5" cy="11.5" r="1"/><circle cx="14.5" cy="17.5" r="1"/>',
+  leave: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/>',
   kitchen: '<path d="M5 4h11l-1.2 14.5a2 2 0 0 1-2 1.5H8.2a2 2 0 0 1-2-1.5z"/><path d="M16 8h2.5a1.5 1.5 0 0 1 0 3H15.5M8 9h3M8 13h3"/>',
   fuel: '<path d="M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M4 21h12M8 8h4"/><path d="M15 10h2a2 2 0 0 1 2 2v5a1 1 0 0 0 2 0V9l-3-3"/>',
   loan: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6.5 9.5h.01M17.5 14.5h.01"/>',
@@ -503,7 +515,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
 
 /** Blog category of a post, from the tool it links to. */
 /** Everyday sums (percentages, VAT, euro, loans, dates) get their own blog category. */
-const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator', 'holidays-2027', 'us-holidays-2027', 'compound-interest-calculator', 'amount-in-words', 'fuel-cost-calculator', 'legal-interest-calculator', 'kitchen-measures'])
+const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator', 'holidays-2027', 'us-holidays-2027', 'compound-interest-calculator', 'amount-in-words', 'fuel-cost-calculator', 'legal-interest-calculator', 'kitchen-measures', 'unused-leave-compensation'])
 
 export function postCategory(tool?: string): ToolCategory | 'everyday' | 'general' {
   if (!tool) return 'general'
@@ -517,7 +529,7 @@ export const HOME_GROUPS: { id: string; name: Record<Lang, string>; tools: strin
   { id: 'walls', name: { en: 'Walls and finishes', bg: 'Стени и довършване' }, tools: ['paint', 'wallpaper', 'drywall', 'insulation', 'masonry'] },
   { id: 'outdoor', name: { en: 'Concrete and garden', bg: 'Бетон и двор' }, tools: ['concrete', 'fence', 'gravel', 'mulch', 'area'] },
   { id: 'energy', name: { en: 'Energy', bg: 'Енергия и отопление' }, tools: ['heating', 'firewood', 'aircon', 'energy'] },
-  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'sick', 'savings', 'percent', 'vat', 'words', 'interest', 'fuel', 'kitchen', 'countdown', 'euro', 'loan', 'dates', 'holidays-2027', 'easter', 'us-holidays-2027', 'uk-holidays-2027'] },
+  { id: 'everyday', name: { en: 'Everyday sums', bg: 'Всекидневни сметки' }, tools: ['salary', 'sick', 'savings', 'percent', 'vat', 'words', 'interest', 'fuel', 'kitchen', 'leave', 'countdown', 'euro', 'loan', 'dates', 'holidays-2027', 'easter', 'us-holidays-2027', 'uk-holidays-2027'] },
 ]
 
 /** Tools that go together, for the "Related tools" block on tool pages and articles. */
@@ -559,6 +571,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   words: ['vat', 'euro', 'percent', 'salary'],
   fuel: ['percent', 'euro', 'dates', 'energy'],
   kitchen: ['percent', 'energy', 'euro'],
+  leave: ['salary', 'sick', 'dates', 'holidays-2027'],
   countdown: ['holidays-2027', 'easter', 'dates', 'sick'],
   easter: ['countdown', 'holidays-2027', 'dates'],
   interest: ['dates', 'euro', 'loan', 'words'],
@@ -583,6 +596,7 @@ export const POST_TOOL_IDS: Record<string, string> = {
   'amount-in-words': 'words',
   'fuel-cost-calculator': 'fuel',
   'kitchen-measures': 'kitchen',
+  'unused-leave-compensation': 'leave',
   'legal-interest-calculator': 'interest',
   'heating-cost-calculator': 'heating',
   'firewood-calculator': 'firewood',

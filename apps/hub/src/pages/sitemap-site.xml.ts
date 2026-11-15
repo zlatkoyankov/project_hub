@@ -32,6 +32,7 @@ export async function GET() {
     { path: '/bg/razhod-na-gorivo/' },
     { path: '/bg/zakonna-lihva/' },
     { path: '/bg/kuhnenski-merki/' },
+    { path: '/bg/obezshtetenie-neizpolzvan-otpusk/' },
     { path: '/bg/kolko-dni-do/' },
     { path: '/bg/koga-e-velikden/' },
     { path: '/bg/kalkulator-bolnichni/' },

@@ -89,6 +89,7 @@ export const TOOLS = {
   'amount-in-words': { en: { href: '/bg/suma-slovom/', name: 'Amount in words', cta: 'Open the amount in words tool' }, bg: { href: '/bg/suma-slovom/', name: 'Сума словом', cta: 'Към „Сума словом“' } },
   'fuel-cost-calculator': { en: { href: '/bg/razhod-na-gorivo/', name: 'Fuel cost calculator', cta: 'Open the fuel cost calculator' }, bg: { href: '/bg/razhod-na-gorivo/', name: 'Калкулатор за разход на гориво', cta: 'Към калкулатора за гориво' } },
   'legal-interest-calculator': { en: { href: '/bg/zakonna-lihva/', name: 'Statutory interest calculator', cta: 'Open the statutory interest calculator' }, bg: { href: '/bg/zakonna-lihva/', name: 'Калкулатор за законна лихва', cta: 'Към калкулатора за законна лихва' } },
+  'unused-leave-compensation': { en: { href: '/bg/obezshtetenie-neizpolzvan-otpusk/', name: 'Unused leave compensation (Bulgaria)', cta: 'Open the unused leave compensation calculator' }, bg: { href: '/bg/obezshtetenie-neizpolzvan-otpusk/', name: 'Обезщетение за неизползван отпуск', cta: 'Към калкулатора за обезщетение за отпуск' } },
   'kitchen-measures': { en: { href: '/bg/kuhnenski-merki/', name: 'Kitchen measures', cta: 'Open the kitchen measures converter' }, bg: { href: '/bg/kuhnenski-merki/', name: 'Кухненски мерки', cta: 'Към кухненските мерки' } },
 } as const
 

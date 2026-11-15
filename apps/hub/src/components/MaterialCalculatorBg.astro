@@ -14,11 +14,12 @@ import { TOOL_ICONS } from '../lib/tools'
 import { LEGAL_INTEREST_RATES, daysBetween, percent } from '../lib/everyday'
 import { AIRCON_SIZES, estimateAircon } from '../lib/materials'
 import { INGREDIENTS, KITCHEN_CHECKED, KITCHEN_SOURCES, KITCHEN_UNITS, UNIT_ORDER, convertKitchen, roundKitchen } from '../lib/kitchen'
+import { LEAVE_CHECKED, LEAVE_NOT_COVERED, LEAVE_SOURCES, unusedLeaveCompensation } from '../lib/leave'
 import { daysOff } from '../lib/holidays'
 import { workdaysBetween } from '../lib/workdays'
 import '../styles/tool.css'
 
-type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'fuel' | 'interest' | 'kitchen'
+type Kind = 'flooring' | 'drywall' | 'adhesive' | 'wallpaper' | 'screed' | 'insulation' | 'masonry' | 'concrete' | 'gravel' | 'paint' | 'tile' | 'heating' | 'firewood' | 'aircon' | 'percent' | 'vat' | 'euro' | 'dates' | 'loan' | 'salary' | 'fence' | 'sick' | 'fuel' | 'interest' | 'kitchen' | 'leave'
 
 interface Props {
   kind: Kind
@@ -97,6 +98,10 @@ const kitchenGrams = (amount: number, from: 'water-cup' | 'tea-cup' | 'tbsp') =>
   return { ml: kitchenFmt(roundKitchen('ml', result.ml)), g: kitchenFmt(roundKitchen('g', result.grams)) }
 }
 const kitchenExample = { cups: kitchenGrams(1.5, 'water-cup'), tea: kitchenGrams(1, 'tea-cup'), spoon: kitchenGrams(1, 'tbsp') }
+
+// Unused leave: the example on the page is computed with the same function as the calculator.
+const leaveMoney = (value: number) => `${value.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
+const leaveExample = unusedLeaveCompensation({ gross: 1760, workdays: 22, carriedDays: 8, annualDays: 20, months: 6, usedDays: 4 })!
 
 const CONFIGS: Partial<Record<Kind, Config>> = {
   percent: {
@@ -541,6 +546,48 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
     ],
     fields: [
       { name: 'amount', label: 'Количество', unit: '', value: 1.5, step: 'any', hint: 'Може и десетично, например 0,5 за половин чаша.' },
+    ],
+  },
+  leave: {
+    page: {
+      path: '/bg/obezshtetenie-neizpolzvan-otpusk/',
+      tool: 'unused-leave-compensation',
+      title: 'Обезщетение за неизползван отпуск | Zyankov.eu',
+      description: 'Колко е обезщетението за неизползван платен отпуск при прекратяване на договора: чл. 224 КТ, среднодневно брутно и дни. Формула и източници.',
+      h1: 'Обезщетение за неизползван отпуск',
+      intro: 'Въведи брутната си заплата, неизползваните дни от предходни години и месеците стаж в годината на прекратяване. Калкулаторът смята ориентировъчно БРУТНО обезщетение по чл. 224 КТ за един ясен случай: постоянна месечна заплата и ясен брой дни.',
+      answer: `При прекратяване на трудовия договор неизползваният платен годишен отпуск се обезщетява (чл. 224 КТ). Сумата е броят неизползвани дни по среднодневното брутно възнаграждение за последния календарен месец с поне 10 отработени работни дни (чл. 177 КТ). За текущата година дните са пропорционални на стажа. При 1 760 € брутно и 22 работни дни в месеца среднодневното е ${leaveMoney(leaveExample.daily)}. 8 дни от 2025 г. плюс 6 дни за 2026 г. (20 дни × 6 месеца ÷ 12 − 4 ползвани) са ${leaveExample.totalDays} дни и ${leaveMoney(leaveExample.amount)} брутно. Това не е нето сума и не е правен съвет.`,
+      big: '€ бруто',
+      bigOne: '€ бруто',
+      resultTitle: 'ОБЕЗЩЕТЕНИЕ (БРУТО)',
+      caveat: 'Това не е правен съвет. Сумата е брутна и ориентировъчна, за един ясен случай. Не е нето (облага се по ЗДДФЛ) и не смята случаите от „Какво не смята калкулаторът“ по-долу. За твоя случай питай счетоводител или юрист.',
+      formula: 'среднодневно брутно = брутно за месеца ÷ работни дни в месеца · дни за годината на прекратяване = дни за пълна година × пълни месеци стаж ÷ 12 − вече ползвани дни · обезщетение = среднодневно брутно × (дни от предходни години + дни за годината на прекратяване)',
+      how: 'Според чл. 224 КТ при прекратяване на трудовото правоотношение работникът има право на пари за неизползвания платен годишен отпуск, ако правото не е погасено по давност (чл. 176а КТ: две години след края на годината, за която се полага). Основата е среднодневното брутно възнаграждение по чл. 177 КТ: за последния календарен месец, в който са отработени поне 10 работни дни, брутното възнаграждение се дели на отработените дни (НСОРЗ чл. 18, ал. 1). За годината на прекратяване отпускът е пропорционален на признатия трудов стаж (НРВПО чл. 42): трябва поне един пълен месец, а последният месец се брои за пълен, ако са отработени поне половината от работните дни му. Така е по коментарите, които цитират текстовете; сверявай с действащата редакция. Наши опростявания (наша оценка): (1) месецът-основа е отработен изцяло и заплатата е постоянна, затова дневното е месечното брутно ÷ работните дни в него; (2) дните за годината на прекратяване са дни за пълна година × пълни месеци ÷ 12, без закръгляване на дните; (3) дневното се закръглява до цент и после се умножава по дните. Данък и осигуровки: според НАП-становище и коментари обезщетението е облагаем доход по чл. 24, ал. 1 ЗДДФЛ, а осигурителни вноски не се дължат (Наредбата за елементите на възнагражденията, чл. 1, ал. 8, т. 7, в някои коментари ал. 7: номерацията се е сменяла). Затова сумата тук е брутна и нето не се смята.',
+      tips: [
+        'Месецът-основа е последният календарен месец преди прекратяването, в който си отработил поне 10 работни дни. Ако последният месец е с по-малко, върни се към предишния.',
+        'Дните от предходни години въвеждай само ако още не са погасени по давност. Отпускът за 2024 г. се погасява на 31.12.2026 г., ако не е бил отложен по чл. 176.',
+        'Ако си ползвал през тази година дни от стар отпуск, извади ги от дните от предходни години, а не от дните за текущата година.',
+        'Ако знаеш среднодневното си брутно от работодателя или от ведомостта, избери „Знам среднодневното“ и го въведи директно.',
+      ],
+      jsonName: 'Обезщетение за неизползван отпуск',
+      kicker: 'ВСЕКИДНЕВНИ СМЕТКИ',
+      crumb: { label: 'Всекидневни сметки', href: '/bg/#everyday' },
+      checked: LEAVE_CHECKED,
+      sources: LEAVE_SOURCES,
+    },
+    formTitle: 'Твоят случай',
+    formHint: 'Сумите са в евро и са брутни. Дните може да са десетични.',
+    selects: [
+      { name: 'base', label: 'Среднодневно брутно', options: [{ value: 'monthly', label: 'Смятай от месечна заплата' }, { value: 'daily', label: 'Знам среднодневното' }] },
+    ],
+    fields: [
+      { name: 'gross', label: 'Брутна заплата за месеца-основа', unit: '€', value: 1760, step: 'any', show: 'base:monthly', hint: 'Постоянна месечна заплата за последния месец с поне 10 отработени работни дни. Наша оценка: месецът е отработен изцяло.' },
+      { name: 'workdays', label: 'Работни дни в този месец', unit: 'дни', value: 22, step: '1', show: 'base:monthly', hint: 'Без събота, неделя и официални празници.' },
+      { name: 'dailyGross', label: 'Среднодневно брутно', unit: '€', value: 80, step: 'any', show: 'base:daily' },
+      { name: 'carried', label: 'Неизползвани дни от предходни години', unit: 'дни', value: 8, step: 'any', hint: 'Само дните, които още не са погасени по давност (чл. 176а КТ).' },
+      { name: 'annual', label: 'Платен отпуск за пълна година', unit: 'дни', value: 20, step: 'any', hint: 'По договора ти. Пример: 20 дни.' },
+      { name: 'months', label: 'Пълни месеци стаж в годината на прекратяване', unit: 'мес.', value: 6, step: '1', hint: 'От 0 до 12. Последният месец се брои за пълен, ако са отработени поне половината работни дни.' },
+      { name: 'used', label: 'Вече ползвани дни през тази година', unit: 'дни', value: 4, step: 'any', hint: 'Дни от отпуска за текущата година, които вече си взел.' },
     ],
   },
   interest: {
@@ -1439,6 +1486,18 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         </section>
       )}
 
+      {kind === 'leave' && !embed && (
+        <section class="tool-schedule" aria-labelledby="leave-scope-title">
+          <h2 id="leave-scope-title">Какво смята калкулаторът и какво не</h2>
+          <p>Калкулаторът дава брутна ориентировъчна сума за един ясен случай: постоянна месечна заплата (или известно среднодневно брутно), дни от предходни години, които още не са погасени, и пропорционалния отпуск за годината на прекратяване. Правното основание е чл. 224 КТ. Калкулаторът не заменя консултация със счетоводител или юрист.</p>
+          <p>Пример от страницата: 1 760 € ÷ 22 дни = {leaveMoney(leaveExample.daily)} на ден. За 2026 г.: 20 × 6 ÷ 12 = {leaveExample.proportionalDays} дни, минус 4 ползвани = {leaveExample.currentDays} дни. Заедно с 8 дни от 2025 г. са {leaveExample.totalDays} дни × {leaveMoney(leaveExample.daily)} = {leaveMoney(leaveExample.amount)} брутно.</p>
+          <h3>Не се смята</h3>
+          <ul>
+            {LEAVE_NOT_COVERED.map((item) => <li>{item}</li>)}
+          </ul>
+        </section>
+      )}
+
       {kind === 'kitchen' && !embed && (
         <section class="tool-schedule tool-schedule--rates" aria-labelledby="kitchen-table-title">
           <h2 id="kitchen-table-title">Колко грама са чашата и лъжицата: таблица по продукти</h2>
@@ -1535,6 +1594,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
   import { addDays, convertEuro, daysBetween, tripFuelCost, legalInterest, LEGAL_INTEREST_FIRST, LEGAL_INTEREST_LAST, loanPayment, loanSchedule, sickPay, type ScheduleRow, MAX_INSURABLE_EUR, MIN_WAGE_EUR, percent, salaryFromGross, salaryFromNet, vat, type BirthGroup, type PercentMode } from '../lib/everyday'
   import { estimateFence, FENCE_PANELS as PANELS } from '../lib/materials'
   import { KITCHEN_UNITS, UNIT_ORDER, convertKitchen, ingredientById, nearestQuarter, roundKitchen, type KitchenUnit } from '../lib/kitchen'
+  import { unusedLeaveCompensation } from '../lib/leave'
   import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
@@ -1740,6 +1800,27 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           ['Нетна заплата за същите дни', money(result.usualNet), 'за сравнение'],
         ]
         render(result.total, rows)
+      } else if (kind === 'leave') {
+        const daily = field('base')?.value === 'daily'
+        const result = unusedLeaveCompensation({
+          gross: daily ? undefined : num('gross'),
+          workdays: daily ? undefined : num('workdays'),
+          dailyGross: daily ? num('dailyGross') : undefined,
+          carriedDays: num('carried'),
+          annualDays: num('annual'),
+          months: num('months'),
+          usedDays: num('used'),
+        })
+        if (!result) return render(null, [])
+        const rows: [string, string, string?][] = [
+          ['Среднодневно брутно', money(result.daily), daily ? 'въведено от теб' : `${money(num('gross'))} ÷ ${fmt(num('workdays'), 0)} работни дни (наша оценка: месецът е отработен изцяло)`],
+          ['Дни от предходни години', `${fmt(result.carriedDays)} дни`, 'не са погасени по давност, ти ги въвеждаш'],
+          ['Пропорционален отпуск за годината', `${fmt(result.proportionalDays)} дни`, `${fmt(num('annual'))} дни × ${fmt(Math.min(12, num('months')), 0)} мес. ÷ 12 (наша оценка)`],
+          ['Неизползвани дни за годината', `${fmt(result.currentDays)} дни`, `след ${fmt(num('used'))} ползвани`],
+          ['Общо дни', `${fmt(result.totalDays)} дни`],
+        ]
+        if (result.overUsed) rows.push(['Внимание', 'ползвани са повече дни от полагащите се', 'удръжка или връщане не се смятат'])
+        render(result.amount, rows)
       } else if (kind === 'interest') {
         const result = legalInterest(num('principal'), field('from')?.value ?? '', field('to')?.value ?? '')
         const shortDate = (iso: string) => iso.split('-').reverse().map((part, index) => index < 2 ? String(Number(part)) : part).join('.')
