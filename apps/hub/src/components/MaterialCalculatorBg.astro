@@ -54,6 +54,8 @@ interface Page {
   path: string
   /** The English version, if there is one. */
   en?: string
+  /** Text of the link to the English page; the default fits the building calculators. */
+  enLabel?: string
   tool: string
   title: string
   description: string
@@ -500,6 +502,8 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
   kitchen: {
     page: {
       path: '/bg/kuhnenski-merki/',
+      en: '/cups-to-grams-calculator/',
+      enLabel: 'In English: cups to grams →',
       tool: 'kitchen-measures',
       title: 'Кухненски мерки: чаши, лъжици, мл и грамове | Zyankov.eu',
       description: 'Колко грама е една чаша брашно, захар или ориз? Превърни чаени и водни чаши, лъжици, милилитри и грамове за 15 продукта, с формула и източници.',
@@ -1487,7 +1491,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         <article>
           <h2>Съвети</h2>
           <ul>{page.tips.map((tip) => <li>{tip}</li>)}</ul>
-          {page.en && <p class="tool-switch"><a href={page.en} hreflang="en">In English, in feet or metres →</a></p>}
+          {page.en && <p class="tool-switch"><a href={page.en} hreflang="en">{page.enLabel ?? 'In English, in feet or metres →'}</a></p>}
         </article>
       </section>
 
