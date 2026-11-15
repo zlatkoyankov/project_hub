@@ -88,6 +88,7 @@ export const TOOLS = {
   'date-calculator': { en: { href: '/date-calculator/', name: 'Date calculator', cta: 'Open the date calculator' }, bg: { href: '/bg/kalkulator-dati/', name: 'Калкулатор за дати', cta: 'Към калкулатора за дати' } },
   'amount-in-words': { en: { href: '/bg/suma-slovom/', name: 'Amount in words', cta: 'Open the amount in words tool' }, bg: { href: '/bg/suma-slovom/', name: 'Сума словом', cta: 'Към „Сума словом“' } },
   'fuel-cost-calculator': { en: { href: '/bg/razhod-na-gorivo/', name: 'Fuel cost calculator', cta: 'Open the fuel cost calculator' }, bg: { href: '/bg/razhod-na-gorivo/', name: 'Калкулатор за разход на гориво', cta: 'Към калкулатора за гориво' } },
+  'legal-interest-calculator': { en: { href: '/bg/zakonna-lihva/', name: 'Statutory interest calculator', cta: 'Open the statutory interest calculator' }, bg: { href: '/bg/zakonna-lihva/', name: 'Калкулатор за законна лихва', cta: 'Към калкулатора за законна лихва' } },
 } as const
 
 export type ToolKey = keyof typeof TOOLS
