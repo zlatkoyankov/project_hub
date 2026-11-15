@@ -531,6 +531,18 @@
   font-weight: 800;
 }
 
+.post-guide {
+  margin: 0 0 24px;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.post-guide a {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 .author-box {
   display: flex;
   align-items: center;

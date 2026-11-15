@@ -29,6 +29,23 @@ const PAGES: Record<string, PageContent> = {
   },
 };
 
+/** Guides that belong together (same job or next step). Each guide links to these under its own text. */
+export const RELATED_GUIDES: Record<string, string[]> = {
+  'gravel-calculator-guide': ['concrete-calculator-guide', 'mulch-calculator-guide', 'square-footage-calculator-guide'],
+  'paint-calculator-guide': ['wallpaper-calculator-guide', 'drywall-calculator-guide', 'square-footage-calculator-guide'],
+  'tile-calculator-guide': ['tile-adhesive-grout-calculator-guide', 'screed-plaster-calculator-guide', 'laminate-flooring-calculator-guide'],
+  'concrete-calculator-guide': ['gravel-calculator-guide', 'brick-block-calculator-guide', 'screed-plaster-calculator-guide'],
+  'square-footage-calculator-guide': ['laminate-flooring-calculator-guide', 'paint-calculator-guide', 'tile-calculator-guide'],
+  'mulch-calculator-guide': ['gravel-calculator-guide', 'square-footage-calculator-guide', 'concrete-calculator-guide'],
+  'laminate-flooring-calculator-guide': ['screed-plaster-calculator-guide', 'tile-calculator-guide', 'square-footage-calculator-guide'],
+  'drywall-calculator-guide': ['paint-calculator-guide', 'insulation-board-calculator-guide', 'brick-block-calculator-guide'],
+  'tile-adhesive-grout-calculator-guide': ['tile-calculator-guide', 'screed-plaster-calculator-guide', 'laminate-flooring-calculator-guide'],
+  'wallpaper-calculator-guide': ['paint-calculator-guide', 'drywall-calculator-guide', 'square-footage-calculator-guide'],
+  'screed-plaster-calculator-guide': ['laminate-flooring-calculator-guide', 'tile-calculator-guide', 'concrete-calculator-guide'],
+  'insulation-board-calculator-guide': ['brick-block-calculator-guide', 'drywall-calculator-guide', 'paint-calculator-guide'],
+  'brick-block-calculator-guide': ['insulation-board-calculator-guide', 'concrete-calculator-guide', 'drywall-calculator-guide'],
+}
+
 @Component({
   standalone: true,
   imports: [RouterLink, MaterialArtComponent],
@@ -41,6 +58,7 @@ export class ContentPage {
   protected readonly sourcesChecked = SOURCES_CHECKED;
   protected readonly isGuideIndex = this.pageKey === 'guides';
   protected readonly guide: Guide | undefined = GUIDES.find((item) => item.slug === this.pageKey);
+  protected readonly relatedGuides: Guide[] = (RELATED_GUIDES[this.pageKey] ?? []).flatMap((slug) => GUIDES.filter((item) => item.slug === slug));
   protected readonly page: PageContent = this.guide
     ? { title: this.guide.title, kicker: this.guide.kicker, intro: this.guide.intro, sections: this.guide.sections }
     : this.isGuideIndex

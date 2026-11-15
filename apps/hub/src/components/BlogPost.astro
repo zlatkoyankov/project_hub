@@ -4,7 +4,7 @@ import { render } from 'astro:content'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import RelatedTools from './RelatedTools.astro'
 import { POST_TOOL_IDS } from '../lib/tools'
-import { TOOLS, formatDate, getPosts, getTranslation, isoDate, ogKey, postPath, readingMinutes, type Post } from '../lib/site'
+import { TOOLS, TOOL_GUIDES, formatDate, getPosts, getTranslation, isoDate, ogKey, postPath, readingMinutes, type Post } from '../lib/site'
 import { postCategory } from '../lib/tools'
 import { relatedPosts } from '../lib/related-posts'
 import '../styles/page.css'
@@ -24,6 +24,7 @@ const translation = await getTranslation(post)
 const alternates = translation ? { [lang]: path, [translation.data.lang]: postPath(translation) } : {}
 const tool = post.data.tool ? TOOLS[post.data.tool][lang] : undefined
 const category = postCategory(post.data.tool)
+const guideSlug = !bg && post.data.tool ? TOOL_GUIDES[post.data.tool] : undefined
 // Posts about the same or a related tool first, then the same topic, then the newest of the rest.
 const related = relatedPosts(post, await getPosts(lang))
 const t = bg
@@ -74,6 +75,7 @@ const jsonLd = {
               <a class="zy-cta" href={tool.href}>{tool.cta} <span aria-hidden="true">→</span></a>
             </aside>
           )}
+          {guideSlug && <p class="post-guide">Want a worked example first? The <a href={`/calculators/guides/${guideSlug}/`}>{tool!.name.toLowerCase()} guide</a> walks through the assumptions, a step-by-step example and common mistakes.</p>}
           <aside class="author-box">
             <span class="byline__avatar" aria-hidden="true">ZY</span>
             <p><strong>{t.author}</strong> · {t.about} <a href="/about/">{t.more}</a></p>

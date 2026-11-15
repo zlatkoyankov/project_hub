@@ -65,6 +65,7 @@ const copy = {
     articles: [
       { href: '/blog/best-wordle-starting-words/', label: 'The best Wordle starting words, tested' },
       { href: '/blog/how-to-solve-wordle-in-fewer-guesses/', label: 'How to solve Wordle in fewer guesses' },
+      { href: '/letterwell/daily/hints/', label: 'Letterwell Daily hints: clues without the answer' },
     ],
   },
   bg: {
@@ -114,7 +115,10 @@ const copy = {
       'Натисни ⓘ до дума, за да видиш линкове към нейното значение в Речника на българския език на БАН и в Уикиречника. Бутоните се скриват с „Показвай значения“.',
     ],
     readMore: 'Прочети още',
-    articles: [{ href: '/bg/blog/kak-da-reshavash-wordle-na-balgarski/', label: 'Как да решаваш Wordle на български' }],
+    articles: [
+      { href: '/bg/blog/kak-da-reshavash-wordle-na-balgarski/', label: 'Как да решаваш Wordle на български' },
+      { href: '/letterwell/bg/duma-na-denya/podskazki/', label: 'Подсказки за „Дума на деня“ без спойлери' },
+    ],
   },
 }
 
