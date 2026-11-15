@@ -519,7 +519,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   adhesive: ['tile', 'screed', 'flooring'],
   flooring: ['screed', 'tile', 'area'],
   screed: ['flooring', 'tile', 'concrete'],
-  paint: ['wallpaper', 'drywall', 'area'],
+  paint: ['wallpaper', 'drywall', 'tile', 'area'],
   wallpaper: ['paint', 'drywall', 'area'],
   drywall: ['paint', 'insulation', 'masonry'],
   insulation: ['masonry', 'drywall', 'paint'],
