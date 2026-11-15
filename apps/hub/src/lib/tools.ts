@@ -418,12 +418,11 @@ export const TOOL_CATALOG: Tool[] = [
     id: 'kitchen',
     category: 'home',
     icon: 'kitchen',
-    href: { en: '/bg/kuhnenski-merki/', bg: '/bg/kuhnenski-merki/' },
-    name: { en: 'Kitchen measures (Bulgarian)', bg: 'Кухненски мерки' },
-    description: { en: 'Cups, spoons, millilitres and grams for common ingredients.', bg: 'Чаши, лъжици, мл и грамове за брашно, захар, олио и други продукти.' },
-    keywords: 'kitchen measures cups spoons grams ml flour sugar конвертор кухненски мерки чаша лъжица лъжичка грама милилитра брашно захар ориз мляко олио масло мед сол какао нишесте овесени ядки рецепта',
+    href: { en: '/cups-to-grams-calculator/', bg: '/bg/kuhnenski-merki/' },
+    name: { en: 'Cups to grams converter', bg: 'Кухненски мерки' },
+    description: { en: 'US and metric cups, spoons, ml and grams for flour, sugar, butter and more.', bg: 'Чаши, лъжици, мл и грамове за брашно, захар, олио и други продукти.' },
+    keywords: 'cups to grams converter kitchen measures baking flour sugar butter honey tablespoon teaspoon ml конвертор кухненски мерки чаша лъжица лъжичка грама милилитра брашно захар ориз мляко олио масло мед сол какао нишесте овесени ядки рецепта',
     isNew: true,
-    only: 'bg',
   },
   {
     id: 'interest',
@@ -503,7 +502,7 @@ export const TOOL_ICONS: Record<ToolIcon, string> = {
 
 /** Blog category of a post, from the tool it links to. */
 /** Everyday sums (percentages, VAT, euro, loans, dates) get their own blog category. */
-const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator', 'holidays-2027', 'us-holidays-2027', 'compound-interest-calculator', 'amount-in-words', 'fuel-cost-calculator', 'legal-interest-calculator', 'kitchen-measures'])
+const EVERYDAY_POST_TOOLS = new Set(['percent-calculator', 'vat-calculator', 'euro-converter', 'loan-calculator', 'date-calculator', 'salary-calculator', 'holidays-2027', 'us-holidays-2027', 'compound-interest-calculator', 'amount-in-words', 'fuel-cost-calculator', 'legal-interest-calculator', 'kitchen-measures', 'cups-to-grams-calculator'])
 
 export function postCategory(tool?: string): ToolCategory | 'everyday' | 'general' {
   if (!tool) return 'general'
@@ -558,7 +557,7 @@ export const RELATED_TOOLS: Record<string, string[]> = {
   sick: ['salary', 'dates', 'holidays-2027'],
   words: ['vat', 'euro', 'percent', 'salary'],
   fuel: ['percent', 'euro', 'dates', 'energy'],
-  kitchen: ['percent', 'energy', 'euro'],
+  kitchen: ['percent', 'euro', 'energy', 'loan'],
   countdown: ['holidays-2027', 'easter', 'dates', 'sick'],
   easter: ['countdown', 'holidays-2027', 'dates'],
   interest: ['dates', 'euro', 'loan', 'words'],
@@ -583,6 +582,7 @@ export const POST_TOOL_IDS: Record<string, string> = {
   'amount-in-words': 'words',
   'fuel-cost-calculator': 'fuel',
   'kitchen-measures': 'kitchen',
+  'cups-to-grams-calculator': 'kitchen',
   'legal-interest-calculator': 'interest',
   'heating-cost-calculator': 'heating',
   'firewood-calculator': 'firewood',

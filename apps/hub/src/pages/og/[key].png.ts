@@ -34,6 +34,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'uk-bank-holidays-2027': { kicker: 'Everyday sums · calendar', title: 'When are the bank holidays in 2027?', footer: 'zyankov.eu/uk-bank-holidays-2027' },
     'compound-interest-calculator': { kicker: 'Everyday sums · calculator', title: 'How much will my savings grow?', footer: 'zyankov.eu/compound-interest-calculator' },
     'percentage-calculator': { kicker: 'Everyday sums · calculator', title: 'What is X% of a number?', footer: 'zyankov.eu/percentage-calculator' },
+    'cups-to-grams-calculator': { kicker: 'Everyday sums · calculator', title: 'How many grams in a cup of flour?', footer: 'zyankov.eu/cups-to-grams-calculator' },
     'date-calculator': { kicker: 'Everyday sums · calculator', title: 'How many days until that date?', footer: 'zyankov.eu/date-calculator' },
     'loan-calculator': { kicker: 'Everyday sums · calculator', title: 'What will the monthly loan payment be?', footer: 'zyankov.eu/loan-calculator' },
     'bg-kalkulator-bolnichni': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко ще получа за болничния?', footer: 'zyankov.eu/bg/kalkulator-bolnichni' },

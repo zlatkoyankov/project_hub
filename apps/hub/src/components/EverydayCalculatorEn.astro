@@ -9,9 +9,22 @@ import { AUTHOR, getPosts, ogKey, postPath } from '../lib/site'
 import { postsForTool } from '../lib/related-posts'
 import { POST_TOOL_IDS } from '../lib/tools'
 import { TOOL_ICONS } from '../lib/tools'
+import {
+  ALL_ORDER,
+  COOK_UNITS,
+  CUPS_CHECKED,
+  CUPS_CHECKED_ISO,
+  FROM_ORDER,
+  INGREDIENTS_EN,
+  SOURCES_EN,
+  TO_ORDER,
+  UNIT_SOURCES,
+  convertCooking,
+  roundCooking,
+} from '../lib/kitchen-en'
 import '../styles/tool.css'
 
-type Kind = 'percent' | 'dates' | 'loan' | 'savings'
+type Kind = 'percent' | 'dates' | 'loan' | 'savings' | 'kitchen'
 
 interface Props {
   kind: Kind
@@ -60,6 +73,19 @@ interface Config {
   selects: Select[]
   fields: Field[]
 }
+
+// Cups to grams: the examples in the text are computed with the same function as the calculator.
+const cupsFmt = (value: number) => value.toLocaleString('en-US', { maximumFractionDigits: 2 })
+const cupsExample = (amount: number, from: 'us-cup' | 'metric-cup' | 'tbsp', ingredient: string) => {
+  const result = convertCooking({ amount, from, to: 'g', ingredient })!
+  return { ml: cupsFmt(roundCooking('ml', result.ml)), g: cupsFmt(roundCooking('g', result.grams)) }
+}
+const cupsFlourUs = cupsExample(1, 'us-cup', 'flour')
+const cupsSugarUs = cupsExample(1, 'us-cup', 'sugar')
+const cupsButterUs = cupsExample(1, 'us-cup', 'butter')
+const cupsFlourMetric = cupsExample(1, 'metric-cup', 'flour')
+const cupsFlourOneAndHalf = cupsExample(1.5, 'metric-cup', 'flour')
+const cupsFlourOneAndHalfUs = cupsExample(1.5, 'us-cup', 'flour')
 
 const CONFIGS: Record<Kind, Config> = {
   percent: {
@@ -231,6 +257,45 @@ const CONFIGS: Record<Kind, Config> = {
       { name: 'years', label: 'Years', unit: 'yr', value: 20, step: '1' },
     ],
   },
+  kitchen: {
+    path: '/cups-to-grams-calculator/',
+    bg: '/bg/kuhnenski-merki/',
+    tool: 'cups-to-grams-calculator',
+    catalogId: 'kitchen',
+    title: 'Cups to Grams Converter: Flour, Sugar, Butter | Zyankov.eu',
+    description: 'Convert US cups, metric cups (250 ml), tablespoons and teaspoons to grams and ml for 15 ingredients, with the formula and a sourced density table.',
+    h1: 'Cups to grams converter',
+    intro: 'Pick an ingredient, enter how much you have and what you measure it in, and see the amount in grams, millilitres, US cups, metric cups and spoons. The result updates as you type.',
+    answer: `1 US cup of all-purpose flour is ${cupsFlourUs.g} g, 1 US cup of granulated sugar is ${cupsSugarUs.g} g and 1 US cup of butter is ${cupsButterUs.g} g. A 250 ml metric cup of flour is about ${cupsFlourMetric.g} g, and 1½ metric cups are ${cupsFlourOneAndHalf.ml} ml, or about ${cupsFlourOneAndHalf.g} g. The conversion is grams = ml × density, so it is different for every ingredient.`,
+    resultTitle: 'THAT IS',
+    big: 'grams',
+    caveat: 'An estimate. The weight of a cup depends on the ingredient, on how the cup is filled (sifted, spooned, scooped or packed) and on the size of your own cup. For dough and baking, weigh on a kitchen scale.',
+    formula: 'ml = amount × volume of the measure · grams = ml × density (g/ml) · amount in a measure = ml ÷ volume of the measure',
+    how: 'Every measure has a volume in millilitres: a US cup is 236.588 ml (8 US fluid ounces), a US tablespoon 14.787 ml, a US teaspoon 4.929 ml, and the metric cup used in UK, Australian and other metric recipes is 250 ml. Every ingredient has a density in grams per millilitre. For most we took a published weight of one US cup or tablespoon and divided it by the volume of that measure; for water, milk and sunflower oil we used a measured density. Grams are the millilitres times the density. Our own rounding: grams and ml are whole numbers from 10 up and have one decimal below 10, cups and spoons have two decimals. The "by eye" line is the nearest quarter, for example 1½. Ingredients with no source we could find are not in the list.',
+    tips: [
+      'A cup is a volume, not a weight. A US cup of flour is 120 g and a US cup of sugar is 198 g.',
+      'Check which cup the recipe means. A US cup (236.6 ml) is about 5% smaller than a metric cup (250 ml). Some US labels round the cup to 240 ml, which is 1.4% more than the exact figure we use.',
+      'Flour packs down. A cup scooped straight from the bag weighs more than one spooned in and levelled, which is why baking recipes give grams.',
+      'Spoons are level, not heaped. We use US spoons (tablespoon 14.79 ml, teaspoon 4.93 ml); the metric 15 ml and 5 ml spoons are within 1.4% of them. Australian recipes use a 20 ml tablespoon: enter 20 ml per tablespoon in millilitres instead.',
+    ],
+    sources: [
+      ...Object.values(SOURCES_EN).map((source) => ({ label: source.label, href: source.href })),
+      ...UNIT_SOURCES,
+    ],
+    checked: CUPS_CHECKED,
+    checkedIso: CUPS_CHECKED_ISO,
+    jsonName: 'Cups to grams converter',
+    formTitle: 'What are you measuring',
+    formHint: 'Decimals are fine, for example 0.5 for half a cup.',
+    selects: [
+      { name: 'ingredient', label: 'Ingredient', options: INGREDIENTS_EN.map((item) => ({ value: item.id, label: item.label })) },
+      { name: 'from', label: 'I have', options: FROM_ORDER.map((unit) => ({ value: unit, label: COOK_UNITS[unit].label })) },
+      { name: 'to', label: 'I want to know', options: TO_ORDER.map((unit) => ({ value: unit, label: COOK_UNITS[unit].label })) },
+    ],
+    fields: [
+      { name: 'amount', label: 'Amount', unit: '', value: 1, step: 'any' },
+    ],
+  },
 }
 
 const { kind } = Astro.props
@@ -320,6 +385,29 @@ const jsonLd = {
         </section>
       )}
 
+      {kind === 'kitchen' && (
+        <section class="tool-schedule tool-schedule--rates" aria-labelledby="cups-table-title">
+          <h2 id="cups-table-title">How many grams in a cup: table by ingredient</h2>
+          <p>The weight of a measure is the ingredient's density times the volume of the measure. Every density has a source, and this is the same data the calculator above uses. Grams are rounded by our own rule: whole numbers from 10 g up, one decimal below 10 g.</p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th>Ingredient</th><th>Figure from the source</th><th>g/ml</th><th>1 US cup (236.6 ml)</th><th>1 metric cup (250 ml)</th><th>1 US tbsp (14.79 ml)</th><th>1 US tsp (4.93 ml)</th><th>Source</th></tr></thead><tbody>
+            {INGREDIENTS_EN.map((item) => (
+              <tr>
+                <td>{item.label}</td>
+                <td>{item.basis}</td>
+                <td>{item.density.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</td>
+                {(['us-cup', 'metric-cup', 'tbsp', 'tsp'] as const).map((unit) => <td>{roundCooking('g', item.density * COOK_UNITS[unit].ml!).toLocaleString('en-US')} g</td>)}
+                <td><a href={SOURCES_EN[item.source].href} target="_blank" rel="noopener">{SOURCES_EN[item.source].short}</a></td>
+              </tr>
+            ))}
+          </tbody></table></div>
+          <h3>Notes on the ingredients</h3>
+          <ul>
+            {INGREDIENTS_EN.filter((item) => item.note).map((item) => <li><strong>{item.label}.</strong> {item.note}</li>)}
+          </ul>
+          <p>Example: 1½ metric cups of flour are 1.5 × 250 = 375 ml. King Arthur gives 120 g for a US cup of flour (236.588 ml), which is 0.5072 g/ml, so 375 × 0.5072 = {cupsFlourOneAndHalf.g} g. The same 1½ cups measured as US cups are 1.5 × 236.588 × 0.5072 = {cupsFlourOneAndHalfUs.g} g.</p>
+        </section>
+      )}
+
       <section class="tool-notes">
         <article>
           <h2>How it is calculated</h2>
@@ -364,6 +452,7 @@ const jsonLd = {
   import { track } from '@zyankov/design-system/analytics'
   import { addDays, compoundSavings, daysBetween, loanPayment, loanSchedule, percent, type PercentMode, type ScheduleRow } from '../lib/everyday'
   import { addWorkdays, workdaysBetween, type HolidayCalendar } from '../lib/workdays'
+  import { ALL_ORDER, COOK_UNITS, convertCooking, ingredientEnById, nearestQuarter, roundCooking, type CookUnit } from '../lib/kitchen-en'
 
   const root = document.querySelector<HTMLElement>('[data-everyday]')
   if (root) {
@@ -476,6 +565,25 @@ const jsonLd = {
           ['Interest earned', money(result.interest), `${fmt((result.interest / result.balance) * 100, 1)}% of the balance`],
           ...(rate > 0 ? [['Doubling time (rule of 72)', `about ${fmt(72 / rate, 1)} years`] as [string, string]] : []),
         ])
+      } else if (kind === 'kitchen') {
+        const unitOf = (name: string, fallback: CookUnit) => (ALL_ORDER.includes(field(name)?.value as CookUnit) ? (field(name)!.value as CookUnit) : fallback)
+        const from = unitOf('from', 'us-cup')
+        const to = unitOf('to', 'g')
+        const ingredient = ingredientEnById(field('ingredient')?.value ?? '')
+        const result = convertCooking({ amount: num('amount'), from, to, ingredient: ingredient?.id ?? '' })
+        if (!result || !ingredient) return render(null, [])
+        const shown = roundCooking(to, result.value)
+        const rows: [string, string, string?][] = [
+          ['Ingredient', ingredient.label, ingredient.basis],
+          ['Volume', `${fmt(roundCooking('ml', result.ml))} ml`, from === 'g' ? `${fmt(num('amount'))} g ÷ ${fmt(result.density, 3)} g/ml` : `${fmt(num('amount'))} × ${fmt(COOK_UNITS[from].ml!, 2)} ml`],
+          ['Weight', `${fmt(roundCooking('g', result.grams))} g`, `${fmt(roundCooking('ml', result.ml))} ml × ${fmt(result.density, 3)} g/ml`],
+        ]
+        for (const unit of ALL_ORDER) {
+          if (unit === to || unit === 'g' || unit === 'ml') continue
+          rows.push([COOK_UNITS[unit].label, `${fmt(roundCooking(unit, result.all[unit]))}`, `by eye ≈ ${nearestQuarter(result.all[unit])}`])
+        }
+        if (to !== 'g' && to !== 'ml') rows.splice(1, 0, ['By eye', nearestQuarter(result.value), 'nearest quarter'])
+        render(fmt(shown), rows, shown === 1 ? COOK_UNITS[to].one : COOK_UNITS[to].many)
       } else if (kind === 'loan') {
         const months = field('termUnit')?.value === 'months' ? num('term') : num('term') * 12
         const result = loanPayment(num('principal'), num('rate'), months)
