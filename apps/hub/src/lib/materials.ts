@@ -757,7 +757,9 @@ export const WOOD_MOISTURE = [
  *  (LWF Merkblatt 20, Bavarian State Institute of Forestry). */
 export const STACKED_TO_SOLID = 0.7
 export const STACKED_TO_LOOSE = 1.5
-/** Dry wood holds about 4 kWh per kg, so the weight follows from the heat. */
+/** Air-dry firewood (15–20 % water) holds about 4 kWh per kg on average, so the weight follows from the heat
+ *  (LWF Merkblatt 20, Bavarian State Institute of Forestry). Fresh wood is about 2 kWh/kg; the moisture factor
+ *  in the calculator corrects for that. */
 export const WOOD_KWH_PER_KG = 4
 
 export interface FuelAmountInput extends HeatDemandInput {
