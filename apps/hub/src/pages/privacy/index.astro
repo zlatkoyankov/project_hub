@@ -1,22 +1,23 @@
 ---
 import PageLayout from '../../layouts/PageLayout.astro'
-import { renderPrivacyAnalytics } from '@zyankov/design-system/render'
+import { analyticsEnabled, renderPrivacyAnalytics } from '@zyankov/design-system/render'
 
 const title = 'Privacy Policy | Zyankov.eu'
-const description = 'What information Zyankov.eu processes, how project preferences and favourites work, which cookies and ads are used, and how to contact us about privacy.'
+const description = 'What Zyankov.eu processes: browser storage, anonymous analytics, shared links, embedded calculators and Google AdSense, and how to contact us.'
 const jsonLd = {
   '@type': 'WebPage',
+  dateModified: '2026-11-15',
 }
 ---
 
-<PageLayout title={title} description={description} path="/privacy/" noAds={true} project="hub" jsonLd={jsonLd}>
+<PageLayout title={title} description={description} path="/privacy/" lang="en" alternates={{ en: '/privacy/', bg: '/bg/poveritelnost/' }} noAds={true} project="hub" jsonLd={jsonLd}>
       <p class="eyebrow">Your information</p>
       <h1>Privacy policy</h1>
-      <p class="updated">Last updated: November 12, 2026</p>
+      <p class="updated">Last updated: November 15, 2026</p>
       <p class="intro">
         This policy explains what information may be processed when you visit Zyankov.eu,
-        Letterwell, or BuildCalc. It describes the current site setup; please check it again
-        whenever a project or third-party service changes.
+        including its calculators, articles, Letterwell and BuildCalc. It describes the current
+        site setup; please check it again whenever a project or third-party service changes.
       </p>
 
       <section>
@@ -24,7 +25,8 @@ const jsonLd = {
         <p>
           The data controller for Zyankov.eu is Zlatko Yankov, based in Bulgaria. For privacy
           questions or requests, contact
-          <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>.
+          <a href="mailto:hello@zyankov.eu">hello@zyankov.eu</a>
+          (also on the <a href="/about/#contact">About page</a>).
         </p>
       </section>
 
@@ -41,60 +43,118 @@ const jsonLd = {
           Fonts and images are served from zyankov.eu itself. Pages do not request fonts from
           Google Fonts or other font services.
         </p>
+        <p>
+          The site has no accounts and no first-party cookies. Calculators and word tools run in
+          your browser; Letterwell searches a dictionary downloaded from this site, and the
+          letters you enter are not sent to Zyankov.eu.
+        </p>
       </section>
 
       <section>
-        <h2>Project data and local storage</h2>
+        <h2>Browser storage on your device</h2>
         <p>
-          Letterwell processes the letters you enter in your browser using a dictionary
-          downloaded from this site. The letters are not sent to Zyankov.eu.
+          The site saves a few preferences and game states in your browser's local storage. They
+          stay on your device and are not sent to the site owner. You can remove them by
+          clearing this site's data in your browser settings. The keys are:
         </p>
-        <p>
-          Zyankov.eu saves the selected light or dark theme in browser local storage, and the
-          choice applies to every project on the site. Letterwell also saves the selected language, and BuildCalc saves the
-          measurement system. For "Your tools" on the homepage, the site also keeps the addresses
-          of the last twelve tool pages you opened and the tools you starred as favourites; you can
-          clear the history with the button on the homepage. The energy cost calculators keep the
-          appliance list you build and the bill amount you enter. The daily word game keeps today's
-          guesses, your statistics and the hints you opened, the daily anagram keeps today's progress and
-          your statistics, and the Wordle solver remembers whether
-          word meanings are shown. These preferences stay in your browser
-          and are not sent to the site owner. You can remove them by clearing this site's stored data in your browser
-          settings.
-        </p>
+        <ul>
+          <li><code>zyankov-theme</code>: your light or dark theme, shared by all projects. Older keys <code>letterwell-theme</code> and <code>buildcalc-theme</code> are read once to carry an earlier choice over.</li>
+          <li><code>buildcalc-units</code>: the measurement system (metric or US) chosen in BuildCalc.</li>
+          <li><code>zyankov-recent</code>: the addresses of the last twelve tool pages you opened, for "Your tools" on the homepage (it is not filled on the homepage, the blog, embedded calculators or inside frames; the homepage has a button to clear it).</li>
+          <li><code>zyankov-favourites</code>: the tools you starred on the homepage.</li>
+          <li><code>zyankov-energy-list</code> and <code>zyankov-energy-list-bill</code>: the appliance list you build and the bill amount you enter in the energy cost calculators.</li>
+          <li><code>zy-daily-game-v1</code>, <code>zy-daily-stats-v1</code>, <code>zy-daily-hints-v1</code> and <code>zy-daily-unlimited-v1</code> (English game: <code>zy-daily-en-…</code>): today's guesses, your statistics, the hints you opened and the practice game of the daily word game. The homepage reads the game and statistics keys to show your progress on its cards.</li>
+          <li><code>zy-anagram-today-v1</code> and <code>zy-anagram-stats-v1</code> (English game: <code>zy-anagram-en-…</code>): today's progress and statistics of the daily anagram.</li>
+          <li><code>letterwell-meanings</code>: whether word meanings are shown in the Wordle solver.</li>
+        </ul>
         <p>
           Letterwell also keeps up to five recent searches in temporary page memory so you can
           reuse them while the page remains open. This search history is not saved to local
-          storage and is cleared when you leave or reload the page.
+          storage and is cleared when you leave or reload the page. The site does not use
+          session storage.
         </p>
       </section>
 
       <section>
-        <h2>Advertising and cookies</h2>
+        <h2>Share links</h2>
         <p>
-          Pages on Zyankov.eu, Letterwell and BuildCalc load Google AdSense to show ads. This
-          privacy policy and the terms of use load no ads. Google
-          may process technical information such as your IP address and browser or device
-          details, and may use cookies or similar technologies to serve, limit and measure ads
-          and, where allowed, to personalise them.
+          The "Share link", "Copy list" and similar buttons build an address that contains the
+          values you entered (for example areas, prices, a date, an amount or a name you typed
+          for a countdown) as parameters after the "?" in the URL. Anyone who has the link can
+          see those values, and so can the messaging or email service you send it through. Pages
+          you open from such a link fill the form from the URL, and the link is also visible to
+          the hosting provider in its request logs. Share a link only if you are comfortable
+          with that.
         </p>
+      </section>
+
+      <section>
+        <h2>Calculators embedded on other websites</h2>
         <p>
-          Visitors in the European Economic Area, the United Kingdom and Switzerland see
-          Google's consent message before personalised advertising is used. You can change or
-          withdraw your choice at any time with <button class="link-button" type="button" data-zy-consent>Privacy settings</button>,
-          also linked in the footer of every page.
-        </p>
-        <p>
-          You can manage Google ad personalisation at
-          <a href="https://myadcenter.google.com/" rel="noreferrer">My Ad Center</a>
-          and read how Google uses information from sites that use its services at
-          <a href="https://policies.google.com/technologies/partner-sites" rel="noreferrer">How Google uses information from sites or apps that use our services</a>.
+          Some calculators (the Bulgarian ones under <code>/bg/vgradi/</code>, and BuildCalc
+          under <code>/calculators/embed/</code>) can be embedded in other websites. The
+          embedded page is loaded from zyankov.eu, so the hosting provider and the analytics
+          service below process the request as for any other page. The embedded page shows no
+          site bar, footer or ad script. It records the embed events listed below, including
+          the domain name of the page that embeds it (taken from the browser's referrer, when
+          the browser sends one). Depending on your browser, embedded calculators may use the
+          same browser storage as described above. The website that embeds a calculator is
+          responsible for its own page.
         </p>
       </section>
 
       <section>
         <h2>Analytics</h2>
-        <Fragment set:html={renderPrivacyAnalytics()} />
+        <Fragment set:html={renderPrivacyAnalytics('en')} />
+        {analyticsEnabled && (
+          <>
+            <p>
+              Besides page views, the site records these anonymous events. They carry only names
+              and categories (such as the tool, the language or a count), never the letters,
+              measurements or amounts you enter:
+            </p>
+            <ul>
+              <li>Word tools: searching for words, Wordle guesses and meaning lookups, crossword and Spelling Bee searches, and clicks on "try next" suggestions (with the language, the number of letters or results, and the guess number).</li>
+              <li>Daily games: starting and finishing a puzzle (win or loss, number of guesses), opening hints, sharing a result, and solving, hinting or giving up the daily anagram.</li>
+              <li>Calculators: running a calculation, copying a shopping list, opening a shared link (with the calculator and, in BuildCalc, the unit system), the energy calculator's appliance list, and copying a sum in words.</li>
+              <li>Sharing: using a share or copy-link button, and which tool it was.</li>
+              <li>Homepage: adding or removing a favourite tool (the tool's id), switching the quick estimate, opening a daily game card, and clicks between projects in the top bar or footer.</li>
+              <li>Embedded calculators: viewing, using and copying the embed code of an embedded calculator, with the calculator and the domain name of the embedding page.</li>
+            </ul>
+          </>
+        )}
+      </section>
+
+      <section>
+        <h2>Advertising and cookies</h2>
+        <p>
+          Zyankov.eu is set up for Google AdSense. The AdSense script is included in the content
+          pages of Zyankov.eu, Letterwell and BuildCalc. It is not included in this privacy
+          policy, the terms of use, the disclaimer or the embedded calculators. The site's own
+          code does not place any ad units on its pages; if Google shows ads through the script,
+          Zyankov.eu does not control which ads appear. Zyankov.eu itself sets no advertising
+          cookies.
+        </p>
+        <p>
+          When the AdSense script is loaded, and when ads are shown, Google and its partners
+          may process technical information such as your IP address and browser or device
+          details, and may use cookies or similar technologies to serve, limit and measure ads
+          and, where allowed, to personalise them. Those cookies belong to Google, not to
+          Zyankov.eu, and the site owner cannot read them.
+        </p>
+        <p>
+          Where Google requires it (for example for visitors in the European Economic Area, the
+          United Kingdom and Switzerland), Google's consent message asks for your choice before
+          personalised advertising is used. You can change or withdraw your choice at any time with
+          <button class="link-button" type="button" data-zy-consent>Privacy settings</button>,
+          also linked in the footer of every page.
+        </p>
+        <p>
+          You can manage Google ad personalisation at
+          <a href="https://adssettings.google.com" rel="noreferrer">adssettings.google.com</a>
+          and read how Google uses information from sites that use its services at
+          <a href="https://policies.google.com/technologies/partner-sites" rel="noreferrer">How Google uses information from sites or apps that use our services</a>.
+        </p>
       </section>
 
       <section>

@@ -2,29 +2,35 @@
 import PageLayout from '../../layouts/PageLayout.astro'
 
 const title = 'Disclaimer | Zyankov.eu'
-const description = 'The limits of the information, estimates and word lists provided by Zyankov.eu, Letterwell and BuildCalc, and what you should check yourself.'
+const description = 'What the calculators, estimates, articles and word lists on Zyankov.eu can and cannot tell you: general information, not professional advice.'
 const jsonLd = {
   '@type': 'WebPage',
+  dateModified: '2026-11-15',
 }
 ---
 
-<PageLayout title={title} description={description} path="/disclaimer/" noAds={true} project="hub" jsonLd={jsonLd}>
+<PageLayout title={title} description={description} path="/disclaimer/" lang="en" alternates={{ en: '/disclaimer/', bg: '/bg/otkaz-ot-otgovornost/' }} noAds={true} project="hub" jsonLd={jsonLd}>
       <p class="eyebrow">Important information</p>
       <h1>Disclaimer</h1>
-      <p class="updated">Last updated: November 4, 2026</p>
+      <p class="updated">Last updated: November 15, 2026</p>
       <p class="intro">
         The tools and articles on Zyankov.eu provide general information for planning, learning and play. Please read the limitations below before relying on a result.
       </p>
 
       <section>
         <h2>No professional advice</h2>
-        <p>Nothing on this site is professional, engineering, legal or financial advice. Results depend on the values and assumptions you enter, and no tool can account for every product, situation or rule.</p>
+        <p>Nothing on this site is professional, engineering, legal, tax or financial advice. Results depend on the values and assumptions you enter, and no tool can account for every product, situation or rule.</p>
       </section>
 
       <section>
-        <h2>BuildCalc estimates</h2>
-        <p>BuildCalc results are arithmetic estimates based on your measurements. Material density, coverage, site conditions, cutting, waste and packaging vary. Verify results with product documentation, suppliers and qualified professionals.</p>
-        <p>Concrete volume estimates do not establish structural adequacy or building-code compliance. BuildCalc does not guarantee that an estimate will match the quantity you need or the price you are charged. Confirm quantities, delivery terms and project requirements before you order or start work.</p>
+        <h2>Calculator estimates</h2>
+        <p>The results of the calculators on Zyankov.eu, including BuildCalc, are arithmetic estimates based on the values you enter and on the rates and coefficients listed under each calculator. Material density, coverage, site conditions, cutting, waste and packaging vary, and energy prices, tariffs, appliance use, tax rates, interest rates and exchange rates change. Each calculator shows its formula, its sources and the date they were last checked; verify results against those sources, with product documentation, suppliers, the competent authority and qualified professionals.</p>
+        <p>Concrete volume estimates do not establish structural adequacy or building-code compliance. The calculators do not guarantee that an estimate will match the quantity you need or the price you are charged. Confirm quantities, delivery terms and project requirements before you order or start work.</p>
+      </section>
+
+      <section>
+        <h2>Articles</h2>
+        <p>The articles explain how the tools work and use worked examples. They are general information, they reflect the sources and figures available on the date shown, and they are not advice for your specific situation.</p>
       </section>
 
       <section>
@@ -34,12 +40,12 @@ const jsonLd = {
 
       <section>
         <h2>Accuracy and availability</h2>
-        <p>The content is checked carefully, but errors are possible and the tools may change or be unavailable. Nothing in this disclaimer limits rights that cannot be limited under applicable law. The <a href="/terms/">terms of use</a> apply to all projects.</p>
+        <p>The content is checked carefully, but errors are possible and the tools may change or be unavailable. Nothing in this disclaimer limits rights that cannot be limited under applicable law. The <a href="/terms/">terms of use</a> apply to the whole site.</p>
       </section>
 
       <section>
         <h2>Ads and external links</h2>
-        <p>The site shows ads from Google AdSense and links to other websites. Zyankov.eu does not control the content of ads or external sites. See the <a href="/privacy/">privacy policy</a> for how advertising works.</p>
+        <p>The site is set up for Google AdSense and links to other websites. Zyankov.eu does not control the content of ads, if any are shown, or of external sites. See the <a href="/privacy/">privacy policy</a> for how advertising works.</p>
       </section>
 
       <section>
