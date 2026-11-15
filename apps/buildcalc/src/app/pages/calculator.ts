@@ -6,7 +6,7 @@ import { track } from '@zyankov/design-system/analytics';
 import { SITE_BASE_URL } from '../core/seo.service';
 import { UnitPreferenceService, UnitSystem } from '../core/unit-preference.service';
 import { GUIDES } from '../data/guides';
-import { ARTICLES, CalculatorInfo, CALCULATORS, CalculatorKind, RELATED_SLUGS, SOURCES_CHECKED } from '../data/calculators';
+import { ARTICLES, CalculatorInfo, CALCULATORS, CalculatorKind, RELATED_SLUGS, checkedIsoFor, formatChecked } from '../data/calculators';
 import {
   AdhesiveInput, calculateAdhesive, calculateInsulation, calculateMasonry, MasonryInput, MASONRY_UNITS, InsulationInput, INSULATION_BOARDS, calculateScreed, calculateWallpaper, ScreedInput, WallpaperInput, calculateArea, calculateConcrete, calculateDrywall, calculateFlooring, calculateGravel, calculateMulch, calculatePaint, calculateTile, ConcreteInput, DRYWALL_SHEETS, SCREED_MATERIALS, TROWEL_NOTCHES, DrywallInput, Estimate, EstimateRow, FlooringInput, GravelInput, MulchInput, PaintInput, TileInput, Values,
 } from '../utils/calculations';
@@ -199,7 +199,10 @@ const DEFAULTS: Record<CalculatorKind, Values> = {
 export class CalculatorPage {
   private readonly route = inject(ActivatedRoute);
   protected readonly calculator = signal<CalculatorInfo | null>(null);
-  protected readonly sourcesChecked = SOURCES_CHECKED;
+  protected readonly sourcesChecked = computed(() => {
+    const calculator = this.calculator();
+    return calculator ? formatChecked(checkedIsoFor(calculator)) : '';
+  });
   protected readonly values = signal<Values>({});
   protected readonly board = computed(() => boardFor(this.calculator()?.kind));
   protected readonly result = signal<Estimate | null>(null);

@@ -141,7 +141,7 @@
     <section class="calculator-notes">
       <article><p class="eyebrow">HOW IT WORKS</p><h2>The calculation</h2><p>{{ calc.formula }}</p>
         @if (calc.sources?.length) {
-        <div class="calc-sources"><h3>Sources <span>· checked {{ sourcesChecked }}</span></h3>
+        <div class="calc-sources"><h3>Sources <span>· checked {{ sourcesChecked() }}</span></h3>
           <ul>@for (source of calc.sources; track source.href) {<li><a [href]="source.href" target="_blank" rel="noopener">{{ source.label }}</a></li>}</ul>
         </div>
         }
