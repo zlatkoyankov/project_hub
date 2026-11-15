@@ -124,7 +124,7 @@ export function shellInline() {
       event.preventDefault();
       if (document.querySelector('script[src*="adsbygoogle"]')) showConsent();
       /* Pages without ad tags (privacy, terms) cannot open the message: go to the homepage. */
-      else window.location.href = '/#privacy-settings';
+      else window.location.href = (document.documentElement.lang === 'bg' ? '/bg/' : '/') + '#privacy-settings';
     }
     /* Clicks from the bar or footer to another project. */
     var projectLink = target && target.closest ? target.closest('[data-zy-project]') : null;
