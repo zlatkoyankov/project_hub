@@ -1234,9 +1234,26 @@ html.is-embed .calculator-layout {
   gap: 0.25rem;
 }
 
+/* Touch sizes: at least 40px tall hit areas for the BuildCalc bar (brand, menu button, links, unit select). */
+.brand,
 .main-nav a {
-  padding: 0.5rem 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.main-nav a {
+  padding: 0 0.85rem;
   border-radius: 999px;
+}
+
+.menu-toggle {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.unit-preference select {
+  min-height: 40px;
 }
 
 .main-nav a:hover {
