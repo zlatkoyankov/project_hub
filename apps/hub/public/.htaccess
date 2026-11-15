@@ -39,6 +39,12 @@ AddCharset UTF-8 .txt .xml .json .svg
   # Google's consent message needs the referrer on cross-origin requests.
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Content-Type-Options "nosniff"
+
+  # The word-list licence files (letterwell/*-license.txt) stay online for attribution but should not be indexed.
+  # Matches only file names ending in -license.txt, so robots.txt, ads.txt and the IndexNow key file are not touched.
+  <FilesMatch "-license\.txt$">
+    Header always set X-Robots-Tag "noindex"
+  </FilesMatch>
 </IfModule>
 
 <IfModule mod_deflate.c>

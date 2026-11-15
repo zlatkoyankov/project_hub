@@ -393,6 +393,14 @@ input {
   color: inherit;
 }
 
+.door__more + .door__more {
+  margin-top: 6px;
+}
+
+.all-tools__more {
+  margin-top: 14px;
+}
+
 /* Every tool in one list */
 .all-tools {
   padding: 18px 24px;

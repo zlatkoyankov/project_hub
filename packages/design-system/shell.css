@@ -289,6 +289,33 @@
   }
 }
 
+/* Touch sizes: every top-bar control gets a hit area at least 40px tall on narrow or touch screens. The look
+   stays the same (pill shapes, same type); only the clickable box grows. */
+@media (max-width: 760px), (pointer: coarse) {
+  .zy-bar__inner {
+    min-height: 56px;
+  }
+
+  .zy-bar__brand,
+  .zy-bar .zy-bar__link,
+  .zy-bar .zy-bar__lang {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+
+  .zy-bar .zy-bar__link,
+  .zy-bar .zy-bar__lang {
+    padding-block: 0;
+  }
+
+  .zy-bar__theme {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+}
+
 @media (max-width: 640px) {
   .zy-bar .zy-bar__link--secondary {
     display: none;
@@ -300,6 +327,11 @@
 }
 
 @media (max-width: 400px) {
+  /* The Bulgarian labels ("Дом и ремонт") were cut off at 390px; slightly tighter pills make them fit. */
+  .zy-bar .zy-bar__link {
+    padding-inline: 6px;
+  }
+
   .zy-bar__brand span {
     display: none;
   }

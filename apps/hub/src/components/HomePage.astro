@@ -25,7 +25,7 @@ interface Topic { id: string; colour: TopicColour; name: string; door: boolean; 
 
 const topics: Topic[] = (bg
   ? [
-      { id: 'everyday', colour: 'money', name: 'Пари и сметки', door: true, ids: ['euro', 'vat', 'salary', 'sick', 'loan', 'percent', 'dates', 'holidays-2027'] },
+      { id: 'everyday', colour: 'money', name: 'Пари и сметки', door: true, ids: ['euro', 'vat', 'salary', 'sick', 'loan', 'interest', 'percent', 'dates', 'holidays-2027', 'countdown', 'easter', 'fuel', 'words'] },
       { id: 'home-diy', colour: 'build', name: 'Ремонт', door: true, ids: ['tile', 'paint', 'concrete', 'fence', 'adhesive', 'flooring', 'screed', 'wallpaper', 'drywall', 'insulation', 'masonry', 'gravel', 'mulch', 'area'] },
       { id: 'energy', colour: 'heat', name: 'Ток и отопление', door: true, ids: ['heating', 'firewood', 'energy', 'aircon'] },
       { id: 'word-games', colour: 'words', name: 'Думи и игри', door: true, ids: ['daily-word', 'wordle-solver', 'word-finder', 'crossword-solver', 'spelling-bee'] },
@@ -41,6 +41,15 @@ const topics: Topic[] = (bg
 ).map(({ ids, ...topic }) => ({ ...topic, tools: pick(ids) })).filter((topic) => topic.tools.length > 0) as Topic[]
 const toolCount = topics.reduce((sum, topic) => sum + topic.tools.length, 0)
 const href = (id: string) => byId(id)?.href[lang] ?? '#'
+
+// Step-by-step articles that go with the BG money tools, shown in that topic card (slug under /bg/blog/).
+const moneyGuides: [string, string][] = [
+  ['kak-se-smyata-dds', 'ДДС'],
+  ['kak-se-smyata-protsent', 'процент'],
+  ['kak-se-smyata-vnoska-po-kredit', 'вноска по кредит'],
+  ['kak-se-broyat-dni-mezhdu-dve-dati', 'дни между две дати'],
+  ['kak-da-preobarnem-leva-v-evro', 'лева в евро'],
+]
 
 // The seasonal pick follows the month the site is built in; the deploys are frequent enough for that.
 const month = new Date().getMonth() + 1
@@ -251,6 +260,9 @@ const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2
           {topic.tools.length > 3 && (
             <p class="door__more"><span>{t.also}</span> {topic.tools.slice(3).map((tool, index) => <>{index > 0 && <span aria-hidden="true"> · </span>}<a href={tool.href[lang]}>{tool.name[lang]}</a></>)}</p>
           )}
+          {bg && topic.id === 'everyday' && (
+            <p class="door__more"><span>Как се смята:</span> {moneyGuides.map(([slug, label], index) => <>{index > 0 && <span aria-hidden="true"> · </span>}<a href={`/bg/blog/${slug}/`}>{label}</a></>)}</p>
+          )}
         </div>
       ))}
     </section>
@@ -260,7 +272,7 @@ const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2
         <summary><h2 id="all-title">{t.all(toolCount)}</h2><span class="all-tools__toggle" aria-hidden="true"><span class="all-tools__hide">{t.hide}</span><span class="all-tools__show">{t.show}</span></span></summary>
         <div class="all-tools__grid">
           {topics.map((topic) => (
-            <div class="all-tools__group" data-tool-group>
+            <div class="all-tools__group" data-tool-group id={topic.door ? undefined : topic.id}>
               <h3><span class={`topic-dot topic-dot--${topic.colour}`} aria-hidden="true"></span>{topic.name}</h3>
               <ul>
                 {topic.tools.map((tool) => (
@@ -273,6 +285,7 @@ const starIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2
             </div>
           ))}
         </div>
+        {!bg && <p class="door__more all-tools__more">Building tools are also listed by category: <a href="/calculators/all-calculators/">all construction calculators</a>.</p>}
       </details>
     </section>
 
