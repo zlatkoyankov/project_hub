@@ -600,9 +600,9 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
         'Сухите дърва дават с около една трета повече топлина от суровите. Купи за догодина още през пролетта и ги остави на сухо и проветриво.',
         'Стара печка използва 50–60% от топлината в дървата, а модерна камина или котел 75–85%. Разликата е цели кубици на сезон.',
       ],
-      checked: '7 ноември 2026',
+      checked: '15 ноември 2026',
       sources: [
-        { label: 'Баварски институт за горите (LWF), Merkblatt 20: 1 пространствен м³ бук ≈ 1900 kWh; съотношения между кубиците', href: 'https://lwf.bayern.de/mam/cms04/service/dateien/mb20_scheitholz_2025_rz_web_bf.pdf' },
+        { label: 'Баварски институт за горите (LWF), Merkblatt 20: 1 пространствен м³ бук ≈ 1900 kWh; съотношения между кубиците; сухи дърва ≈ 4 kWh/kg', href: 'https://lwf.bayern.de/mam/cms04/service/dateien/mb20_scheitholz_2025_rz_web_bf.pdf' },
         { label: 'LWF, Merkblatt 12: Енергийно съдържание на дървесината по видове', href: 'https://lfl.bayern.de/mam/cms04/service/dateien/mb12_energiegehalt-2024_rz_web_bf.pdf' },
         { label: 'ENplus: изисквания към качеството на пелетите (клас A1: поне 16,5 MJ/кг = 4,6 kWh/кг)', href: 'https://enplus-pellets.eu/wp-content/uploads/2023/11/Teil-III-Anforderungen-an-die-Pellet-Qualitat.pdf' },
         { label: 'Регламент (ЕС) 2015/1185: печките на твърдо гориво трябва да имат поне 65% сезонна ефективност', href: 'http://data.europa.eu/eli/reg/2015/1185/oj' },
@@ -653,7 +653,7 @@ const CONFIGS: Partial<Record<Kind, Config>> = {
         'Климатикът губи от ефективността си при силен студ (под около −10 °C). В планината или при стари климатици сметката излиза по-висока.',
         'Сухите дърва (под 20% влага) дават с около една трета повече топлина от суровите. Купувай ги през пролетта и ги остави да съхнат.',
       ],
-      checked: '7 ноември 2026',
+      checked: '15 ноември 2026',
       sources: [
         { label: 'Бизнес новините: Ток, газ, дърва или пелети – кое е най-евтиното отопление през 2026 г. (цени на дърва и пелети, COP на термопомпа)', href: 'https://businessnovinite.bg/bg-biznes/tok-gaz-darva-ili-peleti-koe-e-naj-evtinoto-otoplenie-v-balgarija-za-2026-g.html' },
         { label: 'ЕНЕРГО-ПРО: КЕВР утвърди нови цени на електроенергията от 1 юли 2026 г. (0,12927 €/kWh дневна, 0,07733 €/kWh нощна)', href: 'https://www.energo-pro.bg/en/novini/kevr-utvrdi-novi-ceni-na-elektroenergiyata-ot-1-yuli-2026-g' },
@@ -1718,7 +1718,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         unitOut.dataset.many = pellets ? 'тона пелети' : 'пространствени м³'
         const rows: [string, string, string?][] = [['Нужна топлина', `${fmt(result.demand, 0)} kWh`, 'за целия сезон']]
         if (pellets) {
-          rows.push(['Торби', `${result.bags} бр.`, `по ${fmt(num('bag'), 0)} кг`], ['Палети', `${fmt(result.tonnes / 1.05, 1)}`, 'по около 1050 кг'])
+          rows.push(['Торби', `${result.bags} бр.`, `по ${fmt(num('bag'), 0)} кг`])
         } else {
           rows.push(
             ['Плътни кубици', `${fmt(result.solid, 1)} м³`, 'ако продавачът мери плътно'],
