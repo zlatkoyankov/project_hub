@@ -1,6 +1,7 @@
 // /og/<key>.png — sharing images for every hub page, every post and the Letterwell pages.
 // <key> is the page path without slashes: "/" → home, "/bg/blog/x/" → bg-blog-x (see ogKey()).
 import type { APIRoute, GetStaticPaths } from 'astro'
+import { upcomingEasterYear } from '../../lib/easter'
 import { renderOg, type OgCard } from '../../lib/og'
 import { getPosts, ogKey, postPath } from '../../lib/site'
 
@@ -34,6 +35,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     'loan-calculator': { kicker: 'Everyday sums · calculator', title: 'What will the monthly loan payment be?', footer: 'zyankov.eu/loan-calculator' },
     'bg-kalkulator-bolnichni': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко ще получа за болничния?', footer: 'zyankov.eu/bg/kalkulator-bolnichni' },
     'bg-kolko-dni-do': { kicker: 'Всекидневни сметки · дати', title: 'Колко дни до Коледа, Нова година и Великден?', footer: 'zyankov.eu/bg/kolko-dni-do' },
+    'bg-koga-e-velikden': { kicker: 'Всекидневни сметки · календар', title: `Кога е Великден ${upcomingEasterYear(new Date().toISOString().slice(0, 10))}? Православен и католически`, footer: 'zyankov.eu/bg/koga-e-velikden' },
     'bg-zakonna-lihva': { kicker: 'Всекидневни сметки · калкулатор', title: 'Каква е законната лихва за забава?', footer: 'zyankov.eu/bg/zakonna-lihva' },
     'bg-razhod-na-gorivo': { kicker: 'Всекидневни сметки · калкулатор', title: 'Колко струва горивото за пътуването?', footer: 'zyankov.eu/bg/razhod-na-gorivo' },
     'bg-suma-slovom': { kicker: 'Всекидневни сметки · фактури', title: 'Сума словом за фактура и договор', footer: 'zyankov.eu/bg/suma-slovom' },
