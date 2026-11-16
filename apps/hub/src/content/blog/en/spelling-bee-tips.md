@@ -37,3 +37,10 @@ The daily puzzle uses a curated list. It leaves out proper nouns, hyphenated wor
 ## Use the Spelling Bee helper
 
 The [Spelling Bee helper](/letterwell/spelling-bee-solver/) shows a hint grid by first letter and length and the two-letter starts first. It reveals the words and pangrams only when you ask. Our dictionary is larger than the game's list, so you will also see words the game does not accept.
+
+## Sources
+
+Checked 15 November 2026.
+
+- [Wikipedia: The New York Times Spelling Bee](https://en.wikipedia.org/wiki/The_New_York_Times_Spelling_Bee): seven letters in a honeycomb, words of four or more letters that include the centre letter, a pangram earns 7 extra points, and every puzzle has at least one pangram.
+- The advice on endings, prefixes and repeated letters is general word-game practice, not a rule of the game. The remark about which words the daily list leaves out is not covered by the source above.

@@ -310,7 +310,7 @@ export const INSULATION_BOARDS = [
 ]
 
 /** Per m² of board: adhesive 5.0 and base coat 4.0 kg from Ceresit CT 85, mesh 1.1 m²/m² (Ceresit CT 325),
- *  and six anchors, the minimum in ETICS approvals for EPS and mineral wool (eight on buildings over about 25 m). */
+ *  and six anchors, the minimum in ETICS approvals for EPS and mineral wool (eight on buildings over 24 m (ETA 22/0366)). */
 export const INSULATION_RATES = { adhesiveKg: 5.0, baseCoatKg: 4.0, meshOverlap: 1.1, anchors: 6 }
 
 export interface InsulationInput {

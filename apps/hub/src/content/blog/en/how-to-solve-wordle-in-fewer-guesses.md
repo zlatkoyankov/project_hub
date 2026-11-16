@@ -11,7 +11,7 @@ Most Wordle players do not lose games because they lack vocabulary. They lose th
 
 ## 1. Start with a strong, fixed opener
 
-Your first guess should test the most useful letters, not your favourite word. When we tested about 4,000 openers, RAISE, SLATE, CRANE, CRATE and TRACE came out on top, and vowel-heavy words like AUDIO did poorly. The full results are in [the best Wordle starting words, tested](/blog/best-wordle-starting-words/).
+Your first guess should test the most useful letters, not your favourite word. When we tested about 4,000 openers, RAISE, SLATE, CRANE, CRATE and TRACE all ranked in the top 30, and vowel-heavy words like AUDIO did poorly. The full results are in [the best Wordle starting words, tested](/blog/best-wordle-starting-words/).
 
 Using the same opener every day has a second benefit: you start to recognise what its colour patterns usually mean.
 
@@ -79,3 +79,10 @@ In Hard Mode, any revealed hint must be used in later guesses, so probe words wi
 - With many options left, use fresh letters; with few left, guess a likely answer.
 - On four greens with several fillers, use a probe word.
 - Consider repeated letters when you are stuck.
+
+## Sources
+
+Checked 15 November 2026.
+
+- **Our own analysis.** The figures (about 4,000 openers, 2,315 games, the 3.57 and 3.48 averages, 16 and 0 games over six guesses, the TERMS probe for _IGHT) are our calculation, not published research. The word lists and method are described in [the best Wordle starting words, tested](/blog/best-wordle-starting-words/#sources). The 3.57 average and 16 lost games were reproduced on 15 November 2026; the 3.48 average came out as 3.49 in the rerun, which uses a slightly different plural rule for the answer pool.
+- [Tom's Guide: what Wordle is and how it works](https://www.tomsguide.com/uk/news/what-is-wordle): five-letter word, six guesses, green, yellow and grey tiles.

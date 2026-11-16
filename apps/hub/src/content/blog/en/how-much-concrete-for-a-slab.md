@@ -55,7 +55,7 @@ Sixty-two 80 lb bags weigh more than two tonnes, all of it lifted and mixed by h
 1. Volume: 3 × 4 × 0.10 = **1.20 m³**
 2. With a 10% allowance: 1.20 × 1.10 = **1.32 m³**
 
-If you buy bagged dry mix, check the yield on the bag. A 25 kg bag of a standard mix typically makes only around 11–13 litres of concrete, so 1.32 m³ would be more than a hundred bags. At that volume ready-mixed concrete is usually the practical choice.
+If you buy bagged dry mix, check the yield on the bag. A 25 kg bag of a standard mix typically makes only around 12–14 litres of concrete (weber lists 12–14 litres), so 1.32 m³ would be roughly 95 to 110 bags. At that volume ready-mixed concrete is usually the practical choice.
 
 ## Example 3: round footings and post holes
 
@@ -95,3 +95,4 @@ The [BuildCalc concrete calculator](/calculators/concrete-calculator/) does step
 Checked on 7 November 2026.
 
 - [QUIKRETE Concrete Mix 80 lb: about 0.6 cu ft per bag](https://www.pacesupply.com/Product/MORCONCRETE80)
+- [weber beton data sheet: 12 to 14 litres of concrete from a 25 kg bag](https://bauhaus.bg/upload/files/120048/2608_TDS_weber_Beton.pdf)
