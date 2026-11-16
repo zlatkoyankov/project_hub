@@ -26,6 +26,7 @@ export const EMBED_SLUGS = {
   'razhod-na-gorivo': 'fuel',
   'zakonna-lihva': 'interest',
   'kuhnenski-merki': 'kitchen',
+  'obezshtetenie-neizpolzvan-otpusk': 'leave',
 } as const
 
 export type EmbedKind = (typeof EMBED_SLUGS)[keyof typeof EMBED_SLUGS]

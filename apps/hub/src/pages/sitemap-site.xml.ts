@@ -33,6 +33,7 @@ export async function GET() {
     { path: '/bg/zakonna-lihva/' },
     { path: '/bg/kuhnenski-merki/', alternates: pair('/cups-to-grams-calculator/', '/bg/kuhnenski-merki/') },
     { path: '/cups-to-grams-calculator/', alternates: pair('/cups-to-grams-calculator/', '/bg/kuhnenski-merki/') },
+    { path: '/bg/obezshtetenie-neizpolzvan-otpusk/' },
     { path: '/bg/kolko-dni-do/' },
     { path: '/bg/koga-e-velikden/' },
     { path: '/bg/kalkulator-bolnichni/' },
