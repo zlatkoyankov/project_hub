@@ -53,7 +53,7 @@ const t = bg
   ? {
       title: 'Калкулатор за разход на ток на уред | Zyankov.eu',
       description: 'Изчисли колко киловатчаса харчи печката, климатикът или бойлерът и колко струва на ден, месец и година при твоята цена на тока.',
-      answer: 'духалка от 2 000 W харчи 2 kWh на час. При 0,155 €/kWh с ДДС (ЕНЕРГО-ПРО, район Север, дневна тарифа от 1 юли 2026 г.) това са 0,31 € на час, 1,86 € на ден при 6 часа работа и около 55,80 € на месец за 30 дни. Климатикът дава същата топлина с около три пъти по-малко ток.',
+      answer: 'духалка от 2 000 W харчи 2 kWh на час. При 0,15512 €/kWh с ДДС (ЕНЕРГО-ПРО, район Север, дневна тарифа от 1 юли 2026 г.) това са 0,31 € на час, 1,86 € на ден при 6 часа работа и около 55,84 € на месец за 30 дни. Климатикът дава същата топлина с около три пъти по-малко ток.',
       crumbs: ['Начало', 'Дом и ремонт'],
       kicker: 'ДОМ И ЕНЕРГИЯ',
       h1: 'Колко ток харчи уредът?',
@@ -394,7 +394,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
       if (!areaField) return
       const option = areaField.selectedOptions[0]
       const vatSelect = field('vat') as HTMLSelectElement
-      if (vatLabel) vatLabel.textContent = vatSelect.value === 'with' ? ' (с ДДС)' : ' (без ДДС)'
+      if (vatLabel) vatLabel.textContent = areaField.value === 'custom' ? ' (от твоята сметка)' : vatSelect.value === 'with' ? ' (с ДДС)' : ' (без ДДС)'
       if (areaField.value === 'custom') return
       const net = Number(option.dataset[(field('tariff') as HTMLSelectElement).value === 'night' ? 'night' : 'day'])
       field('price').value = String(Math.round((vatSelect.value === 'with' ? net * (1 + Number(root.dataset.vat) / 100) : net) * 1e5) / 1e5)
@@ -441,7 +441,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
       if (name === 'watts' || name === 'hours' || name === 'load') (field('appliance') as HTMLSelectElement).value = 'custom'
       if (name === 'currency') renderList()
       if (areaField) {
-        if (name === 'price') areaField.value = 'custom'
+        if (name === 'price') { areaField.value = 'custom'; fillPrice() }
         if (name === 'area' || name === 'tariff' || name === 'vat') fillPrice()
       }
       update()
