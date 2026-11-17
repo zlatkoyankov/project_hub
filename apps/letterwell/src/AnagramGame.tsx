@@ -7,6 +7,7 @@ import { ArrowRight, Delete, Eye, Lightbulb, Shuffle, Sparkles } from 'lucide-re
 import { track } from '@zyankov/design-system/analytics'
 import { HeroDecor } from './Playful'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { ToolContent } from './ToolContent'
 import { TryNext } from './TryNext'
 import { pagePath, type Language } from './seo'
 import { dictionaryLinks } from './meanings'
@@ -338,6 +339,7 @@ export default function AnagramGame({ language = 'bg' }: { language?: Language }
         </section>
 
         <section className="daily-notes"><Notes language={language} /></section>
+        <ToolContent page="anagram" language={language} />
         <MoreWordTools language={language} current="anagram" />
       </main>
     </div>

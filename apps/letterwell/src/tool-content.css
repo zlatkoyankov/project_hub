@@ -1,0 +1,104 @@
+/* Written guide below a tool (ToolContent.tsx). Colours come from the design tokens only. */
+.tool-content {
+  width: min(100%, 760px);
+  margin: 32px auto 8px;
+  padding: 0 20px;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+}
+
+.tool-content__section {
+  margin: 0 0 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.tool-content h2 {
+  margin: 0 0 12px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.tool-content h3 {
+  margin: 0 0 6px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.tool-content p {
+  margin: 0 0 12px;
+}
+
+.tool-content ol,
+.tool-content ul {
+  margin: 0 0 12px;
+  padding-left: 22px;
+}
+
+.tool-content li {
+  margin: 0 0 8px;
+}
+
+.tool-content a {
+  color: var(--coral-strong);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tool-content code {
+  padding: 1px 6px;
+  color: var(--text);
+  font-size: 0.92em;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
+.tool-content__example {
+  margin: 0 0 14px;
+  padding: 16px 18px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.tool-content__faq {
+  margin: 0 0 14px;
+}
+
+.tool-content__faq p {
+  margin: 0;
+}
+
+.tool-content__links {
+  padding-left: 0;
+  list-style: none;
+}
+
+.tool-content__links li {
+  margin: 0 0 6px;
+}
+
+@media (max-width: 480px) {
+  .tool-content {
+    padding: 0 16px;
+    font-size: 15px;
+  }
+
+  .tool-content h2 {
+    font-size: 22px;
+  }
+}
+
+/* The Spelling Bee hero decoration sat a few pixels past the right edge on phones. */
+.bee-page .wordle-intro {
+  overflow-x: clip;
+}
