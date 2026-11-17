@@ -21,7 +21,7 @@ type Mode = 'daily' | 'unlimited'
 
 const TEXT = {
   bg: {
-    titleFirst: 'Дума на', titleEmphasis: 'деня', game: 'Дума на деня', note: 'Нова дума всеки ден', eyebrow: 'Игра на думи',
+    titleFirst: 'Дума на', titleEmphasis: 'деня', game: 'Игра: дума на деня', note: 'Нова дума всеки ден', eyebrow: 'Игра на думи',
     intro: 'Познай думата от 5 букви с 6 опита. Една и съща дума за всички, нова всеки ден в полунощ.',
     shareUrl: 'zyankov.eu/duma', storage: 'zy-daily', locale: 'bg-BG',
     daily: 'Днешната', unlimited: 'Неограничено', modes: 'Режим на игра',
@@ -45,7 +45,7 @@ const TEXT = {
     example: 'книга', exampleNear: 1,
   },
   en: {
-    titleFirst: 'Letterwell', titleEmphasis: 'Daily', game: 'Letterwell Daily', note: 'A new word every day', eyebrow: 'Word game',
+    titleFirst: 'Letterwell', titleEmphasis: 'Daily', game: 'Game: Letterwell Daily', note: 'A new word every day', eyebrow: 'Word game',
     intro: 'Find the five-letter word in six tries. Everyone gets the same word, and a new one arrives every day.',
     shareUrl: 'zyankov.eu/daily', storage: 'zy-daily-en', locale: 'en-GB',
     daily: 'Today', unlimited: 'Unlimited', modes: 'Game mode',
@@ -404,13 +404,13 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
 
           <div className="daily-message" role="status" aria-live="polite">{message}</div>
 
-          <div className="daily-board" aria-label={t.board}>
+          <div className="daily-board" role="group" aria-label={t.board}>
             {rows.map((row, r) => (
               <div key={r} className={`daily-row${row.current && shake ? ' is-shaking' : ''}`} role="group" aria-label={`${t.guess} ${r + 1}`}>
                 {row.letters.map((letter, i) => {
                   const mark = row.marks[i]
                   return (
-                    <span key={i} aria-label={letter.trim() ? `${upper(letter)}${markLabel(mark)}` : t.empty}
+                    <span key={i} role="img" aria-label={letter.trim() ? `${upper(letter)}${markLabel(mark)}` : t.empty}
                       className={`daily-tile${letter.trim() ? ' is-filled' : ''}${mark ? ` is-${mark}` : ''}${r === revealRow ? ' is-revealing' : ''}`}
                       style={{ '--i': i } as CSSProperties}>{upper(letter.trim())}</span>
                   )
@@ -435,7 +435,7 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
             </div>
           )}
 
-          <div className="daily-keyboard" aria-label={t.keyboard}>
+          <div className="daily-keyboard" role="group" aria-label={t.keyboard}>
             {KEYBOARD_ROWS[language].map((row, r) => (
               <div key={r} className="daily-keys">
                 {r === 2 && <button type="button" className="daily-key is-wide" onClick={() => press('enter')}>{t.enter}</button>}
@@ -475,7 +475,7 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
                 <h2 id="daily-modal-title">{dailyDone ? (won ? t.won : t.lost) : t.stats}</h2>
                 {dailyDone && (
                   <div className="daily-answer">
-                    <div className="daily-example" aria-label={upper(answer)}>
+                    <div className="daily-example" role="img" aria-label={upper(answer)}>
                       {[...answer].map((letter, i) => <span key={i} className="daily-tile is-filled is-correct">{upper(letter)}</span>)}
                     </div>
                     <p>{t.meaning} {dictionaryLinks(answer, language).map((link, i) => <span key={link.href}>{i > 0 && ' · '}<a href={link.href} target="_blank" rel="noopener">{link.label}</a></span>)}</p>

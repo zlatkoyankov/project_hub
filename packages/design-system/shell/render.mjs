@@ -133,7 +133,7 @@ export function renderBar({ project = 'hub', main = 'main', lang = 'en', alterna
     .map((p) => `<a class="zy-bar__link" href="${escape(navHref(p, lang))}" data-zy-project="${escape(p.slug)}"${current(p.slug === project)}>${escape(navLabel(p, lang))}</a>`)
     .join('')
   return `<a class="zy-skip" href="#${escape(main)}">${s.skip}</a>
-<div class="zy-bar" data-zy-shell="bar">
+<div class="zy-bar" data-zy-shell="bar" role="region" aria-label="zyankov.eu">
   <div class="zy-bar__inner">
     <a class="zy-bar__brand" href="${l.home}"${current(project === 'hub')}>${monogram('zy-mark')}<span>zyankov.eu</span></a>
     <nav class="zy-bar__nav" aria-label="zyankov.eu">${projectLinks}<a class="zy-bar__link zy-bar__link--secondary" href="${l.blog}"${current(project === 'blog')}>${s.blog}</a><a class="zy-bar__link zy-bar__link--secondary" href="${l.about}"${current(project === 'about')}>${s.about}</a></nav>

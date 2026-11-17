@@ -5,7 +5,7 @@
       <div class="guide-grid">
         @for (item of guides; track item.slug; let i = $index) {
           <a class="calculator-card" [routerLink]="['/guides', item.slug]">
-            <app-material-art class="card-art" [kind]="item.kind" [eager]="i < 3" />
+            <app-material-art class="card-art" [kind]="item.kind" [eager]="i < 1" />
             <span class="card-category">{{ item.kicker }}</span><h2>{{ item.title }}</h2><p>{{ item.description }}</p><span class="card-arrow" aria-hidden="true">↗</span>
           </a>
         }
