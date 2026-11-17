@@ -7,6 +7,7 @@ import { cleanLetters, cleanPattern, findMatches, MAX_PATTERN } from './crosswor
 import { getDictionary } from './dictionary'
 import { crosswordMetadata, pagePath, type Language } from './seo'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { ToolContent } from './ToolContent'
 import { EmptyArt, HeroDecor } from './Playful'
 import { MeaningButton, MeaningPopover, type OpenMeaning } from './WordMeaning'
 
@@ -47,8 +48,6 @@ const copy = {
       'Every word in the dictionary with the same number of letters is checked against your pattern. A word stays only if it has your letters in exactly those squares, contains every letter from “Must contain” and none of the letters from “Leave out”.',
       'The dictionary has about 274,000 English words, so you will also see rare words and plurals. Crossword answers can be phrases or names that are not in it.',
     ],
-    readMore: 'Read more',
-    article: { href: '/blog/how-to-solve-crosswords-faster/', label: 'How to solve crosswords faster: 8 tips' },
   },
   bg: {
     tagline: 'Помощник за кръстословици',
@@ -84,8 +83,6 @@ const copy = {
       'Всяка дума от речника със същия брой букви се сравнява с шаблона. Остават само думите, които имат твоите букви точно на тези места, съдържат всички букви от „Трябва да има“ и нямат нито една от „Без буквите“.',
       'Речникът има около 126 000 български думи, включително форми като членувани съществителни и множествено число. Отговорите в кръстословиците понякога са имена или изрази, които ги няма в него.',
     ],
-    readMore: 'Прочети още',
-    article: { href: '/bg/blog/kak-da-reshavash-krastoslovitsi/', label: 'Как да решаваш кръстословици по-бързо' },
   },
 }
 
@@ -270,8 +267,8 @@ function CrosswordSolver({ language }: { language: Language }) {
         <section className="tool-guide" aria-labelledby="tool-guide-title">
           <h2 id="tool-guide-title">{text.guideTitle}</h2>
           {text.guide.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          <p className="guide-links"><strong>{text.readMore}:</strong> <a href={text.article.href}>{text.article.label}</a></p>
         </section>
+        <ToolContent page="crossword" language={language} />
         <MoreWordTools language={language} current="crossword" />
       </main>
     </div>

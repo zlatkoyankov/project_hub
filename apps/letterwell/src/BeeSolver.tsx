@@ -7,6 +7,7 @@ import { beeHints, cleanBeeLetters, findBeeWords, MIN_LENGTH } from './bee'
 import { getDictionary } from './dictionary'
 import { beeMetadata, pagePath, type Language } from './seo'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { ToolContent } from './ToolContent'
 import { EmptyArt, HeroDecor } from './Playful'
 import { MeaningButton, MeaningPopover, type OpenMeaning } from './WordMeaning'
 
@@ -276,6 +277,7 @@ function BeeSolver({ language }: { language: Language }) {
           <h2 id="tool-guide-title">{text.guideTitle}</h2>
           {text.guide.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         </section>
+        <ToolContent page="bee" language={language} />
         <MoreWordTools language={language} current="bee" />
       </main>
     </div>

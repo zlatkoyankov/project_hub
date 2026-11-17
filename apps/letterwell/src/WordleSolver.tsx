@@ -5,6 +5,7 @@ import './App.css'
 import './wordle.css'
 import { pagePath, wordleMetadata, type Language } from './seo'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { ToolContent } from './ToolContent'
 import { EmptyArt, HeroDecor } from './Playful'
 import { loadMeaningIndex } from './meanings'
 import { MeaningButton, MeaningPopover, type OpenMeaning } from './WordMeaning'
@@ -61,12 +62,6 @@ const copy = {
       'The suggested next guess is the everyday word that splits the remaining answers into the smallest groups, so whatever colours you get back, fewer words are left. The list is not the official Wordle list, so treat it as help, not a guarantee.',
       'Tap ⓘ next to a word to see a short meaning from Wiktionary. A grey ⓘ means we have no meaning for that word; you can hide the buttons with “Show meanings”.',
     ],
-    readMore: 'Read more',
-    articles: [
-      { href: '/blog/best-wordle-starting-words/', label: 'The best Wordle starting words, tested' },
-      { href: '/blog/how-to-solve-wordle-in-fewer-guesses/', label: 'How to solve Wordle in fewer guesses' },
-      { href: '/letterwell/daily/hints/', label: 'Letterwell Daily hints: clues without the answer' },
-    ],
   },
   bg: {
     tagline: 'Помощник за Wordle',
@@ -113,11 +108,6 @@ const copy = {
       'Всеки опит се сравнява с всяка дума от пет букви в списъка. Остават само думите, които биха дали точно същите зелени, жълти и сиви плочки, така че повтарящите се букви се отчитат като в играта.',
       'Предложеният следващ опит е често срещаната дума, която разделя останалите възможности на най-малки групи. Каквито и цветове да получиш, ще останат по-малко думи. Списъкът не е официалният на играта, затова го приемай като помощ, а не като гаранция.',
       'Натисни ⓘ до дума, за да видиш линкове към нейното значение в Речника на българския език на БАН и в Уикиречника. Бутоните се скриват с „Показвай значения“.',
-    ],
-    readMore: 'Прочети още',
-    articles: [
-      { href: '/bg/blog/kak-da-reshavash-wordle-na-balgarski/', label: 'Как да решаваш Wordle на български' },
-      { href: '/letterwell/bg/duma-na-denya/podskazki/', label: 'Подсказки за „Дума на деня“ без спойлери' },
     ],
   },
 }
@@ -370,13 +360,8 @@ function WordleSolver({ language }: { language: Language }) {
         <section className="tool-guide" aria-labelledby="tool-guide-title">
           <h2 id="tool-guide-title">{text.guideTitle}</h2>
           {text.guide.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          <p className="guide-links">
-            <strong>{text.readMore}:</strong>{' '}
-            {text.articles.map((article, index) => (
-              <span key={article.href}>{index > 0 && ' · '}<a href={article.href}>{article.label}</a></span>
-            ))}
-          </p>
         </section>
+        <ToolContent page="wordle" language={language} />
         <MoreWordTools language={language} current="wordle" />
       </main>
     </div>

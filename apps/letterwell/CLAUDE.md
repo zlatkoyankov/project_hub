@@ -54,6 +54,17 @@ needs:
 - `src/AnagramGame.tsx`: the UI; saved in `localStorage` `zy-anagram-today-v1` / `zy-anagram-stats-v1`
   (EN `zy-anagram-en-…`). It shows the daily-word streak from `zy-daily-stats-v1` next to its link.
 
+## Written guides below the tools
+
+- Each tool page ends with a guide (steps, worked examples, word list and limits, rules, strategy, FAQ,
+  related links). The text is plain data in `src/content/<page>.ts` (`finder`, `wordle`, `crossword`, `bee`,
+  `anagram`, `daily`; EN and BG), rendered by `src/ToolContent.tsx` and styled in `src/tool-content.css`
+  (tokens only). Inline markup: `` `code` `` and `[label](/path/)`.
+- Every number and word list quoted in an example is recomputed from the real tool code in
+  `src/content.spec.ts`. When you change a word list, the daily/anagram lists or a tool's logic, run
+  `npm run test:letterwell` and update the text the spec flags. Never write an example by hand.
+- The pages do not use FAQPage JSON-LD (only `WebApplication`), so the FAQs are plain text.
+
 ## Word lists and meanings
 
 - The word lists in `public/` (`*-words.txt`, `wordle-*.txt`) have licence files next to them.

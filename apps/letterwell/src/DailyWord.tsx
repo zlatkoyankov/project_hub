@@ -5,6 +5,7 @@ import { BarChart3, CircleHelp, Delete, Lightbulb, RefreshCw, Share2, Sparkles, 
 import { track } from '@zyankov/design-system/analytics'
 import { HeroDecor } from './Playful'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { ToolContent } from './ToolContent'
 import { TryNext } from './TryNext'
 import { pagePath, type Language } from './seo'
 import { loadWordleList, WORD_LENGTH } from './wordle'
@@ -449,6 +450,7 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
         </section>
 
         <section className="daily-notes">{NOTES[language]}</section>
+        <ToolContent page="daily" language={language} />
 
         <MoreWordTools language={language} current="daily" />
       </main>

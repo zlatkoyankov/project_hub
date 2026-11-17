@@ -6,6 +6,7 @@ import './App.css'
 import { getDictionary } from './dictionary'
 import { languagePath, pagePath, seoMetadata, socialDescriptions, type Language } from './seo'
 import { MoreWordTools, ToolLinks } from './ToolNav'
+import { ToolContent } from './ToolContent'
 import { EmptyArt, HeroDecor } from './Playful'
 
 const examples: Record<Language, string[]> = {
@@ -744,6 +745,7 @@ function App({ language }: { language: Language }) {
               : 'Switch dictionaries with the language menu. Searches run in your browser, so your letters are not sent to a server. Optional Scrabble, Words With Friends, and Boggle scores help you compare possible plays. The word list may differ from official game dictionaries, so check the rules for the game you are playing.'}
           </p>
         </section>
+        <ToolContent page="finder" language={language} />
         <MoreWordTools language={language} current="finder" />
       </main>
     </div>
