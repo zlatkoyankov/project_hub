@@ -252,6 +252,8 @@
 }
 
 .breadcrumbs a {
+  padding-block: 3px;
+  margin-block: -3px;
   color: var(--text-muted);
   font-weight: 600;
 }
