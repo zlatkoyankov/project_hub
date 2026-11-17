@@ -515,6 +515,24 @@
   gap: 6px;
 }
 
+/* Phones (375px): the Bulgarian "Неограничено" mode label pushed the stats button out of the card.
+   The help and icon buttons stay on the first row; the mode switch takes its own full-width row. */
+@media (max-width: 420px) {
+  .daily-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .daily-toolbar .daily-modes {
+    order: 3;
+    flex: 1 0 100%;
+  }
+
+  .daily-modes button {
+    flex: 1;
+  }
+}
+
 .daily-hints {
   width: min(100%, 360px);
   margin: 0 auto 12px;

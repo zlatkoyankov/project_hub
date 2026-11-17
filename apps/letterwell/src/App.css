@@ -114,9 +114,9 @@
 .length-settings legend,
 .result-meta {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 12px; /* was 10px: too small to read comfortably on phones */
   font-weight: 700;
-  letter-spacing: 1.25px;
+  letter-spacing: 1px;
 }
 
 .eyebrow {
@@ -1299,7 +1299,7 @@
 
   .topbar-note {
     max-width: 150px;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .topbar-actions {

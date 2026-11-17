@@ -317,7 +317,7 @@
   .play-decor .play-bee-wrap {
     width: 120px;
     scale: -0.75 0.75;
-    right: 14px; /* keeps the mirrored trail inside a 390px screen (it overflowed by 11px) */
+    right: 20px; /* keeps the mirrored trail inside a 375px screen (14px overflowed it by 4px) */
   }
 
   .play-decor--finder {
