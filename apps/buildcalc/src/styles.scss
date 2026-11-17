@@ -447,6 +447,12 @@ p {
   outline: none;
 }
 
+/* The input itself has no outline, so the visible focus indicator sits on the pill around it. */
+.search-box:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .empty-state {
   border: 1px dashed var(--border);
   border-radius: var(--radius-md);

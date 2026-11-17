@@ -333,8 +333,14 @@
     padding-inline: 6px;
   }
 
+  /* Visually hidden, not display:none, so the logo-only link keeps its accessible name. */
   .zy-bar__brand span {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
