@@ -12,6 +12,8 @@ import { TryNext } from './TryNext'
 import { pagePath, type Language } from './seo'
 import { dictionaryLinks } from './meanings'
 import { getDictionary } from './dictionary'
+import { shareResult } from './share'
+import { ManualCopy } from './ManualCopy'
 import { LATIN_TO_CYRILLIC, currentStreak, emptyStats, msUntilNext, puzzleNumber, type Stats } from './daily'
 import { anagramFor, anagramHints, anagramShareText, checkGuess, currentAnagramStreak, dailyScramble, emptyAnagramStats, recordAnagram, scramble, type AnagramStats } from './anagram'
 import './wordle.css'
@@ -146,6 +148,7 @@ export default function AnagramGame({ language = 'bg' }: { language?: Language }
   const [yesterdayOpen, setYesterdayOpen] = useState(false)
   const [countdown, setCountdown] = useState('')
   const [copied, setCopied] = useState(false)
+  const [manualText, setManualText] = useState('')
 
   // Client only: the prerendered page has no date.
   useEffect(() => {
@@ -238,11 +241,11 @@ export default function AnagramGame({ language = 'bg' }: { language?: Language }
   const share = async () => {
     if (!today || !puzzle) return
     const text = anagramShareText(t.heading(puzzle), today.solved, today.hints, language, t.share)
-    try {
-      if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) await navigator.share({ text })
-      else { await navigator.clipboard.writeText(text); setCopied(true); window.setTimeout(() => setCopied(false), 2000) }
-      track('share', { tool: 'anagram', language })
-    } catch { /* cancelled */ }
+    setManualText('')
+    track('share', { tool: 'anagram', language })
+    const outcome = await shareResult(text)
+    if (outcome === 'copied') { setCopied(true); window.setTimeout(() => setCopied(false), 2000) }
+    else if (outcome === 'manual') setManualText(text)
   }
 
   const yesterday = puzzle && puzzle > 1 ? anagramFor(puzzle - 1, language) : ''
@@ -314,6 +317,7 @@ export default function AnagramGame({ language = 'bg' }: { language?: Language }
                   <div className="daily-after__actions">
                     <button type="button" className="daily-share" onClick={() => void share()}>{copied ? t.copied : t.shareBtn}</button>
                   </div>
+                  {manualText && <ManualCopy text={manualText} language={language} />}
                   <dl className="daily-stats">
                     {[stats.solved, streak, stats.maxStreak, stats.clean].map((value, i) => <div key={t.stats[i]}><dt>{t.stats[i]}</dt><dd>{value}</dd></div>)}
                   </dl>
