@@ -685,3 +685,20 @@
 .try-next li a:hover {
   border-color: var(--border-strong);
 }
+
+.daily-manual {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.daily-manual textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  resize: none;
+}

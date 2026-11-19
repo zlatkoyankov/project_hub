@@ -10,6 +10,8 @@ import { TryNext } from './TryNext'
 import { pagePath, type Language } from './seo'
 import { loadWordleList, WORD_LENGTH } from './wordle'
 import { dictionaryLinks } from './meanings'
+import { shareResult } from './share'
+import { ManualCopy } from './ManualCopy'
 import {
   answerFor, currentStreak, DAILY_WORDS, emptyStats, hintsFor, KEYBOARD_ROWS, keyMarks, LATIN_TO_CYRILLIC, LETTERS, markGuess, MAX_GUESSES,
   msUntilNext, puzzleNumber, randomAnswer, recordResult, shareText, type Mark, type Stats,
@@ -29,7 +31,7 @@ const TEXT = {
     hit: 'на място', near: 'на друго място', miss: 'няма я',
     enter: 'Готово', del: 'Изтрий', tooShort: 'Трябват 5 букви', notWord: 'Няма такава дума в речника',
     praise: ['Гениално!', 'Великолепно!', 'Браво!', 'Много добре!', 'Добре!', 'На косъм!'],
-    copied: 'Резултатът е копиран. Постави го в чата.',
+    copied: 'Резултатът е копиран. Постави го в чата.', copiedShort: 'Копирано!',
     streak: (n: number) => (n > 0 ? `Серия: ${n} ${n === 1 ? 'ден' : 'дни'}` : 'Започни серия днес'),
     unlimitedNote: 'Случайна дума, колкото пъти искаш',
     wonIn: (n: number) => `Позна от ${n} ${n === 1 ? 'опит' : 'опита'}!`, wasWord: 'Думата беше',
@@ -41,6 +43,7 @@ const TEXT = {
     hints: 'Подсказки', hintsTitle: 'Подсказки без да издаваме думата', hintNext: 'Покажи подсказка', hintNone: 'Още не си отворил подсказка. Започни с най-лесната.', hintsDone: 'Това бяха всички подсказки. Остава само думата.',
     helpText: 'Познай думата от 5 букви с 6 опита. След всеки опит плочките показват колко си близо.',
     helpLegend: <>Кораловото <strong>К</strong> е на точното място, синьото кръгче <strong>Н</strong> е в думата, но на друго място, а сивите букви ги няма.</>,
+    helpRepeat: 'Буквите може да се повтарят: една дума може да има два пъти една и съща буква.',
     helpModes: 'Днешната дума е една за всички и се сменя в полунощ. В „Неограничено“ играеш със случайни думи колкото искаш.',
     example: 'книга', exampleNear: 1,
   },
@@ -53,7 +56,7 @@ const TEXT = {
     hit: 'right place', near: 'elsewhere in the word', miss: 'not in the word',
     enter: 'Enter', del: 'Delete', tooShort: 'Five letters, please', notWord: 'Not in our word list',
     praise: ['Genius!', 'Brilliant!', 'Splendid!', 'Nice one!', 'Good!', 'Phew!'],
-    copied: 'Result copied. Paste it into your chat.',
+    copied: 'Result copied. Paste it into your chat.', copiedShort: 'Copied!',
     streak: (n: number) => (n > 0 ? `Streak: ${n} ${n === 1 ? 'day' : 'days'}` : 'Start a streak today'),
     unlimitedNote: 'Random words, as many as you like',
     wonIn: (n: number) => `Solved in ${n} ${n === 1 ? 'guess' : 'guesses'}!`, wasWord: 'The word was',
@@ -65,6 +68,7 @@ const TEXT = {
     hints: 'Hints', hintsTitle: 'Hints without giving the word away', hintNext: 'Show a hint', hintNone: 'No hints opened yet. Start with the gentlest one.', hintsDone: 'That is every hint. Only the word is left.',
     helpText: 'Find the five-letter word in six tries. After each guess the tiles show how close you are.',
     helpLegend: <>The coral <strong>B</strong> is in the right place, the blue circle <strong>R</strong> is in the word but elsewhere, and grey letters are not in it.</>,
+    helpRepeat: 'Letters can repeat: a word may use the same letter twice.',
     helpModes: 'Today’s word is the same for everyone and changes at midnight (Sofia time). In Unlimited you play random words as often as you like.',
     example: 'bread', exampleNear: 1,
   },
@@ -81,6 +85,7 @@ const NOTES = {
           <li><span className="daily-tile is-filled is-present">Н</span> синьо кръгче: буквата е в думата, но на друго място;</li>
           <li><span className="daily-tile is-filled is-absent">П</span> сива плочка: буквата я няма в думата.</li>
         </ul>
+        <p>Буквите може да се повтарят: една дума може да има два пъти една и съща буква. Ако изпишеш буква два пъти, а в думата я има само веднъж, оцветява се само една от плочките.</p>
         <p>Имаш 6 опита. Днешната дума е една и съща за всички и се сменя в полунощ българско време. В „Неограничено“ играеш със случайни думи. Може да пишеш и от клавиатурата, на кирилица или с латинските клавиши по фонетичната подредба.</p>
       </article>
       <article>
@@ -106,6 +111,7 @@ const NOTES = {
           <li><span className="daily-tile is-filled is-present">R</span> blue circle: the letter is in the word, somewhere else;</li>
           <li><span className="daily-tile is-filled is-absent">E</span> grey tile: the letter is not in the word.</li>
         </ul>
+        <p>Letters can repeat: a word may use the same letter twice. If you type a letter twice but the word has it only once, just one of the two tiles is coloured.</p>
         <p>You have six tries. Today’s word is the same for everyone and changes at midnight Sofia time (late evening in the UK and Americas). In Unlimited you get a random word every time.</p>
       </article>
       <article>
@@ -162,6 +168,8 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
   const [valid, setValid] = useState<Set<string> | null>(null)
   const [stats, setStats] = useState<Stats>(emptyStats)
   const [message, setMessage] = useState('')
+  const [manualText, setManualText] = useState('')
+  const [copiedBtn, setCopiedBtn] = useState(false)
   const [shake, setShake] = useState(false)
   const [revealRow, setRevealRow] = useState(-1)
   const [modal, setModal] = useState<'none' | 'help' | 'stats'>('none')
@@ -299,16 +307,14 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
     const heading = mode === 'daily' && puzzle ? t.shareHeading(puzzle) : t.shareUnlimited
     const text = shareText(heading, guesses, answer, won, t.shareUrl)
     track('daily_share', { mode, language })
-    try {
-      if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
-        await navigator.share({ text })
-        return
-      }
-      await navigator.clipboard.writeText(text)
+    setManualText('')
+    const outcome = await shareResult(text)
+    if (outcome === 'copied') {
       flash(t.copied)
-    } catch {
-      // The user closed the share sheet.
+      setCopiedBtn(true)
+      window.setTimeout(() => setCopiedBtn(false), 2000)
     }
+    else if (outcome === 'manual') setManualText(text)
   }
 
   useEffect(() => {
@@ -426,11 +432,12 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
                 <p className="daily-after__meaning">{t.meaning} {dictionaryLinks(answer, language).map((link, i) => <span key={link.href}>{i > 0 && ' · '}<a href={link.href} target="_blank" rel="noopener">{link.label}</a></span>)}</p>
               ) : null}
               <div className="daily-after__actions">
-                <button type="button" className="daily-share" onClick={share}><Share2 size={18} /> {t.share}</button>
+                <button type="button" className="daily-share" onClick={share}><Share2 size={18} /> {copiedBtn ? t.copiedShort : t.share}</button>
                 {mode === 'unlimited'
                   ? <button type="button" className="daily-link-button" onClick={() => startMode('unlimited', true)}><RefreshCw size={16} /> {t.newWord}</button>
                   : <button type="button" className="daily-link-button" onClick={() => setModal('stats')}>{t.stats}</button>}
               </div>
+              {manualText && <ManualCopy text={manualText} language={language} />}
               {mode !== 'unlimited' && <TryNext language={language} current="daily" />}
             </div>
           )}
@@ -467,6 +474,7 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
                   {[...t.example].map((letter, i) => <span key={i} className={`daily-tile is-filled${i === 0 ? ' is-correct' : i === t.exampleNear ? ' is-present' : ''}`}>{upper(letter)}</span>)}
                 </div>
                 <p>{t.helpLegend}</p>
+                <p>{t.helpRepeat}</p>
                 <p>{t.helpModes}</p>
                 <button type="button" className="daily-share" onClick={() => setModal('none')}>{t.play}</button>
               </>
@@ -498,10 +506,13 @@ export default function DailyWord({ language = 'bg' }: { language?: Language }) 
                   ))}
                 </ol>
                 {dailyDone ? (
-                  <div className="daily-next">
-                    <div><span>{t.next}</span><strong>{countdown}</strong></div>
-                    <button type="button" className="daily-share" onClick={share}><Share2 size={18} /> {t.share}</button>
-                  </div>
+                  <>
+                    <div className="daily-next">
+                      <div><span>{t.next}</span><strong>{countdown}</strong></div>
+                      <button type="button" className="daily-share" onClick={share}><Share2 size={18} /> {copiedBtn ? t.copiedShort : t.share}</button>
+                    </div>
+                    {manualText && <ManualCopy text={manualText} language={language} />}
+                  </>
                 ) : mode === 'daily' ? (
                   <p className="daily-hint">{t.finishFirst}</p>
                 ) : null}
