@@ -133,6 +133,17 @@
           <div class="sample-result"><span class="sample-label">A quick example</span><p>{{ calc.example }}</p></div>
         }
         <p class="estimate-caveat">Planning estimate only. Verify product coverage, dimensions, and order quantities with your supplier.</p>
+        @if (!embed()) {
+          <div class="feedback">
+            <p class="feedback-ask" id="feedback-ask">Did this calculator help?</p>
+            <div class="feedback-buttons" role="group" aria-labelledby="feedback-ask">
+              <button type="button" class="text-button" [disabled]="vote() !== null" [attr.aria-pressed]="vote() === 'up'" (click)="sendVote('up')">Yes, thanks</button>
+              <button type="button" class="text-button" [disabled]="vote() !== null" [attr.aria-pressed]="vote() === 'down'" (click)="sendVote('down')">Not really</button>
+              <a class="feedback-write" [href]="feedbackMail()" (click)="feedbackMailClicked()">Write to us</a>
+            </div>
+            <p class="feedback-thanks" role="status">{{ vote() === 'up' ? 'Glad it helped. Thank you!' : vote() === 'down' ? 'Thank you. If you tell me what is wrong, I will fix it.' : '' }}</p>
+          </div>
+        }
       </aside>
     </section>
     @if (embed()) {

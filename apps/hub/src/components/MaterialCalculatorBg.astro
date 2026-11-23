@@ -5,6 +5,7 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 import EmbedLayout from '../layouts/EmbedLayout.astro'
 import { embedPath } from '../lib/embeds'
 import RelatedTools from './RelatedTools.astro'
+import Feedback from './Feedback.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { AUTHOR, getPosts, isoFromBgDate, ogKey, postPath } from '../lib/site'
@@ -1465,6 +1466,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
               <p class="tool-result__status" role="status" data-share-status></p>
             </div>
           )}
+          {!embed && <Feedback lang="bg" tool={page.tool} title={page.h1} />}
         </aside>
       </section>
 

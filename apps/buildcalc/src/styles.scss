@@ -1523,3 +1523,56 @@ h2 {
   font-size: 15px;
   font-weight: 600;
 }
+
+/* "Did this calculator help?" on the dark result card. */
+.results-card .feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--inverse-text) 24%, transparent);
+  color: var(--inverse-text);
+  font-size: 0.9rem;
+}
+
+.results-card .feedback-ask,
+.results-card .feedback-thanks {
+  margin: 0;
+}
+
+.results-card .feedback-ask {
+  font-weight: 700;
+}
+
+.results-card .feedback-thanks {
+  flex-basis: 100%;
+  min-height: 1.2em;
+}
+
+.results-card .feedback-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.results-card .feedback-buttons button[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--inverse-text) 24%, transparent);
+}
+
+.results-card .feedback-buttons button:disabled {
+  cursor: default;
+}
+
+.results-card .feedback-write {
+  color: var(--inverse-text);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.results-card .feedback-write:focus-visible {
+  outline: 2px solid var(--inverse-text);
+  outline-offset: 2px;
+}

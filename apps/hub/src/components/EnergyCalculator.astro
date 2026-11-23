@@ -3,6 +3,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import EmbedLayout from '../layouts/EmbedLayout.astro'
 import RelatedTools from './RelatedTools.astro'
+import Feedback from './Feedback.astro'
 import '@zyankov/design-system/boards.css'
 import { AUTHOR, formatDate, getPosts, ogKey, postPath, readingMinutes, type Lang } from '../lib/site'
 import { postsForTool } from '../lib/related-posts'
@@ -284,6 +285,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
           </dl>
           {!embed && <button class="zy-cta energy-add" type="button" data-energy-add data-added={t.added}>+ {t.add}</button>}
           <p class="tool-result__caveat">{t.caveat}</p>
+          {!embed && <Feedback lang={bg ? 'bg' : 'en'} tool="energy" title={t.h1} />}
         </aside>
       </section>
 

@@ -3,6 +3,7 @@
 // MaterialCalculatorBg.astro; both use the same maths from src/lib/everyday.ts.
 import BaseLayout from '../layouts/BaseLayout.astro'
 import RelatedTools from './RelatedTools.astro'
+import Feedback from './Feedback.astro'
 import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { AUTHOR, getPosts, ogKey, postPath } from '../lib/site'
@@ -365,6 +366,7 @@ const jsonLd = {
             <button type="button" data-share-link>Share link</button>
             <p class="tool-result__status" role="status" data-share-status></p>
           </div>
+          <Feedback lang="en" tool={kind} title={page.h1} />
         </aside>
       </section>
 
