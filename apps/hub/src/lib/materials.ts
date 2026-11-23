@@ -167,6 +167,21 @@ export const TROWEL_NOTCHES = [
 /** Notch by the tile's longest side in cm: the usual rule from adhesive data sheets. */
 export const suggestedNotch = (longestCm: number) => (longestCm <= 10 ? 0 : longestCm <= 15 ? 1 : longestCm <= 25 ? 2 : longestCm <= 31 ? 3 : 4)
 
+/** Tile adhesives with the consumption printed in their Bulgarian data sheets (kg per m², 25 kg bags).
+ *  - Ceresit CM 11 PLUS: table by tile size and notch in the Bulgarian sheet (4, 6, 8, 10 and 15 mm).
+ *  - Knauf K3 C2TE: the product page gives only a range, 2 to 5 kg/m² depending on the notch; 3.5 is our middle value.
+ *  - Baumit Baumacol FlexUni Gel: 1.2 kg/m² per mm of layer (2 to 15 mm); 3.6 is our value for a 3 mm layer.
+ *  Entries without a notch table use the rate the person can edit. Order matters: URLs store the index. */
+export const ADHESIVE_PRODUCTS: { label: string; bag: number; notches?: { mm: number; kgPerM2: number }[]; rate?: number; hint?: string }[] = [
+  { label: 'Общ ориентир по зъби (по Ceresit CM 11 PLUS)', bag: 25, notches: TROWEL_NOTCHES },
+  { label: 'Ceresit CM 11 PLUS (таблица от българския лист)', bag: 25, notches: [
+    { mm: 4, kgPerM2: 2.0 }, { mm: 6, kgPerM2: 2.7 }, { mm: 8, kgPerM2: 3.3 }, { mm: 10, kgPerM2: 4.0 }, { mm: 15, kgPerM2: 6.5 },
+  ] },
+  { label: 'Knauf K3 C2TE', bag: 25, rate: 3.5, hint: 'Knauf дава само диапазон от 2 до 5 кг/м² според зъба на маламашката. 3,5 е наша средна стойност: сложи по-малко за дребни плочки и повече за големи.' },
+  { label: 'Baumit Baumacol FlexUni Gel', bag: 25, rate: 3.6, hint: 'Baumit дава 1,2 кг/м² на всеки мм дебелина на слоя (от 2 до 15 мм). 3,6 е наша стойност за слой 3 мм: умножи дебелината на слоя по 1,2.' },
+  { label: 'Друго лепило: моята стойност', bag: 25, rate: 3, hint: 'Разходът в кг/м² е на опаковката или в техническия лист на лепилото, което купуваш.' },
+]
+
 /** Grout in kg/m²: (L + W) / (L × W) × joint width × joint depth × 1.6, all in mm.
  *  1.6 kg/l is the density of cement grout (e.g. SikaCeram Tile Grout data sheet; Mapei uses the same method). */
 export const groutPerM2 = (lengthMm: number, widthMm: number, jointMm: number, depthMm: number) =>
@@ -182,6 +197,10 @@ export interface AdhesiveInput {
   joint: number
   /** -1: pick from the tile size */
   notch: number
+  /** index in ADHESIVE_PRODUCTS (default 0) */
+  product?: number
+  /** kg/m² for products without a notch table */
+  rate?: number
   waste: number
   adhesiveBag: number
   groutBag: number
@@ -191,7 +210,8 @@ export interface AdhesiveInput {
 
 export interface AdhesiveEstimate {
   areaWithWaste: number
-  notchMm: number
+  /** null for products priced by an entered rate instead of a notch */
+  notchMm: number | null
   suggested: boolean
   adhesivePerM2: number
   adhesive: number
@@ -205,17 +225,29 @@ export interface AdhesiveEstimate {
 export function estimateAdhesive(input: AdhesiveInput): AdhesiveEstimate | null {
   if (!(input.area > 0 && input.tileLength > 0 && input.tileWidth > 0 && input.thickness > 0 && input.adhesiveBag > 0 && input.groutBag > 0)) return null
   const areaWithWaste = withWaste(input.area, input.waste)
-  const suggested = input.notch < 0
-  const notch = TROWEL_NOTCHES[suggested ? suggestedNotch(Math.max(input.tileLength, input.tileWidth)) : input.notch]
-  if (!notch) return null
-  const adhesive = areaWithWaste * notch.kgPerM2
-  const perM2 = groutPerM2(input.tileLength * 10, input.tileWidth * 10, Math.max(0, input.joint), input.thickness)
-  const grout = areaWithWaste * perM2
+  const product = ADHESIVE_PRODUCTS[input.product ?? 0] ?? ADHESIVE_PRODUCTS[0]
+  const suggested = !!product.notches && input.notch < 0
+  let notchMm: number | null = null
+  let perM2: number
+  if (product.notches) {
+    // Suggested notch: the first one in this product's table that is at least the usual size for the tile.
+    const wanted = TROWEL_NOTCHES[suggestedNotch(Math.max(input.tileLength, input.tileWidth))].mm
+    const notch = suggested ? product.notches.find((n) => n.mm >= wanted) ?? product.notches[product.notches.length - 1] : product.notches[input.notch]
+    if (!notch) return null
+    notchMm = notch.mm
+    perM2 = notch.kgPerM2
+  } else {
+    perM2 = input.rate && input.rate > 0 ? input.rate : (product.rate ?? 0)
+    if (!(perM2 > 0)) return null
+  }
+  const adhesive = areaWithWaste * perM2
+  const groutRate = groutPerM2(input.tileLength * 10, input.tileWidth * 10, Math.max(0, input.joint), input.thickness)
+  const grout = areaWithWaste * groutRate
   const adhesiveBags = wholeUp(adhesive / input.adhesiveBag)
   const groutBags = grout > 0 ? Math.max(1, wholeUp(grout / input.groutBag)) : 0
   return {
-    areaWithWaste, notchMm: notch.mm, suggested, adhesivePerM2: notch.kgPerM2, adhesive, adhesiveBags,
-    groutPerM2: perM2, grout, groutBags,
+    areaWithWaste, notchMm, suggested, adhesivePerM2: perM2, adhesive, adhesiveBags,
+    groutPerM2: groutRate, grout, groutBags,
     cost: adhesiveBags * Math.max(0, input.adhesivePrice) + groutBags * Math.max(0, input.groutPrice),
   }
 }
@@ -269,6 +301,11 @@ export const SCREED_MATERIALS = [
   { label: 'Циментова замазка', kgPerM2PerMm: 2.0, bag: 25 },
   { label: 'Саморазливна замазка', kgPerM2PerMm: 1.6, bag: 25 },
   { label: 'Гипсова мазилка', kgPerM2PerMm: 1.0, bag: 30 },
+  // Branded products, appended so that old shared links keep their meaning (kg per m² per mm, 25 kg bags):
+  { label: 'Ceresit CN 87 (циментова, 10–80 мм)', kgPerM2PerMm: 2.0, bag: 25 },
+  { label: 'Knauf N 340 (циментова, 5–40 мм)', kgPerM2PerMm: 1.6, bag: 25 },
+  { label: 'Baumit Solido E160 (циментова)', kgPerM2PerMm: 2.0, bag: 25 },
+  { label: 'Ceresit CN 68 (саморазливна, 2–20 мм)', kgPerM2PerMm: 1.5, bag: 25 },
 ]
 
 export interface ScreedInput {

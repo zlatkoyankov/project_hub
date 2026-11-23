@@ -9,7 +9,7 @@ import '@zyankov/design-system/boards.css'
 import { boardFor } from '@zyankov/design-system/boards'
 import { AUTHOR, getPosts, isoFromBgDate, ogKey, postPath } from '../lib/site'
 import { postsForTool } from '../lib/related-posts'
-import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, FENCE_PANELS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES } from '../lib/materials'
+import { CLIMATE_ZONES, HOME_INSULATION, HOME_TYPES, WOOD_MOISTURE, WOOD_SPECIES, BULK_MATERIALS, CONCRETE_MIXES, DRYWALL_SHEETS, INSULATION_BOARDS, FENCE_PANELS, MASONRY_UNITS, SCREED_MATERIALS, TROWEL_NOTCHES, ADHESIVE_PRODUCTS } from '../lib/materials'
 import { TOOL_ICONS } from '../lib/tools'
 import { LEGAL_INTEREST_RATES, daysBetween, percent } from '../lib/everyday'
 import { AIRCON_SIZES, estimateAircon } from '../lib/materials'
@@ -1056,12 +1056,15 @@ const screedPage = {
     'Саморазливната замазка се разлива наведнъж, затова приготви всички торби предварително.',
   ],
   jsonName: 'Калкулатор за замазка и мазилка',
-  checked: '7 ноември 2026',
+  checked: '23 ноември 2026',
   sources: [
     { label: 'Baumit Solido E225: циментова замазка, около 20 кг/м² на 10 мм (технически лист)', href: 'https://baumit.pl/files/pl/pdf_files/pds_solido___5___estrich_e___5_bpl_pl_13262.pdf' },
     { label: 'Ceresit CN 68: саморазливна замазка, около 1,5 кг/м² на мм (технически лист, БГ)', href: 'https://datasheets.tdx.henkel.com/CERESIT-CN-68-bg_BG.pdf' },
     { label: 'Baumit Nivello Quattro: саморазливна, около 1,5 кг/м² на мм (технически лист)', href: 'https://media.hornbach.at/hb/technicaldatasheet/as.187261153.pdf' },
     { label: 'Knauf MP 75: гипсова мазилка, 10 кг/м² при 10 мм (технически лист, БГ)', href: 'https://bauhaus.bg/upload/files/120030/2605_MP%2075_2020.pdf' },
+    { label: 'Ceresit CN 87: циментова замазка 10–80 мм, около 2,0 кг/м² на мм (технически лист)', href: 'https://datasheets.tdx.henkel.com/CERESIT-CN-87-en_GL.pdf' },
+    { label: 'Knauf N 340: циментова замазка 5–40 мм, 1,6 кг/м² на мм, торба 25 кг (технически лист, БГ, 05/2016)', href: 'https://assets.knauf.com/content/dam/knauf-gypsum/knauf-bulgaria/technical-documentation/tds---technical-data-sheets/TS%20N340_BG_2016_05.pdf' },
+    { label: 'Baumit Solido E160: около 20 кг/м² на см, торба 25 кг (данните са от страницата на продукта в Masterhaus)', href: 'https://www.masterhaus.bg/en/product/184836-solid-floor-screed-e160-25-kg-baumit' },
   ],
 }
 
@@ -1104,17 +1107,19 @@ const adhesivePage = {
       big: 'торби лепило',
       bigOne: 'торба лепило',
       formula: 'фуга кг/м² = (дължина + ширина) ÷ (дължина × ширина) × фуга × дебелина × 1,6',
-      how: 'Лепилото е площта по разхода за зъба на маламашката от техническия лист на Ceresit CM 11 PLUS. Фугата се смята от обема на фугите по плътност 1,6 кг/л, както в листовете на Sika и Mapei: колкото по-малки са плочките, толкова повече фуги има на квадратен метър. Добавя се фира и се закръгля до цели торби.',
+      how: 'Лепилото е площта по разхода на избраното лепило от неговия технически лист: за Ceresit CM 11 PLUS по зъба на маламашката, за Knauf K3 и Baumit FlexUni Gel по диапазона или разхода на мм слой, които дават производителите. Тези два разхода са ориентировъчни: средната стойност, която предлагаме, е наша, и можеш да я смениш със своя. За друго лепило въведи разхода от неговия лист. Фугата се смята от обема на фугите по плътност 1,6 кг/л, както в листовете на Sika и Mapei: колкото по-малки са плочките, толкова повече фуги има на квадратен метър. Добавя се фира и се закръгля до цели торби.',
       tips: [
         'Големите плочки искат по-дълбок зъб, за да легнат изцяло в лепилото. При плочки над 60 см намажи и гърба на плочката.',
         'Купи фугата от една партида. Различните партиди може да се различават по цвят.',
         'Фугирай след като лепилото е изсъхнало, обикновено след 24 часа. Виж указанията на производителя.',
       ],
       jsonName: 'Калкулатор за лепило и фуга',
-      checked: '7 ноември 2026',
+      checked: '23 ноември 2026',
       sources: [
         { label: 'Ceresit CM 11 PLUS: разход на лепило по зъб на маламашката, 4–12 мм (технически лист)', href: 'https://datasheets.tdx.henkel.com/CERESIT-CM-11-PLUS-sk_SK.pdf' },
-        { label: 'Ceresit CM 11 PLUS: технически лист на български', href: 'https://dm.henkel-dam.com/is/content/henkel/Ceresit_CM-11_Plus_TDS_BG' },
+        { label: 'Ceresit CM 11 PLUS: технически лист на български, таблица по размер на плочката и зъб 4–15 мм, торба 25 кг', href: 'https://datasheets.tdx.henkel.com/CERESIT-CM-11-PLUS-bg_BG.pdf' },
+        { label: 'Knauf K3 C2TE: разходна норма от 2 до 5 кг/м² според зъба на маламашката, торба 25 кг (страница на продукта)', href: 'https://knauf.com/bg-BG/p/produkt/k3-c2te-13010_0102' },
+        { label: 'Baumit Baumacol FlexUni Gel: около 1,2 кг/м² на мм слой (2–15 мм), торба 25 кг (технически лист, 01/2022)', href: 'https://bauhaus.bg/upload/files/118577/2542_pds_63024_bbg_63024_baumacol_flexuni_gel_bg.pdf' },
         { label: 'SikaCeram Tile Grout: плътност на фугата около 1,6 кг/л и формула за разход', href: 'https://twn.sika.com/dam/dms/tw01/d/sikaceram_tile_groutf1t.pdf' },
         { label: 'Ceresit CE 40: таблица с разход на фуга за проверка на формулата', href: 'https://datasheets.tdx.henkel.com/CERESIT-CE-40-de_AT.pdf' },
       ],
@@ -1384,13 +1389,27 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
               </div>
             )}
             {adhesive && (
+              <>
               <div class="tool-field">
+                <label for="mat-product">Лепило</label>
+                <select id="mat-product" name="product" data-adhesive-product>
+                  {ADHESIVE_PRODUCTS.map((product, index) => <option value={index} data-bag={product.bag}>{product.label}</option>)}
+                </select>
+                <small>Числата са ориентировъчни, от техническите листове на производителите. Разходът зависи от основата и от майстора.</small>
+              </div>
+              <div class="tool-field" data-adhesive-rate hidden>
+                <label for="mat-adhesiveRate">Разход на лепило</label>
+                <div class="tool-input"><input id="mat-adhesiveRate" name="adhesiveRate" type="number" inputmode="decimal" min="0" step="0.1" value="3.5" aria-describedby="mat-adhesiveRate-hint" /><span>кг/м²</span></div>
+                <small id="mat-adhesiveRate-hint" data-adhesive-rate-hint></small>
+              </div>
+              <div class="tool-field" data-adhesive-notch>
                 <label for="mat-notch">Зъб на маламашката</label>
                 <select id="mat-notch" name="notch">
                   <option value="-1">Според размера на плочката</option>
                   {TROWEL_NOTCHES.map((notch, index) => <option value={index}>{notch.mm} мм (около {notch.kgPerM2.toLocaleString('bg-BG')} кг/м²)</option>)}
                 </select>
               </div>
+              </>
             )}
             {kind === 'drywall' && (
               <>
@@ -1601,7 +1620,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
   import { estimateFence, FENCE_PANELS as PANELS } from '../lib/materials'
   import { KITCHEN_UNITS, UNIT_ORDER, convertKitchen, ingredientById, nearestQuarter, roundKitchen, type KitchenUnit } from '../lib/kitchen'
   import { unusedLeaveCompensation } from '../lib/leave'
-  import { estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
+  import { ADHESIVE_PRODUCTS as PRODUCTS, estimateAdhesive, estimateAircon, estimateBulk, estimateConcrete, estimateFuelAmount, estimateHeating, estimatePaint, estimateTiles, estimateDrywall, estimateFlooring, estimateInsulation, estimateMasonry, estimateScreed, estimateWallpaper } from '../lib/materials'
 
   const root = document.querySelector<HTMLElement>('[data-material]')
   if (root) {
@@ -1657,6 +1676,7 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
     }
 
     const update = () => {
+      if (kind === 'adhesive') syncProduct()
       const extraOn = root.querySelector<HTMLSelectElement>('[data-extra-toggle]')?.value === '1'
       const extraBox = root.querySelector<HTMLElement>('[data-extra-fields]')
       if (extraBox) extraBox.hidden = !extraOn
@@ -2090,13 +2110,13 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
       } else if (kind === 'adhesive') {
         const result = estimateAdhesive({
           area: num('area'), tileLength: num('tileLength'), tileWidth: num('tileWidth'), thickness: num('thickness'), joint: num('joint'),
-          notch: Number(field('notch')?.value ?? -1), waste: num('waste'), adhesiveBag: num('adhesiveBag'), groutBag: num('groutBag'),
+          notch: Number(field('notch')?.value ?? -1), product: Number(field('product')?.value ?? 0), rate: num('adhesiveRate'), waste: num('waste'), adhesiveBag: num('adhesiveBag'), groutBag: num('groutBag'),
           adhesivePrice: num('adhesivePrice'), groutPrice: num('groutPrice'),
         })
         if (!result) return render(null, [])
         const rows: [string, string, string?][] = [
           ['Площ с фирата', `${fmt(result.areaWithWaste)} м²`],
-          ['Зъб на маламашката', `${result.notchMm} мм`, result.suggested ? 'според размера на плочката' : undefined],
+          ...(result.notchMm !== null ? [['Зъб на маламашката', `${result.notchMm} мм`, result.suggested ? 'според размера на плочката' : undefined] as [string, string, string?]] : []),
           ['Лепило', `${fmt(result.adhesive, 1)} кг`, `около ${fmt(result.adhesivePerM2, 1)} кг/м²`],
         ]
         if (result.grout > 0) {
@@ -2138,6 +2158,34 @@ const embedResize = `<script>addEventListener('message',function(e){if(e.origin!
         render(result.sheets, rows)
       }
     }
+
+    // Adhesive: the product decides between a notch table and a rate the person can edit.
+    const productSelect = root.querySelector<HTMLSelectElement>('[data-adhesive-product]')
+    const notchSelect = root.querySelector<HTMLSelectElement>('#mat-notch')
+    const rateInput = root.querySelector<HTMLInputElement>('#mat-adhesiveRate')
+    let notchesFor = 0
+    const syncProduct = () => {
+      if (!productSelect) return
+      const index = Number(productSelect.value) || 0
+      const product = PRODUCTS[index] ?? PRODUCTS[0]
+      const table = !!product.notches
+      const rateBox = root.querySelector<HTMLElement>('[data-adhesive-rate]')
+      const notchBox = root.querySelector<HTMLElement>('[data-adhesive-notch]')
+      if (rateBox) rateBox.hidden = table
+      if (notchBox) notchBox.hidden = !table
+      const hint = root.querySelector<HTMLElement>('[data-adhesive-rate-hint]')
+      if (hint) hint.textContent = product.hint ?? ''
+      if (table && notchSelect && notchesFor !== index) {
+        notchesFor = index
+        const previous = notchSelect.value
+        notchSelect.replaceChildren(new Option('Според размера на плочката', '-1'), ...product.notches!.map((n, i) => new Option(`${n.mm} мм (около ${n.kgPerM2.toLocaleString('bg-BG')} кг/м²)`, String(i))))
+        notchSelect.value = [...notchSelect.options].some((o) => o.value === previous) ? previous : '-1'
+      }
+    }
+    productSelect?.addEventListener('change', () => {
+      const product = PRODUCTS[Number(productSelect.value) || 0] ?? PRODUCTS[0]
+      if (rateInput && product.rate) rateInput.value = String(product.rate)
+    })
 
     // Plaster usually comes in 30 kg bags, screed in 25 kg: follow the material unless the user changed the bag.
     const materialSelect = root.querySelector<HTMLSelectElement>('#mat-material')
