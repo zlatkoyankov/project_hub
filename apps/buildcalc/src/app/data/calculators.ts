@@ -128,7 +128,7 @@ export const CALCULATORS: CalculatorInfo[] = [
     ],
   },
   {
-    slug: 'laminate-flooring-calculator', bg: '/bg/kalkulator-laminat/', title: 'Laminate Flooring Calculator', seoTitle: 'Laminate Flooring Calculator: Boxes Needed', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
+    slug: 'laminate-flooring-calculator', checkedIso: '2026-11-22', bg: '/bg/kalkulator-laminat/', title: 'Laminate Flooring Calculator', seoTitle: 'Laminate Flooring Calculator: Boxes Needed', shortTitle: 'Laminate flooring', category: 'Flooring & Tile',
     description: 'Work out how many boxes of laminate or vinyl plank flooring a room needs: floor area, waste allowance for cuts and the coverage printed on the box.',
     answer: 'Floor area plus about 10% for cuts, divided by the coverage printed on the box, rounded up. A 14 × 12 ft room is 168 sq ft; with 10% waste that is 184.8 sq ft, so with 20 sq ft boxes you need 10 boxes.',
     intro: 'Enter the room size and the coverage printed on the box. The estimate adds a waste allowance for cuts and rounds up to whole boxes.',
@@ -136,7 +136,11 @@ export const CALCULATORS: CalculatorInfo[] = [
     example: 'A 14 ft × 12 ft room is 168 square feet of floor before waste.',
     formula: 'Length × width gives the floor area. Add the waste allowance, divide by the coverage per box and round up to whole boxes.',
     faqs: [
-      { question: 'How much extra laminate should I buy?', answer: 'Around 10% is a common allowance for a straight layout in a simple room. Diagonal or herringbone layouts and rooms with many corners need more. Keep a spare box for future repairs.' },
+      { question: 'How do I calculate how much laminate flooring I need?', answer: 'Multiply the room length by the width to get the floor area, add a waste allowance for cuts, divide by the coverage printed on one box and round up to whole boxes. For a 14 × 12 ft room that is 168 sq ft, 184.8 sq ft with 10% waste, so 10 boxes of 20 sq ft. In metric, a 4 × 3 m room is 12 m², 13.2 m² with 10% waste, so 6 boxes of 2.2 m². The 20 sq ft and 2.2 m² boxes are example values: use the coverage on your own box.' },
+      { question: 'How much extra laminate should I buy?', answer: 'Around 10% is a common allowance for a straight layout in a simple room; EGGER’s guide and Lowe’s instructions both suggest 10%. EGGER suggests 15% if you are less experienced or the boards are patterned, while EGGER’s installation FAQ and Pergo say 5% can be enough in a regular rectangular room. Diagonal or herringbone layouts and rooms with many corners need more. Keep a spare box for future repairs.' },
+      { question: 'How many square feet or square metres are in a box of laminate?', answer: 'It depends on the brand and the product. EGGER packs, for example, run from 1.39 to 2.54 m² (about 15 to 27 sq ft). Use the coverage printed on the box you plan to buy, not a general figure.' },
+      { question: 'Should I add the expansion gap to the floor area?', answer: 'No. EGGER says the gap needs no allowance in the area calculation; you only leave it when installing. Pergo asks for at least 8 mm at the walls (1 mm per metre of floor width), and Lowe’s instructions give 3/8 in, so check the instructions for your floor.' },
+      { question: 'How long should laminate sit in the room before installation?', answer: 'Pergo’s installation guide says to let the planks acclimatize for 48 hours, and to mix planks from several packs when laying. Follow the instructions of the manufacturer of your floor.' },
       { question: 'Do I need underlayment?', answer: 'Most floating floors need an underlayment unless one is attached to the planks. Plan for roughly the floor area and follow the flooring manufacturer’s instructions.' },
     ],
   },
