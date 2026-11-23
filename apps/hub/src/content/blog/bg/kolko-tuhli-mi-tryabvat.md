@@ -2,6 +2,7 @@
 title: 'Колко тухли ми трябват за стена? Брой и разтвор'
 description: 'Как да изчислиш тухлите, керамичните блокове или газобетона за стена, с фугите, и колко разтвор и торби да купиш, с примери.'
 date: 2026-11-05
+updated: 2026-11-23
 lang: bg
 tags: [зидария, ремонт]
 tool: brick-block-calculator
@@ -21,7 +22,7 @@ translation: en/how-many-bricks-do-i-need
 | Плътна тухла, стена 12 см | 25 × 6,5 см | 1 см | около 51 |
 | Плътна тухла, стена 25 см | 12 × 6,5 см (на чело) | 1 см | около 103 |
 | Керамичен блок Porotherm 25 | 37,5 × 23,8 см | 1,2 см | около 10,7 |
-| Керамичен блок Porotherm 11,5 | 50 × 23,8 см | 1,2 см | 8 |
+| Керамичен блок Porotherm 12 | 50 × 23,8 см | 1,2 см | 8 |
 | Газобетон 62,5 × 25 см | 62,5 × 25 см | 2 мм лепило | около 6,4 |
 
 Керамичните блокове и газобетонът нямат вертикални фуги, защото краищата им влизат един в друг („нут и перо“), затова при тях се брои само хоризонталната фуга.
@@ -57,10 +58,10 @@ translation: en/how-many-bricks-do-i-need
 
 ## Източници
 
-Проверено на 7 ноември 2026.
+Проверено на 23 ноември 2026.
 
-- [Wienerberger Porotherm 25 Light Plus, технически лист: 375 × 250 × 238 мм, 11 бр./м², 44 л разтвор на м³](https://www.masterhaus.bg/files/pdf-docs/11/03/01/1103010048-tuhla-poroterm-25-light-plus-375h250h238mm.pdf)
-- [Wienerberger Porotherm 11,5, технически лист: 500 × 115 × 238 мм, 8 бр./м²](https://www.wienerberger.hr/content/dam/wienerberger/croatia/marketing/documents-magazines/technical/tehnicki-listovi/HR_MKT_TEC_WAL_POR_Porotherm_11,5_P+E.pdf)
+- [Wienerberger Porotherm 25 Light Plus, техническа карта (юни 2025): 375 × 250 × 238 мм, 11 бр./м², 44 л разтвор на м³](https://www.wienerberger.bg/content/dam/wienerberger/bulgaria/marketing/documents-magazines/technical/technical-product-info-sheet/wall/BG_MKT_DOC_Porotherm-25-N-F-Light-technicheska%20karta.pdf)
+- [Wienerberger Porotherm 12, техническа карта: 500 × 120 × 238 мм, 8 бр./м²](https://www.wienerberger.bg/content/dam/wienerberger/bulgaria/marketing/documents-magazines/technical/technical-product-info-sheet/wall/BG_MKT_DOC_Porotherm_12-technicheska%20karta.pdf)
 - [Ytong 625 × 250 мм, технически лист: 6,4 бр./м², лепило на тънка фуга](https://www.baubook.info/m/Daten/Infos/SI2142723510/AT87/ID147470/2023_Ytong_Planstein_gelb_PP2_050_250.pdf)
 - [Плътна тухла 250 × 120 × 65 мм: около 53 бр./м² за стена 12 см](https://citadeli.com/en/products/39-inertuli-masalebi/167-aguri/20973-keramikuli-aguri-t12)
 - [Baumit зидарски разтвор: около 16 л от торба и около 0,75 м² стена от плътни тухли](https://www.masterhaus.bg/en/product/199498-masonry-solution-clinker-25kg-baumit)
