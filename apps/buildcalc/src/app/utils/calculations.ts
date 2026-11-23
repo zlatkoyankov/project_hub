@@ -799,7 +799,7 @@ export const MASONRY_UNITS = [
   { label: 'Solid brick 25 × 12 × 6.5 cm, 12 cm wall', length: 25 / 2.54, height: 6.5 / 2.54, depth: 12 / 2.54, joint: 1 / 2.54, headJoints: true },
   { label: 'Solid brick 25 × 12 × 6.5 cm, 25 cm wall', length: 12 / 2.54, height: 6.5 / 2.54, depth: 25 / 2.54, joint: 1 / 2.54, headJoints: true },
   { label: 'Clay block 25 cm (Porotherm 25)', length: 37.5 / 2.54, height: 23.8 / 2.54, depth: 25 / 2.54, joint: 1.2 / 2.54, headJoints: false },
-  { label: 'Clay block 11.5 cm (Porotherm 11.5)', length: 50 / 2.54, height: 23.8 / 2.54, depth: 11.5 / 2.54, joint: 1.2 / 2.54, headJoints: false },
+  { label: 'Clay block 12 cm (Porotherm 12)', length: 50 / 2.54, height: 23.8 / 2.54, depth: 12 / 2.54, joint: 1.2 / 2.54, headJoints: false },
   { label: 'Aerated concrete block 62.5 × 25 cm, 25 cm wall', length: 62.5 / 2.54, height: 25 / 2.54, depth: 25 / 2.54, joint: 0.2 / 2.54, headJoints: false },
   // UK metric brick 215 × 102.5 × 65 mm with 10 mm joints (co-ordinating size 225 × 75 mm): about 60 per m² in a
   // half-brick wall (Designing Buildings; Travis Perkins brick guide). UK block 440 × 215 × 100 mm: about 10 per m².

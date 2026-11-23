@@ -349,13 +349,13 @@ export function estimateInsulation(input: InsulationInput): InsulationEstimate |
 
 /** Bricks and blocks common in Bulgaria: face length and height, wall depth and joint, in metres.
  *  Sizes from the manufacturers' sheets: solid brick 250 × 120 × 65, Wienerberger Porotherm 25 (375 × 250 × 238,
- *  11 per m²) and 11.5 (500 × 115 × 238, 8 per m²), Ytong 625 × 250 with a 2–3 mm thin-bed joint (6.4 per m²).
+ *  11 per m²) and 12 (500 × 120 × 238, 8 per m², sheet of June 2025), Ytong 625 × 250 with a 2–3 mm thin-bed joint (6.4 per m²).
  *  headJoints is false for interlocking ends (no mortar in the vertical joints). */
 export const MASONRY_UNITS = [
   { label: 'Плътна тухла 25 × 12 × 6,5 см, стена 12 см', length: 0.25, height: 0.065, depth: 0.12, joint: 0.01, headJoints: true },
   { label: 'Плътна тухла 25 × 12 × 6,5 см, стена 25 см', length: 0.12, height: 0.065, depth: 0.25, joint: 0.01, headJoints: true },
   { label: 'Керамичен блок 25 см (Porotherm 25)', length: 0.375, height: 0.238, depth: 0.25, joint: 0.012, headJoints: false },
-  { label: 'Керамичен блок 11,5 см (Porotherm 11,5)', length: 0.5, height: 0.238, depth: 0.115, joint: 0.012, headJoints: false },
+  { label: 'Керамичен блок 12 см (Porotherm 12)', length: 0.5, height: 0.238, depth: 0.12, joint: 0.012, headJoints: false },
   { label: 'Газобетон 62,5 × 25 см, стена 25 см', length: 0.625, height: 0.25, depth: 0.25, joint: 0.002, headJoints: false },
   { label: 'Газобетон 62,5 × 25 см, стена 10 см', length: 0.625, height: 0.25, depth: 0.1, joint: 0.002, headJoints: false },
 ]
