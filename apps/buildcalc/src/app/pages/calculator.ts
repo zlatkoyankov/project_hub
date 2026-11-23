@@ -208,6 +208,8 @@ export class CalculatorPage {
   protected readonly result = signal<Estimate | null>(null);
   protected readonly error = signal('');
   protected readonly copied = signal(false);
+  /** Answer to "Did this calculator help?" for this page view; only an anonymous event is sent. */
+  protected readonly vote = signal<'up' | 'down' | null>(null);
   protected readonly linkCopied = signal(false);
   /** Values after the last reset, so a shared link carries only what the visitor changed. */
   private defaultValues: Values = {};
@@ -550,6 +552,22 @@ export class CalculatorPage {
 
   protected printResults(): void {
     if (typeof window !== 'undefined') window.print();
+  }
+
+  protected sendVote(vote: 'up' | 'down'): void {
+    this.vote.set(vote);
+    track('feedback_vote', { tool: this.calculator()?.slug ?? '', vote, language: 'en' });
+  }
+
+  protected feedbackMailClicked(): void {
+    track('feedback_mail', { tool: this.calculator()?.slug ?? '', language: 'en' });
+  }
+
+  /** Opens the visitor's own mail app with a subject and the page address; nothing is stored here. */
+  protected feedbackMail(): string {
+    const title = this.calculator()?.title ?? '';
+    const page = typeof window === 'undefined' ? '' : `${window.location.origin}${window.location.pathname}\n\n`;
+    return `mailto:hello@zyankov.eu?subject=${encodeURIComponent(`Feedback: ${title}`)}&body=${encodeURIComponent(page)}`;
   }
 
   protected async copyResults(): Promise<void> {

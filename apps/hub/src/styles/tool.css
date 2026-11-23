@@ -952,3 +952,71 @@ select {
   color: var(--text);
   text-decoration: underline;
 }
+
+/* "Was this useful?" under a result. Sits on the dark result card, so it uses the inverse text. */
+.tool-feedback {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--inverse-text) 24%, transparent);
+  color: var(--inverse-text);
+  font-size: 14px;
+}
+
+.tool-feedback__ask {
+  margin: 0;
+  font-weight: 700;
+}
+
+.tool-feedback__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.tool-feedback button,
+.tool-feedback__write {
+  padding: 7px 12px;
+  color: var(--inverse-text);
+  font: inherit;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--inverse-text) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--inverse-text) 28%, transparent);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.tool-feedback__write {
+  text-decoration: underline;
+  background: none;
+  border-color: transparent;
+}
+
+.tool-feedback button:hover:not(:disabled),
+.tool-feedback__write:hover {
+  background: color-mix(in srgb, var(--inverse-text) 18%, transparent);
+}
+
+.tool-feedback button[aria-pressed='true'] {
+  background: color-mix(in srgb, var(--inverse-text) 24%, transparent);
+}
+
+.tool-feedback button:disabled {
+  cursor: default;
+}
+
+.tool-feedback button:focus-visible,
+.tool-feedback__write:focus-visible {
+  outline: 2px solid var(--inverse-text);
+  outline-offset: 2px;
+}
+
+.tool-feedback__thanks {
+  flex-basis: 100%;
+  min-height: 1.2em;
+  margin: 0;
+}

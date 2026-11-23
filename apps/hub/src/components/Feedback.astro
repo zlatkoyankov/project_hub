@@ -1,0 +1,70 @@
+---
+// "Was this useful?" block under a calculator result. A vote is one anonymous Umami event with the
+// tool id and the answer; nothing is stored in the browser and no text is collected. Writing to us
+// opens the visitor's own mail app with a ready subject and the page address.
+interface Props {
+  lang: 'bg' | 'en'
+  /** Tool id, e.g. the calculator slug. Names only: never values the visitor typed. */
+  tool: string
+  title?: string
+}
+const { lang, tool, title = '' } = Astro.props
+const t = lang === 'bg'
+  ? {
+      ask: 'Помогна ли ти калкулаторът?',
+      yes: 'Да, благодаря',
+      no: 'Не съвсем',
+      thanksYes: 'Радвам се, че свърши работа. Благодаря!',
+      thanksNo: 'Благодаря. Ако ми кажеш какво не е наред, ще го оправя.',
+      write: 'Напиши ни',
+      subject: `Обратна връзка: ${title || tool}`,
+    }
+  : {
+      ask: 'Did this calculator help?',
+      yes: 'Yes, thanks',
+      no: 'Not really',
+      thanksYes: 'Glad it helped. Thank you!',
+      thanksNo: 'Thank you. If you tell me what is wrong, I will fix it.',
+      write: 'Write to us',
+      subject: `Feedback: ${title || tool}`,
+    }
+---
+<div class="tool-feedback" data-feedback data-tool={tool} data-lang={lang} data-subject={t.subject} data-thanks-yes={t.thanksYes} data-thanks-no={t.thanksNo}>
+  <p class="tool-feedback__ask" id={`fb-${tool}`}>{t.ask}</p>
+  <div class="tool-feedback__buttons" role="group" aria-labelledby={`fb-${tool}`}>
+    <button type="button" data-vote="up">{t.yes}</button>
+    <button type="button" data-vote="down">{t.no}</button>
+    <a class="tool-feedback__write" href="mailto:hello@zyankov.eu" data-feedback-mail>{t.write}</a>
+  </div>
+  <p class="tool-feedback__thanks" role="status" data-feedback-thanks></p>
+</div>
+
+<script>
+  import { track } from '@zyankov/design-system/analytics'
+
+  document.querySelectorAll<HTMLElement>('[data-feedback]').forEach((box) => {
+    const tool = box.dataset.tool ?? ''
+    const language = box.dataset.lang ?? ''
+    const thanks = box.querySelector<HTMLElement>('[data-feedback-thanks]')
+    const mail = box.querySelector<HTMLAnchorElement>('[data-feedback-mail]')
+    // The address of the page goes into the mail only when the visitor opens it.
+    const prepare = () => {
+      if (!mail) return
+      const body = `${window.location.origin}${window.location.pathname}\n\n`
+      mail.href = `mailto:hello@zyankov.eu?subject=${encodeURIComponent(box.dataset.subject ?? '')}&body=${encodeURIComponent(body)}`
+    }
+    prepare()
+    mail?.addEventListener('click', () => track('feedback_mail', { tool, language }))
+    box.querySelectorAll<HTMLButtonElement>('[data-vote]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const vote = button.dataset.vote === 'up' ? 'up' : 'down'
+        track('feedback_vote', { tool, vote, language })
+        box.querySelectorAll<HTMLButtonElement>('[data-vote]').forEach((other) => {
+          other.disabled = true
+          other.setAttribute('aria-pressed', String(other === button))
+        })
+        if (thanks) thanks.textContent = (vote === 'up' ? box.dataset.thanksYes : box.dataset.thanksNo) ?? ''
+      })
+    })
+  })
+</script>
