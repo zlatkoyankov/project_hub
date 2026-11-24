@@ -23,6 +23,7 @@ import {
   convertCooking,
   roundCooking,
 } from '../lib/kitchen-en'
+import { LOAN_EXAMPLES, loanPayment } from '../lib/everyday'
 import '../styles/tool.css'
 
 type Kind = 'percent' | 'dates' | 'loan' | 'savings' | 'kitchen'
@@ -204,8 +205,8 @@ const CONFIGS: Record<Kind, Config> = {
       { label: 'CFPB: the difference between a loan\'s interest rate and its APR', href: 'https://www.consumerfinance.gov/ask-cfpb/what-is-an-apr-en-733/' },
       { label: 'AJ Design: worked example, 25,000 at 7% for 5 years ≈ 495.03 a month', href: 'https://ajdesigner.com/loan/' },
     ],
-    checked: '11 November 2026',
-    checkedIso: '2026-11-11',
+    checked: '24 November 2026',
+    checkedIso: '2026-11-24',
     jsonName: 'Loan payment calculator',
     formTitle: 'The loan',
     formHint: 'Any currency. The rate is per year; the term is in years or months.',
@@ -384,6 +385,24 @@ const jsonLd = {
           <p>How much of your payments goes to interest and how much to principal, and what you still owe after each year. Each month's interest is the balance × the annual rate ÷ 12.</p>
           <div class="tool-schedule__wrap"><table><thead><tr><th data-schedule-period>Year</th><th>Paid</th><th>Interest</th><th>Principal</th><th>Balance</th></tr></thead><tbody data-schedule-body></tbody></table></div>
           <button type="button" data-schedule-toggle data-labels="Show by month|Show by year" data-periods="Month|Year">Show by month</button>
+        </section>
+      )}
+
+      {kind === 'loan' && (
+        <section class="tool-schedule tool-schedule--rates" aria-labelledby="loan-examples-title">
+          <h2 id="loan-examples-title">Monthly payment on common loan amounts</h2>
+          <p>
+            Monthly payments for popular loan sizes, worked out with the formula above at an example rate of {LOAN_EXAMPLES.rate}% a year. The rate is our own example, not a market rate: your offer will differ, so open an amount in the calculator and enter your rate. The amounts work in any currency (£, $, €); the payment is principal and interest only.
+          </p>
+          <div class="tool-schedule__wrap"><table><thead><tr><th>Loan amount</th>{LOAN_EXAMPLES.years.map((years) => <th>{years} years</th>)}</tr></thead><tbody>
+            {LOAN_EXAMPLES.amounts.map((amount) => (
+              <tr>
+                <td><a href={`${page.path}?principal=${amount}&rate=${LOAN_EXAMPLES.rate}&term=5`}>{amount.toLocaleString('en-US')}</a></td>
+                {LOAN_EXAMPLES.years.map((years) => <td>{loanPayment(amount, LOAN_EXAMPLES.rate, years * 12)!.payment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>)}
+              </tr>
+            ))}
+          </tbody></table></div>
+          <p>Example: 33,000 over 5 years at {LOAN_EXAMPLES.rate}% means r = 0.07 ÷ 12 = 0.005833 and n = 60, so the payment is 33,000 × 0.005833 ÷ (1 − 1.005833<sup>−60</sup>) = {loanPayment(33000, LOAN_EXAMPLES.rate, 60)!.payment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}. A longer term lowers the payment but raises the total interest, and a higher rate raises both.</p>
         </section>
       )}
 
