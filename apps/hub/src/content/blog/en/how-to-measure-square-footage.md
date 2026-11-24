@@ -1,7 +1,8 @@
 ---
 title: 'How to measure square footage of a room'
-description: 'Measure floor area for flooring, paint or heating: rectangles, L-shaped rooms, triangles, circles and bay windows, plus converting between ft² and m².'
+description: 'How to work out the square footage or square metres of a room for flooring, paint or heating: rectangles, L-shapes, triangles, circles, mm to m² and ft² to m².'
 date: 2026-11-04
+updated: 2026-11-24
 lang: en
 tags: [area, home-improvement]
 tool: square-footage-calculator
@@ -63,6 +64,26 @@ A round area is π × radius². A semicircular bay with a radius of 3 ft is half
 
 A three-sided bay window is easier to treat as a rectangle plus two small triangles.
 
+## Working in square metres (UK and metric)
+
+To get the square metres of a room, measure the length and the width in metres, to the nearest centimetre, and multiply them. A kitchen 3.6 m long and 2.9 m wide:
+
+3.6 × 2.9 = **10.44 m²**
+
+Tape measures and laser measures often read in millimetres or centimetres. Convert the area at the end, not the lengths halfway:
+
+- **Millimetres:** 3,600 × 2,900 = 10,440,000 mm². There are 1,000,000 mm² in a square metre, so divide by 1,000,000: **10.44 m²**.
+- **Centimetres:** 360 × 290 = 104,400 cm². There are 10,000 cm² in a square metre, so divide by 10,000: **10.44 m²**.
+
+The same split works for an L-shaped room in metres. A living room 5.5 m × 4.0 m with a 2.0 m × 1.5 m corner taken out for the hallway:
+
+- **Subtract the corner:** 5.5 × 4.0 = 22.0 m², minus 2.0 × 1.5 = 3.0 m², gives **19.0 m²**.
+- **Check by adding the parts:** 5.5 × 2.5 = 13.75 m² and 3.5 × 1.5 = 5.25 m² also give **19.0 m²**.
+
+An alcove or a chimney breast is just another small rectangle: add an alcove the floor runs into, and subtract a chimney breast that sticks out into the room.
+
+For flooring, add your waste allowance on top of the room area: with 10% extra, 19.0 m² becomes 19.0 × 1.10 = 20.9 m². Then divide by the area one pack covers, which is printed on the box, and round up to whole packs. The [laminate flooring calculator](/calculators/laminate-flooring-calculator/) does this for you.
+
 ## Converting between square feet and square metres
 
 - 1 m² = 10.764 ft² (10.7639 rounded)
@@ -92,8 +113,8 @@ The [BuildCalc square footage calculator](/calculators/square-footage-calculator
 
 ## Sources
 
-Checked 15 November 2026.
+Checked 24 November 2026.
 
 - [NIST SP 811, Appendix B.9](https://www.nist.gov/node/777661): the foot is exactly 0.3048 m and the square foot exactly 0.09290304 m² (the boldface factors in the Length and Area tables are exact).
 - [LibreTexts, Technical Mathematics: area of polygons and circles](https://math.libretexts.org/Bookshelves/Applied_Mathematics/Technical_Mathematics_(Chase)/01:_Modules/1.19:_Area_of_Polygons_and_Circles): rectangle length × width, triangle ½ × base × height, circle π × r².
-- The worked examples (154, 192, 12, 14.1 and 17.8 ft², 14.28 m², 215 ft²) are our own arithmetic with the formulas above. The advice on what to include for flooring and paint is general practice, not a standard.
+- The worked examples (154, 192, 12, 14.1 and 17.8 ft², 14.28, 10.44, 19.0 and 20.9 m², 215 ft²) are our own arithmetic with the formulas above. The advice on what to include for flooring and paint is general practice, not a standard.
