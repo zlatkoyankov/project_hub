@@ -85,6 +85,11 @@ export function addDays(from: string, days: number): string | null {
   return new Date(start + Math.round(days) * DAY).toISOString().slice(0, 10)
 }
 
+/** Loan sizes that people search for, the terms and the rate used in the examples table on the loan page. The 7% is
+ *  our own example (the page's headline example), not a market rate: lenders' rates differ, so the table links
+ *  every amount to the calculator to enter the real one. */
+export const LOAN_EXAMPLES = { amounts: [10000, 15000, 20000, 25000, 30000, 32000, 33000, 35000, 40000, 50000, 100000], years: [3, 5, 7], rate: 7 }
+
 export interface LoanResult {
   payment: number
   total: number
