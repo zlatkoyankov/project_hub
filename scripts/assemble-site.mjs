@@ -26,7 +26,7 @@ await rm(output, { force: true, recursive: true })
 await mkdir(output, { recursive: true })
 
 for (const part of parts) {
-  await cp(resolve(root, part.from), resolve(output, part.to), { recursive: true })
+  await cp(resolve(root, part.from), resolve(output, part.to), { recursive: true, filter: (source) => !/(^|[\\/])(\.DS_Store|Thumbs\.db|desktop\.ini)$/.test(source) })
   console.log(`${part.name}: ${part.from} -> dist/${part.to === '.' ? '' : `${part.to}/`}`)
 }
 
