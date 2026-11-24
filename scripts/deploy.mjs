@@ -16,7 +16,9 @@ const apply = process.argv.includes('--yes')
 
 // Never deleted on the server even though the build does not have them: server and panel files.
 const KEEP = [/(^|\/)\./, /(^|\/)cgi-bin(\/|$)/, /(^|\/)php\.ini$/, /(^|\/)error_log$/]
-const kept = (path) => KEEP.some((pattern) => pattern.test(path))
+// Operating-system junk is never uploaded, and a copy that reached the server earlier is deleted by the next deploy.
+const JUNK = /(^|\/)(\.DS_Store|Thumbs\.db|desktop\.ini)$/
+const kept = (path) => !JUNK.test(path) && KEEP.some((pattern) => pattern.test(path))
 
 async function loadEnv() {
   let text
@@ -40,6 +42,7 @@ async function loadEnv() {
 async function localFiles(dir, prefix = '', out = new Map()) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const path = prefix ? `${prefix}/${entry.name}` : entry.name
+    if (JUNK.test(path)) continue
     if (entry.isDirectory()) await localFiles(join(dir, entry.name), path, out)
     else if (entry.isFile()) out.set(path, (await stat(join(dir, entry.name))).size)
   }
