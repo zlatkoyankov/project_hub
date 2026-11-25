@@ -8,8 +8,8 @@ import { OCCASIONS, countdown, dayWord, nextDate } from '../../../lib/countdown'
 import { orthodoxEaster } from '../../../lib/holidays'
 import '../../../styles/tool.css'
 
-const CHECKED = '13 ноември 2026'
-const CHECKED_ISO = '2026-11-13'
+const CHECKED = '25 ноември 2026'
+const CHECKED_ISO = '2026-11-25'
 const path = '/bg/kolko-dni-do/'
 const today = new Date().toISOString().slice(0, 10)
 const longDate = (date: string) => new Date(`${date}T12:00:00Z`).toLocaleDateString('bg-BG', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
@@ -19,12 +19,14 @@ const cards = OCCASIONS.map((occasion) => {
 })
 const weeksText = (c: { weeks: number; restDays: number }) => (c.weeks ? `${c.weeks} седм.${c.restDays ? ` и ${dayWord(c.restDays)}` : ''}` : dayWord(c.restDays))
 const koleda = cards.find((card) => card.id === 'koleda')!
+const novaGodina = cards.find((card) => card.id === 'nova-godina')!
 const easterYear = Number(today.slice(0, 4)) + (orthodoxEaster(Number(today.slice(0, 4))) < today ? 1 : 0)
 
 const title = 'Колко дни до Коледа, Нова година и Великден | Zyankov.eu'
 const description = 'Колко дни остават до Коледа, Нова година, Великден, Баба Марта и официалните празници, колко са работните дни дотогава и брояч до всяка дата.'
 const faq = [
   { q: `Кога е Великден ${easterYear}?`, a: `Православният Великден е на ${longDate(orthodoxEaster(easterYear))}. Датата се сменя всяка година, защото се определя по пролетното равноденствие и пълнолунието.` },
+  { q: 'Кога са Коледа и Нова година?', a: `Следващата Коледа е на ${longDate(koleda.date)}, а Нова година е на ${longDate(novaGodina.date)} И двата празника са официални почивни дни по чл. 154 от Кодекса на труда.` },
   { q: 'Как се броят дните?', a: 'Днешният ден се брои, а самият празник не. Затова на 24 декември до Коледа остава 1 ден, а на 25 декември броячът показва 0.' },
   { q: 'Кои дни са работни?', a: 'Работните дни са от понеделник до петък без официалните празници по чл. 154 от Кодекса на труда. Ако празник се падне в събота или неделя, почивен е първият работен ден след него.' },
   { q: 'Мога ли да броя до своя дата?', a: 'Да. Въведи датата в полето „Своя дата“: рожден ден, сватба, отпуска или изпит. Калкулаторът показва дните, седмиците и работните дни дотогава.' },
@@ -40,7 +42,7 @@ const jsonLd = [
   <p class="eyebrow">Всекидневни сметки · дати</p>
   <h1>Колко дни до Коледа, Нова година и Великден</h1>
   <p class="updated">Броят се от днес, <span data-today>{longDate(today)}</span></p>
-  <p class="tool-answer"><strong>Накратко:</strong> до Коледа остават <strong data-answer-days>{dayWord(koleda.count.days)}</strong>, от които <span data-answer-work>{koleda.count.workdays}</span> работни, като се брои и днес. Под всеки празник е датата му и колко работни дни има дотогава, а най-долу можеш да броиш до своя дата.</p>
+  <p class="tool-answer"><strong>Накратко:</strong> до Коледа остават <strong data-answer-days>{dayWord(koleda.count.days)}</strong>, от които <span data-answer-work>{koleda.count.workdays}</span> работни, а до Нова година остават <strong data-answer-ny-days>{dayWord(novaGodina.count.days)}</strong>, от които <span data-answer-ny-work>{novaGodina.count.workdays}</span> работни. Броят се от днес, включително. Под всеки празник е датата му и колко работни дни има дотогава, а най-долу можеш да броиш до своя дата.</p>
 
   <ul class="countdowns">
     {cards.map((card) => (
@@ -116,6 +118,10 @@ const jsonLd = [
     if (occasion.id === 'koleda') {
       document.querySelector('[data-answer-days]')!.textContent = dayWord(count.days)
       document.querySelector('[data-answer-work]')!.textContent = String(count.workdays)
+    }
+    if (occasion.id === 'nova-godina') {
+      document.querySelector('[data-answer-ny-days]')!.textContent = dayWord(count.days)
+      document.querySelector('[data-answer-ny-work]')!.textContent = String(count.workdays)
     }
   }
 
