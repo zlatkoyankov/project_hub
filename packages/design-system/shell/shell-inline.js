@@ -149,4 +149,21 @@ export function shellInline() {
       announce(event.newValue);
     }
   });
+  /* Visits from our own campaign links (?utm_source=facebook&utm_campaign=laminat-1). Umami runs with
+     data-exclude-search, so the query string never reaches it; this sends only a source from a fixed list
+     and a short campaign tag, nothing else from the address. Not in frames (embedded calculators). */
+  var SOURCES = ['facebook', 'instagram', 'tiktok', 'youtube', 'pinterest', 'reddit', 'telegram', 'viber', 'forum', 'newsletter', 'email', 'partner'];
+  window.addEventListener('load', function () {
+    try {
+      if (window.top !== window.self) return;
+      var query = new URLSearchParams(window.location.search);
+      var source = (query.get('utm_source') || '').toLowerCase();
+      if (SOURCES.indexOf(source) === -1) return;
+      var campaign = (query.get('utm_campaign') || '').toLowerCase();
+      if (!/^[a-z0-9-]{1,30}$/.test(campaign)) campaign = '';
+      if (window.umami && window.umami.track) window.umami.track('campaign_visit', { source: source, campaign: campaign });
+    } catch (e) {
+      /* Analytics must never break the page. */
+    }
+  });
 }
